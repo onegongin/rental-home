@@ -5,6 +5,8 @@
 (function () {
   const OT = { 69: 1, 79: 1 };
   const VN = { ext: '확장형', basic: '기본형' };
+  // 오른쪽 두 평면 칸 이름: site.json types[타입].views 가 있으면 그것 (대라수: 입체 평면 · 위에서 본 평면, R1 2026-11-13)
+  const vn = (k, v) => (((O.types || {})[k] || {}).views || {})[v] || VN[v];
   // 실내 사진 (소스/실내 → assets/hwip/interior/타입_번호.jpg)
   const INT = { '84A': ['거실', '침실', '욕실'], '84B': ['거실', '주방', '드레스룸', '수납장', '화장실'], '79': ['거실', '주방', '침실', '침실 2', '화장실'] };
   const name = k => OT[k] ? k + 'OT' : k === '218' ? 'PH 218' : k;
@@ -179,7 +181,7 @@
     q('.nav').querySelectorAll('button').forEach(b => b.onclick = () => open(b.dataset.k));
     const im = q('.stage img'); im.src = A('intro_' + k + '.jpg'); im.alt = name(k) + ' 타입 소개 평면도';
     if (!OT[k]) { const cs = R.D1.querySelectorAll('.card');
-      cs[0].querySelector('.cap').textContent = '| 확장형 |  ' + name(k); cs[1].querySelector('.cap').textContent = '| 기본형 |  ' + name(k);
+      cs[0].querySelector('.cap').textContent = '| ' + vn(k, 'ext') + ' |  ' + name(k); cs[1].querySelector('.cap').textContent = '| ' + vn(k, 'basic') + ' |  ' + name(k);
       cs[0].querySelector('.box').style.backgroundImage = `url(${A('ext_' + k + '.jpg')})`; cs[1].querySelector('.box').style.backgroundImage = `url(${A('basic_' + k + '.jpg')})`; }
     // 실내 사진: 84A · 84B는 평면 칸 옆, 79OT는 그림 오른쪽 (거실 크게 + 나머지 2칸씩)
     const tiles = L.map((n, i) => `<button class="ph" data-i="${i}" aria-label="${name(k)} ${n} 크게 보기"><img src="${IA(k, i)}" alt="${name(k)} 실내 · ${n}" loading="lazy"><span class="cap">${n}</span></button>`).join('');
@@ -195,8 +197,9 @@
   function open2(v) {
     const D2 = R.D2, im = D2.querySelector('img');
     im.onload = () => { D2.querySelector('.pop2').style.setProperty('--ar', (im.naturalWidth / im.naturalHeight).toFixed(4)); requestAnimationFrame(R.Z2.reset); };
-    im.src = A(v + '_' + cur + '.jpg'); im.alt = name(cur) + ' ' + VN[v] + ' 평면도';
-    D2.querySelector('.cap').textContent = '| ' + VN[v] + ' |  ' + name(cur);
+    im.src = A(v + '_' + cur + '.jpg'); im.alt = name(cur) + ' ' + vn(cur, v) + ' 평면도';
+    D2.querySelector('.cap').textContent = '| ' + vn(cur, v) + ' |  ' + name(cur);
+    D2.querySelectorAll('.tg button').forEach(b => { b.textContent = vn(cur, b.dataset.v); });
     D2.querySelectorAll('.tg button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
     D2.classList.add('on');
   }

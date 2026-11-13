@@ -32,7 +32,7 @@ test('타입 페이지: 평면도 · 면적 · 세대수 · 분양가 범위 · 
   assert.equal((await get('/daelasoo/plan/99z')).status, 404);
   const sm = (await get('/daelasoo/sitemap.xml')).text;
   for (const t of TYPES) assert.ok(sm.includes('/daelasoo/plan/' + slugOf(t) + '</loc>'), t + ' 사이트맵');
-  assert.ok(sm.includes('/dongho</loc>'), '/dongho 사이트맵');
-  // 대라수는 분양가표 · 입지 보드 자료가 없어 그 페이지는 안 만듦
-  for (const p of ['/price', '/location']) { assert.ok(!sm.includes(p + '</loc>'), p + ' 없어야 함'); assert.equal((await get('/daelasoo' + p)).status, 404, p + ' 는 없는 주소'); }
+  for (const p of ['/dongho', '/location']) assert.ok(sm.includes(p + '</loc>'), p + ' 사이트맵');
+  // 대라수는 분양가표 자료가 없어 그 페이지는 안 만듦
+  for (const p of ['/price']) { assert.ok(!sm.includes(p + '</loc>'), p + ' 없어야 함'); assert.equal((await get('/daelasoo' + p)).status, 404, p + ' 는 없는 주소'); }
 });

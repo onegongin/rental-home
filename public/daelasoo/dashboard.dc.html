@@ -2635,8 +2635,12 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     <div style="min-width:0;background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
       <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><span style="font-size:17px;font-weight:700">{{ si.smTitle }}</span><span style="font-size:13px;color:#6e6e73">{{ si.smSub }}</span></div>
       <div data-m="smmap" style="position:relative;width:100%;flex:1 1 0;min-height:clamp(360px,40vw,535px);border-radius:12px;overflow:hidden;background:#f5f5f7">
+        <sc-if value="{{ si.smHasMap }}">
         <iframe src="{{ si.smMap }}" title="{{ si.smTitle }} 지도" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
         <a href="{{ si.smLink }}" target="_blank" rel="noopener" style="position:absolute;top:10px;right:10px;z-index:5;height:32px;display:flex;align-items:center;border-radius:9999px;padding:0 12px;background:#fff;color:#1d1d1f;text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.25)">카카오맵에서 크게 보기 ↗</a>
+        </sc-if>
+        <!-- 지도 퍼가기 키가 없는 단지(대라수): 지도 자리에 사진 (site.json siteMap.photo, R1 2026-11-13) -->
+        <sc-if value="{{ si.smNoMap }}"><button onClick="{{ si.smPhotoZoom }}" title="크게 보기" aria-label="{{ si.smPhotoAlt }} 크게 보기" style="position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;cursor:zoom-in;background:#f5f5f7"><img src="{{ si.smPhoto }}" alt="{{ si.smPhotoAlt }}" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover"></button></sc-if>
       </div>
     </div>
     <div style="min-width:0;background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
@@ -5036,7 +5040,7 @@ class Component extends DCLogic {
       /* 사업개요 사진 4컷 (site.json overview.gallery [파일, 이름]): 첫 장이 메인. 누르면 크게 보기 창에서 4장 넘겨 보기 */
       ...(G => ({ hasGal: G.length > 1, noGal: G.length < 2, gal: G.map(([f, c], i) => ({ src: P(f), alt: D.S.site.name + ' ' + (c || '투시도'), cap: c || '', cls: i ? 'bzg-ph' : 'bzg-ph bzg-main', isMain: !i,
         zoom: () => this.setState({ siZoom: P(f), siZoomSet: G.map(([g, d, n]) => [P(g), d || '', n || '']), siZoomI: i }) })) }))((C.overview || {}).gallery || []), /* 3번째 값 = 확대 창 사진 안 안내 글(연회색, 예: AI 생성 이미지) */
-      hasSiteMap: !!(C.siteMap || {}).map, smTitle: (C.siteMap || {}).title || '사업지', smSub: (C.siteMap || {}).sub || '', smMap: (C.siteMap || {}).map || '', smLink: (C.siteMap || {}).link || 'https://map.kakao.com/',
+      hasSiteMap: !!((C.siteMap || {}).map || (C.siteMap || {}).photo), smHasMap: !!(C.siteMap || {}).map, smNoMap: !(C.siteMap || {}).map && !!(C.siteMap || {}).photo, smPhoto: (C.siteMap || {}).photo ? P((C.siteMap || {}).photo) : '', smPhotoAlt: (C.siteMap || {}).photoAlt || D.S.site.name + ' 주변', smPhotoZoom: (C.siteMap || {}).photo ? zoom(P((C.siteMap || {}).photo)) : () => {}, smTitle: (C.siteMap || {}).title || '사업지', smSub: (C.siteMap || {}).sub || '', smMap: (C.siteMap || {}).map || '', smLink: (C.siteMap || {}).link || 'https://map.kakao.com/',
       smSide: ((C.siteMap || {}).side || []).map((x, i) => ({ src: P(x), alt: ((C.siteMap || {}).title || '사업지') + ' 그림 ' + (i + 1), zoom: zoom(P(x)) })), smEmpty: !((C.siteMap || {}).side || []).length && !(C.siteMap || {}).board,
       /* 입지환경 보드 (site.json siteMap.board): 사진 3장 + 설명 카드 4개. 글자는 화면에서 짬 */
       ...(B => ({ hasBoard: !!(B.pics || B.cards), bdTitle: B.title || '', bdSub: B.sub || '', bdTag0: (B.tag || [])[0] || '', bdTag1: (B.tag || [])[1] || '', bdTag2: (B.tag || [])[2] || '', bdHasTag: !!(B.tag || []).length,

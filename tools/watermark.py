@@ -25,36 +25,35 @@ FILES = [
     ('(1차)59A.jpg', 'plans/59A.jpg', True),
     ('(1차)59B.jpg', 'plans/59B.jpg', True),
     ('(1차)59C.jpg', 'plans/59C.jpg', True),
-    # 평면안내 칸 타입 미니보드 (화면 · /plan 카드가 plans/3d_타입.png 를 씀) — 지금은 평면 그림을 줄여 씀, 3D 그림이 생기면 바꿈
-    ('(1차)80A.jpg', 'plans/3d_80A.png', True),
-    ('(1차)80B.jpg', 'plans/3d_80B.png', True),
-    ('(1차)59A.jpg', 'plans/3d_59A.png', True),
-    ('(1차)59B.jpg', 'plans/3d_59B.png', True),
-    ('(1차)59C.jpg', 'plans/3d_59C.png', True),
-    # 타입별 추가 그림 (_1 · _2 · _3) — 무슨 그림인지 대표 확인 전이라 화면에는 아직 안 씀. 84A · 84B = 80A · 80B
-    ('84A_1.png', 'plans/more/80A_1.jpg', True),
-    ('84A_2.png', 'plans/more/80A_2.jpg', True),
-    ('84B_1.png', 'plans/more/80B_1.jpg', True),
-    ('84B_2.png', 'plans/more/80B_2.jpg', True),
-    ('59A_1.png', 'plans/more/59A_1.jpg', True),
-    ('59A_2.jpg', 'plans/more/59A_2.jpg', True),
-    ('59A_3.png', 'plans/more/59A_3.jpg', True),
-    ('59B_1.png', 'plans/more/59B_1.jpg', True),
-    ('59B_2.png', 'plans/more/59B_2.jpg', True),
-    ('59B_3.png', 'plans/more/59B_3.jpg', True),
-    ('59C_2.png', 'plans/more/59C_2.jpg', True),
-    ('59C_3.png', 'plans/more/59C_3.jpg', True),
-    # 기존 사이트 자료 그림 (daelasoo1_B0xx) — 내용 확인 전, 화면에는 아직 안 씀
-    ('daelasoo1_B005b.jpg', 'more/B005b.jpg', True),
-    ('daelasoo1_B005P.png', 'more/B005P.jpg', True),
-    ('daelasoo1_B007.jpg', 'more/B007.jpg', True),
-    ('daelasoo1_B008.jpg', 'more/B008.jpg', True),
-    ('daelasoo1_B011a.png', 'more/B011a.jpg', True),
-    ('daelasoo1_B011b.png', 'more/B011b.jpg', True),
-    ('daelasoo1_B011c.png', 'more/B011c.jpg', True),
-    ('daelasoo1_B011d.png', 'more/B011d.jpg', True),
-    ('daelasoo1_B011e.png', 'more/B011e.jpg', True),
-    ('daelasoo1_B011f.png', 'more/B011f.jpg', True),
+    # 평면 창 (plan-pop.js): 왼쪽 큰 그림 intro_ = 타입 평면 · 오른쪽 두 칸 ext_ = 입체 평면 · basic_ = 위에서 본 평면 (이름은 site.json types.views)
+    # 3D 평면 원본: 84A · 84B = 80A · 80B (대표 확정). _1 · _2 · _3 중 비스듬한 것 = 입체, 위에서 본 것 = 위에서 (2026-11-13 대표 요청으로 내용 확인)
+    ('(1차)80A.jpg', 'plans/intro_80A.jpg', True),
+    ('(1차)80B.jpg', 'plans/intro_80B.jpg', True),
+    ('(1차)59A.jpg', 'plans/intro_59A.jpg', True),
+    ('(1차)59B.jpg', 'plans/intro_59B.jpg', True),
+    ('(1차)59C.jpg', 'plans/intro_59C.jpg', True),
+    ('84A_2.png', 'plans/ext_80A.jpg', True),   ('84A_1.png', 'plans/basic_80A.jpg', True),
+    ('84B_2.png', 'plans/ext_80B.jpg', True),   ('84B_1.png', 'plans/basic_80B.jpg', True),
+    ('59A_3.png', 'plans/ext_59A.jpg', True),   ('59A_1.png', 'plans/basic_59A.jpg', True),   # 59A 위에서 본 3D(59A_2)는 작아서(600x400) 컬러 평면(_1)을 씀
+    ('59B_3.png', 'plans/ext_59B.jpg', True),   ('59B_2.png', 'plans/basic_59B.jpg', True),
+    ('59C_3.png', 'plans/ext_59C.jpg', True),   ('59C_2.png', 'plans/basic_59C.jpg', True),
+    # 평면안내 칸 타입 미니보드 (화면 · /plan 카드) = 입체 평면
+    ('84A_2.png', 'plans/3d_80A.png', True),
+    ('84B_2.png', 'plans/3d_80B.png', True),
+    ('59A_3.png', 'plans/3d_59A.png', True),
+    ('59B_3.png', 'plans/3d_59B.png', True),
+    ('59C_3.png', 'plans/3d_59C.png', True),
+    # 분양전환 혜택 · 입지 안내 그림 (기존 사이트 자료 daelasoo1_B0xx) — 사업개요 사진 칸 · 입지환경 보드
+    ('daelasoo1_B005b.jpg', 'info/benefit.jpg', True),        # 잔여세대 분양 혜택
+    ('daelasoo1_B005P.png', 'info/benefit2.jpg', True),       # 첫 분양전환 특혜 & 시세 상승
+    ('daelasoo1_B007.jpg', 'info/life.jpg', True),            # 생활권 · 교통 · 분양전환 혜택 요약
+    ('daelasoo1_B008.jpg', 'info/road.jpg', True),            # 북광주IC · 빛고을대로 · 산월IC
+    ('daelasoo1_B011a.png', 'info/cheomdan3.jpg', True),      # 첨단3지구 AI특화 복합도시
+    ('daelasoo1_B011b.png', 'info/metro2.jpg', True),         # 도시철도 2호선 쌍암역
+    ('daelasoo1_B011c.png', 'info/shopping.jpg', True),       # 더현대 · 신세계 · 스타필드
+    ('daelasoo1_B011d.png', 'info/invest.jpg', True),         # 서남권 896조원 투자계획
+    ('daelasoo1_B011e.png', 'info/airport.jpg', True),        # 군공항 이전 & 재건축
+    ('daelasoo1_B011f.png', 'info/samsung.jpg', True),        # 하남 삼성전자 AI공조시스템
     # 머리글 로고 (새기지 않음)
     ('logo.png', 'logo.png', False),
     ('logo1.png', 'logo1.png', False),
