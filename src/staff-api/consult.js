@@ -12,11 +12,19 @@ import { can } from '../core/permissions.js';
 import { maskName, maskPhone, maskDeep, maskText } from '../core/mask.js';
 import { KINDS, PROG, PROBS, CHANNELS, DOCS, SEL, cleanCard, cleanLog, convTarget, unitId, fund } from '../core/consult.js';
 import { UNIT } from '../core/units.js';
+import { priceOf } from '../core/price.js';
 import * as C from '../repo/consult.js';
 import { getConv, syncConv } from '../repo/conv.js';
 import { audit } from '../repo/audit.js';
 
 const own = c => ({ writer: c.writer, mgr: c.mgr });
+// R3-5: 적용 분양가(10.16 혜택가) · 기납입 임대보증금(임차인만)이 비었으면 분양가표 값으로
+function fillPrice(kind, unit, d) {
+  const p = priceOf(kind === 'tenant' ? unit : d.contractUnit);
+  if (!p) return;
+  if (d.price == null) d.price = p.benefit;
+  if (kind === 'tenant' && d.deposit == null && p.dep) d.deposit = p.dep;
+}
 function view(u, c) {
   const raw = can(u, 'card.raw', own(c));
   const x = Object.assign({}, c, { raw, fund: fund(c.data) });
@@ -71,6 +79,7 @@ export async function staffConsult(req, env, url, u) {
       c.data = Object.assign({ inflow: '관심등록', interest: String(g.interest || '').slice(0, 200) || null, memo: g.text ? String(g.text).slice(0, 3000) : null }, c.data);
     }
     if (!c.name && !c.phone) return J({ ok: false, err: 'input', field: 'name', msg: '성명이나 연락처 중 하나는 적어 주세요' }, 400);
+    fillPrice(kind, unit_id, c.data);   // R3-5 분양가표 값으로 빈칸 채움
     const card = Object.assign({ kind, unit_id, lead_id, progress: c.progress || '상담중' }, c);
     const id = await C.insertConsult(db, card, u.name);
     const l = cleanLog(b.log);
@@ -85,7 +94,7 @@ export async function staffConsult(req, env, url, u) {
     const c = await C.getConsult(db, m[1]);
     if (!c || (c.deleted_at && !can(u, 'card.delete'))) return J({ ok: false, err: 'notfound' }, 404);
     const x = view(u, c), unit = c.kind === 'tenant' ? c.unit_id : c.data.contractUnit, conv = unit ? await getConv(db, unit) : null;
-    return J({ ok: true, card: x, canEdit: !c.deleted_at && can(u, 'card.edit', own(c)), logs: (await C.logsOf(db, c.id)).map(l => viewLog(x.raw, l)), conv: conv ? { unit, status: conv.status, move_out: conv.move_out } : unit ? { unit, status: null } : null, unit: c.unit_id ? UNIT[c.unit_id] : null });
+    return J({ ok: true, card: x, canEdit: !c.deleted_at && can(u, 'card.edit', own(c)), logs: (await C.logsOf(db, c.id)).map(l => viewLog(x.raw, l)), conv: conv ? { unit, status: conv.status, move_out: conv.move_out } : unit ? { unit, status: null } : null, unit: c.unit_id ? UNIT[c.unit_id] : null, price: unit ? priceOf(unit) : null });
   }
 
   if (m && req.method === 'POST') {
@@ -101,6 +110,7 @@ export async function staffConsult(req, env, url, u) {
       Object.keys(d).forEach(k => { if (d[k] == null) delete d[k]; });
       // MGM 확정 뒤 부동산 · 금액 · 계약할 호실을 바꾸면 확정을 풂 (청구 내역서에서 빠짐 → 대표 · 관리자가 다시 확정)
       if (d.mgmFixed && ['mgmAgency', 'mgmFee', 'contractUnit'].some(k => d[k] !== c.data[k])) delete d.mgmFixed;
+      if (c.kind === 'new' && d.contractUnit !== c.data.contractUnit) fillPrice('new', null, d);   // 계약할 호실을 새로 적으면 그 호실 혜택가 (적용 분양가가 비었을 때만)
       if (JSON.stringify(d) !== JSON.stringify(c.data)) patch.data = d;
     }
     const l = cleanLog(b.log);

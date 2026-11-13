@@ -181,7 +181,7 @@ async function openCard(id) {
   const r = await api('/api/staff/consults/' + id);
   if (!r.j.ok) { flash(errMsg(r.j)); location.hash = ''; return; }
   kind = r.j.card.kind;
-  S = { kind, isNew: false, card: r.j.card, logs: r.j.logs, ro: !r.j.canEdit, conv: r.j.conv, unit: r.j.unit, docs: [] };
+  S = { kind, isNew: false, card: r.j.card, logs: r.j.logs, ro: !r.j.canEdit, conv: r.j.conv, unit: r.j.unit, price: r.j.price, docs: [] };
   drawCard();
 }
 function newCard(k, unit) {
@@ -214,6 +214,7 @@ function drawCard() {
       <h3>상담 이력</h3>
       <div class="meta">${T ? esc(uName(c.unit_id)) + (S.unit ? ' · ' + esc(S.unit.type) + ' · ' + S.unit.floor + '층' : '') : esc(c.name || '') + (c.phone ? ' · ' + esc(c.phone) : '')}</div>
       ${S.conv ? `<div class="unitbox"><span>${T ? '전환 상태' : '계약 호실'}</span><b>${T ? esc(S.conv.status || '미정') : esc(uName(S.conv.unit)) + ' · ' + esc(S.conv.status || '미정')}</b>${S.conv.move_out ? `<span>퇴거일</span><b>${esc(S.conv.move_out)}</b>` : ''}<span></span><a href="units.html">전환상태 화면 →</a></div>` : ''}
+      ${S.price ? `<div class="unitbox" style="background:#f2f7fd"><span>10.16 혜택가</span><b>${won(S.price.benefit)}</b><span>매입보장가</span><b>${won(S.price.hedge)}</b><span>임대보증금</span><b>${won(S.price.dep)}</b><span>필요금액</span><b>${won(S.price.need)}</b>${S.price.wall ? '<span></span><b style="color:#7c3aed">가벽 미설치</b>' : ''}${S.price.rent ? `<span>전세연장</span><b>${won(S.price.rent.cur)} → ${won(S.price.rent.next)} <span style="color:#6d28d9">(+${won(S.price.rent.up)})</span></b>` : ''}<span></span><a href="prices.html#${esc(S.price.id)}">분양가표 →</a></div>` : ''}
       ${S.logs.length ? S.logs.map(l => `<div class="log"><small>${esc(l.date || new Date(l.at).toISOString().slice(0, 10))} · ${esc(l.by)}${l.channel ? ' · ' + esc(l.channel) : ''}${l.progress ? ' · 진행 ' + esc(l.progress) : ''}</small>${esc(l.memo || '')}${l.prob ? `<br><span class="pr">${esc(l.prob)}</span>` : ''}${(l.docs || []).map(d => `<span class="pr">✓ ${esc(d)}</span>`).join('')}${l.next_date ? `<br><small>다음 연락 ${esc(l.next_date)}</small>` : ''}</div>`).join('') : '<div style="color:var(--sub);font-size:13px">아직 상담 기록이 없습니다</div>'}
     </div></div>`;
   $('back').onclick = () => { location.hash = ''; };
@@ -231,6 +232,18 @@ function drawCard() {
     if (!q('mgmAgency').value && q('inflowAgencyName').value) q('mgmAgency').value = q('inflowAgencyName').value;
     if (!q('mgmBroker').value && q('inflowBroker').value) q('mgmBroker').value = q('inflowBroker').value; };
   ['inflowAgencyName', 'inflowBroker'].forEach(k => { const e = document.querySelector(`[data-k="${k}"]`); if (e) e.addEventListener('change', fillMgm); });
+  // R3-5: 호실(임차인) · 계약할 호실(신규고객)을 적으면 분양가표 값으로 빈칸 채움 (저장은 [상담 저장] 때)
+  const fillPrice = async v => {
+    const m = String(v || '').trim().match(/^(\d{3})\D*(\d{3,4})/); if (!m) return;
+    const r = await fetch('/api/staff/prices/' + m[1] + '-' + Number(m[2]), { credentials: 'same-origin' }).then(x => x.json()).catch(() => null);
+    if (!r || !r.ok) return;
+    const q = k => document.querySelector(`[data-k="${k}"]`);
+    if (q('price') && !q('price').value) q('price').value = comma(r.price.benefit);
+    if (S.kind === 'tenant' && q('deposit') && !q('deposit').value && r.price.dep) q('deposit').value = comma(r.price.dep);
+    S.price = r.price; calc();
+  };
+  if ($('f-unit')) { $('f-unit').addEventListener('change', e => fillPrice(e.target.value)); if ($('f-unit').value) fillPrice($('f-unit').value); }
+  const cu = document.querySelector('[data-k="contractUnit"]'); if (cu && !ro) cu.addEventListener('change', e => fillPrice(e.target.value));
   calc(); hint();
 }
 function calc() {

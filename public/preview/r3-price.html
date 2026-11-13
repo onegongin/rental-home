@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>시안 · 분양가표 · 전세연장</title>
+<!-- 시안 r3-price (2026-11-13) — R3-5 분양가표 + 전세연장 계산. 기존 대라수 사이트 PRICE · RENT_UP · 고객DB_양식 구조. 가격은 가짜 숫자 (진짜 분양가는 서버에만, 손님 화면 X) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--card:#fff;--link:#0066cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  .pick{position:sticky;top:0;z-index:9;background:#1d1d1f;color:#fff;display:flex;gap:8px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+  .pick b{font-weight:800}.pick span{color:#a1a1a6;font-size:13px}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 64px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead{color:var(--sub);font-size:14px;margin:0 0 14px;line-height:1.5}
+  .seg{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+  .seg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .cols{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .dongs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px}
+  .dong h3{margin:0 0 6px;font-size:14px}
+  .g{display:grid;grid-template-columns:24px repeat(3,1fr);gap:2px;font-size:10.5px}
+  .g .fl{color:var(--sub);text-align:right;padding-right:3px;line-height:20px}
+  .g .hd{text-align:center;color:var(--sub);font-weight:700;font-size:10.5px}
+  .u{height:20px;border-radius:3px;border:0;font:inherit;font-size:10.5px;cursor:pointer;padding:0;color:#1d1d1f;font-weight:700}
+  .u.wall{box-shadow:inset 0 0 0 1.5px #7c3aed}
+  .u.ter{box-shadow:inset 0 0 0 2px #1d1d1f}
+  .u.sel{outline:2px solid var(--on);outline-offset:1px}
+  .lg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--sub);padding:0 12px 12px}
+  .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+  .side{padding:16px;position:sticky;top:64px}
+  .side h2{margin:0 0 2px;font-size:18px}
+  .side .meta{color:var(--sub);font-size:13px;margin-bottom:12px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;align-items:baseline}
+  .kv span{color:var(--sub);font-size:13px}.kv b{text-align:right}
+  .need{margin-top:10px;padding:12px;border-radius:10px;background:#1d1d1f;color:#fff;display:flex;justify-content:space-between;align-items:baseline}
+  .need span{color:#a1a1a6;font-size:13px}.need b{font-size:20px}
+  .rent{margin-top:12px;padding:12px;border-radius:10px;background:#faf5ff;border:1px solid #e9d5ff}
+  .rent h4{margin:0 0 8px;font-size:13px;color:#6d28d9}
+  .btn{display:block;text-align:center;border-radius:10px;padding:10px 0;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit;margin-top:12px;background:var(--ink);color:#fff;width:100%}
+  .note{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.5}
+  @media (max-width:980px){.cols{grid-template-columns:minmax(0,1fr)}.side{position:static}.dongs{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.dongs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="pick"><b>시안 · 분양가표 · 전세연장</b><span>가격은 가짜 숫자 · 직원만 보는 화면 (손님 화면엔 가격 안 나감)</span></div>
+<div class="wrap">
+  <h1>분양가표</h1>
+  <p class="lead">칸 색 = 고른 금액의 높낮이. 칸을 누르면 오른쪽에 <b>10.16 혜택가 · 매입보장가 · 임대보증금 · 필요금액</b>과 <b>전세연장 시 변경 보증금</b>이 나옵니다. 상담카드의 '적용 분양가' · '기납입 임대보증금'은 이 값으로 자동으로 채워집니다.</p>
+  <div class="seg" id="mode"></div>
+  <div class="cols">
+    <div class="card"><div class="dongs" id="dongs"></div>
+      <div class="lg"><span><i style="box-shadow:inset 0 0 0 2px #1d1d1f;background:#fff"></i>광폭테라스 (101 · 104동 4층)</span><span><i style="box-shadow:inset 0 0 0 1.5px #7c3aed;background:#fff"></i>가벽 미설치</span><span id="scale"></span></div></div>
+    <div class="card side" id="side"></div>
+  </div>
+</div>
+<script>
+// 가짜 가격 (구조만 기존 PRICE 와 같음: 동 → 라인별 타입 · 층 구간 [시작, 끝, 혜택가(백만), 매입보장가(백만), 테라스])
+const P = { 101: [['80B', [[4, 4, 400, 440, 1], [5, 6, 370, 410], [7, 28, 380, 420]]], ['80B', [[4, 4, 405, 445, 1], [5, 6, 372, 412], [7, 28, 382, 422]]], ['80A', [[4, 4, 402, 442, 1], [5, 6, 371, 411], [7, 28, 381, 421]]]],
+  102: [['80A', [[4, 6, 371, 411], [7, 28, 381, 421]]], ['80B', [[4, 6, 372, 412], [7, 28, 382, 422]]], ['80B', [[4, 6, 362, 402], [7, 28, 372, 412]]]],
+  103: [['59C', [[4, 6, 295, 335], [7, 28, 300, 340]]], ['59B', [[4, 6, 295, 335], [7, 28, 300, 340]]], ['59A', [[4, 6, 285, 325], [7, 28, 290, 330]]]],
+  104: [['59A', [[4, 4, 328, 368, 1], [5, 6, 297, 337], [7, 28, 301, 341]]], ['59B', [[4, 4, 326, 366, 1], [5, 6, 295, 335], [7, 28, 299, 339]]], ['59C', [[4, 4, 321, 361, 1], [5, 6, 290, 330], [7, 28, 295, 335]]]] };
+const DEP = { '80A': 210, '80B': 210, '59A': 175, '59B': 175, '59C': 175 }, RENT = { '80A': [210, 218.4], '80B': [210, 218.4], '59A': [175, 182], '59B': [175, 182], '59C': [175, 182] };
+const WALL = ['101-1203', '102-805', '103-1702', '104-2201', '102-2402'].map(x => x.replace(/-(\d+)05$/, '-$103'));
+const U = [];
+Object.entries(P).forEach(([d, L]) => L.forEach(([t, B], i) => B.forEach(([a, b, p, h, ter]) => { for (let f = a; f <= b; f++) U.push({ id: d + '-' + (f * 100 + i + 1), d: +d, f, l: i + 1, t, p: p * 1e6, h: h * 1e6, ter: !!ter, dep: DEP[t] * 1e6 * (ter ? 1.13 : 1), wall: WALL.includes(d + '-' + (f * 100 + i + 1)) }); })));
+const won = n => Math.round(n).toLocaleString('ko-KR') + '원', eok = n => (n / 1e8).toFixed(2).replace(/\.?0+$/, '') + '억';
+let mode = 'p', cur = U.find(u => u.id === '102-1502');
+const val = u => mode === 'p' ? u.p : mode === 'h' ? u.h : u.p - u.dep;
+function color(v, lo, hi) { const x = (v - lo) / Math.max(hi - lo, 1); return `hsl(${210 - x * 190},70%,${88 - x * 22}%)`; }
+function draw() {
+  document.getElementById('mode').innerHTML = [['p', '10.16 혜택가'], ['h', '매입보장가'], ['n', '필요금액 (혜택가 − 보증금)']].map(([k, l]) => `<button class="${k === mode ? 'on' : ''}" onclick="mode='${k}';draw()">${l}</button>`).join('');
+  const vs = U.map(val), lo = Math.min(...vs), hi = Math.max(...vs);
+  document.getElementById('scale').innerHTML = `<i style="background:${color(lo, lo, hi)}"></i>${eok(lo)} … <i style="background:${color(hi, lo, hi)}"></i>${eok(hi)}`;
+  document.getElementById('dongs').innerHTML = [101, 102, 103, 104].map(d => { let h = `<div class="dong"><h3>${d}동</h3><div class="g"><div></div>${P[d].map((x, i) => `<div class="hd">${i + 1}라인<br>${x[0]}</div>`).join('')}`;
+    for (let f = 28; f >= 4; f--) { h += `<div class="fl">${f}</div>`; for (let l = 1; l <= 3; l++) { const u = U.find(x => x.d === d && x.f === f && x.l === l); h += `<button class="u ${u.ter ? 'ter' : ''} ${u.wall ? 'wall' : ''} ${cur === u ? 'sel' : ''}" style="background:${color(val(u), lo, hi)}" title="${u.id} · ${eok(val(u))}" onclick="cur=U.find(x=>x.id==='${u.id}');draw()">${(val(u) / 1e6).toFixed(0)}</button>`; } }
+    return h + '</div></div>'; }).join('');
+  const u = cur, r = RENT[u.t].map(x => x * 1e6 * (u.ter ? 1.13 : 1));
+  document.getElementById('side').innerHTML = `<h2>${u.d}동 ${u.f * 100 + u.l}호</h2><div class="meta">${u.t} · ${u.f}층${u.ter ? ' · 광폭테라스' : ''}${u.wall ? ' · <b style="color:#7c3aed">가벽 미설치</b>' : ''}</div>
+    <div class="kv"><span>10.16 혜택가</span><b>${won(u.p)}</b><span>매입보장가</span><b>${won(u.h)}</b><span>임대보증금 (고객DB)</span><b>${won(u.dep)}</b></div>
+    <div class="need"><span>필요금액 (혜택가 − 보증금)</span><b>${won(u.p - u.dep)}</b></div>
+    <div class="rent"><h4>전세연장 시 변경 임대보증금</h4><div class="kv"><span>현 임대보증금</span><b>${won(r[0])}</b><span>변경 임대보증금</span><b>${won(r[1])}</b><span>인상금액</span><b style="color:#6d28d9">+${won(r[1] - r[0])}</b></div></div>
+    <button class="btn">이 세대 상담카드 열기 →</button>
+    <div class="note">상담카드를 새로 만들면 '적용 분양가'(10.16 혜택가)와 '기납입 임대보증금'이 이 값으로 들어갑니다 — 고칠 수 있음. 신규고객 카드는 '계약할 호실'을 적으면 그 호실 혜택가가 들어갑니다.</div>`;
+}
+draw();
+</script>
+</body>
+</html>

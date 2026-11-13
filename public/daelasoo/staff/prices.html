@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>분양가표</title>
+<!-- R3-5 분양가표 + 전세연장 (시안 preview/r3-price 확정 2026-11-13) — 서버 src/staff-api/price.js · 표 src/core/price.js. 직원만 (손님 화면엔 가격 없음). 주소 #101-401 = 그 세대 열기 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--card:#fff;--link:#0066cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 64px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead{color:var(--sub);font-size:14px;margin:0 0 14px;line-height:1.5}
+  .seg{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+  .seg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .cols{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .dongs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:12px}
+  .dong h3{margin:0 0 6px;font-size:14px}
+  .g{display:grid;grid-template-columns:24px repeat(3,minmax(0,1fr));gap:2px;font-size:10.5px}
+  .g .fl{color:var(--sub);text-align:right;padding-right:3px;line-height:20px}
+  .g .hd{text-align:center;color:var(--sub);font-weight:700;font-size:10.5px}
+  .u{height:20px;border-radius:3px;border:0;font:inherit;font-size:10.5px;cursor:pointer;padding:0;color:#1d1d1f;font-weight:700}
+  .u.wall{box-shadow:inset 0 0 0 1.5px #7c3aed}
+  .u.ter{box-shadow:inset 0 0 0 2px #1d1d1f}
+  .u.sel{outline:2px solid var(--on);outline-offset:1px}
+  .lg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--sub);padding:0 12px 12px}
+  .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+  .side{padding:16px;position:sticky;top:16px}
+  .side h2{margin:0 0 2px;font-size:18px}
+  .side .meta{color:var(--sub);font-size:13px;margin-bottom:12px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;align-items:baseline}
+  .kv span{color:var(--sub);font-size:13px}.kv b{text-align:right}
+  .need{margin-top:10px;padding:12px;border-radius:10px;background:#1d1d1f;color:#fff;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .need span{color:#a1a1a6;font-size:13px}.need b{font-size:20px}
+  .rent{margin-top:12px;padding:12px;border-radius:10px;background:#faf5ff;border:1px solid #e9d5ff}
+  .rent h4{margin:0 0 8px;font-size:13px;color:#6d28d9}
+  .btn{display:block;text-align:center;border-radius:10px;padding:10px 0;font-weight:700;font-size:14px;margin-top:12px;background:var(--ink);color:#fff}
+  .note{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.5}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7;background:#fff;border:1px solid var(--line);border-radius:14px}
+  @media (max-width:980px){.cols{grid-template-columns:minmax(0,1fr)}.side{position:static}.dongs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:560px){.dongs{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><a href="units.html">세대 전환 상태</a><a href="consults.html">상담카드</a></div></div>
+<div class="wrap" id="app"><div class="gate">불러오는 중…</div></div>
+<script>
+const $ = id => document.getElementById(id);
+const won = n => Math.round(Number(n) || 0).toLocaleString('ko-KR') + '원', eok = n => (n / 1e8).toFixed(2).replace(/\.?0+$/, '') + '억';
+let U = [], mode = 'p', cur = null;
+const val = u => mode === 'p' ? u.benefit : mode === 'h' ? u.hedge : u.need;
+const color = (v, lo, hi) => { const x = (v - lo) / Math.max(hi - lo, 1); return `hsl(${210 - x * 190},70%,${88 - x * 22}%)`; };
+
+async function load() {
+  const r = await fetch('/api/staff/prices', { credentials: 'same-origin' });
+  if (r.status === 401 || r.status === 403) { $('app').innerHTML = '<div class="gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; return; }
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) { $('app').innerHTML = '<div class="gate">불러오지 못했습니다</div>'; return; }
+  U = j.rows; cur = U.find(u => u.id === location.hash.slice(1)) || U[0];
+  $('app').innerHTML = `<h1>분양가표</h1>
+    <p class="lead">칸 색 = 고른 금액의 높낮이 (칸 숫자 = 백만원). 칸을 누르면 오른쪽에 <b>10.16 혜택가 · 매입보장가 · 임대보증금 · 필요금액</b>과 <b>전세연장 시 변경 보증금</b>이 나옵니다. 상담카드의 '적용 분양가' · '기납입 임대보증금'은 비어 있으면 이 값으로 채워집니다. 직원 전용 — 손님 화면에는 가격이 나가지 않습니다.</p>
+    <div class="seg" id="mode"></div>
+    <div class="cols"><div class="card"><div class="dongs" id="dongs"></div>
+      <div class="lg"><span><i style="box-shadow:inset 0 0 0 2px #1d1d1f;background:#fff"></i>광폭테라스 (101 · 104동 4층)</span><span><i style="box-shadow:inset 0 0 0 1.5px #7c3aed;background:#fff"></i>가벽 미설치</span><span id="scale"></span></div></div>
+      <div class="card side" id="side"></div></div>`;
+  draw();
+}
+function draw() {
+  $('mode').innerHTML = [['p', '10.16 혜택가'], ['h', '매입보장가'], ['n', '필요금액 (혜택가 − 보증금)']].map(([k, l]) => `<button class="${k === mode ? 'on' : ''}" data-m="${k}">${l}</button>`).join('');
+  const vs = U.map(val), lo = Math.min(...vs), hi = Math.max(...vs);
+  $('scale').innerHTML = `<i style="background:${color(lo, lo, hi)}"></i>${eok(lo)} … <i style="background:${color(hi, lo, hi)}"></i>${eok(hi)}`;
+  $('dongs').innerHTML = [...new Set(U.map(u => u.dong))].map(d => {
+    const mine = U.filter(u => u.dong === d), lines = [...new Set(mine.map(u => u.line))].sort(), fls = [...new Set(mine.map(u => u.floor))].sort((a, b) => b - a);
+    let h = `<div class="dong"><h3>${d}동</h3><div class="g"><div></div>${lines.map(l => `<div class="hd">${l}라인<br>${mine.find(u => u.line === l).type}</div>`).join('')}`;
+    fls.forEach(f => { h += `<div class="fl">${f}</div>`; lines.forEach(l => { const u = mine.find(x => x.floor === f && x.line === l); h += u ? `<button class="u ${u.terrace ? 'ter' : ''} ${u.wall ? 'wall' : ''} ${cur === u ? 'sel' : ''}" style="background:${color(val(u), lo, hi)}" title="${u.id} · ${eok(val(u))}" data-u="${u.id}">${Math.round(val(u) / 1e6)}</button>` : '<div></div>'; }); });
+    return h + '</div></div>';
+  }).join('');
+  const u = cur, m = u.id.split('-');
+  $('side').innerHTML = `<h2>${m[0]}동 ${m[1]}호</h2><div class="meta">${u.type} · ${u.floor}층${u.terrace ? ' · 광폭테라스' : ''}${u.wall ? ' · <b style="color:#7c3aed">가벽 미설치</b>' : ''}</div>
+    <div class="kv"><span>10.16 혜택가</span><b>${won(u.benefit)}</b><span>매입보장가</span><b>${won(u.hedge)}</b><span>임대보증금 (고객DB)</span><b>${u.dep ? won(u.dep) : '—'}</b></div>
+    <div class="need"><span>필요금액 (혜택가 − 보증금)</span><b>${won(u.need)}</b></div>
+    ${u.rent ? `<div class="rent"><h4>전세연장 시 변경 임대보증금</h4><div class="kv"><span>현 임대보증금</span><b>${won(u.rent.cur)}</b><span>변경 임대보증금</span><b>${won(u.rent.next)}</b><span>인상금액</span><b style="color:#6d28d9">+${won(u.rent.up)}</b></div></div>` : '<div class="note">전세연장 해당 자료 없음</div>'}
+    <a class="btn" href="consults.html#unit=${u.id}">이 세대 상담카드 열기 →</a>
+    <div class="note">상담카드를 새로 만들면 '적용 분양가'(10.16 혜택가)와 '기납입 임대보증금'이 이 값으로 들어갑니다 — 고칠 수 있음. 신규고객 카드는 '계약할 호실'을 적으면 그 호실 혜택가가 들어갑니다.</div>`;
+  document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { mode = b.dataset.m; draw(); });
+  document.querySelectorAll('[data-u]').forEach(b => b.onclick = () => { cur = U.find(x => x.id === b.dataset.u); history.replaceState(null, '', '#' + cur.id); draw(); });
+}
+load();
+</script>
+</body>
+</html>
