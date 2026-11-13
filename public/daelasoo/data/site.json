@@ -44,6 +44,15 @@
         104
       ],
       "floor": 4
+    },
+    "gov": {
+      "note": "국토부 공공데이터 (src/gov) — 지번 주소를 받으면 채움. lawdCd = 시군구 코드 5자리 · bjdongCd = 법정동 코드 뒤 5자리 · bun/ji = 번/지 · jibun = 실거래 응답의 지번(예: 123-4) · aptName = 실거래 응답 단지명에 들어 있는 말. 비밀값 DATA_GO_KR_KEY",
+      "lawdCd": "",
+      "bjdongCd": "",
+      "bun": "",
+      "ji": "",
+      "jibun": "",
+      "aptName": "대라수"
     }
   },
   "types": {

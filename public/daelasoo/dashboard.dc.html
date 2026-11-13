@@ -2675,6 +2675,16 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     </div>
   </div>
   </sc-if>
+  <!-- 최근 실거래 (국토부 · 서버가 매일 받아 둠, src/gov · A안 2026-11-13). 받은 거래가 있을 때만 보임 -->
+  <sc-if value="{{ si.trOn }}">
+  <div style="background:#fff;border-radius:18px;padding:18px 20px">
+    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:10px"><span style="font-size:20px;font-weight:800">최근 실거래</span><span style="font-size:12.5px;color:#6e6e73">{{ si.trSub }}</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:8px">
+      <sc-for list="{{ si.trRows }}" as="t"><div style="display:flex;align-items:center;gap:8px;border:1px solid #ececf0;border-radius:12px;padding:10px 12px;font-size:13px;min-width:0"><span style="flex:none;font-size:11.5px;font-weight:700;border-radius:9999px;padding:2px 8px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.kind }}</span><b style="flex:none">{{ t.type }}</b><span style="flex:none;color:#6e6e73">{{ t.floor }}</span><span style="margin-left:auto;font-weight:800;white-space:nowrap">{{ t.price }}</span><span style="flex:none;color:#8e8e93;font-size:12px">{{ t.ymd }}</span></div></sc-for>
+    </div>
+    <div style="margin-top:8px;font-size:11.5px;color:#8e8e93">출처: {{ si.trSrc }} · 동 · 호는 공개되지 않으며, 59B · 59C 는 전용면적이 같아 함께 표시합니다</div>
+  </div>
+  </sc-if>
   <sc-for list="{{ si.sections }}" as="s" hint-placeholder-count="2">
     <div style="background:#fff;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0;font-size:clamp(18px,2vw,24px);font-weight:800;letter-spacing:-.02em;color:#1d1d1f;text-wrap:pretty">{{ s.title }}</h2><div style="display:flex;gap:4px;margin-left:auto"><sc-for list="{{ s.blks }}" as="b"><button onClick="{{ b.go }}" style="border:1px solid {{ b.bd }};background:{{ b.bg }};color:{{ b.fg }};border-radius:9999px;padding:5px 12px;font-size:12.5px;font-weight:700;cursor:pointer">{{ b.label }}</button></sc-for></div></div>
@@ -4596,6 +4606,16 @@ class Component extends DCLogic {
   siteHref(l) { if (String(l).indexOf('/?') !== 0 || typeof location === 'undefined') return l; const p = location.pathname, i = p.indexOf('/staff/'), d = i >= 0 ? p.slice(0, i + 1) : p.slice(0, p.lastIndexOf('/') + 1); return d + l.slice(1); }
   popSz(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB'; }
   popIco(n) { return /\.pdf$/i.test(n) ? '📕' : /\.hwpx?$/i.test(n) ? '📘' : /\.xlsx?$/i.test(n) ? '📗' : /\.docx?$/i.test(n) ? '📄' : /\.zip$/i.test(n) ? '🗜️' : '🖼️'; }
+  // 최근 실거래 (국토부, /api/public/trades) — 손님 화면 단지 소개 칸
+  gTrLoad() { fetch('/api/public/trades', { cache: 'no-store' }).then(r => r.json()).then(j => { if (j && j.ok) this.setState({ gTr: j }); }).catch(() => {}); }
+  trVals() {
+    const T = this.state.gTr || {}, rows = T.rows || [];
+    const won = v => { v = +v || 0; const e = Math.floor(v / 10000), m = v % 10000; return (e ? e + '억' : '') + (m ? (e ? ' ' : '') + m.toLocaleString() + '만' : ''); };
+    const K = { sale: ['매매', '#e8f0fb', '#0066cc'], jeonse: ['전세', '#e8f5ec', '#157a3f'], wolse: ['월세', '#fff4d6', '#6e4a00'] };
+    const day = t => { const d = new Date(t + 9 * 3600e3); return d.getUTCFullYear() + '.' + (d.getUTCMonth() + 1) + '.' + d.getUTCDate(); };
+    return { trOn: rows.length > 0, trSrc: T.source || '', trSub: '국토교통부 신고 자료' + (T.updated ? ' · ' + day(T.updated) + ' 갱신' : ''),
+      trRows: rows.slice(0, 12).map(r => { const k = K[r.kind] || K.sale; return { kind: k[0], bg: k[1], fg: k[2], type: r.type, floor: r.floor + '층', price: r.kind === 'sale' ? won(r.price) : r.kind === 'wolse' ? won(r.dep) + ' / ' + r.rent + '만' : won(r.dep), ymd: String(r.ymd).slice(2).split('-').join('.') }; }) };
+  }
   gPopLoad() { fetch('/api/public/popups', { cache: 'no-store' }).then(r => r.json()).then(j => { if (j && j.ok) this.setState({ gPops: j.list || [] }); }).catch(() => {}); }
   popUseLoad() { fetch('/api/admin/media', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.ok) this.setState({ popUse: j }); }).catch(() => {}); }
   popUp(blob, kind, aud, name) {
@@ -4974,7 +4994,7 @@ class Component extends DCLogic {
   }
   componentDidMount() {
     this._vwRs = () => { clearTimeout(this._vwT); this._vwT = setTimeout(() => this.setState({ vw: window.innerWidth }), 150); }; window.addEventListener('resize', this._vwRs);   // 팝업 한 번에 몇 개 (3 · 2 · 1)
-    if (this.props.guestOnly) this.gPopLoad();   // 공개 팝업은 서버에서 (그림 · 글만 · 첨부)
+    if (this.props.guestOnly) { this.gPopLoad(); this.gTrLoad(); }   // 공개 팝업은 서버에서 (그림 · 글만 · 첨부)
     if (this.props.guestOnly) { try { const q = new URLSearchParams(location.search); const TM = { city: 'gcity', plan: 'gcity', overview: 'guest', board: 'gboard', option: 'goption', price: 'gprice', list: 'glist' }; const o = {}; if (TM[q.get('tab')]) o.tab = TM[q.get('tab')]; const ty = q.get('type'); if (ty && this.D.types[ty]) { o.planOpen = ty; o.tab = o.tab || 'gcity'; } if (q.get('ad') || ty || q.get('visit') || q.get('reg') || q.get('tab')) o.ntClosed = true; if (q.get('reg') === '1' || q.get('visit') === '1') this._noPop = true; if (q.get('reg') === '1') { o.gRegOpen = true; o.gReg = this.gBlank('seller', ''); } if (q.get('visit') === '1') { o.gRegOpen = true; o.gReg = Object.assign(this.gBlank('buyer'), { kind: 'buyer', visit: true, err: '' }); } if (Object.keys(o).length) this.setState(o); } catch (x) {} }
     this._hdt = () => { const h = document.querySelector('[data-cc-head]'); if (!h) return; const n = h.querySelector('[data-m=nav]'); if (window.innerWidth < 1100 && n && h.querySelector('[data-m=fam]')) h.style.setProperty('--hdt', -n.offsetTop + 'px'); else h.style.removeProperty('--hdt'); };
     window.addEventListener('resize', this._hdt); setTimeout(this._hdt, 300); setTimeout(this._hdt, 1500);
@@ -5040,6 +5060,7 @@ class Component extends DCLogic {
       /* 사업개요 사진 4컷 (site.json overview.gallery [파일, 이름]): 첫 장이 메인. 누르면 크게 보기 창에서 4장 넘겨 보기 */
       ...(G => ({ hasGal: G.length > 1, noGal: G.length < 2, gal: G.map(([f, c], i) => ({ src: P(f), alt: D.S.site.name + ' ' + (c || '투시도'), cap: c || '', cls: i ? 'bzg-ph' : 'bzg-ph bzg-main', isMain: !i,
         zoom: () => this.setState({ siZoom: P(f), siZoomSet: G.map(([g, d, n]) => [P(g), d || '', n || '']), siZoomI: i }) })) }))((C.overview || {}).gallery || []), /* 3번째 값 = 확대 창 사진 안 안내 글(연회색, 예: AI 생성 이미지) */
+      ...this.trVals(),
       hasSiteMap: !!((C.siteMap || {}).map || (C.siteMap || {}).photo), smHasMap: !!(C.siteMap || {}).map, smNoMap: !(C.siteMap || {}).map && !!(C.siteMap || {}).photo, smPhoto: (C.siteMap || {}).photo ? P((C.siteMap || {}).photo) : '', smPhotoAlt: (C.siteMap || {}).photoAlt || D.S.site.name + ' 주변', smPhotoZoom: (C.siteMap || {}).photo ? zoom(P((C.siteMap || {}).photo)) : () => {}, smTitle: (C.siteMap || {}).title || '사업지', smSub: (C.siteMap || {}).sub || '', smMap: (C.siteMap || {}).map || '', smLink: (C.siteMap || {}).link || 'https://map.kakao.com/',
       smSide: ((C.siteMap || {}).side || []).map((x, i) => ({ src: P(x), alt: ((C.siteMap || {}).title || '사업지') + ' 그림 ' + (i + 1), zoom: zoom(P(x)) })), smEmpty: !((C.siteMap || {}).side || []).length && !(C.siteMap || {}).board,
       /* 입지환경 보드 (site.json siteMap.board): 사진 3장 + 설명 카드 4개. 글자는 화면에서 짬 */

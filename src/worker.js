@@ -16,6 +16,7 @@ import { morning } from './notify/morning.js';
 import { autoBackup } from './backup/index.js';
 import { isSeoPath, seoApi } from './seo/index.js';
 import { popCleanup } from './popups/index.js';
+import { govSync } from './gov/index.js';
 
 // 단지 주소 앞머리 = SITE_URL 의 경로 (예: /daelasoo). 검색용 주소는 그 아래에서만 만든다 — 맨 앞 / 는 rental-home 첫 화면
 const basePath = env => { try { return new URL(env.SITE_URL).pathname.replace(/\/$/, ''); } catch (e) { return ''; } };
@@ -40,7 +41,7 @@ export default {
     finally { env.ctx.done(); }
   },
 
-  // 정해진 시간 자동 실행 (wrangler.jsonc triggers) — 매일 08:30 아침 요약 (UTC 23:30) · 03:00 자동 백업 (UTC 18:00)
+  // 정해진 시간 자동 실행 (wrangler.jsonc triggers) — 매일 08:30 아침 요약 (UTC 23:30) · 03:00 자동 백업 + 국토부 실거래가 · 건축물대장 받기 (UTC 18:00)
   async scheduled(event, env0, ctx) {
     const conn = openDb(env0);
     if (!conn) return;
@@ -49,7 +50,7 @@ export default {
       await init(env.DB);
       await repo(env).ready();
       // 03:00 = 자동 백업 + 팝업 정리 (기간 끝난 팝업 · 안 쓰는 그림/첨부 지움)
-      env.ctx.waitUntil(event.cron === '0 18 * * *' ? autoBackup(env).finally(() => popCleanup(env).catch(() => {})) : morning(env, { by: '자동' }));
+      env.ctx.waitUntil(event.cron === '0 18 * * *' ? autoBackup(env).finally(() => popCleanup(env).catch(() => {})).finally(() => govSync(env).catch(e => console.log('gov', e && e.message))) : morning(env, { by: '자동' }));
     } finally { env.ctx.done(); }
   }
 };

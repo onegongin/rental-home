@@ -11,6 +11,7 @@ import { notify, reps as repNames } from '../notify/index.js';
 import { notifyAdmin } from './notify.js';
 import { backupApi } from './backup.js';
 import { uploadMedia, mediaUsage } from '../popups/index.js';
+import { govAdmin } from '../gov/index.js';
 
 export async function adminApi(req, env, url, u) {
   const db = env.DB, p = url.pathname, who = { who: u.name, ip: ip(req), dev: device(req) };
@@ -83,6 +84,8 @@ export async function adminApi(req, env, url, u) {
     if (!can(u, 'popup.manage')) return J({ ok: false, err: 'perm' }, 403);
     return req.method === 'POST' ? uploadMedia(req, env, url, u) : mediaUsage(env);
   }
+
+  if (p === '/api/admin/gov') return govAdmin(req, env, u);   // 국토부 실거래가 · 건축물대장 상태 · 지금 받기 (대표 · 관리자)
 
   if (p === '/api/admin/audit' && req.method === 'GET') {
     if (!can(u, 'audit.read')) return J({ ok: false, err: 'perm' }, 403);

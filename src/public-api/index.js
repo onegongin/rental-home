@@ -9,6 +9,7 @@ import { verifyTurnstile } from './turnstile.js';
 import { commentsApi, issueGuest } from './comments.js';
 import { brokerApi } from './broker.js';
 import { publicPopups, serveMedia } from '../popups/public.js';
+import { publicTrades } from '../gov/index.js';
 import { notify, DEAL_KO, unitLabel } from '../notify/index.js';
 
 const KINDS = ['buyer', 'seller', 'client', 'owner'];
@@ -74,6 +75,7 @@ export async function publicApi(req, env, url) {
   if (p === '/api/public/comments') return commentsApi(req, env, url);
   if (p === '/api/public/listings') return publicListings(req, env, url);
   if (p === '/api/public/broker') return brokerApi(req, env, url);   // 공개 매물 중개요청 (관심등록 없이)
+  if (p === '/api/public/trades' && req.method === 'GET') return J(await publicTrades(env));   // 최근 실거래 (국토부, 서버가 매일 받아 둔 것)
   if (p === '/api/public/popups' && req.method === 'GET') return publicPopups(env);   // 켜진 공개 팝업 (그림 · 글만 · 첨부)
   if (p.startsWith('/api/public/media/') && req.method === 'GET') return serveMedia(env, p.slice(18), false);
 
