@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>직원 소통</title>
+<!-- R3-4 직원 소통 3종 (시안 preview/r3-board 확정 2026-11-13) — 상담참고 · 지시 / 요청함 / 사용 불편사항. 서버 src/staff-api/board.js
+     NEW · 새 결과 표시는 이 기기에서 마지막으로 본 때 기준 (localStorage) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--card:#fff;--link:#0066cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:900px;margin:0 auto;padding:20px 16px 64px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead{color:var(--sub);font-size:14px;margin:0 0 14px}
+  .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .tab i{font-style:normal;font-size:11px;font-weight:800;background:var(--on);color:#fff;border-radius:999px;padding:1px 7px;margin-left:6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .write{padding:14px 16px;margin-bottom:12px}
+  .write .f{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+  label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--sub)}
+  select,input,textarea{font:inherit;font-size:14px;border:1px solid #d2d2d7;border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink);width:100%}
+  textarea{min-height:70px;resize:vertical}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .chk{display:flex;flex-direction:row;gap:6px;align-items:center;font-size:13px;font-weight:700;color:var(--ink)}
+  .chk input{width:auto}
+  .btn{border-radius:10px;padding:9px 16px;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#e8e8ed;color:var(--ink)}.btn.k{background:var(--ink);color:#fff}.btn.sm{padding:6px 12px;font-size:12.5px;border-radius:8px}
+  .seg{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+  .seg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .post{padding:14px 16px;margin-bottom:8px}
+  .post.pin{border-color:#fcd34d;background:#fffdf3}
+  .post .hd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--sub);margin-bottom:6px}
+  .post .hd b{color:var(--ink);font-size:13.5px}
+  .post .body{font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .pill{display:inline-block;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 9px}
+  .new{background:var(--on);color:#fff}
+  .ans{margin-top:10px;padding:10px 12px;border-radius:10px;background:#f2f7fd;border:1px solid #d6e6f8;font-size:13.5px;line-height:1.6;white-space:pre-wrap}
+  .ans small{display:block;color:var(--sub);font-size:12px;margin-bottom:2px;white-space:normal}
+  .acts{display:flex;gap:12px;margin-top:8px;font-size:12.5px}
+  .acts button{border:0;background:none;color:var(--link);cursor:pointer;font:inherit;padding:0}
+  .note{font-size:12.5px;color:var(--sub);margin:0 0 10px;line-height:1.5}
+  .empty{padding:30px;text-align:center;color:var(--sub);font-size:14px}
+  .msg{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-size:14px;z-index:30;display:none}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7;background:#fff;border:1px solid var(--line);border-radius:14px}
+  @media (max-width:560px){.write .f{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><a href="kpi.html">KPI</a><a href="consults.html">상담카드</a></div></div>
+<div class="wrap" id="app"><div class="gate">불러오는 중…</div></div>
+<div class="msg" id="msg"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const when = t => { const d = new Date(t + 9 * 3600e3).toISOString(); return d.slice(5, 10) + ' ' + d.slice(11, 16); };
+function flash(t) { const m = $('msg'); m.textContent = t; m.style.display = 'block'; clearTimeout(flash.t); flash.t = setTimeout(() => m.style.display = 'none', 3000); }
+const store = { get: k => { try { return Number(localStorage.getItem('dls_board_' + k)) || 0; } catch (e) { return 0; } }, set: (k, v) => { try { localStorage.setItem('dls_board_' + k, String(v)); } catch (e) {} } };
+async function post(path, b) {
+  const r = await fetch('/api/staff/board' + path, { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(b || {}) });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) flash(j.msg || (j.err === 'input' ? '내용을 적어 주세요' : j.err === 'perm' ? '권한이 없습니다' : '처리하지 못했습니다'));
+  return j;
+}
+const KO = { note: '📌 상담참고 · 지시사항', req: '요청함', fb: '사용 불편사항' };
+const SC = { 대기: ['#fef3c7', '#92400e'], 처리완료: ['#dcfce7', '#166534'], 접수: ['#f0f0f3', '#424245'], 확인중: ['#e0e7ff', '#3730a3'], 반영완료: ['#dcfce7', '#166534'], 보류: ['#fee2e2', '#991b1b'] };
+const pill = s => s ? `<span class="pill" style="background:${(SC[s] || SC.접수)[0]};color:${(SC[s] || SC.접수)[1]}">${esc(s)}</span>` : '';
+let V = null, tab = ['note', 'req', 'fb'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'note', filt = '', edit = null, seen = {};
+
+// NEW: 남이 쓴 글이 마지막으로 본 때보다 새것 · 요청함은 (직원) 처리 결과가 새것 / (관리자) 새 요청
+const isNew = (k, r) => { const s = seen[k]; if (!s) return false; if (k === 'req' && !V.admin) return r.ans_at && r.ans_at > s; return r.author !== V.me && r.at > s; };
+const newN = k => V[k].filter(r => isNew(k, r)).length;
+
+async function load() {
+  const r = await fetch('/api/staff/board', { credentials: 'same-origin' });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { $('app').innerHTML = '<div class="gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; return; }
+  if (!j.ok) { $('app').innerHTML = '<div class="gate">불러오지 못했습니다</div>'; return; }
+  V = j;
+  ['note', 'req', 'fb'].forEach(k => { if (!(k in seen)) seen[k] = store.get(k) || Date.now(); });   // 이 기기에서 처음 열면 지난 글은 NEW 로 안 띄움
+  draw();
+}
+function markSeen() { store.set(tab, Date.now()); }
+
+function draw() {
+  const badge = k => { const n = k === 'req' && V.admin ? V.reqWait : newN(k); return n ? `<i>${k === 'req' ? (V.admin ? '대기 ' : '새 결과 ') : 'NEW '}${n}</i>` : ''; };
+  $('app').innerHTML = `<h1>직원 소통</h1><p class="lead">${V.admin ? '관리자 — 요청 처리 · 불편사항 답변을 할 수 있습니다' : '상담참고 · 지시사항 확인 · 관리자에게 요청 · 불편사항 알리기'}</p>
+    <div class="tabs">${['note', 'req', 'fb'].map(k => `<button class="tab ${k === tab ? 'on' : ''}" data-t="${k}">${KO[k]}${badge(k)}</button>`).join('')}</div>
+    <section>${tab === 'note' ? noteView() : tab === 'req' ? reqView() : fbView()}</section>`;
+  bind();
+}
+const writeBox = (fields, ph, extra) => `<div class="card write">${fields ? `<div class="f">${fields}</div>` : ''}<textarea id="w-body" placeholder="${esc(ph)}"></textarea><div class="row">${extra || ''}<span style="flex:1"></span><button class="btn p" id="w-go">${tab === 'req' ? '요청 보내기' : '등록'}</button></div></div>`;
+const editArea = r => `<textarea id="e-body">${esc(r.body)}</textarea><div class="row"><span style="flex:1"></span><button class="btn s sm" data-ecancel>취소</button><button class="btn k sm" data-esave="${r.id}">저장</button></div>`;
+const canEdit = r => r.author === V.me || V.admin;
+const head = (k, r, more) => `<div class="hd">${more || ''}<b>${esc(r.author)}</b>${r.dept ? `<span>${esc(r.dept)}</span>` : ''}<span>${when(r.at)}</span>${r.edited_at ? '<span>· 수정됨</span>' : ''}${isNew(k, r) ? `<span class="pill new">${k === 'req' && !V.admin ? '새 결과' : 'NEW'}</span>` : ''}</div>`;
+
+function noteView() {
+  const L = V.note;
+  return `<p class="note">대표 · 팀장 · 직원 누구나 언제든 쓰고 고칠 수 있습니다. [중요]를 켜면 맨 위에 고정됩니다. 고치기 · 지우기는 쓴 사람과 관리자만.</p>
+    ${writeBox(`<label>부서<select id="w-dept"><option value="">선택</option>${V.depts.map(d => `<option>${esc(d)}</option>`).join('')}</select></label><label>작성자<input value="${esc(V.me)}" disabled></label><span></span>`, '상담 시 참고할 내용 · 지시사항', '<label class="chk"><input type="checkbox" id="w-pin"> 중요 (맨 위 고정)</label>')}
+    ${L.length ? L.map(r => `<div class="card post ${r.pin ? 'pin' : ''}">${head('note', r, r.pin ? '<span class="pill" style="background:#fde68a;color:#92400e">📌 중요</span>' : '')}
+      ${edit === r.id ? editArea(r) : `<div class="body">${esc(r.body)}</div>${canEdit(r) ? `<div class="acts"><button data-edit="${r.id}">수정</button><button data-pin="${r.id}" data-v="${r.pin ? 0 : 1}">${r.pin ? '중요 해제' : '중요로'}</button><button data-del="${r.id}" style="color:var(--on)">삭제</button></div>` : ''}`}</div>`).join('') : '<div class="card empty">등록된 상담참고 · 지시사항이 없습니다</div>'}`;
+}
+function reqView() {
+  const L = V.req.filter(r => !filt || r.status === filt), n = s => V.req.filter(r => r.status === s).length;
+  return `<p class="note">${V.admin ? '들어온 요청을 처리하고 결과를 적으면 요청한 직원에게 알림이 갑니다.' : '담당자 변경 · 고객 성명/연락처 수정 · 그 밖에 관리자에게 부탁할 일을 적습니다. 처리되면 결과가 여기와 텔레그램으로 옵니다. 본인 요청만 보입니다.'}</p>
+    ${writeBox(`<label>요청 종류<select id="w-rkind">${V.reqKinds.map(k => `<option>${esc(k)}</option>`).join('')}</select></label><label>관련 호실 · 카드 (선택)<input id="w-ref" placeholder="예: 102-1502"></label><span></span>`, '요청사항 (예: 102-1502 담당을 김철수로 바꿔 주세요 — 고객이 요청)')}
+    <div class="seg">${[['', (V.admin ? '전체 ' : '내 요청 ') + V.req.length], ['대기', '대기 ' + n('대기')], ['처리완료', '처리완료 ' + n('처리완료')]].map(([k, l]) => `<button class="${k === filt ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div>
+    ${L.length ? L.map(r => `<div class="card post">${head('req', r, pill(r.status) + `<b>${esc(r.rkind)}</b>${r.ref ? `<span>${esc(r.ref)}</span>` : ''}<span>·</span>`)}
+      ${edit === r.id ? editArea(r) : `<div class="body">${esc(r.body)}</div>`}
+      ${r.answer || r.status === '처리완료' ? `<div class="ans"><small>처리 결과 · ${esc(r.ans_by || '')} · ${r.ans_at ? when(r.ans_at) : ''}</small>${esc(r.answer || '처리했습니다')}</div>` : ''}
+      ${V.admin && r.status === '대기' ? `<textarea id="a-${r.id}" placeholder="처리 결과 (요청한 직원에게 보임)" style="margin-top:10px;min-height:50px"></textarea><div class="row">${/^\d{3}-\d{3,4}$/.test(r.ref || '') ? `<a href="consults.html#unit=${esc(r.ref)}" style="font-size:13px">상담카드 열기 →</a>` : ''}<span style="flex:1"></span><button class="btn k sm" data-done="${r.id}">처리완료</button></div>` : ''}
+      ${V.admin && r.status === '처리완료' ? `<div class="acts"><button data-reopen="${r.id}">대기로 되돌리기</button></div>` : ''}
+      ${!V.admin && r.status === '대기' && edit !== r.id ? `<div class="acts"><button data-edit="${r.id}">수정</button><button data-del="${r.id}" style="color:var(--on)">요청 취소</button></div>` : ''}</div>`).join('') : `<div class="card empty">${filt ? '해당하는 요청이 없습니다' : '요청이 없습니다'}</div>`}`;
+}
+function fbView() {
+  const L = V.fb.filter(r => !filt || r.status === filt), n = s => V.fb.filter(r => r.status === s).length;
+  return `<p class="note">사이트를 쓰면서 불편한 점 · 오류 · 더 필요한 기능을 적어 주세요. 관리자가 확인하고 처리 상태를 남깁니다. 모든 직원이 함께 봅니다.</p>
+    ${writeBox('<label>화면 · 메뉴<input id="w-rkind" placeholder="예: 상담카드 › 자금계획"></label><span></span><span></span>', '불편한 점 · 오류 · 필요한 기능')}
+    <div class="seg">${[['', '전체 ' + V.fb.length], ...V.st.fb.map(s => [s, s + ' ' + n(s)])].map(([k, l]) => `<button class="${k === filt ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div>
+    ${L.length ? L.map(r => `<div class="card post">${head('fb', r, pill(r.status) + (r.rkind ? `<span>${esc(r.rkind)}</span><span>·</span>` : ''))}
+      ${edit === r.id ? editArea(r) : `<div class="body">${esc(r.body)}</div>`}
+      ${r.answer ? `<div class="ans"><small>답변 · ${esc(r.ans_by || '')} · ${r.ans_at ? when(r.ans_at) : ''}</small>${esc(r.answer)}</div>` : ''}
+      ${V.admin ? `<div class="row"><select id="s-${r.id}" style="width:auto">${V.st.fb.map(s => `<option ${s === r.status ? 'selected' : ''}>${s}</option>`).join('')}</select><input id="a-${r.id}" placeholder="답변" value="${esc(r.answer || '')}" style="flex:1;min-width:160px"><button class="btn k sm" data-ans="${r.id}">저장</button></div>` : ''}
+      ${canEdit(r) && edit !== r.id ? `<div class="acts"><button data-edit="${r.id}">수정</button><button data-del="${r.id}" style="color:var(--on)">삭제</button></div>` : ''}</div>`).join('') : `<div class="card empty">${filt ? '해당하는 내용이 없습니다' : '등록된 내용이 없습니다'}</div>`}`;
+}
+
+function bind() {
+  document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { markSeen(); tab = b.dataset.t; filt = ''; edit = null; history.replaceState(null, '', '#' + tab); draw(); setTimeout(markSeen, 1500); });
+  document.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filt = b.dataset.f; draw(); });
+  $('w-go').onclick = async () => {
+    const b = { kind: tab, body: $('w-body').value };
+    if ($('w-dept')) b.dept = $('w-dept').value; if ($('w-pin')) b.pin = $('w-pin').checked;
+    if ($('w-rkind')) b.rkind = $('w-rkind').value; if ($('w-ref')) b.ref = $('w-ref').value;
+    if (!b.body.trim()) { flash('내용을 적어 주세요'); return; }
+    if ((await post('', b)).ok) { flash(tab === 'req' ? '요청을 보냈습니다 — 관리자에게 알림이 갑니다' : '등록했습니다'); load(); }
+  };
+  document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => { edit = b.dataset.edit; draw(); });
+  document.querySelectorAll('[data-ecancel]').forEach(b => b.onclick = () => { edit = null; draw(); });
+  document.querySelectorAll('[data-esave]').forEach(b => b.onclick = async () => { if ((await post('/' + b.dataset.esave, { body: $('e-body').value })).ok) { edit = null; load(); } });
+  document.querySelectorAll('[data-pin]').forEach(b => b.onclick = async () => { if ((await post('/' + b.dataset.pin, { pin: b.dataset.v === '1' })).ok) load(); });
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { if (confirm(tab === 'req' ? '요청을 취소할까요?' : '삭제할까요?') && (await post('/' + b.dataset.del + '/del')).ok) load(); });
+  document.querySelectorAll('[data-done]').forEach(b => b.onclick = async () => { if ((await post('/' + b.dataset.done + '/answer', { status: '처리완료', answer: $('a-' + b.dataset.done).value })).ok) { flash('처리완료 — 요청한 직원에게 알림이 갑니다'); load(); } });
+  document.querySelectorAll('[data-reopen]').forEach(b => b.onclick = async () => { if ((await post('/' + b.dataset.reopen + '/answer', { status: '대기' })).ok) load(); });
+  document.querySelectorAll('[data-ans]').forEach(b => b.onclick = async () => { const id = b.dataset.ans; if ((await post('/' + id + '/answer', { status: $('s-' + id).value, answer: $('a-' + id).value })).ok) { flash('저장했습니다'); load(); } });
+}
+window.addEventListener('beforeunload', markSeen);
+load().then(() => setTimeout(markSeen, 1500));
+</script>
+</body>
+</html>

@@ -11,6 +11,7 @@ import { staffConsult } from './consult.js';
 import { staffKpi } from './kpi.js';
 import { staffReport } from './report.js';
 import { staffClaim } from './claim.js';
+import { staffBoard } from './board.js';
 import { repo } from '../repo/index.js';
 import { staffListings } from './listings.js';
 import { staffAds } from './ads.js';
@@ -39,6 +40,7 @@ export async function staffApi(req, env, url, u) {
   if (p === '/api/staff/kpi') return staffKpi(req, env, url, u);   // R3-1 KPI 보드
   if (p === '/api/staff/report') return staffReport(req, env, url, u);   // R3-2 일일업무보고
   if (p === '/api/staff/claims' || p.startsWith('/api/staff/claims/')) return staffClaim(req, env, url, u);   // R3-3 수수료 청구서 · MGM
+  if (p === '/api/staff/board' || p.startsWith('/api/staff/board/')) return staffBoard(req, env, url, u);   // R3-4 직원 소통 3종
   if (p === '/api/staff/ads' || /^\/api\/staff\/listings\/[0-9A-Z]{26}\/ads$/.test(p)) return staffAds(req, env, url, u);   // 광고 초안 · 게시기록 · 매칭 고객 (P6)
   if (p === '/api/staff/listings' || p.startsWith('/api/staff/listings/')) return staffListings(req, env, url, u);
   if (p === '/api/staff/broker' || p.startsWith('/api/staff/broker/')) return staffBroker(req, env, url, u);   // 공개 매물 중개요청 알림 · 첫 확인
