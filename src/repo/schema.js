@@ -70,6 +70,9 @@ export async function init(db) {
   // R2 세대 전환 상태 (시안 r2-public-pick 2026-11-13): 호실마다 상태 · 퇴거일 · 메모 / 공개 세대 사본 — 손님은 public_units 만 읽음 (호수 · 층 없음)
   try { await db.prepare('CREATE TABLE IF NOT EXISTS unit_conv (unit_id TEXT PRIMARY KEY, status TEXT, move_out TEXT, memo TEXT, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS public_units (unit_id TEXT PRIMARY KEY, dong INTEGER, band TEXT, type TEXT, kind TEXT, exclusive REAL, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
+  // R3-2 일일업무보고 (시안 r3-daily 2026-11-13): 전환 상태가 계약완료 · 신규입주가 된 시각(done_at, 10.16 이전/이후 · 금일계약 구분) · 저장한 보고서
+  try { await db.prepare('ALTER TABLE unit_conv ADD COLUMN done_at INTEGER').run(); } catch (e) { /* 이미 있음 */ }
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS daily_reports (date TEXT PRIMARY KEY, data TEXT, saved_at INTEGER, saved_by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   // R2 상담카드 2종 (시안 r2-consult-card 2026-11-13): 카드 한 장 + 상담할 때마다 기록 한 줄. 지우기는 숨김(deleted_at · 사유)
   try { await db.prepare('CREATE TABLE IF NOT EXISTS consults (id TEXT PRIMARY KEY, kind TEXT NOT NULL, unit_id TEXT, name TEXT, phone TEXT, progress TEXT, mgr TEXT, writer TEXT, data TEXT, lead_id TEXT, created_at INTEGER, at INTEGER, by TEXT, deleted_at INTEGER, del_by TEXT, del_reason TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS consult_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, consult_id TEXT NOT NULL, at INTEGER, by TEXT, date TEXT, channel TEXT, prob TEXT, memo TEXT, docs TEXT, next_date TEXT, progress TEXT)').run(); } catch (e) { /* 이미 있음 */ }

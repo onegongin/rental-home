@@ -11,9 +11,13 @@ export const getConv = (db, id) => db.prepare('SELECT * FROM unit_conv WHERE uni
 export const isPubUnit = async (db, id) => !!(await db.prepare('SELECT 1 FROM public_units WHERE unit_id = ?').bind(id).first());
 
 // 상태 저장. 공개 중인데 공개할 수 없는 상태가 되면 바로 내림 → true 돌려줌
+//   done_at: 계약완료 · 신규입주가 된 시각 (그 사이를 오갈 땐 그대로, 벗어나면 지움) — 일일업무보고 10.16 이전/이후 · 금일계약
+const DONE = ['계약완료', '신규입주'];
 export async function setConv(db, id, v, by, now = Date.now()) {
-  await db.prepare('INSERT INTO unit_conv (unit_id, status, move_out, memo, at, by) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (unit_id) DO UPDATE SET status = excluded.status, move_out = excluded.move_out, memo = excluded.memo, at = excluded.at, by = excluded.by')
-    .bind(id, v.status, v.move_out, v.memo, now, by).run();
+  const old = await getConv(db, id);
+  const done_at = DONE.includes(v.status) ? (old && DONE.includes(old.status) && old.done_at ? old.done_at : now) : null;
+  await db.prepare('INSERT INTO unit_conv (unit_id, status, move_out, memo, at, by, done_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (unit_id) DO UPDATE SET status = excluded.status, move_out = excluded.move_out, memo = excluded.memo, at = excluded.at, by = excluded.by, done_at = excluded.done_at')
+    .bind(id, v.status, v.move_out, v.memo, now, by, done_at).run();
   if (!(await isPubUnit(db, id))) return false;
   if (!canPub(v.status)) { await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); return true; }
   const r = pubRow(id, v.status);   // 공실 ↔ 퇴거확정(매물동의) 사이로 바뀌면 구분만 새로

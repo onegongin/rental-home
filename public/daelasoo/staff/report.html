@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>일일업무보고</title>
+<!-- R3-2 일일업무보고 (시안 preview/r3-daily 확정 2026-11-13) — 서버 src/staff-api/report.js · 계산 src/core/report.js
+     파란 숫자 = 자동 계산(fresh), 노란 칸 = 직접 고친 값. 저장해야 A4 인쇄 · 엑셀. 대표 · 관리자 · 권한자만 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--card:#fff;--hd:#eef3fb;--grid:#b8c2d0;--link:#0066cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:900px;margin:0 auto;padding:20px 16px 64px}
+  .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .bar select,.bar input{font:inherit;font-size:14px;border:1px solid #d2d2d7;border-radius:8px;padding:8px 10px;background:#fff}
+  .st{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px}
+  .st.no{background:#fef3c7;color:#92400e}.st.ok{background:#dcfce7;color:#166534}
+  .sp{flex:1}
+  .btn{border-radius:10px;padding:9px 16px;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#e8e8ed;color:var(--ink)}.btn.k{background:var(--ink);color:#fff}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .note{font-size:12.5px;color:var(--sub);line-height:1.6;margin:0 0 12px}
+  .note input{font:inherit;font-size:12.5px;border:1px solid #d2d2d7;border-radius:6px;padding:2px 6px}
+  .paper{background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 28px 32px}
+  .paper h1{text-align:center;font-size:20px;font-weight:800;margin:0 0 4px;letter-spacing:-.01em}
+  .paper .date{text-align:right;font-size:13px;font-weight:700;margin-bottom:14px}
+  .paper h2{font-size:14px;font-weight:800;margin:18px 0 6px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
+  th,td{border:1px solid var(--grid);padding:5px 4px;text-align:center;height:28px}
+  th{background:var(--hd);font-weight:700;font-size:12px}
+  td input,th input,td textarea{width:100%;border:0;background:transparent;font:inherit;text-align:center;padding:2px;color:inherit}
+  td input:focus,th input:focus,td textarea:focus{outline:2px solid #93c5fd;background:#f8fbff}
+  .ed,input.ed{background:#fffbea!important}
+  td.l{text-align:left}td.l input{text-align:left}
+  tr.tot td{background:#f5f5f7;font-weight:800}
+  tr.pct td{font-weight:700;color:#1d4ed8}
+  .auto,.auto input{color:#1d4ed8;font-weight:700}
+  textarea{resize:vertical;min-height:110px;text-align:left!important;line-height:1.6}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--sub);margin-top:8px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:12px;height:12px;border:1px solid var(--grid);vertical-align:-2px;margin-right:4px}
+  .add{font-size:12px;font-weight:700;border:1px dashed #c7c7cc;background:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;margin-top:6px}
+  .x{border:0;background:none;color:#a1a1a6;cursor:pointer;font-size:14px}
+  .msg{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-size:14px;z-index:30;display:none}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7;background:#fff;border:1px solid var(--line);border-radius:14px}
+  @media (max-width:640px){.paper{padding:16px 10px;overflow-x:auto}.paper table{min-width:600px}}
+  @media print{
+    @page{size:A4;margin:12mm}
+    body{background:#fff}.top,.bar,.note,.legend,.add,.x,.msg{display:none!important}
+    .wrap{max-width:none;padding:0}.paper{border:0;padding:0}
+    .ed,input.ed{background:transparent!important}.auto,.auto input,tr.pct td{color:inherit}
+    th,tr.tot td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    textarea{min-height:0;height:auto;overflow:visible;resize:none}
+    textarea::placeholder,input::placeholder{color:transparent}
+    th.x,td.xc{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><a href="kpi.html">KPI</a><a href="units.html">세대 전환 상태</a><a href="consults.html">상담카드</a></div></div>
+<div class="wrap" id="app"><div class="gate">불러오는 중…</div></div>
+<div class="msg" id="msg"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const n = v => Number(String(v == null ? '' : v).replace(/[^0-9]/g, '')) || 0;
+const z = v => n(v) ? n(v) : '';
+const pc = v => v ? (v * 100).toFixed(1) + '%' : '';
+const WD = ['일', '월', '화', '수', '목', '금', '토'];
+const clone = o => JSON.parse(JSON.stringify(o));
+function flash(t) { const m = $('msg'); m.textContent = t; m.style.display = 'block'; clearTimeout(flash.t); flash.t = setTimeout(() => m.style.display = 'none', 3000); }
+
+let D = null, R = null, F = null, dirty = false;   // D = 서버 응답 · R = 화면의 보고서 · F = 자동 계산값
+
+async function load(date) {
+  const r = await fetch('/api/staff/report' + (date ? '?date=' + date : ''), { credentials: 'same-origin' });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { $('app').innerHTML = '<div class="gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; return; }
+  if (!j.ok) { $('app').innerHTML = '<div class="gate">' + esc(j.msg || '불러오지 못했습니다') + '</div>'; return; }
+  D = j; F = j.fresh; R = clone(j.saved ? j.saved.data : j.fresh); dirty = false;
+  draw();
+}
+function totals() {
+  const rows = R.types.map(t => { const sum = n(t.pre) + n(t.post) + n(t.today); return Object.assign({}, t, { sum, pct: n(t.units) ? sum / n(t.units) : 0 }); });
+  const tot = { units: 0, pre: 0, post: 0, today: 0, sum: 0, jeon: 0, mi: 0, vac: 0 };
+  rows.forEach(t => Object.keys(tot).forEach(k => { tot[k] += n(t[k]); }));
+  return { rows, tot, U: tot.units || 300, staffSum: R.staff.reduce((s, x) => s + n(x[1]), 0) };
+}
+// 자동 계산값과 다른 칸 = 직접 고친 칸 (노란색)
+const fT = (i, k) => ((F.types || [])[i] || {})[k];
+const edT = (i, k) => n(R.types[i][k]) !== n(fT(i, k)) ? 'ed' : '';
+const edS = (g, k) => n(R.stats[g][k]) !== n(((F.stats || {})[g] || {})[k]) ? 'ed' : '';
+
+function draw() {
+  const T = totals(), d = new Date(R.date + 'T00:00:00'), saved = D.saved && !dirty;
+  const dates = D.dates.map(x => x.date); if (!dates.includes(D.today)) dates.unshift(D.today); if (!dates.includes(R.date)) dates.push(R.date);
+  dates.sort().reverse();
+  const inp = (path, v, cls = '') => `<input data-p="${path}" value="${esc(v)}" class="${cls}">`;
+  $('app').innerHTML = `
+  <div class="bar">
+    <select id="date">${dates.map(x => `<option value="${x}" ${x === R.date ? 'selected' : ''}>${x} · ${D.dates.some(y => y.date === x) ? '저장됨' : '새로 작성'}</option>`).join('')}</select>
+    <span class="st ${saved ? 'ok' : 'no'}">${saved ? '저장됨 · ' + new Date(D.saved.saved_at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' · ' + esc(D.saved.saved_by) : dirty ? '고친 내용 저장 안 됨' : '저장 안 됨 · 저장해야 인쇄 · 엑셀'}</span>
+    <span class="sp"></span>
+    <button class="btn s" id="redo">↺ 자료로 다시 계산</button>
+    <button class="btn p" id="save">저장</button>
+    <button class="btn k" id="print" ${saved ? '' : 'disabled'}>A4 인쇄 · PDF</button>
+    <button class="btn s" id="xlsx" ${saved ? '' : 'disabled'}>엑셀 받기</button>
+  </div>
+  <p class="note">파란 숫자는 전환상태 · 상담카드 · 상담 기록에서 <b>자동으로 센 값</b>입니다. 칸을 눌러 고칠 수 있고, 고친 칸은 노란색으로 표시됩니다. 저장한 보고서의 근무인원 · 명일 업무는 다음 날 보고서로 넘어갑니다.<br>
+  분양현황 기준일 <input type="date" id="cutoff" value="${esc(R.cutoff)}"> — 계약완료가 이 날 전이면 '이전', 뒤면 '이후' (날짜 없이 옮겨 온 기존 계약완료는 '이전')${R.prevDate ? ' · 이어받은 보고서: ' + esc(R.prevDate) : ''}</p>
+  <div class="paper">
+    <h1>첨단 대라수 1차 분양전환 일일업무보고</h1>
+    <div class="date">${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${WD[d.getDay()]})</div>
+    <h2>1. 근무인원</h2>
+    <table><tr><th>구 분</th>${R.staff.map((s, i) => `<th>${inp('staff.' + i + '.0', s[0])}</th>`).join('')}<th>총계</th></tr>
+      <tr><th>인원</th>${R.staff.map((s, i) => `<td>${inp('staff.' + i + '.1', z(s[1]))}</td>`).join('')}<td><b>${z(T.staffSum)}</b></td></tr></table>
+    <h2>2. 분양전환 현황</h2>
+    <table><tr><th rowspan="2" style="width:9%">구분</th><th rowspan="2" style="width:8%">TYPE</th><th rowspan="2">세대수</th><th colspan="3">분양현황</th><th colspan="2">총계</th><th rowspan="2">전세<br>연장</th><th rowspan="2">미동의<br>(퇴거)</th><th rowspan="2">퇴거<br>(공실)</th></tr>
+      <tr><th>${esc(R.cutoff.slice(5).replace('-', '.'))}<br>이전</th><th>이후</th><th>금일<br>계약</th><th>합계</th><th>비율</th></tr>
+      ${T.rows.map((t, i) => `<tr>${i === 0 ? `<th rowspan="${T.rows.length}">아파트</th>` : ''}<th>${esc(t.type)}</th><td>${z(t.units)}</td>${['pre', 'post', 'today'].map(k => `<td class="auto">${inp('types.' + i + '.' + k, z(t[k]), edT(i, k))}</td>`).join('')}<td class="auto">${z(t.sum)}</td><td class="auto">${pc(t.pct)}</td>${['jeon', 'mi', 'vac'].map(k => `<td class="auto">${inp('types.' + i + '.' + k, z(t[k]), edT(i, k))}</td>`).join('')}</tr>`).join('')}
+      <tr class="tot"><td colspan="2">합계</td><td>${z(T.tot.units)}</td><td>${z(T.tot.pre)}</td><td>${z(T.tot.post)}</td><td>${z(T.tot.today)}</td><td>${z(T.tot.sum)}</td><td>${pc(T.tot.sum / T.U)}</td><td>${z(T.tot.jeon)}</td><td>${z(T.tot.mi)}</td><td>${z(T.tot.vac)}</td></tr>
+      <tr class="pct"><td colspan="3">비율</td><td>${pc(T.tot.pre / T.U)}</td><td>${pc(T.tot.post / T.U)}</td><td>${pc(T.tot.today / T.U)}</td><td>${pc(T.tot.sum / T.U)}</td><td></td><td>${pc(T.tot.jeon / T.U)}</td><td>${pc(T.tot.mi / T.U)}</td><td>${pc(T.tot.vac / T.U)}</td></tr></table>
+    <h2>3. 일일 영업통계 현황 (요약)</h2>
+    <table><tr><th rowspan="2">구 분</th><th colspan="2">방문상담</th><th colspan="2">상담예약</th><th colspan="2">유선 · 문자 상담</th></tr>
+      <tr><th>금일</th><th>누계</th><th>금일</th><th>누계</th><th>금일</th><th>누계</th></tr>
+      <tr><th>건수</th>${['visit', 'book', 'other'].map(g => ['today', 'total'].map(k => `<td class="auto">${inp('stats.' + g + '.' + k, z(R.stats[g][k]), edS(g, k))}</td>`).join('')).join('')}</tr></table>
+    <h2>4. 세대관람</h2>
+    <table><tr><th style="width:15%">금일 관람</th><td class="auto" style="width:10%">${inp('view.today', z(R.view.today), n(R.view.today) !== n(F.view.today) ? 'ed' : '')}</td><th style="width:15%">관람 세대</th><td class="l auto">${inp('view.units', R.view.units, R.view.units !== F.view.units ? 'ed' : '')}</td><th style="width:9%">누계</th><td class="auto" style="width:9%">${inp('view.total', z(R.view.total), n(R.view.total) !== n(F.view.total) ? 'ed' : '')}</td></tr></table>
+    <table style="margin-top:-1px"><tr><th style="width:18%">동 · 호</th><th style="width:16%">진행단계</th><th>금일 상담내용</th><th style="width:28px" class="x"></th></tr>
+      ${R.view.rows.map((v, i) => `<tr><td>${inp('view.rows.' + i + '.unit', v.unit)}</td><td>${inp('view.rows.' + i + '.stage', v.stage)}</td><td class="l">${inp('view.rows.' + i + '.memo', v.memo)}</td><td class="xc"><button class="x" data-del="${i}" title="이 줄 지우기">✕</button></td></tr>`).join('') || '<tr><td colspan="3" style="color:var(--sub)">오늘 상담 기록이 있는 신규고객의 관심호실이 여기에 자동으로 나옵니다</td></tr>'}</table>
+    <button class="add" id="addv">+ 행 추가</button>
+    <h2>5. 주요 업무 내용</h2>
+    <table><tr><th style="width:12%">구 분</th><th>내 용</th></tr>
+      <tr><th>금일</th><td class="l"><textarea data-p="work.today" placeholder="오늘 한 일">${esc(R.work.today)}</textarea></td></tr>
+      <tr><th>명일</th><td class="l"><textarea data-p="work.tomorrow" placeholder="내일 할 일 — 저장하면 다음 날 보고서 '금일' 칸으로 넘어갑니다">${esc(R.work.tomorrow)}</textarea></td></tr></table>
+    <div class="legend"><span><b style="color:#1d4ed8">파란 글씨</b> = 자동 계산</span><span><i style="background:#fffbea"></i>노란 칸 = 직접 고친 값</span></div>
+  </div>`;
+  document.querySelectorAll('[data-p]').forEach(el => el.addEventListener('change', () => { setPath(el.dataset.p, el.value); dirty = true; const a = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.p : null; draw(); if (a) { const f = document.querySelector(`[data-p="${a}"]`); if (f) f.focus(); } }));
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { R.view.rows.splice(Number(b.dataset.del), 1); dirty = true; draw(); });
+  $('addv').onclick = () => { R.view.rows.push({ unit: '', stage: '', memo: '' }); dirty = true; draw(); };
+  $('date').onchange = e => { if (dirty && !confirm('고친 내용이 저장되지 않았습니다. 다른 날짜로 갈까요?')) { e.target.value = R.date; return; } load(e.target.value); };
+  $('cutoff').onchange = e => { R.cutoff = e.target.value; dirty = true; flash('기준일을 바꿨습니다 — [자료로 다시 계산]을 누르면 이전/이후 숫자가 새 기준으로 바뀝니다'); draw(); };
+  $('redo').onclick = redo;
+  $('save').onclick = save;
+  $('print').onclick = () => print();
+  $('xlsx').onclick = xlsx;
+}
+function setPath(p, v) {
+  const k = p.split('.'); let o = R;
+  for (let i = 0; i < k.length - 1; i++) o = o[k[i]];
+  const last = k[k.length - 1], isNum = /^(types|stats)/.test(p) || /^view\.(today|total)$/.test(p) || /^staff\.\d+\.1$/.test(p);
+  o[last] = isNum ? String(n(v) || '') : v;
+  if (/^(types|stats)/.test(p) || /^view\.(today|total)$/.test(p)) o[last] = n(v);
+}
+async function redo() {
+  if (!confirm('지금 자료로 숫자를 다시 셉니다. 근무인원 · 주요 업무 내용은 그대로 둡니다.')) return;
+  const cut = R.cutoff;
+  const r = await fetch('/api/staff/report?date=' + R.date + '&cutoff=' + encodeURIComponent(cut), { credentials: 'same-origin' }).then(x => x.json());
+  if (!r.ok) { flash('다시 계산하지 못했습니다'); return; }
+  F = r.fresh;
+  Object.assign(R, { types: clone(F.types), stats: clone(F.stats), view: clone(F.view), cutoff: F.cutoff });
+  dirty = true; draw(); flash('자료로 다시 계산했습니다 — 저장을 눌러 주세요');
+}
+async function save() {
+  const r = await fetch('/api/staff/report', { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ date: R.date, data: R }) });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) { flash(j.msg || '저장하지 못했습니다'); return; }
+  flash(R.date + ' 일일업무보고를 저장했습니다 — 이제 인쇄 · 엑셀을 받을 수 있습니다');
+  load(R.date);
+}
+
+// 엑셀 (숫자표 — 칸 합치기만, 대표 결정 2026-11-13)
+async function xlsx() {
+  const X = await import('https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs');
+  const T = totals(), A = [], M = [], add = r => { A.push(r); return A.length - 1; }, mg = (r0, c0, r1, c1) => M.push({ s: { r: r0, c: c0 }, e: { r: r1, c: c1 } });
+  const pcv = v => v ? Math.round(v * 1000) / 10 + '%' : '';
+  mg(add(['첨단 대라수 1차 분양전환 일일업무보고']), 0, A.length - 1, 10);
+  add(['', '', '', '', '', '', '', R.date]); add([]);
+  add(['1. 근무인원']); add(['구 분', ...R.staff.map(s => s[0]), '총계']); add(['인원', ...R.staff.map(s => n(s[1]) || ''), T.staffSum || '']); add([]);
+  add(['2. 분양전환 현황']);
+  const h1 = add(['구분', 'TYPE', '세대수', '분양현황', '', '', '총계', '', '전세연장', '미동의(퇴거)', '퇴거(공실)']);
+  add(['', '', '', R.cutoff.slice(5).replace('-', '.') + ' 이전', '이후', '금일계약', '합계', '비율']);
+  mg(h1, 3, h1, 5); mg(h1, 6, h1, 7); [0, 1, 2, 8, 9, 10].forEach(c => mg(h1, c, h1 + 1, c));
+  const r0 = A.length;
+  T.rows.forEach((t, i) => add([i === 0 ? '아파트' : '', t.type, n(t.units), n(t.pre), n(t.post), n(t.today), t.sum, pcv(t.pct), n(t.jeon), n(t.mi), n(t.vac)]));
+  mg(r0, 0, A.length - 1, 0);
+  const tr = add(['합계', '', T.tot.units, T.tot.pre, T.tot.post, T.tot.today, T.tot.sum, pcv(T.tot.sum / T.U), T.tot.jeon, T.tot.mi, T.tot.vac]); mg(tr, 0, tr, 1);
+  const pr = add(['비율', '', '', pcv(T.tot.pre / T.U), pcv(T.tot.post / T.U), pcv(T.tot.today / T.U), pcv(T.tot.sum / T.U), '', pcv(T.tot.jeon / T.U), pcv(T.tot.mi / T.U), pcv(T.tot.vac / T.U)]); mg(pr, 0, pr, 2);
+  add([]); add(['3. 일일 영업통계 현황(요약)']);
+  const s1 = add(['구 분', '방문상담', '', '상담예약', '', '유선 · 문자 상담', '']); mg(s1, 1, s1, 2); mg(s1, 3, s1, 4); mg(s1, 5, s1, 6); mg(s1, 0, s1 + 1, 0);
+  add(['', '금일', '누계', '금일', '누계', '금일', '누계']);
+  add(['건수', ...['visit', 'book', 'other'].flatMap(g => [n(R.stats[g].today), n(R.stats[g].total)])]);
+  add([]); add(['4. 세대관람']);
+  add(['금일 관람', n(R.view.today), '관람 세대', R.view.units, '', '', '', '', '누계', n(R.view.total)]);
+  add(['동 · 호', '진행단계', '금일 상담내용']);
+  R.view.rows.forEach(v => { const r = add([v.unit, v.stage, v.memo]); mg(r, 2, r, 10); });
+  add([]); add(['5. 주요 업무 내용']);
+  let r = add(['금일', R.work.today]); mg(r, 1, r, 10);
+  r = add(['명일', R.work.tomorrow]); mg(r, 1, r, 10);
+  const ws = X.utils.aoa_to_sheet(A);
+  ws['!merges'] = M; ws['!cols'] = [10, 8, 8, 10, 8, 8, 8, 8, 9, 11, 10].map(w => ({ wch: w }));
+  const wb = X.utils.book_new(); X.utils.book_append_sheet(wb, ws, '일일업무보고');
+  X.writeFile(wb, '대라수1차_일일업무보고_' + R.date + '.xlsx');
+}
+// 인쇄할 때 업무 내용 칸을 글 길이만큼 늘려 잘리지 않게
+window.addEventListener('beforeprint', () => document.querySelectorAll('textarea').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }));
+window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+load();
+</script>
+</body>
+</html>
