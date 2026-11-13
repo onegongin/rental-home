@@ -3,32 +3,65 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>rental-home</title>
-<meta name="description" content="첨단대라수1차 단지 안내 · 관심등록">
+<title>rental-home · 광주 민간임대 · 분양전환 단지 안내</title>
+<meta name="description" content="첨단대라수1차 등 광주 민간임대 · 분양전환 단지 소개와 관심등록 — 제니스원부동산">
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="canonical" href="https://rental-home.onegongin.workers.dev/">
-<!-- rental-home 첫 화면 (R0 임시). 단지는 /daelasoo/ 아래. 첫 화면 모양은 R1 에서 대표 확인 뒤 정한다 -->
+<meta property="og:title" content="rental-home · 광주 민간임대 · 분양전환 단지 안내">
+<meta property="og:url" content="https://rental-home.onegongin.workers.dev/">
+<meta property="og:image" content="https://rental-home.onegongin.workers.dev/daelasoo/assets/dls/hero.jpg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<!-- rental-home 첫 화면 — 시안 home-first A안 대표 확정 (2026-11-13). 단지가 늘면 .grid 에 카드(a.cx)만 추가 -->
 <style>
-  body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
-  main{max-width:720px;margin:0 auto;padding:56px 16px}
-  h1{font-size:26px;font-weight:800;margin:0 0 8px}
-  p{color:#6e6e73;margin:0 0 28px}
-  a.card{display:block;background:#fff;border:1px solid #ececf0;border-radius:14px;padding:22px;text-decoration:none;color:inherit}
-  a.card:hover{border-color:#c8381e}
-  a.card b{font-size:19px;font-weight:800}
-  a.card span{display:block;color:#6e6e73;margin-top:6px}
-  a.card i{display:block;font-style:normal;color:#0066cc;margin-top:12px;font-weight:600}
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--link:#0066cc;--on:#c8381e;--card:#fff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  .hub{max-width:1120px;margin:0 auto;padding:48px 16px 64px}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+  .brand i{width:34px;height:34px;border-radius:10px;background:var(--on);display:grid;place-items:center;color:#fff;font-style:normal;font-weight:800}
+  .brand b{font-size:20px;font-weight:800}
+  h1{font-size:30px;font-weight:800;margin:0 0 8px;letter-spacing:-.02em}
+  p.lead{color:var(--sub);margin:0 0 28px;font-size:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  .cx{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.15s}
+  .cx:hover{border-color:var(--on);transform:translateY(-2px)}
+  .cx .ph{display:block;aspect-ratio:16/9;background:#ddd center/cover}
+  .cx .bd{padding:18px 20px 20px}
+  .cx .tag{display:inline-block;font-size:12px;font-weight:700;color:var(--on);background:#fdecea;border-radius:999px;padding:3px 10px;margin-bottom:8px}
+  .cx b{display:block;font-size:20px;font-weight:800}
+  .cx .meta{color:var(--sub);margin-top:6px;font-size:14px}
+  .cx .go{display:flex;gap:8px;margin-top:16px}
+  .btn{flex:1;text-align:center;border-radius:10px;padding:11px 0;font-weight:700;font-size:14px;text-decoration:none}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#f0f0f3;color:var(--ink)}
+  .foot{margin-top:40px;color:var(--sub);font-size:13px;line-height:1.7;border-top:1px solid var(--line);padding-top:18px}
+  .foot a{color:var(--link);text-decoration:none}
+  @media (max-width:560px){
+    .hub{padding-top:28px}h1{font-size:24px}
+    .grid{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>rental-home</h1>
-  <p>단지를 골라 주세요</p>
-  <a class="card" href="/daelasoo/">
-    <b>첨단대라수1차</b>
-    <span>101~104동 · 300세대 · 80㎡ · 59㎡</span>
-    <i>단지 안내 · 관심등록 →</i>
-  </a>
+<main class="hub">
+  <div class="brand"><i>R</i><b>rental-home</b></div>
+  <h1>광주 민간임대 · 분양전환 단지 안내</h1>
+  <p class="lead">단지를 고르면 단지 소개 · 평면 · 관심등록으로 이어집니다</p>
+  <div class="grid">
+    <div class="cx">
+      <a class="ph" href="/daelasoo/" style="background-image:url(/daelasoo/assets/dls/hero.jpg)" aria-label="첨단대라수1차 단지 소개"></a>
+      <div class="bd">
+        <span class="tag">분양전환 진행 중</span>
+        <b>첨단대라수1차</b>
+        <div class="meta">광주 첨단 · 101~104동 · 300세대 · 80A · 80B · 59A · 59B · 59C</div>
+        <div class="go"><a class="btn s" href="/daelasoo/">단지 소개</a><a class="btn p" href="/daelasoo/?reg=1">관심등록</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    제니스원부동산 공인중개사사무소 · 대표 황후권 · 등록번호 29170-2025-00089<br>
+    전남광주통합특별시 북구 유동길 46 202동 1층 1-122호 · ☎ <a href="tel:1800-7240">1800-7240</a> · <a href="https://blog.naver.com/h2k2800" target="_blank" rel="noopener">블로그</a>
+  </div>
 </main>
 </body>
 </html>
