@@ -1,13 +1,15 @@
-# 단지 사진에 사무소 로고를 새겨 public/daelasoo/assets/hwip/ 에 저장한다 (설계서 9.4)
-# - 로고: 소스/브랜드/사무소로고.png, 사진 정중앙, 사진 안에 꽉 차게(높이·폭 중 맞는 쪽 기준), 진하기 3% (2026-10-27 8%→3%, 그림이 잘 보이게)
+# 단지 사진에 사무소 로고를 새겨 public/daelasoo/assets/dls/ 에 저장한다 (설계서 9.4)
+# - 원본: 소스/DAELASOO/소스/ (2026-11-13 대표가 옮김) · 로고: 소스/사무소로고.png (모든 단지 공통, 아이파크와 같은 파일)
+# - ⚠ 아래 FILES 목록은 아직 아이파크 것 — R1 에서 대라수 사진 목록으로 바꾼다
+# - 사진 정중앙, 사진 안에 꽉 차게(높이·폭 중 맞는 쪽 기준), 진하기 3% (2026-10-27 8%→3%, 그림이 잘 보이게)
 # - 사진은 폭 MAX_W · 높이 MAX_H 픽셀 이하로 (세로로 긴 안내 그림은 폭 유지) 줄이고 JPG(품질 82)로 저장. 원본(소스/)은 건드리지 않는다
 # 실행: 프로젝트 폴더에서  python tools/watermark.py   (처음 한 번: py -m pip install --user pillow)
 from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC, OUT = ROOT / '소스', ROOT / 'public' / 'daelasoo' / 'assets' / 'hwip'
-LOGO = SRC / '브랜드' / '사무소로고.png'
+SRC, OUT = ROOT / '소스' / 'DAELASOO' / '소스', ROOT / 'public' / 'daelasoo' / 'assets' / 'dls'
+LOGO = ROOT / '소스' / '사무소로고.png'
 OPACITY, MAX_W, MAX_H, QUALITY = 0.03, 1600, 6000, 82
 
 # (원본 경로, 저장 경로, 로고 새김 여부[, 'R' = 오른쪽으로 90도 돌림 · 'G' = 제미나이 별 지움 · 'H' = 큰 화면용 폭 2400 · 'U' = 작은 원본을 커뮤니티 사진 크기(1600x1195)로 키움 · 'X' = 작은 원본을 메인 사진 폭 2400으로 키움 · (x0, y0, x1, y1) = 그 부분만 잘라 씀]) — 로고·안내문 그림처럼 새기면 안 되는 것은 False
