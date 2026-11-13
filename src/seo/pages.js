@@ -4,6 +4,7 @@
 //   공개 사본에 없는 매물 번호 = 끝났거나 내린 매물 → 410(영구 삭제). 호수 · 사람 정보는 공개 사본에 원래 없음
 import SITE from '../../public/daelasoo/data/site.json' with { type: 'json' };
 import { priceText, mgmtText } from '../ads/templates.js';
+import { ASSET, nameX, scaleText, moveInText } from '../core/site-text.js';
 
 const S = SITE.site || {}, O = SITE.office || {};
 export const DEAL = { sale: '매매', jeonse: '전세', wolse: '월세', short: '단기임대' };
@@ -14,7 +15,7 @@ const where = r => String(r.label || '').replace(/\/\d+층$/, '');
 const top = r => (String(r.label || '').match(/\/(\d+)층/) || [])[1] || '';
 export const titleOf = r => S.name + ' ' + where(r) + ' ' + r.type + ' ' + DEAL[r.deal] + ' ' + priceText(r).replace(/^\S+ /, '');
 export const urlOf = (base, r) => base + '/listings/' + r.id;
-const planOf = r => { const t = (SITE.types || {})[r.type] || {}, b = (t.byBlock || {})[r.block] || {}; return '/assets/hwip/' + (b.plan || t.plan || 'hero1.jpg'); };
+const planOf = r => { const t = (SITE.types || {})[r.type] || {}, b = (t.byBlock || {})[r.block] || {}; return ASSET + (b.plan || t.plan || 'hero.jpg'); };
 const descOf = r => [where(r) + ' ' + r.type + '타입', priceText(r), '전용 ' + r.exclusive + '㎡', '방 ' + r.rooms + ' · 욕실 ' + r.baths, r.facing + '향', '입주 ' + r.move].join(' · ') + '. ' + O.name + ' ' + (r.tel || O.tel);
 
 const CSS = `*{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo',sans-serif;line-height:1.6}
@@ -37,7 +38,7 @@ export function page({ base, path, title, desc, img, body, json }) {
   return '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
     '<title>' + esc(title) + '</title><meta name="description" content="' + esc(desc) + '"><link rel="canonical" href="' + esc(url) + '">' +
     '<meta property="og:type" content="website"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="' + esc(S.name) + '">' +
-    '<meta property="og:title" content="' + esc(title) + '"><meta property="og:description" content="' + esc(desc) + '"><meta property="og:url" content="' + esc(url) + '"><meta property="og:image" content="' + esc(base + (img || '/assets/hwip/hero1.jpg')) + '">' +
+    '<meta property="og:title" content="' + esc(title) + '"><meta property="og:description" content="' + esc(desc) + '"><meta property="og:url" content="' + esc(url) + '"><meta property="og:image" content="' + esc(base + (img || ASSET + ((SITE.seo || {}).ogImage || '').split('/').pop())) + '">' +
     '<link rel="alternate" type="application/rss+xml" title="' + esc(S.name) + ' 매물" href="' + base + '/rss.xml">' +
     '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"><style>' + CSS + '</style>' +
     (json || []).map(ld).join('') + '</head><body><div class="w">' +
@@ -71,7 +72,7 @@ export function listingPage(base, r) {
     '<div class="card"><div class="price">' + esc(priceText(r)) + '</div><img class="pic" src="' + esc(img) + '" alt="' + esc(S.name + ' ' + r.type + '타입 평면도') + '" loading="lazy">' +
     '<div class="go"><a class="btn p" href="tel:' + esc(r.tel || O.tel) + '">전화 ' + esc(r.tel || O.tel) + '</a><a class="btn s" href="/?tab=list">사이트에서 중개요청 · 다른 매물</a></div></div>' +
     '<div class="card"><h2>중개대상물 표시</h2><table>' + rows.map(([k, v]) => '<tr><th>' + k + '</th><td>' + esc(v) + '</td></tr>').join('') + '</table></div>' +
-    '<div class="card"><h2>단지 안내</h2><ul><li>' + esc(S.name + ' (구 ' + S.alias + ') · 아파트 ' + S.households + '세대 + 오피스텔 ' + S.officetels + '실') + '</li><li>' + esc('입주 ' + ((S.blocks || {})['1단지'] || {}).moveIn + ' (1 · 2단지 동일)') + '</li><li><a href="/?type=' + esc(encodeURIComponent(r.type)) + '">' + esc(r.type) + '타입 평면 · 실내 사진 보기</a></li></ul></div>';
+    '<div class="card"><h2>단지 안내</h2><ul><li>' + esc(nameX() + ' · ' + scaleText()) + '</li>' + (moveInText() ? '<li>' + esc(moveInText()) + '</li>' : '') + '<li><a href="/?type=' + esc(encodeURIComponent(r.type)) + '">' + esc(r.type) + '타입 평면 · 실내 사진 보기</a></li></ul></div>';
   const offer = { '@type': 'Offer', price: (r.deal === 'sale' ? r.ask : r.dep) * 10000, priceCurrency: 'KRW', availability: 'https://schema.org/InStock', seller: { '@type': 'RealEstateAgent', name: O.name, telephone: O.tel } };
   const json = [{ '@context': 'https://schema.org', '@type': 'RealEstateListing', name: title, url: urlOf(base, r), description: desc, datePosted: ymd(r.at), image: base + img, offers: offer,
     about: { '@type': r.kind === '오피스텔' ? 'Accommodation' : 'Apartment', floorSize: { '@type': 'QuantitativeValue', value: r.exclusive, unitCode: 'MTK' }, numberOfRooms: r.rooms, numberOfBathroomsTotal: r.baths, address: { '@type': 'PostalAddress', addressCountry: 'KR', streetAddress: S.address } } },
@@ -109,8 +110,8 @@ const rfc = t => new Date(t || Date.now()).toUTCString().replace('GMT', '+0000')
 export function rss(base, rows) {
   const items = rows.slice(0, 50).map(r => '<item><title>' + xesc(titleOf(r)) + '</title><link>' + xesc(urlOf(base, r)) + '</link><guid isPermaLink="true">' + xesc(urlOf(base, r)) + '</guid><description>' + xesc(descOf(r)) + '</description><pubDate>' + rfc(r.at) + '</pubDate></item>');
   return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>' + xesc(S.name + ' 매물 · 소식') + '</title><link>' + xesc(base + '/') + '</link>' +
-    '<description>' + xesc(S.name + '(구 ' + S.alias + ') ' + S.address + ' · 아파트 ' + S.households + '세대 · 오피스텔 ' + S.officetels + '실. 매매 · 전세 · 월세 공개 매물. ' + O.name + ' ' + O.tel) + '</description><language>ko</language>' +
+    '<description>' + xesc(nameX('') + ' ' + S.address + ' · ' + scaleText(' · ') + '. 매매 · 전세 · 월세 공개 매물. ' + O.name + ' ' + O.tel) + '</description><language>ko</language>' +
     '<lastBuildDate>' + rfc(rows.reduce((m, r) => Math.max(m, r.updated || 0), 0) || Date.now()) + '</lastBuildDate><atom:link href="' + xesc(base + '/rss.xml') + '" rel="self" type="application/rss+xml"/>' +
-    '<item><title>' + xesc(S.name + ' 단지 안내 · 평면 · 동호배치표 · 방문상담') + '</title><link>' + xesc(base + '/') + '</link><guid isPermaLink="false">' + xesc((S.slug || S.code) + '-site') + '</guid><description>' + xesc(S.address + ' · ' + ((S.blocks || {})['1단지'] || {}).moveIn + ' 입주. 상담 ' + O.tel) + '</description></item>' +
+    '<item><title>' + xesc(S.name + ' 단지 안내 · 평면 · 동호배치표 · 방문상담') + '</title><link>' + xesc(base + '/') + '</link><guid isPermaLink="false">' + xesc((S.slug || S.code) + '-site') + '</guid><description>' + xesc(S.address + ' · ' + (moveInText() ? moveInText() + '. ' : '') + '상담 ' + O.tel) + '</description></item>' +
     items.join('') + '</channel></rss>\n';
 }

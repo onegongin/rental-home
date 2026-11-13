@@ -84,10 +84,10 @@ test('준비: 대표 · 직원 2명 · 그룹방 찾기 · 조용한 시간 끄�
   };
   a = await mk('직원가', '3.3.3.1');
   b = await mk('직원나', '3.3.3.2');
-  fakeUpdates.push({ update_id: 1, message: { chat: { id: Number(GROUP), type: 'supergroup', title: '센테니얼아이파크 알람' }, text: '/start' } });
+  fakeUpdates.push({ update_id: 1, message: { chat: { id: Number(GROUP), type: 'supergroup', title: '대라수1차 알람' }, text: '/start' } });
   const f = await admin(boss, { op: 'find' });
-  assert.deepEqual(f.json.groups, [{ id: GROUP, title: '센테니얼아이파크 알람' }]);
-  assert.equal((await admin(boss, { op: 'group', id: GROUP, title: '센테니얼아이파크 알람' })).status, 200);
+  assert.deepEqual(f.json.groups, [{ id: GROUP, title: '대라수1차 알람' }]);
+  assert.equal((await admin(boss, { op: 'group', id: GROUP, title: '대라수1차 알람' })).status, 200);
   assert.equal((await admin(boss, { op: 'set', quiet: [0, 0] })).status, 200);
   const g = await admin(boss);
   assert.equal(g.json.bot, 'centennial_test_bot');
@@ -122,7 +122,7 @@ test('내 텔레그램 연결: 코드 → 봇에서 [시작] → [확인] → �
 test('관심등록 → 그룹방에 원문(이름 · 번호) · 개인 알림 없음', async () => {
   sent.length = 0;
   const g = agent('9.9.9.1');
-  const r = await g('/api/public/lead', { body: { card: { kind: 'client', name: '홍길동', phone: '010-2222-3333', interest: '84B 전세', consent: { req: true } } } });
+  const r = await g('/api/public/lead', { body: { card: { kind: 'client', name: '홍길동', phone: '010-2222-3333', interest: '80B 전세', consent: { req: true } } } });
   assert.equal(r.status, 200);
   const m = await waitSent(x => x.chat === GROUP);
   assert.equal(m.length, 1);

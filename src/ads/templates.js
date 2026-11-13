@@ -2,6 +2,7 @@
 //   공개용 사본 한 줄(publicRow) → 매체별 초안. 끝에는 필수 표시 블록(부록 A + 사무소)이 항상 붙고 직원이 뺄 수 없다
 //   문장 틀 여러 개 중 seed 로 골라 매번 조금씩 다른 글 · 과장 표현은 경고 (cfg.adBan 으로 편집)
 import SITE from '../../public/daelasoo/data/site.json' with { type: 'json' };
+import { nameX, scaleText, moveInText } from '../core/site-text.js';
 
 export const MEDIA = { blog: '네이버 블로그', karrot: '당근', insta: '인스타그램', sms: '문자 · 카톡', naver: '네이버부동산 등록' };
 export const MEDIA_KEYS = Object.keys(MEDIA);
@@ -45,10 +46,10 @@ export function requiredBlock(r) {
 
 // 단지 공통 (사실만 — 자료에 있는 값)
 const FACTS = [
-  (S.name || '') + ' (구 ' + (S.alias || '') + ') · 아파트 ' + (S.households || '') + '세대 + 오피스텔 ' + (S.officetels || '') + '실',
-  '입주 ' + ((S.blocks || {})['1단지'] || {}).moveIn + ' (1 · 2단지 동일)',
+  nameX() + ' · ' + scaleText(),
+  moveInText(),
   (S.address || '').replace(/ 일원$/, '')
-];
+].filter(Boolean);
 
 const pick = (arr, seed, k) => arr[Math.abs((seed | 0) + k * 7) % arr.length];
 // 해시태그 (site.json seo.tags · instaTags) — {거래} · {타입} 은 매물 값으로 바꿈

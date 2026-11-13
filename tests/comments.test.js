@@ -33,7 +33,7 @@ test('가림: 전화 · 한글 숫자 · 카톡 아이디 · 메일 · 링크', 
     const m = maskComment('문의 ' + s + ' 주세요');
     assert.ok(m.masked && m.text.includes('***'), s + ' → ' + m.text);
   }
-  for (const s of ['84A 타입 3층 좋네요', '101동 1001호', '2027년 1월 입주', '대표번호 1800-7240']) assert.equal(maskComment(s).masked, false, s);
+  for (const s of ['80A 타입 3층 좋네요', '101동 1001호', '2027년 1월 입주', '대표번호 1800-7240']) assert.equal(maskComment(s).masked, false, s);
 });
 
 let g1, g2, boss, staff;

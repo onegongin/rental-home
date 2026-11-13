@@ -69,7 +69,7 @@ test('준비: D1 에 직원 · 상담카드 · 세대 · 감사기록 → 전체
   const r = await boss('/api/admin/backup', { body: { op: 'download', pw: 'office-2027' } });
   assert.equal(r.status, 200);
   file = await unpack(r.buf, 'office-2027');
-  assert.ok(file.tables.units.rows.length >= 847 && file.tables.tenancies.rows.length >= 1 && file.tables.staff.rows.length === 2);
+  assert.ok(file.tables.units.rows.length >= 300 && file.tables.tenancies.rows.length >= 1 && file.tables.staff.rows.length === 2);
 });
 
 let pgData;

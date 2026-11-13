@@ -2168,7 +2168,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <div style="background:#f7f7f9;border-radius:12px;padding:10px 12px;font-size:12px;color:#6e6e73"><b style="display:block;font-size:18px;color:#1d1d1f">{{ ad.seoAt }}</b>사이트맵 마지막 갱신</div>
         <div style="background:#f7f7f9;border-radius:12px;padding:10px 12px;font-size:12px;color:#6e6e73"><b style="display:block;font-size:18px;color:#1d1d1f">{{ ad.seoIdx }}</b>{{ ad.seoIdxSub }}</div>
       </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap"><a href="/listings" target="_blank" rel="noopener" style="font-size:12.5px;font-weight:700;background:#f2f2f5;color:#1d1d1f;border-radius:9999px;padding:6px 12px;text-decoration:none">매물 목록 페이지 보기 ↗</a><a href="/sitemap.xml" target="_blank" rel="noopener" style="font-size:12.5px;font-weight:700;background:#f2f2f5;color:#1d1d1f;border-radius:9999px;padding:6px 12px;text-decoration:none">sitemap.xml</a><a href="/rss.xml" target="_blank" rel="noopener" style="font-size:12.5px;font-weight:700;background:#f2f2f5;color:#1d1d1f;border-radius:9999px;padding:6px 12px;text-decoration:none">rss.xml</a></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap"><a href="../listings" target="_blank" rel="noopener" style="font-size:12.5px;font-weight:700;background:#f2f2f5;color:#1d1d1f;border-radius:9999px;padding:6px 12px;text-decoration:none">매물 목록 페이지 보기 ↗</a><a href="../sitemap.xml" target="_blank" rel="noopener" style="font-size:12.5px;font-weight:700;background:#f2f2f5;color:#1d1d1f;border-radius:9999px;padding:6px 12px;text-decoration:none">sitemap.xml</a><a href="../rss.xml" target="_blank" rel="noopener" style="font-size:12.5px;font-weight:700;background:#f2f2f5;color:#1d1d1f;border-radius:9999px;padding:6px 12px;text-decoration:none">rss.xml</a></div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <div style="font-size:12.5px;font-weight:800">최근 검색엔진 알림 <span style="font-size:11px;font-weight:600;color:#8e8e93">공개 · 수정 · 비공개 때마다 자동</span></div>
         <sc-if value="{{ ad.noPings }}"><div style="font-size:12px;color:#8e8e93">{{ ad.pingsEmpty }}</div></sc-if>
@@ -4588,6 +4588,8 @@ class Component extends DCLogic {
   POK = /\.(pdf|hwp|hwpx|xls|xlsx|doc|docx|jpe?g|png|zip)$/i;
   // 팝업 '누르면 이동' 고르기 [주소, 보이는 이름, 단추 글자 기본값] — 사이트 안 주소는 그 자리에서 열림 (2026-11-04)
   PLINK = [['', '없음', ''], ['/?reg=1', '관심등록 창', '관심등록하기'], ['/?visit=1', '방문상담 예약 창', '방문상담 예약하기'], ['/?tab=list', '현재 매물', '현재 매물 보기'], ['/?tab=city', '단지배치', '단지배치 보기'], ['/?tab=board', '동호배치표', '동호배치표 보기'], ['/?tab=option', '옵션계산기', '옵션 계산해 보기'], ['/?tab=price', '분양가표', '분양가표 보기'], ['custom', '직접 입력 (다른 사이트)', '자세히 보기']];
+  // 사이트 안 주소 '/?reg=1' → 단지 주소 아래 '/daelasoo/?reg=1' (손님 화면 · 직원 화면 어디서 눌러도 단지 첫 화면으로, R1 2026-11-13)
+  siteHref(l) { if (String(l).indexOf('/?') !== 0 || typeof location === 'undefined') return l; const p = location.pathname, i = p.indexOf('/staff/'), d = i >= 0 ? p.slice(0, i + 1) : p.slice(0, p.lastIndexOf('/') + 1); return d + l.slice(1); }
   popSz(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB'; }
   popIco(n) { return /\.pdf$/i.test(n) ? '📕' : /\.hwpx?$/i.test(n) ? '📘' : /\.xlsx?$/i.test(n) ? '📗' : /\.docx?$/i.test(n) ? '📄' : /\.zip$/i.test(n) ? '🗜️' : '🖼️'; }
   gPopLoad() { fetch('/api/public/popups', { cache: 'no-store' }).then(r => r.json()).then(j => { if (j && j.ok) this.setState({ gPops: j.list || [] }); }).catch(() => {}); }
@@ -5782,7 +5784,7 @@ class Component extends DCLogic {
     const cpExt = l => /^https?:\/\//i.test(l), cpTM = { city: 'gcity', plan: 'gcity', overview: 'guest', board: 'gboard', option: 'goption', price: 'gprice', list: 'glist' };
     const cpSeen = ids => { const o = {}; ids.forEach(id => { o[id] = true; }); this.setState(ss => ({ popSeen: Object.assign({}, ss.popSeen, o) })); };
     const cpHideIds = ids => { try { const o = JSON.parse(localStorage.getItem(this.k('cc-pop-hide')) || '{}'); ids.forEach(id => { o[id] = pTd; }); localStorage.setItem(this.k('cc-pop-hide'), JSON.stringify(o)); } catch (x) {} cpSeen(ids); };
-    const cpCard = cpP => ({ isImg: cpP.kind === 'img', isText: cpP.kind !== 'img', img: cpP.img ? 'url(' + cpP.img + ')' : 'none', head: cpP.head, body: cpP.body, color: cpP.color || this.PCOL[0], link: cpP.link || '#', tgt: cpExt(cpP.link || '') ? '_blank' : '_self', btn: cpP.btn || '자세히 보기',
+    const cpCard = cpP => ({ isImg: cpP.kind === 'img', isText: cpP.kind !== 'img', img: cpP.img ? 'url(' + cpP.img + ')' : 'none', head: cpP.head, body: cpP.body, color: cpP.color || this.PCOL[0], link: cpP.link ? this.siteHref(cpP.link) : '#', tgt: cpExt(cpP.link || '') ? '_blank' : '_self', btn: cpP.btn || '자세히 보기',
       imgLink: cpP.kind === 'img' && !!cpP.link, imgNoLink: cpP.kind === 'img' && !cpP.link, txtLink: cpP.kind !== 'img' && !!cpP.link,
       hasFiles: !!(cpP.files || []).length, files: (cpP.files || []).map(f => ({ ico: this.popIco(f.name), name: f.name, size: this.popSz(f.size || 0), url: f.url })),
       imgText: cpP.kind === 'img' && !!(cpP.head || cpP.body), btnShow: !!cpP.link && (cpP.kind !== 'img' || !!(cpP.head || cpP.body)),

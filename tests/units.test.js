@@ -1,5 +1,5 @@
 // P3 세대 DB 자동 테스트 — 설계서 8.1 · 8.2 · 13.2
-//   완료 기준: 엑셀로 전 세대(847) 올리고 만기 목록 확인
+//   완료 기준: 엑셀로 전 세대(300) 올리고 만기 목록 확인
 // 실행: npm test
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
@@ -31,7 +31,7 @@ const detail = async (a, id) => (await a('/api/staff/units/' + id)).json;
 const imp = (a, b) => a('/api/admin/import', { body: b });
 
 test('규칙: 날짜 · 금액 · 남은 날 · 현재 임대차', () => {
-  assert.equal(UNITS.length, 847, '호실 수 = 동호배치표 검산 847');
+  assert.equal(UNITS.length, 300, '호실 수 = 동호배치표 검산 300');
   assert.equal(normDate('2027.1.5'), '2027-01-05');
   assert.equal(normDate('20270105'), '2027-01-05');
   assert.equal(normDate(46392), '2027-01-05', '엑셀 날짜 숫자');
@@ -137,14 +137,14 @@ test('엑셀 가져오기: 검사 · 미리보기 (아직 저장 안 됨)', asyn
   assert.equal((await imp(boss, { op: 'preview', kind: 'owners', rows: [['이름', '전화']] })).json.err, 'sheet');
   const p = await imp(boss, { op: 'preview', kind: 'owners', file: '소유자.xlsx', rows: ownersSheet });
   assert.equal(p.json.cnt.err, 0);
-  assert.equal(p.json.cnt.new + p.json.cnt.ok + p.json.cnt.diff + p.json.cnt.same, 847);
+  assert.equal(p.json.cnt.new + p.json.cnt.ok + p.json.cnt.diff + p.json.cnt.same, 300);
   assert.equal(p.json.rows.find(x => x.unit === '101동 1001호').st, 'same', '빈 칸만 채우기: 이미 이름 · 번호 · 통신사가 있는 세대');
   assert.equal((await detail(boss, '101-401')).owners.length, 0, '미리보기는 저장 안 함');
 });
 
 test('완료 기준: 엑셀로 전 세대 올리고 만기 목록 확인 → 되돌리기', async () => {
   let r = await imp(boss, { op: 'apply', kind: 'owners', mode: 'over', file: '소유자.xlsx', rows: ownersSheet });
-  assert.equal(r.json.n, 847);
+  assert.equal(r.json.n, 300);
   r = await imp(boss, { op: 'apply', kind: 'tenancies', mode: 'over', file: '임대차.xlsx', rows: tenSheet });
   assert.equal(r.json.n, leased.length);
 
@@ -172,7 +172,7 @@ test('완료 기준: 엑셀로 전 세대 올리고 만기 목록 확인 → 되
   assert.equal((await imp(boss, { op: 'undo' })).json.n, leased.length);
   assert.equal((await boss('/api/staff/tenancies')).json.rows.length, 0);
   assert.equal((await detail(boss, leased[1].id)).owners[0].name, '소유자3', '소유자는 그대로');
-  assert.equal((await imp(boss, { op: 'undo' })).json.n, 847);
+  assert.equal((await imp(boss, { op: 'undo' })).json.n, 300);
   assert.equal((await detail(boss, '101-401')).owners.length, 0);
   const back = await detail(boss, '101-1001');
   assert.equal(back.owners[0].name, '최매수', '가져오기 전 소유자로 돌아옴');

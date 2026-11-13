@@ -68,11 +68,11 @@ test('준비: 대표 · 관리자 · 권한자 · 직원, 상담카드 3장 · �
   mgr = await mk('관리가', '관리자', '5.5.5.2');
   top = await mk('권한나', '권한자', '5.5.5.3');
   staff = await mk('직원다', '직원', '5.5.5.4');
-  await pushRow(boss, 'c', 'c1', { id: 'c1', kind: 'buyer', at: '2026-10-20 10:00', name: '김매수', phone: '010-1111-2222', writer: '대표', mgr: '직원다', text: '84A 전세 찾음', consent: { mkt: true } });
+  await pushRow(boss, 'c', 'c1', { id: 'c1', kind: 'buyer', at: '2026-10-20 10:00', name: '김매수', phone: '010-1111-2222', writer: '대표', mgr: '직원다', text: '80A 전세 찾음', consent: { mkt: true } });
   await pushRow(boss, 'c', 'c2', { id: 'c2', kind: 'buyer', at: '2026-11-02 15:00', name: '김매수', phone: '01011112222', writer: '대표', text: '다시 문의' });
-  await pushRow(boss, 'c', 'c3', { id: 'c3', kind: 'owner', at: '2026-11-01 09:00', unit: '103-1504', name: '윤소유', phone: '010-3131-4141', writer: '대표', trades: { jeonse: { dep: '52000', move: '협의' } } });
+  await pushRow(boss, 'c', 'c3', { id: 'c3', kind: 'owner', at: '2026-11-01 09:00', unit: '101-1503', name: '윤소유', phone: '010-3131-4141', writer: '대표', trades: { jeonse: { dep: '52000', move: '협의' } } });
   const g = agent('5.5.5.9');
-  assert.equal((await g('/api/public/lead', { body: { card: { id: 'g1730000000000', kind: 'client', at: '2026-11-03 09:30', name: '홍길동', phone: '010-2222-3333', interest: '84B', text: '원래 문의', consent: { req: true, mkt: true } } } })).status, 200);
+  assert.equal((await g('/api/public/lead', { body: { card: { id: 'g1730000000000', kind: 'client', at: '2026-11-03 09:30', name: '홍길동', phone: '010-2222-3333', interest: '80B', text: '원래 문의', consent: { req: true, mkt: true } } } })).status, 200);
   // 직원이 나중에 고쳐도 '관심등록 원본'은 처음 모습
   const gc = (await cardsOf(boss)).find(c => c.id === 'g1730000000000');
   await pushRow(boss, 'c', gc.id, Object.assign({}, gc, { text: '직원이 고친 내용' }));
@@ -99,9 +99,9 @@ test('내보내기: 고객DB 는 연락처로 묶음 · 조건 · 가림 · 관�
   const ld = sh('leads');
   assert.equal(ld.rows.length, 1);
   assert.equal(ld.rows[0][col(ld, '문의')], '원래 문의');
-  assert.equal(sh('units').rows.length, 847);
-  assert.ok(sh('listings').rows.some(x => x.includes('103동 1504호')), 'R1 매물');
-  assert.match(r.json.file, /^센테니얼아이파크_.*\.xlsx$/);
+  assert.equal(sh('units').rows.length, 300);
+  assert.ok(sh('listings').rows.some(x => x.includes('101동 1503호')), 'R1 매물');
+  assert.match(r.json.file, /^대라수1차_.*\.xlsx$/);
   // 조건 + 가림 (외부 전달용)
   r = await boss('/api/admin/export', { body: { sets: ['consults'], f: { from: '2026-11-01' }, mask: { phone: true, name: true } } });
   const c = r.json.sheets[0];
@@ -111,7 +111,7 @@ test('내보내기: 고객DB 는 연락처로 묶음 · 조건 · 가림 · 관�
   const log = (await boss('/api/admin/audit')).json.rows.filter(x => x.act === '엑셀 내보내기');
   assert.equal(log.length, 2);
   assert.match(log[0].detail, /가림 전화번호 · 이름/);
-  assert.match(log[1].target, /고객DB 3건 · 상담이력 4건 · 관심등록 원본 1건 · 세대현황 847건/);
+  assert.match(log[1].target, /고객DB 3건 · 상담이력 4건 · 관심등록 원본 1건 · 세대현황 300건/);
 });
 
 test('내보내기: 한 사람 하루 10번까지', async () => {
@@ -158,7 +158,7 @@ test('기준: 백업 → 복구 성공 (바뀐 자료는 백업 때로 · 직원
   assert.equal(r.status, 200);
   const st = r.json.rows.find(x => x.t === 'staff');
   assert.ok(st.keep && st.now === st.bak + 1, '직원 표는 지금 그대로 (표시)');
-  assert.ok(r.json.rows.find(x => x.t === 'units').bak === 847);
+  assert.ok(r.json.rows.find(x => x.t === 'units').bak === 300);
 
   // 복구: 관리자 안 됨 · PIN 틀리면 안 됨
   assert.equal((await mgr('/api/admin/backup', { body: { op: 'restore', file: b64(file), pw: 'office-2027', pin: '4321' } })).status, 403);
@@ -175,7 +175,7 @@ test('기준: 백업 → 복구 성공 (바뀐 자료는 백업 때로 · 직원
   assert.ok(by('g1730000000000'));
   assert.ok((await boss('/api/admin/staff')).json.staff.some(s => s.name === '신입라'), '직원 명단은 그대로');
   assert.ok((await boss('/api/auth/me')).json.restoreAt > 0, '직원 화면에 복구 표시');
-  assert.equal((await boss('/api/staff/listings')).json.rows.filter(l => l.unit_id === '103-1504').length, 1, '매물도 백업 때로');
+  assert.equal((await boss('/api/staff/listings')).json.rows.filter(l => l.unit_id === '101-1503').length, 1, '매물도 백업 때로');
   assert.ok((await mgr('/api/staff/pull?since=0')).status === 200, '복구 뒤 다른 직원 출입증 유지');
 
   // 복구 직전 상태가 저장소에 남아 → 그것으로 다시 되돌리면 c9 가 돌아옴

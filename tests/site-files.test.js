@@ -18,7 +18,7 @@ test('다른 단지 이름 · 주소로 바꾸면 고정 화면에 옛 이름이
   try {
     FILES.forEach(f => { mkdirSync(join(dir, f, '..'), { recursive: true }); writeFileSync(join(dir, f), readFileSync(f)); });
     const D = JSON.parse(readFileSync('public/daelasoo/data/site.json', 'utf8'));
-    const OLD = /센테니얼|화정|hwajeong/;
+    const OLD = /대라수/;   // 지금 단지(첨단대라수1차) 이름
     // 새 단지 값으로 바꿈: 옛 이름이 든 글자는 모두 '새단지'로
     const swap = v => typeof v === 'string' ? (OLD.test(v) ? '새단지' : v) : Array.isArray(v) ? v.map(swap) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, swap(x)])) : v;
     D.site = swap(D.site); D.seo = swap(D.seo);

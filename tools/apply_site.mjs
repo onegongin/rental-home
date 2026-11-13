@@ -45,7 +45,7 @@ function head(D, U) {
     '<meta property="og:image" content="' + esc(U + '/' + E.ogImage) + '">',
     '<meta property="og:image:alt" content="' + esc(E.ogAlt) + '">',
     '<meta name="twitter:card" content="summary_large_image">',
-    '<link rel="alternate" type="application/rss+xml" title="' + esc(S.name) + ' 매물" href="/rss.xml">',
+    '<link rel="alternate" type="application/rss+xml" title="' + esc(S.name) + ' 매물" href="' + esc(U) + '/rss.xml">',
     '<script type="application/ld+json">',
     '{',
     '  "@context": "https://schema.org",',
