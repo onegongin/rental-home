@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>시안 · 상담카드 2종</title>
+<!-- 시안 r2-consult-card (2026-11-13) — R2 상담카드: 기존 임차인(분양전환) · 신규고객. 칸은 기존 대라수 사이트 popFields 그대로. 가짜 예시 자료 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--link:#0066cc;--on:#c8381e;--card:#fff;--blue:#f2f7fd;--blueb:#d6e6f8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  .pick{position:sticky;top:0;z-index:9;background:#1d1d1f;color:#fff;display:flex;gap:8px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+  .pick b{font-weight:800;margin-right:6px}
+  .pick button{border:0;border-radius:999px;padding:8px 16px;font:inherit;font-weight:700;cursor:pointer;background:#3a3a3c;color:#fff}
+  .pick button.on{background:var(--on)}
+  .pick span{color:#a1a1a6;font-size:13px}
+  .v{display:none}.v.on{display:block}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 16px 64px}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  h1{font-size:22px;font-weight:800;margin:0}
+  .head p{margin:4px 0 0;color:var(--sub);font-size:14px}
+  .badge{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;margin-left:6px;vertical-align:3px}
+  .cols{display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .sec{padding:16px;margin-bottom:12px}
+  .sec.blue{background:var(--blue);border-color:var(--blueb)}
+  .sec h3{margin:0 0 12px;font-size:14px;font-weight:800}
+  .f{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px}
+  .f.two{grid-template-columns:repeat(2,1fr)}
+  label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--sub)}
+  label.w2{grid-column:span 2}label.w3{grid-column:1/-1}
+  input,select,textarea{font:inherit;font-size:14px;font-weight:500;color:var(--ink);border:1px solid #d2d2d7;border-radius:8px;padding:8px 10px;background:#fff;width:100%}
+  input.money{text-align:right}
+  textarea{min-height:80px;resize:vertical}
+  .calc{margin-top:12px;padding:12px;border-radius:10px;background:#fff;border:1px solid var(--blueb);font-size:14px;line-height:1.7}
+  .calc b{font-size:16px}
+  .calc .gap{font-weight:800}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{border:1px solid #d2d2d7;background:#fff;border-radius:999px;padding:7px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .sync{margin-top:10px;padding:10px 12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:13px;line-height:1.5}
+  .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+  .btn{border-radius:10px;padding:11px 20px;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#e8e8ed;color:var(--ink)}
+  .side{padding:16px;position:sticky;top:64px}
+  .side h3{margin:0 0 4px;font-size:15px}
+  .side .meta{color:var(--sub);font-size:13px;margin-bottom:12px}
+  .log{border-left:2px solid var(--line);padding:0 0 14px 12px;position:relative;font-size:13px;line-height:1.5}
+  .log::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:#d2d2d7}
+  .log.new::before{background:var(--on)}
+  .log small{color:var(--sub);display:block}
+  .log .pr{display:inline-block;font-size:11.5px;font-weight:700;background:#f5f5f7;border-radius:6px;padding:1px 6px;margin-top:3px}
+  .unitbox{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;padding:12px;background:#f5f5f7;border-radius:10px;margin-bottom:14px}
+  .unitbox span{color:var(--sub)}
+  .hide{display:none!important}
+  @media (max-width:900px){.cols{grid-template-columns:1fr}.side{position:static}}
+  @media (max-width:560px){.f,.f.two{grid-template-columns:1fr}label.w2{grid-column:auto}h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="pick"><b>시안</b>
+  <button class="on" data-v="t">① 기존 임차인 (분양전환)</button>
+  <button data-v="n">② 신규고객</button>
+  <span>가짜 예시 자료</span>
+</div>
+
+<!-- ① 기존 임차인 -->
+<section class="v on" id="v-t"><div class="wrap">
+  <div class="head"><div>
+    <h1>102동 1502호 상담카드 <span class="badge" style="background:#fef3c7;color:#b45309">상담중</span></h1>
+    <p>기존 임차인 · 분양전환 상담 — 세대 하나에 카드 하나, 상담할 때마다 오른쪽 이력에 한 줄씩 쌓입니다</p>
+  </div></div>
+  <div class="cols"><div>
+    <div class="card sec"><h3>1. 고객 인적사항</h3><div class="f">
+      <label>작성일자 (상담일자)<input type="date" value="2026-11-13"></label>
+      <label>성명<input value="김임차"></label>
+      <label>연락처<input value="010-1234-5678"></label>
+      <label>퇴거일자<input type="date" id="t-out"></label>
+      <label>고객 구분<select><option>임차인 본인</option><option>배우자</option><option>가족</option><option>대리인</option></select></label>
+      <label>진행상태<select id="t-prog"><option>상담중</option><option>가계약</option><option>계약중</option><option>계약완료</option><option>전세연장</option><option>퇴거</option></select></label>
+    </div>
+    <div class="sync" id="t-sync"></div></div>
+
+    <div class="card sec"><h3>이사일정 · 세대방문 협조</h3><div class="f">
+      <label>세대방문 협조<select><option>협조 확인 전</option><option>협조 가능</option><option>협조 불가</option><option>일정 조율 중</option></select></label>
+      <label class="w2">방문 가능 요일 · 시간<input placeholder="예: 평일 저녁 7시 이후, 토요일 오전"></label>
+      <label class="w3">이사 일정 메모<input placeholder="예: 12월 말 이사 예정, 새 집 잔금일 12/28"></label>
+      <label class="w2">계약관리 관계자<input placeholder="예: 배우자 이○○ 010-…"></label>
+      <label>예약방문<input type="datetime-local"></label>
+    </div></div>
+
+    <div class="card sec blue"><h3>2. 자금계획 및 상담</h3><div class="f">
+      <label>적용 분양가 (원)<input class="money" data-m="price" value="286,000,000"></label>
+      <label>기납입 임대보증금 (원)<input class="money" data-m="dep" value="180,000,000"></label>
+      <label>자금 조달 방법<select><option>주담대 활용</option><option>자기자금</option><option>전세 활용</option><option>가족 지원</option><option>미정</option></select></label>
+      <label>자기자금 (원)<input class="money" data-m="own" value="30,000,000"></label>
+      <label>대출 예정액 (원)<input class="money" data-m="loan" value="60,000,000"></label>
+    </div>
+    <div class="calc" id="t-calc"></div></div>
+
+    <div class="card sec"><h3>이번 상담 기록</h3><div class="f">
+      <label>상담경로<select><option>유선상담</option><option>방문상담</option><option>문자 · 카톡</option></select></label>
+      <label class="w2">작성 확률 (단계)<select><option>1.합의서 작성</option><option>2.미동의 작성</option><option>3.부재</option><option>4.통화거부(장기부재)</option><option selected>5.고민(긍정)</option><option>6.고민(부정)</option><option>7.동의예정(서류미비)</option><option>8.미동의예정(퇴거)</option><option>9.전세연장</option></select></label>
+      <label>다음 연락일<input type="date"></label>
+      <label class="w2">서류 확인<div class="chips"><button class="chip" onclick="this.classList.toggle('on')">합의서</button><button class="chip" onclick="this.classList.toggle('on')">서류제출</button><button class="chip" onclick="this.classList.toggle('on')">매물동의서</button></div></label>
+      <label class="w3">상담 내용 · 특이사항<textarea placeholder="예: 대출 가능액 확인 요청, 소득증빙 서류 다음 주 제출 예정"></textarea></label>
+    </div></div>
+    <div class="acts"><button class="btn s">취소</button><button class="btn p">상담 저장</button></div>
+  </div>
+
+  <div class="card side">
+    <h3>상담 이력</h3><div class="meta">102동 1502호 · 80B · 전용 80.88㎡</div>
+    <div class="unitbox"><span>전환 상태</span><b id="t-conv">상담중</b><span>담당</span><b>홍길동</b><span>퇴거일</span><b id="t-out2">—</b></div>
+    <div class="log new"><small>2026-11-13 · 지금 쓰는 중</small>이번 상담</div>
+    <div class="log"><small>2026-11-02 · 홍길동 · 방문상담</small>자금계획 상담 (대출 가능액 확인 요청)<br><span class="pr">7.동의예정(서류미비)</span> 서류 미비: 소득증빙</div>
+    <div class="log"><small>2026-10-20 · 홍길동 · 유선상담</small>보증금 반환 일정 문의. 분양전환 조건 안내, 다음 주 재연락<br><span class="pr">5.고민(긍정)</span></div>
+  </div></div>
+</div></section>
+
+<!-- ② 신규고객 -->
+<section class="v" id="v-n"><div class="wrap">
+  <div class="head"><div>
+    <h1>신규고객 상담카드 <span class="badge" style="background:#ede9fe;color:#6d28d9">신규</span></h1>
+    <p>공실 · 퇴거세대를 사려는 새 고객 — 손님 화면 '관심 등록'으로 들어온 고객도 여기로 옵니다</p>
+  </div></div>
+  <div class="cols"><div>
+    <div class="card sec"><h3>1. 고객 인적사항</h3><div class="f">
+      <label>작성일자 (상담일자)<input type="date" value="2026-11-13"></label>
+      <label>성명<input value="박신규"></label>
+      <label>연락처<input value="010-9876-5432"></label>
+      <label>생년월일<input placeholder="예: 1988-03-15"></label>
+      <label>고객 구분<select><option>실거주</option><option>투자</option><option>가족 대신</option></select></label>
+      <label>진행상태<select id="n-prog"><option>상담중</option><option>가계약</option><option>계약중</option><option>계약완료</option><option>종료</option></select></label>
+    </div></div>
+
+    <div class="card sec"><h3>신규고객 관계자 · 유입경로</h3><div class="f">
+      <label class="w2">신규고객 관계자<input placeholder="예: 배우자 함께 방문"></label>
+      <label>유입경로<select id="n-in"><option value="">선택</option><option>방문</option><option>유선</option><option>부동산</option><option>지인</option><option>관심등록</option><option>기타</option></select></label>
+      <label class="in-부동산 hide">부동산명<input></label>
+      <label class="in-부동산 hide">중개사명<input></label>
+      <label class="in-부동산 hide">부동산 연락처<input></label>
+      <label class="in-유선 hide w2">유선 경로<input placeholder="예: 현수막 보고 전화"></label>
+      <label class="in-지인 hide w2">지인 관계<input></label>
+      <label class="in-기타 hide w2">기타 경로<input></label>
+      <label class="in-관심등록 hide w3">관심등록 내용<input value="102동 고층 80B (즉시 입주)" readonly></label>
+      <label>예약방문<input type="datetime-local"></label>
+    </div></div>
+
+    <div class="card sec"><h3>관심호실 (세대방문)</h3><div class="f">
+      <label class="w3">관심호실 (쉼표로 구분)<input placeholder="예: 101-2101, 102-1902"></label>
+      <label class="w3">관심호실 방문내역<textarea placeholder="예: 11/13 102-1902 관람 — 전망 좋아함, 확장 여부 문의"></textarea></label>
+    </div></div>
+
+    <div class="card sec blue"><h3>2. 계약관리 상담</h3><div class="f">
+      <label>적용 분양가 (원)<input class="money" data-n="price" value="292,000,000"></label>
+      <label>계약금 (원)<input class="money" data-n="dep" value="29,200,000"></label>
+      <label>입금일 · 입금예정일 (계약일)<input type="date"></label>
+      <label>계약할 호실<input placeholder="예: 102-1902"></label>
+      <label>자금 조달 방법<select><option>주담대 활용</option><option>자기자금</option><option>전세 활용</option><option>가족 지원</option><option>미정</option></select></label>
+      <label>자기자금 (원)<input class="money" data-n="own" value="80,000,000"></label>
+      <label>대출 예정액 (원)<input class="money" data-n="loan" value="180,000,000"></label>
+    </div>
+    <div class="calc" id="n-calc"></div>
+    <div class="sync" id="n-sync"></div></div>
+
+    <div class="card sec"><h3>상담 내용 · 특이사항</h3>
+      <textarea placeholder="상담 내용"></textarea>
+    </div>
+    <div class="acts"><button class="btn s">취소</button><button class="btn p">상담 저장</button></div>
+  </div>
+
+  <div class="card side">
+    <h3>상담 이력</h3><div class="meta">박신규 · 010-9876-****</div>
+    <div class="log new"><small>2026-11-13 · 지금 쓰는 중</small>이번 상담</div>
+    <div class="log"><small>2026-11-10 · 관심등록 (손님 화면)</small>102동 고층 80B (즉시 입주) 관심 등록</div>
+  </div></div>
+</div></section>
+
+<script>
+const num = s => Number(String(s || '').replace(/[^\d]/g, '')) || 0;
+const won = n => n.toLocaleString('ko-KR') + '원';
+function calc(attr, id, depLabel) {
+  const v = {}; document.querySelectorAll('[' + attr + ']').forEach(i => v[i.getAttribute(attr)] = num(i.value));
+  const need = v.price - v.dep, gap = need - v.own - v.loan;
+  document.getElementById(id).innerHTML = `필요금액 <b>${won(Math.max(need, 0))}</b> <span style="color:var(--sub)">(분양가 − ${depLabel})</span><br>
+    자기자금 + 대출 = ${won(v.own + v.loan)} → <span class="gap" style="color:${gap > 0 ? '#c8381e' : '#047857'}">${gap > 0 ? '부족 ' + won(gap) : '여유 ' + won(-gap)}</span>`;
+}
+document.querySelectorAll('input.money').forEach(i => i.oninput = () => { const n = num(i.value); i.value = n ? n.toLocaleString('ko-KR') : ''; calc('data-m', 't-calc', '기납입 임대보증금'); calc('data-n', 'n-calc', '계약금'); });
+calc('data-m', 't-calc', '기납입 임대보증금'); calc('data-n', 'n-calc', '계약금');
+
+// 진행상태 → 세대 전환 상태 (제안)
+const T_MAP = { '상담중': '상담중', '가계약': '가계약', '계약중': '계약중', '계약완료': '계약완료', '전세연장': '전세연장', '퇴거': '퇴거확정' };
+function tSync() {
+  const p = document.getElementById('t-prog').value, c = T_MAP[p];
+  document.getElementById('t-conv').textContent = c;
+  document.getElementById('t-out2').textContent = document.getElementById('t-out').value || '—';
+  document.getElementById('t-sync').innerHTML = `저장하면 <b>102동 1502호 전환 상태</b>도 <b>'${c}'</b>(으)로 바뀝니다${p === '퇴거' ? ' · 퇴거일도 함께. 손님 화면에 공개하려면 전환상태 화면에서 \'퇴거확정(매물동의)\'로 바꾼 뒤 공개' : ''}.`;
+}
+document.getElementById('t-prog').onchange = tSync; document.getElementById('t-out').onchange = tSync; tSync();
+function nSync() {
+  const p = document.getElementById('n-prog').value;
+  document.getElementById('n-sync').innerHTML = (p === '가계약' || p === '계약중' || p === '계약완료')
+    ? `저장하면 <b>계약할 호실</b>의 전환 상태가 <b>'${p === '계약완료' ? '신규입주' : p}'</b>(으)로 바뀌고, 손님 화면에 공개 중이었다면 자동으로 내려갑니다.`
+    : '진행상태가 가계약 · 계약중 · 계약완료가 되면 계약할 호실의 전환 상태도 함께 바뀝니다.';
+}
+document.getElementById('n-prog').onchange = nSync; nSync();
+document.getElementById('n-in').onchange = e => { document.querySelectorAll('[class*="in-"]').forEach(x => x.classList.toggle('hide', !x.classList.contains('in-' + e.target.value))); };
+
+document.querySelectorAll('.pick button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.pick button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.v').forEach(v => v.classList.toggle('on', v.id === 'v-' + b.dataset.v));
+  scrollTo(0, 0);
+});
+</script>
+</body>
+</html>

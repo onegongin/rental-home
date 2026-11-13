@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>상담카드 · 분양전환</title>
+<!-- R2 상담카드 2종 (시안 preview/r2-consult-card 확정 2026-11-13) — 기존 임차인(분양전환) · 신규고객
+     서버: src/staff-api/consult.js (가리기 · 권한 · 진행상태 → 전환 상태 자동) · 주소 #id=… · #unit=101-1502 · #new=tenant|new -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--link:#0066cc;--on:#c8381e;--card:#fff;--blue:#f2f7fd;--blueb:#d6e6f8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 16px 80px}
+  h1{font-size:22px;font-weight:800;margin:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip.red{border-color:#fecaca;color:var(--on)}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .bar input{flex:1;min-width:180px}
+  input,select,textarea{font:inherit;font-size:14px;font-weight:500;color:var(--ink);border:1px solid #d2d2d7;border-radius:8px;padding:8px 10px;background:#fff;width:100%}
+  input:disabled,select:disabled,textarea:disabled{background:#f5f5f7;color:#3a3a3c}
+  input.money{text-align:right}
+  textarea{min-height:80px;resize:vertical}
+  .btn{border-radius:10px;padding:10px 18px;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#e8e8ed;color:var(--ink)}.btn.k{background:var(--ink);color:#fff}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  th{font-size:12px;color:var(--sub);font-weight:700;background:#fafafc}
+  tbody tr{cursor:pointer}tbody tr:hover{background:#fafafc}
+  .tbl{overflow-x:auto}
+  .pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px}
+  .empty{padding:40px;text-align:center;color:var(--sub)}
+  .leads{padding:14px 16px;margin-bottom:14px;background:#fff7ed;border-color:#fed7aa}
+  .leads h3{margin:0 0 8px;font-size:14px;color:#9a3412}
+  .lead{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid #fde4c8;font-size:13.5px;flex-wrap:wrap}
+  .lead:first-of-type{border-top:0}
+  .lead small{color:var(--sub)}
+  /* 카드 */
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .head p{margin:4px 0 0;color:var(--sub);font-size:14px}
+  .cols{display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start}
+  .sec{padding:16px;margin-bottom:12px}
+  .sec.blue{background:var(--blue);border-color:var(--blueb)}
+  .sec h3{margin:0 0 12px;font-size:14px;font-weight:800}
+  .f{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px}
+  label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--sub)}
+  label.w2{grid-column:span 2}label.w3{grid-column:1/-1}
+  .calc{margin-top:12px;padding:12px;border-radius:10px;background:#fff;border:1px solid var(--blueb);font-size:14px;line-height:1.7}
+  .calc b{font-size:16px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .sync{margin-top:10px;padding:10px 12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:13px;line-height:1.5}
+  .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+  .side{padding:16px;position:sticky;top:16px}
+  .side h3{margin:0 0 4px;font-size:15px}
+  .side .meta{color:var(--sub);font-size:13px;margin-bottom:12px}
+  .unitbox{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;padding:12px;background:#f5f5f7;border-radius:10px;margin-bottom:14px}
+  .unitbox span{color:var(--sub)}
+  .log{border-left:2px solid var(--line);padding:0 0 14px 12px;position:relative;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-all}
+  .log::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:#d2d2d7}
+  .log small{color:var(--sub);display:block;white-space:normal}
+  .log .pr{display:inline-block;font-size:11.5px;font-weight:700;background:#f5f5f7;border-radius:6px;padding:1px 6px;margin:3px 4px 0 0}
+  .hide{display:none!important}
+  .msg{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-size:14px;z-index:30;display:none;max-width:calc(100% - 32px)}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7}
+  @media (max-width:900px){.cols{grid-template-columns:1fr}.side{position:static}}
+  @media (max-width:560px){.f{grid-template-columns:1fr}label.w2{grid-column:auto}h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><a href="units.html">세대 전환 상태</a></div></div>
+<div class="wrap" id="app"><div class="card gate">불러오는 중…</div></div>
+<div class="msg" id="msg"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const num = s => Number(String(s == null ? '' : s).replace(/[^\d]/g, '')) || 0;
+const comma = n => n ? Number(n).toLocaleString('ko-KR') : '';
+const won = n => Number(n || 0).toLocaleString('ko-KR') + '원';
+const today = () => new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+const uName = id => { const m = String(id || '').match(/^(\d+)-(\d+)$/); return m ? m[1] + '동 ' + m[2] + '호' : ''; };
+const PC = { 상담중: ['#fef3c7', '#b45309'], 가계약: ['#ecfccb', '#4d7c0f'], 계약중: ['#d1fae5', '#047857'], 계약완료: ['#dbeafe', '#1d4ed8'], 전세연장: ['#f3e9dc', '#8a5a2b'], 퇴거: ['#ffe4e6', '#be123c'], 종료: ['#f0f0f3', '#6e6e73'] };
+const pill = p => { const c = PC[p] || ['#f0f0f3', '#424245']; return `<span class="pill" style="background:${c[0]};color:${c[1]}">${esc(p || '—')}</span>`; };
+function flash(t) { const m = $('msg'); m.textContent = t; m.style.display = 'block'; clearTimeout(flash.t); flash.t = setTimeout(() => m.style.display = 'none', 3200); }
+async function api(path, b) {
+  const r = await fetch(path, b ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b), credentials: 'same-origin' } : { credentials: 'same-origin' });
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (r.status === 401) { $('app').innerHTML = '<div class="card gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; throw new Error('auth'); }
+  return { status: r.status, j: j || {} };
+}
+const ERR = { perm: '권한이 없습니다', exists: '이미 있습니다', notfound: '찾을 수 없습니다' };
+const errMsg = j => j.msg || (j.err === 'input' ? '입력을 확인해 주세요' + (j.field ? ' (' + (LBL[j.field] || j.field) + ')' : '') : ERR[j.err] || '처리하지 못했습니다');
+
+// ── 칸 정의 (서버 src/core/consult.js FIELDS 와 같은 이름) ─ [키, 이름, 종류, 넓이]
+const LBL = { unit: '호실', name: '성명', phone: '연락처', progress: '진행상태' };
+let OPT = null, kind = 'tenant', list = null, ME = '', S = null;   // S = 열린 카드 상태
+function secs(k) {
+  const SEL = OPT.SEL;
+  const one = [['date', '작성일자 (상담일자)', 'date'], ['name', '성명', 'top'], ['phone', '연락처', 'top']]
+    .concat(k === 'tenant' ? [['moveOut', '퇴거일자', 'date']] : [['birth', '생년월일', 'text']])
+    .concat([['ctype', '고객 구분', SEL['ctype_' + k]], ['progress', '진행상태', 'prog'], ['mgr', '담당', 'top']]);
+  const out = [['1. 고객 인적사항', '', one]];
+  if (k === 'tenant') out.push(['이사일정 · 세대방문 협조', '', [['visitCoop', '세대방문 협조', SEL.visitCoop], ['visitTime', '방문 가능 요일 · 시간', 'text', 'w2'], ['moveMemo', '이사 일정 메모', 'text', 'w3'], ['family', '계약관리 관계자', 'text', 'w2'], ['book', '예약방문', 'datetime-local']]]);
+  else out.push(['신규고객 관계자 · 유입경로', '', [['family', '신규고객 관계자', 'text', 'w2'], ['inflow', '유입경로', SEL.inflow], ['inflowAgencyName', '부동산명', 'text', 'in-부동산'], ['inflowBroker', '중개사명', 'text', 'in-부동산'], ['inflowAgencyTel', '부동산 연락처', 'text', 'in-부동산'], ['inflowCall', '유선 경로', 'text', 'w2 in-유선'], ['inflowFriend', '지인 관계', 'text', 'w2 in-지인'], ['inflowEtc', '기타 경로', 'text', 'w2 in-기타'], ['interest', '관심등록 내용', 'text', 'w3 in-관심등록'], ['book', '예약방문', 'datetime-local']]],
+    ['관심호실 (세대방문)', '', [['intUnits', '관심호실 (쉼표로 구분, 예: 101-2101, 102-1902)', 'units', 'w3'], ['visitNotes', '관심호실 방문내역', 'area', 'w3']]]);
+  const money = [['price', '적용 분양가 (원)', 'money'], ['deposit', k === 'tenant' ? '기납입 임대보증금 (원)' : '계약금 (원)', 'money']];
+  if (k === 'new') money.push(['depDue', '입금일 · 입금예정일 (계약일)', 'date'], ['contractUnit', '계약할 호실 (예: 102-1902)', 'text']);
+  money.push(['fundType', '자금 조달 방법', SEL.fundType], ['own', '자기자금 (원)', 'money'], ['loan', '대출 예정액 (원)', 'money']);
+  out.push([k === 'tenant' ? '2. 자금계획 및 상담' : '2. 계약관리 상담', 'blue', money]);
+  out.push(['상담 내용 · 특이사항', '', [['memo', '상담 내용 · 특이사항 (카드에 계속 남는 내용)', 'area', 'w3']]]);
+  return out;
+}
+const TOPK = ['name', 'phone', 'progress', 'mgr'];
+const getV = k => TOPK.includes(k) ? S.card[k] : (S.card.data || {})[k];
+
+function field([k, l, t, w], ro) {
+  const v = getV(k), dis = ro ? 'disabled' : '', cls = 'w-' + k;
+  let inp;
+  if (Array.isArray(t)) inp = `<select data-k="${k}" ${dis}><option value="">선택</option>${t.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+  else if (t === 'prog') inp = `<select data-k="${k}" ${dis}>${OPT.PROG[S.kind].map(o => `<option ${o === (v || '상담중') ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+  else if (t === 'money') inp = `<input class="money" inputmode="numeric" data-k="${k}" value="${esc(comma(v))}" ${dis}>`;
+  else if (t === 'area') inp = `<textarea data-k="${k}" ${dis}>${esc(v)}</textarea>`;
+  else if (t === 'units') inp = `<input data-k="${k}" value="${esc((v || []).join(', '))}" ${dis}>`;
+  else if (t === 'date') inp = `<input type="date" data-k="${k}" value="${esc(v)}" ${dis}>`;
+  else if (t === 'datetime-local') inp = `<input type="datetime-local" data-k="${k}" value="${esc(v)}" ${dis}>`;
+  else inp = `<input data-k="${k}" value="${esc(k === 'mgr' && !v && S.isNew ? ME : v)}" ${dis}>`;
+  return `<label class="${esc(w || '')} ${cls}">${esc(l)}${inp}</label>`;
+}
+
+// ── 목록
+async function loadList(del) {
+  const r = await api('/api/staff/consults?kind=' + kind + (del ? '&del=1' : ''));
+  if (!r.j.ok) { flash(errMsg(r.j)); return; }
+  OPT = r.j.opts; ME = r.j.me; list = Object.assign(r.j, { del });
+  S = null; drawList();
+}
+function drawList() {
+  const q = ($('q') || {}).value || '', L = list;
+  const rows = L.rows.filter(c => !q || [c.unit_id, uName(c.unit_id), c.name, c.phone, c.mgr, c.progress, (c.data || {}).contractUnit].join(' ').includes(q));
+  const T = kind === 'tenant';
+  $('app').innerHTML = `
+    <div class="head"><div><h1>상담카드</h1><p>${T ? '기존 임차인 분양전환 상담 — 세대 하나에 카드 하나' : '공실 · 퇴거세대를 사려는 신규고객'}</p></div>
+      ${L.canCreate && !L.del ? `<button class="btn p" id="new">+ 새 ${T ? '임차인' : '신규고객'} 카드</button>` : ''}</div>
+    <div class="tabs">
+      <button class="chip ${T && !L.del ? 'on' : ''}" data-k="tenant">기존 임차인</button>
+      <button class="chip ${!T && !L.del ? 'on' : ''}" data-k="new">신규고객${!T && L.leads.length ? ' · 관심등록 ' + L.leads.length : ''}</button>
+      ${L.canDelete ? `<button class="chip red ${L.del ? 'on' : ''}" data-del="1">지운 카드</button>` : ''}
+    </div>
+    ${L.leads.length ? `<div class="card leads"><h3>관심등록 대기 ${L.leads.length}건 — 손님 화면에서 들어온 신규고객</h3>${L.leads.map(g => `<div class="lead"><div><b>${esc(g.name)}</b> · ${esc(g.phone)} <small>${esc(String(g.at || '').slice(0, 10))}</small><br><small>${esc(g.interest || g.text || '')}</small></div>${L.canCreate ? `<button class="btn k" data-lead="${esc(g.k)}">카드 만들기</button>` : ''}</div>`).join('')}</div>` : ''}
+    <div class="bar"><input id="q" placeholder="검색 — 호실 · 이름 · 연락처 · 담당 · 진행상태" value="${esc(q)}"></div>
+    <div class="card tbl">${rows.length ? `<table><thead><tr>${T ? '<th>호실</th>' : '<th>계약할 호실</th>'}<th>성명</th><th>연락처</th><th>진행상태</th><th>최근 단계</th><th>최근 상담</th><th>다음 연락</th><th>담당</th>${L.del ? '<th>지운 사유</th>' : ''}</tr></thead><tbody>
+      ${rows.map(c => `<tr data-id="${c.id}"><td><b>${esc(T ? uName(c.unit_id) : uName((c.data || {}).contractUnit) || '—')}</b></td><td>${esc(c.name || '—')}</td><td>${esc(c.phone || '—')}</td><td>${pill(c.progress)}</td><td>${esc((c.last || {}).prob || '')}</td><td>${esc((c.last || {}).date || '')}</td><td>${esc((c.last || {}).next_date || '')}</td><td>${esc(c.mgr || '')}</td>${L.del ? `<td>${esc(c.del_reason || '')} · ${esc(c.del_by || '')}</td>` : ''}</tr>`).join('')}
+      </tbody></table>` : `<div class="empty">${q ? '찾는 카드가 없습니다' : L.del ? '지운 카드가 없습니다' : '아직 상담카드가 없습니다'}</div>`}</div>`;
+  $('q').oninput = () => { const p = $('q').selectionStart; drawList(); $('q').focus(); $('q').setSelectionRange(p, p); };
+  document.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { kind = b.dataset.k; location.hash = ''; loadList(false); });
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { location.hash = ''; loadList(true); });
+  document.querySelectorAll('tr[data-id]').forEach(t => t.onclick = () => { location.hash = 'id=' + t.dataset.id; });
+  document.querySelectorAll('[data-lead]').forEach(b => b.onclick = () => fromLead(b.dataset.lead));
+  if ($('new')) $('new').onclick = () => { location.hash = 'new=' + kind; };
+}
+async function fromLead(k) {
+  const r = await api('/api/staff/consults', { kind: 'new', lead: k });
+  if (!r.j.ok) { flash(errMsg(r.j)); return; }
+  flash('관심등록으로 신규고객 카드를 만들었습니다'); location.hash = 'id=' + r.j.id;
+}
+
+// ── 카드 열기
+async function openCard(id) {
+  const r = await api('/api/staff/consults/' + id);
+  if (!r.j.ok) { flash(errMsg(r.j)); location.hash = ''; return; }
+  kind = r.j.card.kind;
+  S = { kind, isNew: false, card: r.j.card, logs: r.j.logs, ro: !r.j.canEdit, conv: r.j.conv, unit: r.j.unit, docs: [] };
+  drawCard();
+}
+function newCard(k, unit) {
+  kind = k;
+  S = { kind: k, isNew: true, card: { kind: k, unit_id: unit || '', progress: '상담중', data: { date: today() }, raw: true }, logs: [], ro: false, conv: null, docs: [] };
+  drawCard();
+}
+function drawCard() {
+  const c = S.card, T = S.kind === 'tenant', ro = S.ro;
+  const title = T ? (S.isNew ? '새 임차인 상담카드' : uName(c.unit_id) + ' 상담카드') : (S.isNew ? '새 신규고객 상담카드' : (c.name || '신규고객') + ' 상담카드');
+  $('app').innerHTML = `
+    <div class="head"><div><h1>${esc(title)} ${S.isNew ? '' : pill(c.progress)}</h1>
+      <p>${T ? '기존 임차인 · 분양전환 상담' : '신규고객 상담'}${c.deleted_at ? ' · <b style="color:var(--on)">지운 카드 (' + esc(c.del_reason || '') + ')</b>' : ''}${!c.raw ? ' · 이름 · 연락처는 가려서 보입니다' : ''}${ro && !c.deleted_at ? ' · 보기만 가능' : ''}</p></div>
+      <div class="acts"><button class="btn s" id="back">목록</button></div></div>
+    <div class="cols"><div>
+      ${T && S.isNew ? `<div class="card sec"><h3>호실</h3><div class="f"><label>호실 (예: 101-1502)<input id="f-unit" value="${esc(c.unit_id)}"></label></div></div>` : ''}
+      ${secs(S.kind).map(([h, cl, fs]) => `<div class="card sec ${cl}"><h3>${esc(h)}</h3><div class="f">${fs.map(f => field(f, ro)).join('')}</div>${cl === 'blue' ? '<div class="calc" id="calc"></div>' : ''}${h.startsWith('1.') || cl === 'blue' ? '<div class="sync hide" id="sync' + (cl ? 'B' : 'A') + '"></div>' : ''}</div>`).join('')}
+      ${ro ? '' : `<div class="card sec"><h3>이번 상담 기록 <span style="font-weight:500;color:var(--sub);font-size:12px">— 적으면 오른쪽 이력에 한 줄 남습니다 (비워 두면 카드만 저장)</span></h3><div class="f">
+        <label>상담일<input type="date" id="l-date" value="${today()}"></label>
+        <label>상담경로<select id="l-ch">${OPT.CHANNELS.map(x => `<option>${esc(x)}</option>`).join('')}</select></label>
+        <label>다음 연락일<input type="date" id="l-next"></label>
+        ${T ? `<label class="w2">작성 확률 (단계)<select id="l-prob"><option value="">선택</option>${OPT.PROBS.map(x => `<option>${esc(x)}</option>`).join('')}</select></label>` : ''}
+        <label class="${T ? '' : 'w2'}">서류 확인<div class="chips">${OPT.DOCS.map(d => `<button type="button" class="chip" data-doc="${esc(d)}">${esc(d)}</button>`).join('')}</div></label>
+        <label class="w3">이번 상담 내용<textarea id="l-memo" placeholder="예: 대출 가능액 확인 요청, 소득증빙 서류 다음 주 제출 예정"></textarea></label>
+      </div></div>
+      <div class="acts"><button class="btn s" id="cancel">취소</button><button class="btn p" id="save">${S.isNew ? '카드 만들기' : '상담 저장'}</button></div>`}
+      ${list && list.canDelete && !S.isNew ? `<div class="acts" style="margin-top:16px"><button class="btn s" id="del" style="color:var(--on)">${c.deleted_at ? '카드 되살리기' : '카드 지우기'}</button></div>` : ''}
+    </div>
+    <div class="card side">
+      <h3>상담 이력</h3>
+      <div class="meta">${T ? esc(uName(c.unit_id)) + (S.unit ? ' · ' + esc(S.unit.type) + ' · ' + S.unit.floor + '층' : '') : esc(c.name || '') + (c.phone ? ' · ' + esc(c.phone) : '')}</div>
+      ${S.conv ? `<div class="unitbox"><span>${T ? '전환 상태' : '계약 호실'}</span><b>${T ? esc(S.conv.status || '미정') : esc(uName(S.conv.unit)) + ' · ' + esc(S.conv.status || '미정')}</b>${S.conv.move_out ? `<span>퇴거일</span><b>${esc(S.conv.move_out)}</b>` : ''}<span></span><a href="units.html">전환상태 화면 →</a></div>` : ''}
+      ${S.logs.length ? S.logs.map(l => `<div class="log"><small>${esc(l.date || new Date(l.at).toISOString().slice(0, 10))} · ${esc(l.by)}${l.channel ? ' · ' + esc(l.channel) : ''}${l.progress ? ' · 진행 ' + esc(l.progress) : ''}</small>${esc(l.memo || '')}${l.prob ? `<br><span class="pr">${esc(l.prob)}</span>` : ''}${(l.docs || []).map(d => `<span class="pr">✓ ${esc(d)}</span>`).join('')}${l.next_date ? `<br><small>다음 연락 ${esc(l.next_date)}</small>` : ''}</div>`).join('') : '<div style="color:var(--sub);font-size:13px">아직 상담 기록이 없습니다</div>'}
+    </div></div>`;
+  $('back').onclick = () => { location.hash = ''; };
+  if ($('cancel')) $('cancel').onclick = () => { location.hash = ''; };
+  if ($('save')) $('save').onclick = save;
+  if ($('del')) $('del').onclick = delCard;
+  document.querySelectorAll('[data-doc]').forEach(b => b.onclick = () => b.classList.toggle('on'));
+  document.querySelectorAll('input.money').forEach(i => i.oninput = () => { i.value = comma(num(i.value)); calc(); });
+  document.querySelectorAll('[data-k="progress"],[data-k="contractUnit"],[data-k="moveOut"]').forEach(i => i.onchange = hint);
+  const inf = document.querySelector('[data-k="inflow"]');
+  const showIn = () => document.querySelectorAll('label[class*="in-"]').forEach(x => x.classList.toggle('hide', !inf || !x.className.split(' ').includes('in-' + inf.value)));
+  if (inf) { inf.addEventListener('change', showIn); showIn(); }
+  calc(); hint();
+}
+function calc() {
+  const v = k => num((document.querySelector(`[data-k="${k}"]`) || {}).value);
+  const need = Math.max(v('price') - v('deposit'), 0), gap = need - v('own') - v('loan');
+  if ($('calc')) $('calc').innerHTML = `필요금액 <b>${won(need)}</b> <span style="color:var(--sub)">(분양가 − ${S.kind === 'tenant' ? '기납입 임대보증금' : '계약금'})</span><br>자기자금 + 대출 = ${won(v('own') + v('loan'))} → <b style="color:${gap > 0 ? '#c8381e' : '#047857'}">${gap > 0 ? '부족 ' + won(gap) : '여유 ' + won(-gap)}</b>`;
+}
+// 진행상태 → 전환 상태 안내 (서버 convTarget 과 같은 규칙)
+function hint() {
+  const p = (document.querySelector('[data-k="progress"]') || {}).value, T = S.kind === 'tenant';
+  const box = $(T ? 'syncA' : 'syncB'); if (!box) return;
+  let t = '';
+  if (T) { const m = { 상담중: '상담중', 가계약: '가계약', 계약중: '계약중', 계약완료: '계약완료', 전세연장: '전세연장', 퇴거: '퇴거확정' }[p]; const u = S.isNew ? ($('f-unit') || {}).value : S.card.unit_id;
+    if (m && p !== S.card.progress || S.isNew) t = `저장하면 <b>${esc(uName(u) || '이 세대')} 전환 상태</b>도 <b>'${m}'</b>(으)로 바뀝니다${p === '퇴거' ? ' (이미 공실 · 퇴거확정(매물동의)이면 그대로). 손님 화면 공개는 전환상태 화면에서' : ''}.`; }
+  else { const m = { 가계약: '가계약', 계약중: '계약중', 계약완료: '신규입주' }[p], u = (document.querySelector('[data-k="contractUnit"]') || {}).value;
+    if (m) t = u ? `저장하면 <b>${esc(u)}</b> 전환 상태가 <b>'${m}'</b>(으)로 바뀌고, 손님 화면에 공개 중이면 자동으로 내려갑니다.` : '진행상태를 바꾸려면 <b>계약할 호실</b>도 적어 주세요 — 그 호실 전환 상태가 함께 바뀝니다.'; }
+  box.innerHTML = t; box.classList.toggle('hide', !t);
+}
+function collect() {
+  const b = { data: {} };
+  document.querySelectorAll('[data-k]').forEach(i => { const k = i.dataset.k; if (i.tagName === 'BUTTON') return; const v = i.value; if (TOPK.includes(k)) b[k] = v; else b.data[k] = v; });
+  if (!S.card.raw) { delete b.name; delete b.phone; }
+  const docs = [...document.querySelectorAll('[data-doc].on')].map(x => x.dataset.doc);
+  b.log = { date: $('l-date').value, channel: $('l-ch').value, prob: $('l-prob') ? $('l-prob').value : '', next_date: $('l-next').value, memo: $('l-memo').value, docs };
+  return b;
+}
+async function save() {
+  const b = collect();
+  if (S.kind === 'new' && ['가계약', '계약중', '계약완료'].includes(b.progress) && !b.data.contractUnit) { flash('진행상태를 바꾸려면 계약할 호실을 적어 주세요'); return; }
+  let r;
+  if (S.isNew) { b.kind = S.kind; if (S.kind === 'tenant') b.unit = $('f-unit').value; r = await api('/api/staff/consults', b); }
+  else r = await api('/api/staff/consults/' + S.card.id, b);
+  if (!r.j.ok) { if (r.j.err === 'exists' && r.j.id) { flash('이 세대 상담카드가 이미 있어 그 카드를 엽니다'); location.hash = 'id=' + r.j.id; return; } flash(errMsg(r.j)); return; }
+  flash('저장했습니다' + (r.j.synced ? ' — 전환 상태: ' + r.j.synced : ''));
+  const id = S.isNew ? r.j.id : S.card.id;
+  if (location.hash === '#id=' + id) openCard(id); else location.hash = 'id=' + id;
+}
+async function delCard() {
+  const on = !S.card.deleted_at;
+  let reason = '';
+  if (on) { reason = prompt('지우는 사유를 적어 주세요 (감사기록에 남습니다)') || ''; if (!reason.trim()) return; }
+  const r = await api('/api/staff/consults/' + S.card.id + '/del', { on, reason });
+  if (!r.j.ok) { flash(errMsg(r.j)); return; }
+  flash(on ? '카드를 지웠습니다 (지운 카드 탭에서 되살릴 수 있음)' : '카드를 되살렸습니다'); location.hash = '';
+}
+
+// ── 주소: #id=… · #unit=101-1502 (전환상태 화면에서) · #new=tenant|new
+async function route() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (!OPT) { const r = await api('/api/staff/consults?kind=' + kind); if (!r.j.ok) { $('app').innerHTML = '<div class="card gate">' + esc(errMsg(r.j)) + '</div>'; return; } OPT = r.j.opts; ME = r.j.me; list = r.j; }
+  if (h.get('id')) return openCard(h.get('id'));
+  if (h.get('unit')) { const r = await api('/api/staff/consults?unit=' + encodeURIComponent(h.get('unit'))); if (r.j.id) { location.replace('#id=' + r.j.id); return; } return newCard('tenant', h.get('unit')); }
+  if (h.get('new')) return newCard(h.get('new') === 'new' ? 'new' : 'tenant');
+  loadList(list && list.del);
+}
+window.addEventListener('hashchange', route);
+route().catch(e => { if (e.message !== 'auth') $('app').innerHTML = '<div class="card gate">불러오지 못했습니다. 새로고침해 주세요.</div>'; });
+</script>
+</body>
+</html>

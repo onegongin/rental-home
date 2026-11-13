@@ -21,6 +21,13 @@ export async function setConv(db, id, v, by, now = Date.now()) {
   return false;
 }
 
+// 상담카드 진행상태 → 전환 상태 (R2 상담카드). 퇴거일 · 메모는 그대로 두고 상태만 (move_out 을 주면 그것도)
+export async function syncConv(db, id, status, by, move_out) {
+  const old = (await getConv(db, id)) || {};
+  const v = { status, move_out: move_out || old.move_out || null, memo: old.memo || null };
+  return { old: old.status || null, off: await setConv(db, id, v, by) };
+}
+
 // 공개 켜기 · 내리기. 켤 때 상태가 공개 불가면 'status' 돌려줌
 export async function setPub(db, id, on, by, now = Date.now()) {
   if (!on) { await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); return 'ok'; }

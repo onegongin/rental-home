@@ -67,7 +67,7 @@
 </style>
 </head>
 <body>
-<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a></div></div>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><a href="consults.html">상담카드</a></div></div>
 <div class="wrap" id="app"><div class="card gate">불러오는 중…</div></div>
 <div class="card side" id="side"></div>
 <div class="msg" id="msg"></div>
@@ -172,6 +172,7 @@ function open(id) {
     <label>메모 (직원만 보임)</label>
     <textarea id="f-memo" maxlength="300" ${ro}>${esc(c.memo || '')}</textarea>
     ${D.canEdit ? '<div class="acts"><button class="btn k" onclick="saveConv()">상태 저장</button></div>' : ''}
+    <div class="acts"><a class="btn s" style="text-decoration:none;color:var(--ink)" href="consults.html#unit=${cur.id}">이 세대 상담카드 열기 →</a></div>
     <div class="pubbox" id="pubbox"></div>
     <div class="note">공개 · 내리기 · 상태 변경은 감사기록에 남습니다. 상태가 공실 · 퇴거확정(매물동의)이 아니게 되면 손님 화면에서 자동으로 내려갑니다.</div>`;
   drawPub();
@@ -195,7 +196,7 @@ async function saveConv() {
   const b = { status: $('f-st').value, move_out: $('f-out').value, memo: $('f-memo').value };
   const r = await api('/api/staff/conv/' + cur.id, b);
   if (!r.j.ok) { flash(r.status === 403 ? '고칠 권한이 없습니다' : '저장하지 못했습니다 (입력 확인)'); return; }
-  D.conv[cur.id] = Object.assign({}, D.conv[cur.id], { unit_id: cur.id, status: b.status || null, move_out: b.move_out || null, memo: b.memo || null, at: Date.now(), by: '나' });
+  D.conv[cur.id] = Object.assign({}, D.conv[cur.id], { unit_id: cur.id, status: b.status || null, move_out: b.move_out || null, memo: b.memo || null, at: Date.now(), by: '방금 저장' });
   if (r.j.unpublished) { delete D.pub[cur.id]; flash('저장 — 공개할 수 없는 상태라 손님 화면에서 내렸습니다'); }
   else flash('저장했습니다');
   open(cur.id);
