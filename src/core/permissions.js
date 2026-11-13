@@ -60,6 +60,7 @@ export function can(u, action, item, perms) {
     case 'report.use': return top;
     case 'claim.use': return u.role === '대표' || u.role === '관리자';   // R3-3 수수료 청구서 · MGM 확정 (돈 — 권한자 제외)
     case 'claim.unlock': return u.role === '대표';                         // 잠근 청구서 풀기
+    case 'migrate': return u.role === '대표' || u.role === '관리자';      // R4 기존 자료 옮기기 · 되돌리기
     case 'board.admin': return u.role === '대표' || u.role === '관리자';   // R3-4 요청 처리 · 불편사항 답변 · 남의 글 고치기   // R3-2 일일업무보고 보기 · 저장 (기존 사이트: 관리자 · 권한자)
   }
   return false;

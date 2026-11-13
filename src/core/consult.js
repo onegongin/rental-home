@@ -24,7 +24,7 @@ export const SEL = {
 // 칸 → 종류 (money = 원 단위 정수 · date = YYYY-MM-DD · unit = 호실 · units = 호실 여러 개 · sel:이름 · text:길이)
 const F_COMMON = { date: 'date', fundType: 'sel:fundType', price: 'money', deposit: 'money', own: 'money', loan: 'money', family: 'text:200', book: 'text:20', memo: 'text:3000' };
 export const FIELDS = {
-  tenant: Object.assign({ ctype: 'sel:ctype_tenant', moveOut: 'date', visitCoop: 'sel:visitCoop', visitTime: 'text:100', moveMemo: 'text:300' }, F_COMMON),
+  tenant: Object.assign({ ctype: 'sel:ctype_tenant', birth: 'text:20', moveOut: 'date', visitCoop: 'sel:visitCoop', visitTime: 'text:100', moveMemo: 'text:300' }, F_COMMON),
   new: Object.assign({ ctype: 'sel:ctype_new', birth: 'text:20', inflow: 'sel:inflow', inflowAgencyName: 'text:60', inflowBroker: 'text:30', inflowAgencyTel: 'text:20', inflowCall: 'text:100', inflowFriend: 'text:60', inflowEtc: 'text:100', interest: 'text:200', intUnits: 'units', visitNotes: 'text:2000', depDue: 'date', contractUnit: 'unit', mgmAgency: 'text:60', mgmBroker: 'text:30', mgmFee: 'sel:mgmFee' }, F_COMMON)
 };
 const DATE = /^\d{4}-\d{2}-\d{2}$/;

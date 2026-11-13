@@ -12,6 +12,7 @@ import { notifyAdmin } from './notify.js';
 import { backupApi } from './backup.js';
 import { uploadMedia, mediaUsage } from '../popups/index.js';
 import { govAdmin } from '../gov/index.js';
+import { migrateApi } from './migrate.js';
 
 export async function adminApi(req, env, url, u) {
   const db = env.DB, p = url.pathname, who = { who: u.name, ip: ip(req), dev: device(req) };
@@ -85,7 +86,8 @@ export async function adminApi(req, env, url, u) {
     return req.method === 'POST' ? uploadMedia(req, env, url, u) : mediaUsage(env);
   }
 
-  if (p === '/api/admin/gov') return govAdmin(req, env, u);   // 국토부 실거래가 · 건축물대장 상태 · 지금 받기 (대표 · 관리자)
+  if (p === '/api/admin/gov') return govAdmin(req, env, u);
+  if (p === '/api/admin/migrate' || p.startsWith('/api/admin/migrate/')) return migrateApi(req, env, url, u);   // R4 기존 자료 옮기기 (고객DB)   // 국토부 실거래가 · 건축물대장 상태 · 지금 받기 (대표 · 관리자)
 
   if (p === '/api/admin/audit' && req.method === 'GET') {
     if (!can(u, 'audit.read')) return J({ ok: false, err: 'perm' }, 403);

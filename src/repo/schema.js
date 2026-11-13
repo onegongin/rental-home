@@ -80,6 +80,8 @@ export async function init(db) {
   try { await db.prepare('CREATE TABLE IF NOT EXISTS claim_staff (name TEXT PRIMARY KEY, fee INTEGER, tax TEXT, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   // R3-4 직원 소통 (시안 r3-board 2026-11-13): note = 상담참고 · 지시 · req = 요청함 · fb = 사용 불편사항. 지우기는 숨김
   try { await db.prepare('CREATE TABLE IF NOT EXISTS board_posts (id TEXT PRIMARY KEY, kind TEXT NOT NULL, author TEXT, dept TEXT, rkind TEXT, ref TEXT, body TEXT, pin INTEGER DEFAULT 0, status TEXT, answer TEXT, ans_by TEXT, ans_at INTEGER, at INTEGER, edited_at INTEGER, deleted_at INTEGER, del_by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
+  // R4 기존 자료 옮기기 (시안 r4-migrate 2026-11-13): 옮기기 한 번 = 한 줄, undo = 되돌릴 때 쓸 이전 모습
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS migrate_log (id TEXT PRIMARY KEY, kind TEXT, at INTEGER, by TEXT, mode TEXT, summary TEXT, undo TEXT, undone_at INTEGER, undone_by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   // R2 상담카드 2종 (시안 r2-consult-card 2026-11-13): 카드 한 장 + 상담할 때마다 기록 한 줄. 지우기는 숨김(deleted_at · 사유)
   try { await db.prepare('CREATE TABLE IF NOT EXISTS consults (id TEXT PRIMARY KEY, kind TEXT NOT NULL, unit_id TEXT, name TEXT, phone TEXT, progress TEXT, mgr TEXT, writer TEXT, data TEXT, lead_id TEXT, created_at INTEGER, at INTEGER, by TEXT, deleted_at INTEGER, del_by TEXT, del_reason TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS consult_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, consult_id TEXT NOT NULL, at INTEGER, by TEXT, date TEXT, channel TEXT, prob TEXT, memo TEXT, docs TEXT, next_date TEXT, progress TEXT)').run(); } catch (e) { /* 이미 있음 */ }

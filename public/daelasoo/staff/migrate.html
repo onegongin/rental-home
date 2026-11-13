@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>기존 자료 옮기기</title>
+<!-- R4 기존 자료 옮기기 — 고객DB (시안 preview/r4-migrate 확정 2026-11-13). 엑셀은 이 브라우저에서만 읽고 필요한 칸만 서버로 (파일은 안 올라감)
+     서버 src/staff-api/migrate.js · 규칙 src/core/migrate.js. 대표 · 관리자만 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--card:#fff;--link:#0066cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:900px;margin:0 auto;padding:20px 16px 64px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead{color:var(--sub);font-size:14px;margin:0 0 16px;line-height:1.6}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+  .step{display:flex;gap:10px;align-items:center;font-weight:800;font-size:15px;margin-bottom:10px}
+  .step i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:13px}
+  .drop{display:block;border:2px dashed #c7c7cc;border-radius:12px;padding:22px;text-align:center;color:var(--sub);font-size:14px;cursor:pointer}
+  .drop b{color:var(--ink)}
+  .drop input{display:none}
+  .modes{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .modes label{flex:1;min-width:220px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;cursor:pointer}
+  .modes label.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+  .modes b{display:block;font-size:14px}
+  .sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+  .sum div{background:#f5f5f7;border-radius:10px;padding:10px 12px}
+  .sum small{display:block;font-size:11.5px;color:var(--sub);font-weight:700}.sum b{font-size:20px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;white-space:nowrap}
+  th{font-size:11.5px;color:var(--sub)}
+  .tbl{overflow-x:auto}
+  .warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6;margin-bottom:10px}
+  .err{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6;margin-bottom:10px}
+  .ok{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6}
+  .btn{border-radius:10px;padding:11px 18px;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#e8e8ed;color:var(--ink)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:#f0f0f3}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7}
+  details{font-size:13px;margin-top:6px}details summary{cursor:pointer;font-weight:700}
+  @media (max-width:560px){.sum{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><a href="units.html">세대 전환 상태</a><a href="consults.html">상담카드</a></div></div>
+<div class="wrap" id="app"><div class="card gate">불러오는 중…</div></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const when = t => new Date(t).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+// 엑셀 제목 → 보낼 칸 (기존 사이트 고객DB 양식 + 비슷한 이름)
+const HEAD = { dong: ['동'], ho: ['호', '호수'], team: ['팀'], type: ['타입', 'TYPE'], name: ['성명', '이름', '계약자명', '임차인'], birth: ['생년월일'], phone: ['연락처', '전화', '휴대폰', '핸드폰'], moveOut: ['퇴거일', '퇴거예정일'], status: ['전환여부', '진행상태', '상태'] };
+const MAP = { 상담중: ['상담중', '상담중'], 장기부재: ['장기부재', '상담중'], 호실변경: ['호실변경', '상담중'], 전세연장: ['전세연장', '전세연장'], 가계약: ['가계약', '가계약'], 계약중: ['계약중', '계약중'], 신규입주: ['신규입주', '계약완료'], 계약완료: ['계약완료', '계약완료'], 퇴거확정: ['퇴거확정 (+ 퇴거일)', '퇴거'], '퇴거확정(매물동의)': ['퇴거확정(매물동의)', '퇴거'], 공실: ['공실', '퇴거'] };
+let rows = null, file = '', mode = 'fill', dry = null, logs = [];
+
+async function api(path, b) {
+  const r = await fetch(path, b ? { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(b) } : { credentials: 'same-origin' });
+  return { status: r.status, j: await r.json().catch(() => ({})) };
+}
+async function load() {
+  const r = await api('/api/admin/migrate');
+  if (r.status === 401) { $('app').innerHTML = '<div class="card gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; return; }
+  if (!r.j.ok) { $('app').innerHTML = '<div class="card gate">' + esc(r.j.msg || '불러오지 못했습니다') + '</div>'; return; }
+  logs = r.j.logs; draw();
+}
+function draw() {
+  $('app').innerHTML = `<h1>기존 자료 옮기기 — 고객DB</h1>
+  <p class="lead">기존 사이트의 <b>고객DB 엑셀</b>(고객DB_양식.xlsx)을 고르면 세대마다 <b>전환상태 · 퇴거일</b>과 <b>임차인 상담카드</b>(성명 · 연락처 · 생년월일 · 담당 = 팀)를 만듭니다. 파일은 <b>이 컴퓨터 브라우저에서만 읽고</b>, 필요한 칸만 서버로 보냅니다. 옮겨 온 계약완료는 날짜가 없어 일일업무보고에서 '이전'으로 세고, 청구서 대상이 아닙니다.</p>
+  <div class="card"><div class="step"><i>1</i>엑셀 파일 고르기</div>
+    <label class="drop"><input type="file" id="f" accept=".xlsx,.xls,.csv">${rows ? `<b>${esc(file)}</b> · ${rows.length}줄 읽음` : '<b>여기를 눌러 파일 고르기</b> · 첫 줄에 동 · 호 · 팀 · 타입 · 성명 · 생년월일 · 연락처 · 퇴거일 · 전환여부'}</label>
+    <div class="modes"><label class="${mode === 'fill' ? 'on' : ''}"><input type="radio" name="m" value="fill" ${mode === 'fill' ? 'checked' : ''}> <b>빈 칸만 채우기 (추천)</b>이미 적어 둔 전환상태 · 카드 내용은 그대로, 비어 있는 것만</label>
+      <label class="${mode === 'over' ? 'on' : ''}"><input type="radio" name="m" value="over" ${mode === 'over' ? 'checked' : ''}> <b>덮어쓰기</b>엑셀 값으로 바꿈 (엑셀의 빈 칸은 지우지 않음)</label></div></div>
+  ${dry ? previewView() : ''}
+  ${logs.length ? `<div class="card"><div class="step"><i>3</i>지난 옮기기</div><div class="tbl"><table><tr><th>때</th><th>누가</th><th>방식</th><th>카드 새로 · 고침</th><th>전환상태</th><th></th></tr>
+    ${logs.map(l => `<tr><td>${when(l.at)}</td><td>${esc(l.by)}</td><td>${l.mode === 'over' ? '덮어쓰기' : '빈 칸만'}</td><td>${l.summary.cardNew || 0} · ${l.summary.cardUpd || 0}</td><td>${l.summary.conv || 0}</td>
+      <td>${l.undone_at ? '<span class="pill">되돌림 · ' + esc(l.undone_by) + '</span>' : `<button class="btn s" style="padding:5px 12px;font-size:12.5px" data-undo="${l.id}">되돌리기</button>`}</td></tr>`).join('')}</table></div>
+    <p style="font-size:12.5px;color:var(--sub);margin:8px 0 0">되돌리기 = 그 옮기기로 만든 카드는 지우고, 바꾼 카드 · 전환상태는 옮기기 전으로. 그 뒤 직원이 고치거나 상담을 기록한 카드 · 세대는 남깁니다.</p></div>` : ''}`;
+  $('f').onchange = read;
+  document.querySelectorAll('input[name=m]').forEach(r => r.onchange = () => { mode = r.value; if (rows) preview(); else draw(); });
+  document.querySelectorAll('[data-undo]').forEach(b => b.onclick = undo);
+  if ($('go')) $('go').onclick = apply;
+}
+function previewView() {
+  const d = dry, ord = Object.keys(MAP);
+  return `<div class="card"><div class="step"><i>2</i>미리보기 — 아직 저장 안 됨</div>
+    <div class="sum"><div><small>읽은 줄</small><b>${rows.length}</b></div><div><small>옮길 세대</small><b>${d.n}</b></div><div><small>확인할 것</small><b style="color:#9a3412">${d.warns.length}</b></div><div><small>오류 (빼고 옮김)</small><b style="color:var(--on)">${d.errors.length}</b></div></div>
+    <table style="margin-bottom:12px"><tr><th>전환여부 (엑셀)</th><th>→ 전환상태</th><th>→ 카드 진행상태</th><th style="text-align:right">세대</th></tr>
+      ${Object.keys(d.byStatus).sort((a, b) => ord.indexOf(a) - ord.indexOf(b)).map(s => `<tr><td>${esc(s)}</td><td>${MAP[s] ? esc(MAP[s][0]) + (s === '계약완료' ? ' <span class="pill">\'이전\' · 청구 대상 아님</span>' : '') : '그대로'}</td><td>${MAP[s] ? esc(MAP[s][1]) : '상담중'}</td><td style="text-align:right">${d.byStatus[s]}</td></tr>`).join('')}</table>
+    ${d.errors.length ? `<div class="err"><b>오류 ${d.errors.length}줄 — 이 줄은 빼고 옮깁니다</b>${d.errors.slice(0, 20).map(e => `<br>${e.line}번째 줄 ${esc(e.unit)} · ${esc(e.msg)}`).join('')}</div>` : ''}
+    ${d.warns.length ? `<div class="warn"><b>확인할 것 ${d.warns.length}건</b>${d.warns.slice(0, 20).map(e => `<br>${esc(e.unit)} · ${esc(e.msg)}`).join('')}</div>` : ''}
+    <div class="tbl"><table><tr><th>동·호</th><th>담당</th><th>성명</th><th>연락처</th><th>생년월일</th><th>전환여부</th><th>퇴거일</th></tr>
+      ${d.sample.map(r => `<tr><td>${esc(r.unit)}</td><td>${esc(r.team || '')}</td><td>${esc(r.name)}</td><td>${esc(r.phone)}</td><td>${esc(r.birth)}</td><td>${esc(r.status || '')}</td><td>${esc(r.moveOut || '')}</td></tr>`).join('')}
+      <tr><td colspan="7" style="color:var(--sub)">… ${Math.max(d.n - d.sample.length, 0)}줄 더 (미리보기에서는 이름 · 번호를 가려서 보여 줌)</td></tr></table></div>
+    <div class="acts"><button class="btn s" onclick="rows=null;dry=null;draw()">취소</button><button class="btn p" id="go">${d.n}세대 옮기기 (${mode === 'over' ? '덮어쓰기' : '빈 칸만'})</button></div></div>`;
+}
+async function read(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const X = await import('https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs');
+  const wb = X.read(await f.arrayBuffer());
+  const ws = wb.Sheets[wb.SheetNames.find(n => /고객/.test(n)) || wb.SheetNames[0]];
+  const raw = X.utils.sheet_to_json(ws, { defval: '', raw: true });
+  const keyOf = h => Object.keys(HEAD).find(k => HEAD[k].includes(String(h).replace(/\s+/g, '').trim()));
+  rows = raw.map(r => { const o = {}; Object.keys(r).forEach(h => { const k = keyOf(h); if (k && o[k] == null) o[k] = r[h]; }); return o; }).filter(o => o.dong && o.ho);
+  file = f.name;
+  if (!rows.length) { alert('동 · 호 칸을 찾지 못했습니다. 첫 줄이 제목(동, 호, 성명 …)인지 확인해 주세요.'); rows = null; draw(); return; }
+  preview();
+}
+async function preview() {
+  const r = await api('/api/admin/migrate/roster', { rows, mode, dry: true });
+  if (!r.j.ok) { alert(r.j.msg || '미리보기를 만들지 못했습니다'); return; }
+  dry = r.j; draw();
+}
+async function apply() {
+  if (!confirm(dry.n + '세대를 옮깁니다 (' + (mode === 'over' ? '덮어쓰기' : '빈 칸만 채우기') + '). 되돌리기로 취소할 수 있습니다.')) return;
+  $('go').disabled = true; $('go').textContent = '옮기는 중…';
+  const r = await api('/api/admin/migrate/roster', { rows, mode });
+  if (!r.j.ok) { alert(r.j.msg || '옮기지 못했습니다'); $('go').disabled = false; return; }
+  const n = r.j.result;
+  rows = null; dry = null; await load();
+  $('app').insertAdjacentHTML('afterbegin', `<div class="ok" style="margin-bottom:12px"><b>옮겼습니다</b> — 임차인 카드 새로 ${n.cardNew} · 고침 ${n.cardUpd} · 전환상태 ${n.conv}${n.unpub ? ' · 공개 내림 ' + n.unpub : ''}${r.j.skipped ? ' · 오류로 뺀 줄 ' + r.j.skipped : ''}. <a href="units.html">전환상태</a> · <a href="consults.html">상담카드</a> · <a href="kpi.html">KPI</a>에서 확인하세요.</div>`);
+}
+async function undo(e) {
+  if (!confirm('이 옮기기를 되돌릴까요? 만든 카드는 지우고 전환상태는 옮기기 전으로 돌립니다 (그 뒤 고친 것은 남김).')) return;
+  const r = await api('/api/admin/migrate/' + e.target.dataset.undo + '/undo', {});
+  if (!r.j.ok) { alert(r.j.msg || '되돌리지 못했습니다'); return; }
+  const n = r.j.result; await load();
+  $('app').insertAdjacentHTML('afterbegin', `<div class="ok" style="margin-bottom:12px"><b>되돌렸습니다</b> — 카드 지움 ${n.cardDel} · 카드 되돌림 ${n.cardBack} · 전환상태 ${n.conv}${n.kept ? ' · 그 뒤 고쳐서 남긴 것 ' + n.kept : ''}</div>`);
+}
+load();
+</script>
+</body>
+</html>
