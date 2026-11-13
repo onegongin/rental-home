@@ -1,0 +1,22 @@
+{
+  "name": "rental-home",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "node --test",
+    "test:supabase": "node -e \"process.env.TEST_DB='supabase';require('child_process').execSync('node --test',{stdio:'inherit'})\""
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
+    "wrangler": "^4.40.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261019.1": true
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.4.0",
+    "postgres": "3.4.9"
+  }
+}

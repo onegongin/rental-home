@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(../site_Ipark/**)",
+      "Write(../site_Ipark/**)",
+      "NotebookEdit(../site_Ipark/**)",
+      "Edit(../site_op/**)",
+      "Write(../site_op/**)",
+      "NotebookEdit(../site_op/**)",
+      "Edit(./DAELASOO/참고만_CD_DaelaSoo1-main/**)",
+      "Write(./DAELASOO/참고만_CD_DaelaSoo1-main/**)"
+    ]
+  }
+}

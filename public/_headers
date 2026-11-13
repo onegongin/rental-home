@@ -1,0 +1,32 @@
+/*.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/daelasoo/
+  Cache-Control: no-cache
+/daelasoo/staff/
+  Cache-Control: no-cache
+/daelasoo/support.js
+  Cache-Control: no-cache
+# 속도: 저장본을 바로 쓰고, 기간이 지나면 뒤에서 새로 받아 다음 열 때 반영
+# 사진은 하루 — 같은 이름으로 바꾼 사진을 바로 보이게 하려면 site.json assetVer 를 올린다
+/daelasoo/assets/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/daelasoo/data/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+/daelasoo/config.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/daelasoo/turnstile.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/daelasoo/site.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/daelasoo/plan-pop.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/favicon.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+/daelasoo/staff/*
+  X-Frame-Options: DENY
+  X-Robots-Tag: noindex, nofollow

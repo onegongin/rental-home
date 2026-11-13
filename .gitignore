@@ -1,0 +1,12 @@
+node_modules/
+.wrangler/
+.dev.vars
+.env*
+*.log
+# 기존 대라수 사이트(cd-daelasoo1) 원본 — 참고만, 올리지 않음
+DAELASOO/참고만_CD_DaelaSoo1-main/
+# 기존 사이트에서 내려받은 고객 자료(개인정보)는 올리지 않음
+*.csv
+*.xlsx
+_자료/
+__pycache__/

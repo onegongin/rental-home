@@ -1,0 +1,11 @@
+/* 시안(preview) 공통 스타일 — 챔피언스시티 화면에서 뽑은 색·글꼴·카드 모양 (CLAUDE.md '스타일 기준') */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+:root {
+  --bg: #f5f5f7; --fg: #1d1d1f; --sub: #6e6e73; --link: #0066cc; --tab: #c8381e;
+  --card: #fff; --line: #ececf0; --radius: 14px;
+  --sale: #8e2c6e; --jeonse: #3a5aa0; --wolse: #b25000; --short: #c77700;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Apple SD Gothic Neo', sans-serif; }
+a { color: var(--link); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }

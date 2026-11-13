@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /daelasoo/staff/
+Disallow: /api/
+Disallow: /preview/
+
+Sitemap: https://rental-home.onegongin.workers.dev/daelasoo/sitemap.xml
