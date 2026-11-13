@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>세대 전환 상태 · 공개 세대</title>
+<!-- R2 세대 전환 상태 · 공개 세대 고르기 (시안 preview/r2-public-pick 확정 2026-11-13)
+     서버: src/staff-api/conv.js · 손님 화면 표시: /api/public/units (동 · 층구간 · 타입만) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--link:#0066cc;--on:#c8381e;--card:#fff;
+    --vac:#0e7490;--vacbg:#ecfeff;--out:#047857;--outbg:#d1fae5;--pub:#c8381e}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:12px;padding-top:12px;padding-bottom:12px}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 16px 80px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead{color:var(--sub);margin:0 0 18px;font-size:14px;line-height:1.5}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .sum{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+  .sum .card{padding:14px 16px}
+  .sum small{display:block;color:var(--sub);font-size:12px;font-weight:600}
+  .sum b{font-size:24px;font-weight:800}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin:0 0 14px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+  .dongs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .dong{padding:12px}
+  .dong h3{margin:0 0 8px;font-size:15px;display:flex;justify-content:space-between}
+  .dong h3 span{font-size:12px;color:var(--sub);font-weight:600}
+  .grid{display:grid;grid-template-columns:28px repeat(3,1fr);gap:3px;font-size:11px}
+  .grid .fl{color:var(--sub);text-align:right;padding-right:4px;line-height:22px}
+  .grid .hd{text-align:center;color:var(--sub);font-weight:700}
+  .u{height:22px;border-radius:4px;background:#f0f0f3;border:0;font:inherit;font-size:10.5px;color:#a1a1a6;cursor:pointer;padding:0}
+  .u.st{background:#fef3c7;color:#b45309}
+  .u.vac{background:var(--vacbg);color:var(--vac);font-weight:700;outline:1px solid #a5e3ee}
+  .u.out{background:var(--outbg);color:var(--out);font-weight:700;outline:1px solid #a7e3c6}
+  .u.pub{background:var(--pub);color:#fff;outline:0;font-weight:700}
+  .u.dim{opacity:.25}
+  .u.sel{box-shadow:0 0 0 2px var(--ink)}
+  .side{position:fixed;right:16px;bottom:16px;width:360px;max-width:calc(100% - 32px);padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);display:none;z-index:20;max-height:calc(100vh - 32px);overflow:auto}
+  .side.on{display:block}
+  .side h4{margin:0 0 4px;font-size:17px;display:flex;justify-content:space-between}
+  .side h4 button{border:0;background:none;font-size:20px;cursor:pointer;color:var(--sub);line-height:1}
+  .side .meta{color:var(--sub);font-size:13px;margin-bottom:12px;line-height:1.5}
+  .side label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin:10px 0 4px}
+  .side select,.side input,.side textarea{width:100%;font:inherit;font-size:14px;border:1px solid #d2d2d7;border-radius:8px;padding:8px 10px;background:#fff}
+  .side textarea{resize:vertical;min-height:56px}
+  .pubbox{margin-top:14px;padding:12px;border-radius:10px;background:#f5f5f7;font-size:13px;line-height:1.5}
+  .pubbox b{display:block;margin-bottom:6px}
+  .acts{display:flex;gap:8px;margin-top:12px}
+  .btn{flex:1;text-align:center;border-radius:10px;padding:11px 0;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#e8e8ed;color:var(--ink)}.btn.k{background:var(--ink);color:#fff}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .note{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.5}
+  .msg{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-size:14px;z-index:30;display:none}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7}
+  @media (max-width:860px){.dongs{grid-template-columns:repeat(2,1fr)}.sum{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.dongs{grid-template-columns:1fr}h1{font-size:19px}.side{left:16px;right:16px;width:auto;max-width:none}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a></div></div>
+<div class="wrap" id="app"><div class="card gate">불러오는 중…</div></div>
+<div class="card side" id="side"></div>
+<div class="msg" id="msg"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+let S = null, D = null, U = [], ftype = '', fst = '', cur = null;
+
+function flash(t) { const m = $('msg'); m.textContent = t; m.style.display = 'block'; clearTimeout(flash.t); flash.t = setTimeout(() => m.style.display = 'none', 2500); }
+async function api(path, b) {
+  const r = await fetch(path, b ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b), credentials: 'same-origin' } : { credentials: 'same-origin' });
+  let j = null; try { j = await r.json(); } catch (e) {}
+  return { status: r.status, j: j || {} };
+}
+
+// 호실 목록 — 서버 src/core/units.js buildUnits 와 같은 규칙 (site.json)
+function build(site) {
+  const out = [];
+  site.units.buildings.forEach(B => {
+    const skip = B.skip || [], wide = B.wide || [];
+    const inWide = (f, l) => wide.some(w => f >= w.from && f <= w.to && w.lines.includes(l));
+    B.lines.forEach(L => { for (let f = L.from; f <= L.to; f++) if (!skip.includes(f) && !inWide(f, L.line)) out.push({ id: B.no + '-' + (f * 100 + L.line), d: B.no, f, l: L.line, type: L.type, block: B.block || '' }); });
+  });
+  return out;
+}
+const TOP = {};
+const band = (f, top) => { const c = Math.ceil(top / 3); return f <= 2 || f <= c ? '저층' : f <= c * 2 ? '중층' : '고층'; };
+const area = u => (((S.types[u.type] || {}).byBlock || {})[u.block] || {}).exclusive;
+const conv = id => D.conv[id] || {};
+const isPub = id => !!D.pub[id];
+const pubOk = st => !!D.pubKinds[st];
+
+async function load() {
+  const [site, r] = await Promise.all([fetch('../data/site.json').then(x => x.json()), api('/api/staff/conv')]);
+  if (r.status === 401 || r.status === 403) { $('app').innerHTML = '<div class="card gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; return; }
+  if (!r.j.ok) { $('app').innerHTML = '<div class="card gate">자료를 불러오지 못했습니다. 잠시 뒤 새로고침해 주세요.</div>'; return; }
+  S = site; U = build(site);
+  U.forEach(u => { TOP[u.d] = Math.max(TOP[u.d] || 0, u.f); });
+  D = { statuses: r.j.statuses, pubKinds: r.j.pubKinds, kindKo: r.j.kindKo, canEdit: r.j.canEdit, canPub: r.j.canPub,
+    conv: Object.fromEntries(r.j.conv.map(c => [c.unit_id, c])), pub: Object.fromEntries(r.j.pub.map(p => [p.unit_id, p])) };
+  draw();
+}
+
+function cls(u) {
+  const st = conv(u.id).status;
+  if (isPub(u.id)) return 'pub';
+  if (st === '공실') return 'vac';
+  if (st === '퇴거확정(매물동의)') return 'out';
+  return st ? 'st' : '';
+}
+
+function draw() {
+  const dongs = [...new Set(U.map(u => u.d))];
+  const cnt = st => U.filter(u => conv(u.id).status === st).length;
+  const sts = D.statuses.map(s => [s, cnt(s)]).filter(([, n]) => n);
+  $('app').innerHTML = `
+  <h1>세대 전환 상태 · 공개 세대</h1>
+  <p class="lead">칸을 눌러 <b>전환 상태 · 퇴거일 · 메모</b>를 고칩니다.${D.canPub ? ' <b>공실</b>과 <b>퇴거확정(매물동의)</b> 세대는 손님 화면에 공개할 수 있습니다 — 손님에게는 <b>동 · 층구간 · 타입</b>만 보이고 호수 · 가격은 보이지 않습니다.' : ' 손님 화면 공개는 대표 · 관리자가 합니다.'}${D.canEdit ? '' : '<br>지금 권한으로는 보기만 할 수 있습니다.'}</p>
+  <div class="sum">
+    <div class="card"><small>전체</small><b>${U.length}</b></div>
+    <div class="card"><small>공실</small><b>${cnt('공실')}</b></div>
+    <div class="card"><small>퇴거확정(매물동의)</small><b>${cnt('퇴거확정(매물동의)')}</b></div>
+    <div class="card"><small>손님 화면 공개 중</small><b style="color:var(--pub)">${Object.keys(D.pub).length}</b></div>
+  </div>
+  <div class="bar">${['', ...new Set(U.map(u => u.type))].map(t => `<button class="chip ${t === ftype ? 'on' : ''}" data-t="${t}">${t || '전체 타입'}</button>`).join('')}</div>
+  <div class="bar">${[['', '전체 상태'], ['__none', '미정'], ...sts.map(([s, n]) => [s, s + ' ' + n])].map(([k, n]) => `<button class="chip ${k === fst ? 'on' : ''}" data-s="${esc(k)}">${esc(n)}</button>`).join('')}</div>
+  <div class="legend">
+    <span><i style="background:var(--vacbg);outline:1px solid #a5e3ee"></i>공실</span>
+    <span><i style="background:var(--outbg);outline:1px solid #a7e3c6"></i>퇴거확정(매물동의)</span>
+    <span><i style="background:var(--pub)"></i>손님 화면 공개 중</span>
+    <span><i style="background:#fef3c7"></i>그 밖의 상태</span>
+    <span><i style="background:#f0f0f3"></i>미정</span>
+  </div>
+  <div class="dongs">${dongs.map(d => {
+    const mine = U.filter(u => u.d === d), lines = [...new Set(mine.map(u => u.l))].sort(), fls = [...new Set(mine.map(u => u.f))].sort((a, b) => b - a);
+    let h = `<div class="card dong"><h3>${d}동 <span>공개 ${mine.filter(u => isPub(u.id)).length}</span></h3><div class="grid" style="grid-template-columns:28px repeat(${lines.length},1fr)"><div></div>${lines.map(l => `<div class="hd">${l}라인<br>${mine.find(u => u.l === l).type}</div>`).join('')}`;
+    fls.forEach(f => { h += `<div class="fl">${f}</div>`; lines.forEach(l => {
+      const u = mine.find(x => x.f === f && x.l === l);
+      if (!u) { h += '<div></div>'; return; }
+      const st = conv(u.id).status || '';
+      const dim = (ftype && u.type !== ftype) || (fst && (fst === '__none' ? !!st : st !== fst));
+      h += `<button class="u ${cls(u)} ${dim ? 'dim' : ''} ${cur && cur.id === u.id ? 'sel' : ''}" data-u="${u.id}" title="${u.id} · ${esc(st || '미정')}">${f * 100 + l}</button>`;
+    }); });
+    return h + '</div></div>';
+  }).join('')}</div>`;
+  $('app').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { ftype = b.dataset.t; draw(); });
+  $('app').querySelectorAll('[data-s]').forEach(b => b.onclick = () => { fst = b.dataset.s; draw(); });
+  $('app').querySelectorAll('[data-u]').forEach(b => b.onclick = () => open(b.dataset.u));
+}
+
+function open(id) {
+  cur = U.find(u => u.id === id);
+  const c = conv(id), ro = D.canEdit ? '' : 'disabled';
+  $('side').innerHTML = `
+    <h4>${cur.d}동 ${cur.f * 100 + cur.l}호 <button onclick="closeSide()" aria-label="닫기">×</button></h4>
+    <div class="meta">${cur.type} · 전용 ${area(cur) ? area(cur).toFixed(2) + '㎡' : '—'} · ${cur.f}층${c.at ? '<br>마지막 수정 ' + esc(c.by) + ' · ' + new Date(c.at).toLocaleString('ko-KR') : ''}</div>
+    <label>전환 상태</label>
+    <select id="f-st" ${ro}><option value="">미정</option>${D.statuses.map(s => `<option ${s === c.status ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
+    <label>퇴거일 (퇴거확정 세대)</label>
+    <input type="date" id="f-out" value="${esc(c.move_out || '')}" ${ro}>
+    <label>메모 (직원만 보임)</label>
+    <textarea id="f-memo" maxlength="300" ${ro}>${esc(c.memo || '')}</textarea>
+    ${D.canEdit ? '<div class="acts"><button class="btn k" onclick="saveConv()">상태 저장</button></div>' : ''}
+    <div class="pubbox" id="pubbox"></div>
+    <div class="note">공개 · 내리기 · 상태 변경은 감사기록에 남습니다. 상태가 공실 · 퇴거확정(매물동의)이 아니게 되면 손님 화면에서 자동으로 내려갑니다.</div>`;
+  drawPub();
+  $('side').classList.add('on');
+  draw();
+}
+function drawPub() {
+  const st = conv(cur.id).status, on = isPub(cur.id), kind = D.pubKinds[st];
+  let h = `<b>손님 화면 ${on ? '<span style="color:var(--pub)">· 공개 중</span>' : ''}</b>`;
+  if (!pubOk(st)) h += '공실 · 퇴거확정(매물동의) 세대만 공개할 수 있습니다. (상태를 먼저 저장하세요)';
+  else {
+    h += `손님에게는 이렇게 보입니다: <b style="display:inline">${cur.d}동 ${band(cur.f, TOP[cur.d])} · ${cur.type} · ${D.kindKo[kind]}</b>`;
+    if (D.canPub) h += `<div class="acts"><button class="btn ${on ? 's' : 'p'}" onclick="togglePub()">${on ? '공개 내리기' : '손님 화면에 공개'}</button></div>`;
+    else h += '<br>공개는 대표 · 관리자가 합니다.';
+  }
+  $('pubbox').innerHTML = h;
+}
+function closeSide() { $('side').classList.remove('on'); cur = null; draw(); }
+
+async function saveConv() {
+  const b = { status: $('f-st').value, move_out: $('f-out').value, memo: $('f-memo').value };
+  const r = await api('/api/staff/conv/' + cur.id, b);
+  if (!r.j.ok) { flash(r.status === 403 ? '고칠 권한이 없습니다' : '저장하지 못했습니다 (입력 확인)'); return; }
+  D.conv[cur.id] = Object.assign({}, D.conv[cur.id], { unit_id: cur.id, status: b.status || null, move_out: b.move_out || null, memo: b.memo || null, at: Date.now(), by: '나' });
+  if (r.j.unpublished) { delete D.pub[cur.id]; flash('저장 — 공개할 수 없는 상태라 손님 화면에서 내렸습니다'); }
+  else flash('저장했습니다');
+  open(cur.id);
+}
+async function togglePub() {
+  const on = !isPub(cur.id);
+  const r = await api('/api/staff/conv/' + cur.id + '/pub', { on });
+  if (!r.j.ok) { flash(r.j.msg || (r.status === 403 ? '공개 권한이 없습니다' : '처리하지 못했습니다')); return; }
+  if (on) D.pub[cur.id] = { unit_id: cur.id, at: Date.now() }; else delete D.pub[cur.id];
+  flash(on ? '손님 화면에 공개했습니다' : '공개를 내렸습니다');
+  drawPub(); draw();
+}
+load();
+</script>
+</body>
+</html>

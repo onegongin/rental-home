@@ -54,6 +54,9 @@ export function can(u, action, item, perms) {
     case 'listing.publish': return top;                                               // 공개 켜기 · 승인 · 반려
     case 'listing.share': return top || (staff && mine(u, item));                     // 공유 · 담당 바꾸기 (본인 매물만)
     case 'listing.cfg': return top;                                                   // 공개 설정 (사용승인일 · 주차 · 방/욕실)
+    // R2 세대 전환 상태 · 공개 세대 (시안 r2-public-pick 2026-11-13): 상태 고치기는 세대 고치기와 같은 권한, 공개는 관리자급만
+    case 'conv.edit': return top || (staff && (perm(perms, '직원', 'create') || perm(perms, '직원', 'edit')));
+    case 'unit.publish': return top;
   }
   return false;
 }

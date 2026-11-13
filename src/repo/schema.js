@@ -67,5 +67,8 @@ export async function init(db) {
   // 최근 거래완료 (시안 listing-done B안 2026-11-05): 계약 · 잔금완료 매물의 공개용 사본 — 타입 · 단지 · 면적만 (가격 · 동 · 층 · 날짜 안 보냄), 30일 지나면 안 보냄
   try { await db.prepare('CREATE TABLE IF NOT EXISTS public_done (id TEXT PRIMARY KEY, deal TEXT, type TEXT, block TEXT, kind TEXT, exclusive REAL, done_at INTEGER)').run(); } catch (e) { /* 이미 있음 */ }
   for (const c of ['done_at INTEGER', 'done_hide INTEGER DEFAULT 0']) { try { await db.prepare('ALTER TABLE listings ADD COLUMN ' + c).run(); } catch (e) { /* 이미 있음 */ } }
+  // R2 세대 전환 상태 (시안 r2-public-pick 2026-11-13): 호실마다 상태 · 퇴거일 · 메모 / 공개 세대 사본 — 손님은 public_units 만 읽음 (호수 · 층 없음)
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS unit_conv (unit_id TEXT PRIMARY KEY, status TEXT, move_out TEXT, memo TEXT, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS public_units (unit_id TEXT PRIMARY KEY, dong INTEGER, band TEXT, type TEXT, kind TEXT, exclusive REAL, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   ready.add(key);
 }

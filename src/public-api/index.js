@@ -10,6 +10,8 @@ import { commentsApi, issueGuest } from './comments.js';
 import { brokerApi } from './broker.js';
 import { publicPopups, serveMedia } from '../popups/public.js';
 import { publicTrades } from '../gov/index.js';
+import { listPubGuest } from '../repo/public-units.js';
+import { groupPub } from '../core/conv.js';
 import { notify, DEAL_KO, unitLabel } from '../notify/index.js';
 
 const KINDS = ['buyer', 'seller', 'client', 'owner'];
@@ -74,6 +76,8 @@ export async function publicApi(req, env, url) {
 
   if (p === '/api/public/comments') return commentsApi(req, env, url);
   if (p === '/api/public/listings') return publicListings(req, env, url);
+  // R2 공개 세대 (공실 · 퇴거확정(매물동의)) — 동 · 층구간 · 타입 · 면적 · 구분 · 세대 수만 (호수 · 가격 없음)
+  if (p === '/api/public/units' && req.method === 'GET') return J({ ok: true, rows: groupPub(await listPubGuest(db)) });
   if (p === '/api/public/broker') return brokerApi(req, env, url);   // 공개 매물 중개요청 (관심등록 없이)
   if (p === '/api/public/trades' && req.method === 'GET') return J(await publicTrades(env));   // 최근 실거래 (국토부, 서버가 매일 받아 둔 것)
   if (p === '/api/public/popups' && req.method === 'GET') return publicPopups(env);   // 켜진 공개 팝업 (그림 · 글만 · 첨부)

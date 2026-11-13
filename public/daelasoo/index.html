@@ -59,6 +59,52 @@ a{color:#0066cc;text-decoration:none}a:hover{text-decoration:underline}
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#c8381e"></rect><text x="50" y="62" font-size="34" font-weight="800" text-anchor="middle" fill="#fff" font-family="sans-serif">CC</text></svg></template>
 <dc-import name="dashboard" guest-only="{{ true }}" is-public="{{ isPublic }}" sync-url="{{ syncUrl }}" hint-size="100%,100vh"></dc-import>
 </x-dc>
+<!-- R2 공개 세대 (시안 preview/r2-public-pick 확정 2026-11-13) — 관리자가 고른 공실 · 퇴거확정(매물동의) 세대. 동 · 층구간 · 타입만, 공개 세대가 없으면 칸 자체를 숨김 -->
+<section id="pub-units" hidden style="max-width:1720px;margin:0 auto;padding:28px 20px 0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#1d1d1f">
+  <style>
+    #pub-units h2{font-size:20px;font-weight:800;margin:0 0 4px}
+    #pub-units .pu-lead{color:#6e6e73;font-size:14px;margin:0 0 14px;line-height:1.5}
+    #pub-units .pu-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+    #pub-units .pu-tabs button{border:1px solid #ececf0;background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:#1d1d1f}
+    #pub-units .pu-tabs button.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+    #pub-units .pu-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+    #pub-units .pu-it{background:#fff;border:1px solid #ececf0;border-radius:14px;padding:16px}
+    #pub-units .pu-tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;margin-bottom:8px}
+    #pub-units .pu-tag.vac{background:#ecfeff;color:#0e7490}#pub-units .pu-tag.out{background:#d1fae5;color:#047857}
+    #pub-units .pu-it b{display:block;font-size:19px;font-weight:800}
+    #pub-units .pu-meta{color:#6e6e73;font-size:14px;margin:4px 0 12px}
+    #pub-units .pu-price{font-size:14px;font-weight:700;margin-bottom:12px}#pub-units .pu-price em{font-style:normal;color:#6e6e73;font-weight:600;margin-right:6px}
+    #pub-units .pu-btn{display:block;text-align:center;border-radius:10px;padding:11px 0;font-weight:700;font-size:14px;background:#c8381e;color:#fff;text-decoration:none}
+    @media (max-width:560px){#pub-units{padding:20px 16px 0}#pub-units h2{font-size:18px}}
+  </style>
+  <h2>지금 입주 · 분양 가능한 세대</h2>
+  <p class="pu-lead">사무소가 직접 확인한 세대만 보여 드립니다. 정확한 호수와 분양가는 상담 때 안내해 드립니다.</p>
+  <div class="pu-tabs" id="pu-tabs"></div>
+  <div class="pu-list" id="pu-list"></div>
+</section>
+<script>
+(function () {
+  var KO = { vac: '즉시 입주', out: '입주일 협의' }, rows = [], tab = '';
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  function draw() {
+    var tabs = [['', '전체'], ['80', '80㎡대'], ['59', '59㎡대']].filter(function (t) { return !t[0] || rows.some(function (r) { return r.type.indexOf(t[0]) === 0; }); });
+    var n = function (k) { return rows.filter(function (r) { return !k || r.type.indexOf(k) === 0; }).reduce(function (s, r) { return s + r.n; }, 0); };
+    document.getElementById('pu-tabs').innerHTML = tabs.length > 2 ? tabs.map(function (t) { return '<button class="' + (t[0] === tab ? 'on' : '') + '" data-k="' + t[0] + '">' + t[1] + ' ' + n(t[0]) + '</button>'; }).join('') : '';
+    document.querySelectorAll('#pu-tabs button').forEach(function (b) { b.onclick = function () { tab = b.getAttribute('data-k'); draw(); }; });
+    document.getElementById('pu-list').innerHTML = rows.filter(function (r) { return !tab || r.type.indexOf(tab) === 0; }).map(function (r) {
+      var name = r.dong + '동 ' + r.band, int = name + ' ' + r.type + ' (' + KO[r.kind] + ')';
+      return '<div class="pu-it"><span class="pu-tag ' + esc(r.kind) + '">' + esc(KO[r.kind]) + '</span><b>' + esc(name) + '</b>' +
+        '<div class="pu-meta">' + esc(r.type) + (r.exclusive ? ' · 전용 ' + Number(r.exclusive).toFixed(2) + '㎡' : '') + (r.n > 1 ? ' · ' + r.n + '세대' : '') + '</div>' +
+        '<div class="pu-price"><em>분양가</em>상담 시 안내</div>' +
+        '<a class="pu-btn" href="?reg=client&int=' + encodeURIComponent(int) + '">관심 등록 · 상담 신청</a></div>';
+    }).join('');
+  }
+  fetch('/api/public/units').then(function (r) { return r.json(); }).then(function (j) {
+    if (!j || !j.ok || !j.rows || !j.rows.length) return;
+    rows = j.rows; draw(); document.getElementById('pub-units').hidden = false;
+  }).catch(function () {});
+})();
+</script>
 <footer id="site-info" style="max-width:1720px;margin:0 auto;padding:28px 20px 40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#3a3a3c;font-size:13px;line-height:1.6">
   <div style="background:#fff;border-radius:18px;padding:20px 22px;display:flex;flex-wrap:wrap;gap:20px 40px">
 <!-- 아래 정보 칸은 site.json 에서 만듦 (node tools/apply_site.mjs) -->

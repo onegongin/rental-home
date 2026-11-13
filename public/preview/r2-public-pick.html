@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>시안 · 공개 세대 선택</title>
+<!-- 시안 r2-public-pick (2026-11-13) — R2 공실 · 분양 가능 세대 공개 선택. 가짜 예시 자료 (실제 세대 상태 아님)
+     대표 결정: 손님 화면은 동 · 층구간만 (호수 숨김) · 가격 없이 시작 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--link:#0066cc;--on:#c8381e;--card:#fff;
+    --vac:#0e7490;--vacbg:#ecfeff;--out:#047857;--outbg:#d1fae5;--pub:#c8381e}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  .pick{position:sticky;top:0;z-index:9;background:#1d1d1f;color:#fff;display:flex;gap:8px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+  .pick b{font-weight:800;margin-right:6px}
+  .pick button{border:0;border-radius:999px;padding:8px 16px;font:inherit;font-weight:700;cursor:pointer;background:#3a3a3c;color:#fff}
+  .pick button.on{background:var(--on)}
+  .pick span{color:#a1a1a6;font-size:13px}
+  .v{display:none}.v.on{display:block}
+  .wrap{max-width:1120px;margin:0 auto;padding:24px 16px 64px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead{color:var(--sub);margin:0 0 18px;font-size:14px;line-height:1.5}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+
+  /* 관리자 */
+  .sum{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+  .sum .card{padding:14px 16px}
+  .sum small{display:block;color:var(--sub);font-size:12px;font-weight:600}
+  .sum b{font-size:24px;font-weight:800}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin:0 0 14px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+  .dongs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .dong{padding:12px}
+  .dong h3{margin:0 0 8px;font-size:15px;display:flex;justify-content:space-between}
+  .dong h3 span{font-size:12px;color:var(--sub);font-weight:600}
+  .grid{display:grid;grid-template-columns:28px repeat(3,1fr);gap:3px;font-size:11px}
+  .grid .fl{color:var(--sub);text-align:right;padding-right:4px;line-height:22px}
+  .grid .hd{text-align:center;color:var(--sub);font-weight:700}
+  .u{height:22px;border-radius:4px;background:#f0f0f3;border:0;font:inherit;font-size:10.5px;color:#a1a1a6;cursor:not-allowed;padding:0}
+  .u.vac{background:var(--vacbg);color:var(--vac);font-weight:700;cursor:pointer;outline:1px solid #a5e3ee}
+  .u.out{background:var(--outbg);color:var(--out);font-weight:700;cursor:pointer;outline:1px solid #a7e3c6}
+  .u.pub{background:var(--pub);color:#fff;outline:0}
+  .u.dim{opacity:.25}
+  .side{position:fixed;right:16px;bottom:16px;width:340px;max-width:calc(100% - 32px);padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);display:none;z-index:20}
+  .side.on{display:block}
+  .side h4{margin:0 0 4px;font-size:17px}
+  .side .meta{color:var(--sub);font-size:13px;margin-bottom:12px;line-height:1.5}
+  .side .row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-top:1px solid var(--line)}
+  .side .row span{color:var(--sub)}
+  .side .acts{display:flex;gap:8px;margin-top:12px}
+  .btn{flex:1;text-align:center;border-radius:10px;padding:11px 0;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#f0f0f3;color:var(--ink)}
+  .note{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.5}
+
+  /* 손님 */
+  .gh{background:#fff;border-bottom:1px solid var(--line)}
+  .gh .wrap{padding-top:18px;padding-bottom:18px}
+  .tabs{display:flex;gap:6px;margin:14px 0 16px;flex-wrap:wrap}
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .it{padding:16px}
+  .it .tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;margin-bottom:8px}
+  .it .tag.vac{background:var(--vacbg);color:var(--vac)}.it .tag.out{background:var(--outbg);color:var(--out)}
+  .it b{display:block;font-size:19px;font-weight:800}
+  .it .meta{color:var(--sub);font-size:14px;margin:4px 0 12px}
+  .it .price{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:12px}
+  .it .price em{font-style:normal;color:var(--sub);font-weight:600}
+  .it .btn{display:block;width:100%}
+  .empty{padding:40px;text-align:center;color:var(--sub)}
+  @media (max-width:860px){.dongs{grid-template-columns:repeat(2,1fr)}.sum{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.dongs{grid-template-columns:1fr}h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="pick"><b>시안</b>
+  <button class="on" data-v="admin">① 관리자 · 공개 세대 고르기</button>
+  <button data-v="guest">② 손님 화면 · 공개 세대</button>
+  <span>가짜 예시 자료</span>
+</div>
+
+<!-- ① 관리자 -->
+<section class="v on" id="v-admin"><div class="wrap">
+  <h1>공개 세대 고르기</h1>
+  <p class="lead">색이 있는 칸만 공개할 수 있습니다 — <b>공실</b>(비어 있는 집)과 <b>퇴거확정(매물동의)</b>(임차인이 나가기로 하고 보여주기에 동의한 집).<br>
+  칸을 눌러 공개 · 내리기. 손님 화면에는 <b>동 · 층구간 · 타입</b>만 보이고 호수는 보이지 않습니다.</p>
+  <div class="sum">
+    <div class="card"><small>전체</small><b>300</b></div>
+    <div class="card"><small>공실</small><b id="n-vac">0</b></div>
+    <div class="card"><small>퇴거확정(매물동의)</small><b id="n-out">0</b></div>
+    <div class="card"><small>지금 공개 중</small><b id="n-pub" style="color:var(--pub)">0</b></div>
+  </div>
+  <div class="bar" id="ftype"></div>
+  <div class="legend">
+    <span><i style="background:var(--vacbg);outline:1px solid #a5e3ee"></i>공실 (공개 가능)</span>
+    <span><i style="background:var(--outbg);outline:1px solid #a7e3c6"></i>퇴거확정(매물동의) (공개 가능)</span>
+    <span><i style="background:var(--pub)"></i>공개 중</span>
+    <span><i style="background:#f0f0f3"></i>거주 중 · 상담 중 등 (공개 불가)</span>
+  </div>
+  <div class="dongs" id="dongs"></div>
+</div>
+<div class="card side" id="side">
+  <h4 id="s-t"></h4>
+  <div class="meta" id="s-m"></div>
+  <div class="row"><span>전환 상태</span><b id="s-st"></b></div>
+  <div class="row"><span>퇴거일</span><b id="s-out"></b></div>
+  <div class="row"><span>손님 화면 표시</span><b id="s-g"></b></div>
+  <div class="acts"><button class="btn s" onclick="closeSide()">닫기</button><button class="btn p" id="s-btn"></button></div>
+  <div class="note">공개 · 내리기는 기록에 남습니다 (누가 · 언제). 상태가 '계약완료' 등으로 바뀌면 자동으로 내려갑니다.</div>
+</div>
+</section>
+
+<!-- ② 손님 -->
+<section class="v" id="v-guest">
+  <div class="gh"><div class="wrap">
+    <h1>지금 입주 · 분양 가능한 세대</h1>
+    <p class="lead" style="margin:0">첨단 대라수 1차 · 관리사무소가 직접 확인한 세대만 보여드립니다. 정확한 호수와 분양가는 상담 때 안내해 드립니다.</p>
+  </div></div>
+  <div class="wrap">
+    <div class="tabs" id="gtabs"></div>
+    <div class="list" id="glist"></div>
+  </div>
+</section>
+
+<script>
+// ── 가짜 자료: 101~104동 · 1~3라인 · 4~28층 (site.json 과 같은 배치)
+const B = [[101,['80B','80B','80A']],[102,['80A','80B','80B']],[103,['59C','59B','59A']],[104,['59A','59B','59C']]];
+const AREA = {'80A':80.38,'80B':80.88,'59A':59.96,'59B':59.65,'59C':59.65};
+const ST = ['상담중','장기부재','전세연장','가계약','계약중','계약완료','신규입주'];
+let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+const U = [];
+B.forEach(([d, types]) => { for (let f = 4; f <= 28; f++) for (let l = 1; l <= 3; l++) {
+  const r = rnd(); let st = ST[Math.floor(rnd() * ST.length)], out = '';
+  if (r < .06) st = '공실'; else if (r < .1) { st = '퇴거확정(매물동의)'; out = '2026-' + (12) + '-' + String(5 + Math.floor(rnd() * 20)).padStart(2, '0'); }
+  U.push({ id: d + '-' + (f * 100 + l), d, f, l, type: types[l - 1], st, out, pub: rnd() < .5 && (st === '공실' || st === '퇴거확정(매물동의)') });
+} });
+const can = u => u.st === '공실' || u.st === '퇴거확정(매물동의)';
+const band = f => f <= 2 || f <= 10 ? '저층' : f <= 19 ? '중층' : '고층';   // 최고층 28 → 3등분
+const kind = u => u.st === '공실' ? ['vac', '즉시 입주'] : ['out', '입주일 협의'];
+let ftype = '', cur = null;
+
+function draw() {
+  document.getElementById('n-vac').textContent = U.filter(u => u.st === '공실').length;
+  document.getElementById('n-out').textContent = U.filter(u => u.st === '퇴거확정(매물동의)').length;
+  document.getElementById('n-pub').textContent = U.filter(u => u.pub).length;
+  document.getElementById('ftype').innerHTML = ['', '80A', '80B', '59A', '59B', '59C'].map(t => `<button class="chip ${t === ftype ? 'on' : ''}" onclick="ftype='${t}';draw()">${t || '전체 타입'}</button>`).join('');
+  document.getElementById('dongs').innerHTML = B.map(([d, types]) => {
+    let h = `<div class="card dong"><h3>${d}동 <span>공개 ${U.filter(u => u.d === d && u.pub).length}</span></h3><div class="grid"><div></div>${types.map((t, i) => `<div class="hd">${i + 1}라인<br>${t}</div>`).join('')}`;
+    for (let f = 28; f >= 4; f--) { h += `<div class="fl">${f}</div>`; for (let l = 1; l <= 3; l++) {
+      const u = U.find(x => x.d === d && x.f === f && x.l === l);
+      const c = u.pub ? 'pub' : u.st === '공실' ? 'vac' : u.st === '퇴거확정(매물동의)' ? 'out' : '';
+      h += `<button class="u ${c} ${ftype && u.type !== ftype ? 'dim' : ''}" title="${u.id} · ${u.st}" ${can(u) ? `onclick="openSide('${u.id}')"` : ''}>${f * 100 + l}</button>`;
+    } }
+    return h + '</div></div>';
+  }).join('');
+  drawGuest();
+}
+function openSide(id) {
+  cur = U.find(u => u.id === id);
+  document.getElementById('s-t').textContent = cur.d + '동 ' + (cur.f * 100 + cur.l) + '호';
+  document.getElementById('s-m').textContent = cur.type + ' · 전용 ' + AREA[cur.type] + '㎡ · ' + cur.f + '층';
+  document.getElementById('s-st').textContent = cur.st;
+  document.getElementById('s-out').textContent = cur.out || '—';
+  document.getElementById('s-g').textContent = cur.d + '동 ' + band(cur.f) + ' · ' + kind(cur)[1];
+  const b = document.getElementById('s-btn'); b.textContent = cur.pub ? '공개 내리기' : '손님 화면에 공개';
+  b.onclick = () => { cur.pub = !cur.pub; draw(); openSide(cur.id); };
+  document.getElementById('side').classList.add('on');
+}
+function closeSide() { document.getElementById('side').classList.remove('on'); }
+
+let gtab = '';
+function drawGuest() {
+  const P = U.filter(u => u.pub);
+  const tabs = [['', '전체'], ['80', '80㎡대'], ['59', '59㎡대']];
+  document.getElementById('gtabs').innerHTML = tabs.map(([k, n]) => `<button class="chip ${k === gtab ? 'on' : ''}" onclick="gtab='${k}';drawGuest()">${n} ${P.filter(u => !k || u.type.startsWith(k)).length}</button>`).join('');
+  // 손님 화면은 호수가 없으므로 같은 동 · 층구간 · 타입 · 구분은 한 장으로 묶어 '2세대'로 표시
+  const g = {};
+  P.filter(u => !gtab || u.type.startsWith(gtab)).forEach(u => { const k = [u.d, band(u.f), u.type, kind(u)[0]].join('|'); (g[k] = g[k] || { u, n: 0 }).n++; });
+  const rows = Object.values(g).sort((a, b) => (a.u.st === '공실' ? 0 : 1) - (b.u.st === '공실' ? 0 : 1) || a.u.d - b.u.d);
+  document.getElementById('glist').innerHTML = rows.length ? rows.map(({ u, n }) => { const [c, t] = kind(u); return `<div class="card it">
+    <span class="tag ${c}">${t}</span><b>${u.d}동 ${band(u.f)}</b>
+    <div class="meta">${u.type} · 전용 ${AREA[u.type]}㎡${n > 1 ? ' · ' + n + '세대' : ''}</div>
+    <div class="price"><em>분양가</em> 상담 시 안내</div>
+    <button class="btn p">관심 등록 · 상담 신청</button></div>`; }).join('') : '<div class="card empty">지금 공개된 세대가 없습니다. 관심 등록을 남겨 주시면 먼저 알려 드립니다.</div>';
+}
+document.querySelectorAll('.pick button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.pick button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.v').forEach(v => v.classList.toggle('on', v.id === 'v-' + b.dataset.v));
+  closeSide(); scrollTo(0, 0);
+});
+draw();
+</script>
+</body>
+</html>
