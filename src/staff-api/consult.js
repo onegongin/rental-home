@@ -99,6 +99,8 @@ export async function staffConsult(req, env, url, u) {
     if (Object.keys(x.data).length) {
       const d = Object.assign({}, c.data, x.data);
       Object.keys(d).forEach(k => { if (d[k] == null) delete d[k]; });
+      // MGM 확정 뒤 부동산 · 금액 · 계약할 호실을 바꾸면 확정을 풂 (청구 내역서에서 빠짐 → 대표 · 관리자가 다시 확정)
+      if (d.mgmFixed && ['mgmAgency', 'mgmFee', 'contractUnit'].some(k => d[k] !== c.data[k])) delete d.mgmFixed;
       if (JSON.stringify(d) !== JSON.stringify(c.data)) patch.data = d;
     }
     const l = cleanLog(b.log);

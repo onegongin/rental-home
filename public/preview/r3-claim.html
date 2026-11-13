@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>시안 · 수수료 청구서 · MGM</title>
+<!-- 시안 r3-claim (2026-11-13) — R3-3 수수료 청구서 + MGM. 기존 대라수 사이트 buildClaimView 를 옮김. 가짜 예시 자료 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--card:#fff;--hd:#eef3fb;--grid:#b8c2d0;--est:#d97706;--inv:#5b21b6;--mgm:#ea580c}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  .pick{position:sticky;top:0;z-index:9;background:#1d1d1f;color:#fff;display:flex;gap:8px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+  .pick b{font-weight:800}.pick span{color:#a1a1a6;font-size:13px}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 64px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead{color:var(--sub);font-size:14px;margin:0 0 16px;line-height:1.5}
+  .cols{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;align-items:start}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .list{padding:10px;display:flex;flex-direction:column;gap:6px;position:sticky;top:64px}
+  .list small{font-size:11.5px;font-weight:800;color:var(--sub);padding:6px 4px 0}
+  .it{display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px 12px;border-radius:10px;cursor:pointer;border:1px solid var(--line);background:#fff;font:inherit}
+  .it b{font-size:13.5px}.it span{font-size:12px;color:var(--sub)}
+  .it.on.mgm{border-color:var(--mgm);background:#fff7ed}.it.on.est{border-color:var(--est);background:#fffbeb}.it.on.inv{border-color:var(--inv);background:#f5f3ff}
+  .main{padding:18px}
+  .main h2{font-size:18px;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tag{font-size:11.5px;font-weight:800;border-radius:999px;padding:3px 10px}
+  .note{font-size:12.5px;color:var(--sub);line-height:1.6;margin:0 0 12px}
+  .sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+  .sum div{background:#f5f5f7;border-radius:10px;padding:10px 12px}
+  .sum small{display:block;font-size:11.5px;color:var(--sub);font-weight:700}
+  .sum b{font-size:18px}
+  .sum .fin{background:#1d1d1f;color:#fff}.sum .fin small{color:#a1a1a6}
+  h3{font-size:14px;font-weight:800;margin:16px 0 6px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{border:1px solid var(--grid);padding:6px 6px;text-align:center;white-space:nowrap}
+  th{background:var(--hd);font-weight:700;font-size:12px}
+  td.r{text-align:right}td.l{text-align:left;white-space:normal}
+  tr.tot td{background:#f5f5f7;font-weight:800}
+  tr.off td{color:#a1a1a6;text-decoration:line-through}
+  select,input{font:inherit;font-size:12.5px;border:1px solid #d2d2d7;border-radius:6px;padding:3px 6px;background:#fff}
+  .tbl{overflow-x:auto}
+  .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .btn{border-radius:10px;padding:9px 16px;font-weight:700;font-size:13.5px;border:0;cursor:pointer;font-family:inherit}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#e8e8ed;color:var(--ink)}.btn.k{background:var(--ink);color:#fff}.btn.sm{padding:4px 9px;font-size:12px;border-radius:7px}
+  .x{border:0;background:none;color:#a1a1a6;cursor:pointer;font-size:12px;text-decoration:underline}
+  .agency{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+  .agency .hd{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .agency b{font-size:15px}
+  .agency span{font-size:12.5px;color:var(--sub)}
+  .mgmcard{border:1px dashed #fdba74;background:#fffaf5;border-radius:12px;padding:12px 14px;margin-top:16px;font-size:13px;line-height:1.6}
+  .mgmcard .f{display:grid;grid-template-columns:2fr 1.4fr auto;gap:8px;align-items:end;margin-top:8px}
+  .mgmcard label{display:flex;flex-direction:column;gap:3px;font-size:11.5px;font-weight:700;color:var(--sub)}
+  @media (max-width:900px){.cols{grid-template-columns:1fr}.list{position:static;flex-direction:row;flex-wrap:wrap}.sum{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="pick"><b>시안 · 수수료 청구서 · MGM</b><span>가짜 예시 자료 · 대표 · 관리자만</span></div>
+<div class="wrap">
+  <h1>청구서</h1>
+  <p class="lead">왼쪽에서 MGM 내역서 · 예상청구 · 날짜별 청구서를 고릅니다. 수수료는 만원 단위, 기본값은 <b>계약담당 직원에게 정해 둔 금액</b>입니다 (오른쪽 위 [담당자별 수수료]).</p>
+  <div class="cols">
+    <div class="card list" id="list"></div>
+    <div class="card main" id="main"></div>
+  </div>
+</div>
+<script>
+const won = n => Math.round(n).toLocaleString('ko-KR') + '원';
+const TAX = { '3.3%': '3.3% 원천징수', '현금영수증': '현금영수증', '부가세': '부가세 10%' };
+const tx = (fee, t) => { const a = fee * 10000; return t === '3.3%' ? -Math.floor(a * 0.033 / 10) * 10 : t === '부가세' ? Math.round(a * 0.1) : 0; };
+const STAFF_FEE = { 홍길동: 100, 김철수: 100, 이영희: 110 };
+let EST = [
+  { u: '101-1203', who: '김O수', kind: '전세>분양', staff: '홍길동', fee: 100, tax: '3.3%' },
+  { u: '102-1502', who: '박O규', kind: '퇴거>신규', staff: '김철수', fee: 100, tax: '3.3%' },
+  { u: '102-2201', who: '이O영', kind: '전세>분양', staff: '홍길동', fee: 100, tax: '3.3%' },
+  { u: '103-801', who: '최O희', kind: '퇴거>신규', staff: '이영희', fee: 110, tax: '부가세' },
+  { u: '104-1902', who: '정O호', kind: '전세>분양', staff: '이영희', fee: 110, tax: '부가세', off: true },
+  { u: '101-501', who: '한O민', kind: '추가', staff: '', fee: 200, tax: '현금영수증', memo: '사유: 기존 계약완료 · 재계약 지원' }
+];
+const INV = { '2026-11-05': { lock: true, rows: [{ u: '101-902', who: '오O진', kind: '전세>분양', staff: '홍길동', fee: 100, tax: '3.3%' }, { u: '103-1403', who: '윤O아', kind: '퇴거>신규', staff: '김철수', fee: 100, tax: '3.3%' }] },
+  '2026-10-28': { lock: true, rows: [{ u: '104-701', who: '서O우', kind: '전세>분양', staff: '이영희', fee: 110, tax: '부가세' }] } };
+const MGM = [{ ag: '첨단행복부동산', br: '김중개', rows: [['102-1502', '박O규', 1000000, '현금영수증'], ['103-801', '최O희', 1000000, '현금영수증']] }, { ag: '수완공인중개사', br: '이중개', rows: [['104-1501', '정O희', 2200000, '세금계산서']] }];
+let sel = 'est';
+
+function list() {
+  const sumOf = rows => rows.filter(r => !r.off).length + '건 · ' + won(rows.filter(r => !r.off).reduce((s, r) => s + r.fee * 1e4 + tx(r.fee, r.tax), 0));
+  const mg = MGM.reduce((s, a) => s + a.rows.reduce((t, r) => t + r[2], 0), 0);
+  document.getElementById('list').innerHTML = `<small>MGM</small><button class="it mgm ${sel === 'mgm' ? 'on' : ''}" onclick="sel='mgm';draw()"><b>MGM 청구 내역서</b><span>${MGM.reduce((s, a) => s + a.rows.length, 0)}호실 · ${won(mg)}</span></button>
+    <small>수수료</small><button class="it est ${sel === 'est' ? 'on' : ''}" onclick="sel='est';draw()"><b>예상청구 (미확정)</b><span>${sumOf(EST)}</span></button>
+    ${Object.keys(INV).sort().reverse().map(d => `<button class="it inv ${sel === d ? 'on' : ''}" onclick="sel='${d}';draw()"><b>${d} 청구서 ${INV[d].lock ? '🔒' : '· 작성중'}</b><span>${sumOf(INV[d].rows)}</span></button>`).join('')}`;
+}
+function feeView(rows, est, date) {
+  const on = rows.filter(r => !r.off);
+  const total = on.reduce((s, r) => s + r.fee * 1e4, 0), wh = on.filter(r => r.tax === '3.3%').reduce((s, r) => s + tx(r.fee, r.tax), 0), vat = on.filter(r => r.tax === '부가세').reduce((s, r) => s + tx(r.fee, r.tax), 0);
+  const byFee = {}; on.forEach(r => { (byFee[r.fee] = byFee[r.fee] || []).push(r.u.replace(/^\d+-/, m => m)); });
+  const ro = !est && INV[date].lock;
+  return `<h2>${est ? '예상청구 <span class="tag" style="background:#fef3c7;color:#92400e">미확정</span>' : date + ' 수수료 청구서 ' + (ro ? '<span class="tag" style="background:#ede9fe;color:#5b21b6">🔒 잠금</span>' : '<span class="tag" style="background:#f0f0f3">작성중</span>')}</h2>
+    <p class="note">${est ? '대상: <b>전세연장 · 퇴거확정 · 퇴거확정(매물동의) · 공실</b>이던 세대가 계약완료 · 신규입주로 바뀐 호실 (전환상태 화면 · 상담카드 진행상태) · 이미 청구한 호실 제외. 처음부터 계약완료였던 세대는 대상이 아니며, 필요하면 [+ 호실 추가]에 사유를 적어 넣습니다. 금액 · 세금을 고른 뒤 [청구]를 누르면 오늘 날짜 청구서로 옮겨집니다.' : ro ? '잠긴 청구서는 고칠 수 없습니다 (대표가 잠금 해제 가능).' : ''}</p>
+    <div class="sum"><div><small>청구 총액 (수수료)</small><b>${won(total)}</b></div><div><small>원천징수 3.3%</small><b>${wh ? '- ' + won(-wh) : '0원'}</b></div><div><small>부가세 10%</small><b>${vat ? '+ ' + won(vat) : '0원'}</b></div><div class="fin"><small>최종 합계</small><b>${won(total + wh + vat)}</b></div></div>
+    <h3>1. 수수료 금액별 집계</h3>
+    <table><tr><th>금액</th><th>호실</th><th>건수</th><th>소계</th></tr>${Object.keys(byFee).sort((a, b) => b - a).map(f => `<tr><td>${Number(f).toLocaleString()}만원</td><td class="l">${byFee[f].join(', ')}</td><td>${byFee[f].length}</td><td class="r">${won(f * 1e4 * byFee[f].length)}</td></tr>`).join('')}<tr class="tot"><td colspan="2">합계</td><td>${on.length}</td><td class="r">${won(total)}</td></tr></table>
+    <h3>2. 호실별 상세</h3>
+    <div class="tbl"><table><tr><th>No</th><th>동·호</th><th>계약자</th><th>구분</th><th>계약담당</th><th>수수료</th><th>세금</th><th>세액</th><th>최종</th><th>기타</th>${est ? '<th></th>' : ''}</tr>
+      ${rows.map((r, i) => `<tr class="${r.off ? 'off' : ''}"><td>${i + 1}</td><td><b>${r.u}</b></td><td>${r.who}</td><td>${r.kind}</td><td>${r.staff || '—'}</td>
+        <td>${ro ? r.fee + '만' : `<select>${[100, 110, 200, 220].map(f => `<option ${f === r.fee ? 'selected' : ''}>${f}만</option>`).join('')}<option>직접</option></select>`}</td>
+        <td>${ro ? TAX[r.tax] : `<select>${Object.keys(TAX).map(t => `<option ${t === r.tax ? 'selected' : ''} value="${t}">${TAX[t]}</option>`).join('')}</select>`}</td>
+        <td class="r">${tx(r.fee, r.tax) ? (tx(r.fee, r.tax) > 0 ? '+' : '') + tx(r.fee, r.tax).toLocaleString() : '0'}</td><td class="r"><b>${won(r.fee * 1e4 + tx(r.fee, r.tax))}</b></td><td class="l">${r.memo || ''}</td>
+        ${est ? `<td><button class="x">${r.off ? '복원' : '제외'}</button></td>` : ''}</tr>`).join('')}
+      <tr class="tot"><td colspan="5">청구 총액 ${won(total)} · 원천징수 ${won(-wh)} · 부가세 ${won(vat)}</td><td colspan="${est ? 6 : 5}" class="r">최종 합계 ${won(total + wh + vat)}</td></tr></table></div>
+    <div class="acts">${est ? '<button class="btn s">+ 호실 추가 (사유 필수)</button><span style="flex:1"></span><button class="btn p">청구 → 오늘(2026-11-13) 청구서</button>' : ro ? '<span style="flex:1"></span><button class="btn s">🔓 잠금 해제 (대표)</button><button class="btn k">A4 인쇄 · PDF</button><button class="btn s">엑셀 받기</button>' : '<span style="flex:1"></span><button class="btn s">🔒 잠그기</button><button class="btn k">A4 인쇄 · PDF</button>'}</div>`;
+}
+function mgmView() {
+  const tot = MGM.reduce((s, a) => s + a.rows.reduce((t, r) => t + r[2], 0), 0);
+  return `<h2>MGM 청구 내역서</h2>
+    <p class="note">신규고객 상담카드 › 계약관리 상담 › <b>최종 MGM 지급 부동산</b>에서 [확정]한 호실만 부동산별로 모입니다. 금액: 100만 현금영수증 · 110만 세금계산서 · 200만 현금영수증 · 220만 세금계산서.</p>
+    <div class="sum"><div><small>부동산</small><b>${MGM.length}곳</b></div><div><small>호실</small><b>${MGM.reduce((s, a) => s + a.rows.length, 0)}건</b></div><div><small>현금영수증</small><b>${won(MGM.flatMap(a => a.rows).filter(r => r[3] === '현금영수증').reduce((s, r) => s + r[2], 0))}</b></div><div class="fin"><small>MGM 총액</small><b>${won(tot)}</b></div></div>
+    ${MGM.map(a => `<div class="agency"><div class="hd"><div><b>${a.ag}</b> <span>중개사 ${a.br}</span></div><span>${a.rows.length}호실 · <b style="color:var(--ink)">${won(a.rows.reduce((s, r) => s + r[2], 0))}</b></span></div>
+      <table><tr><th>동·호</th><th>계약자</th><th>MGM 금액</th><th>증빙</th></tr>${a.rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="r">${won(r[2])}</td><td>${r[3]}</td></tr>`).join('')}</table></div>`).join('')}
+    <div class="acts"><span style="flex:1"></span><button class="btn k">A4 인쇄 · PDF</button><button class="btn s">엑셀 받기</button></div>
+    <div class="mgmcard"><b>참고 — 신규고객 상담카드에 더해지는 칸</b> (계약관리 상담 아래)
+      <div class="f"><label>최종 MGM 지급 부동산<input value="첨단행복부동산 (김중개)" style="font-size:13px;padding:7px 9px"></label>
+      <label>MGM 금액<select style="font-size:13px;padding:7px 9px"><option>100만 · 현금영수증</option><option>110만 · 세금계산서</option><option>200만 · 현금영수증</option><option>220만 · 세금계산서</option><option>MGM 없음</option></select></label>
+      <button class="btn k" style="padding:8px 14px">확정</button></div>
+      <span style="color:var(--sub);font-size:12px">유입경로가 '부동산'이면 부동산명 · 중개사명을 자동으로 채움 · 확정은 대표 · 관리자만</span></div>`;
+}
+function draw() { list(); document.getElementById('main').innerHTML = sel === 'mgm' ? mgmView() : sel === 'est' ? feeView(EST, true) : feeView(INV[sel].rows, false, sel); }
+draw();
+</script>
+</body>
+</html>

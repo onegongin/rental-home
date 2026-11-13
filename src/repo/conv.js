@@ -15,9 +15,11 @@ export const isPubUnit = async (db, id) => !!(await db.prepare('SELECT 1 FROM pu
 const DONE = ['계약완료', '신규입주'];
 export async function setConv(db, id, v, by, now = Date.now()) {
   const old = await getConv(db, id);
-  const done_at = DONE.includes(v.status) ? (old && DONE.includes(old.status) && old.done_at ? old.done_at : now) : null;
-  await db.prepare('INSERT INTO unit_conv (unit_id, status, move_out, memo, at, by, done_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (unit_id) DO UPDATE SET status = excluded.status, move_out = excluded.move_out, memo = excluded.memo, at = excluded.at, by = excluded.by, done_at = excluded.done_at')
-    .bind(id, v.status, v.move_out, v.memo, now, by, done_at).run();
+  const keep = old && DONE.includes(old.status) && old.done_at;   // 계약완료 ↔ 신규입주 사이를 오가면 완료 시각 · 바로 전 상태 유지
+  const done_at = DONE.includes(v.status) ? (keep ? old.done_at : now) : null;
+  const done_from = DONE.includes(v.status) ? (keep ? old.done_from : (old && old.status) || null) : null;   // 청구서 '구분' (R3-3)
+  await db.prepare('INSERT INTO unit_conv (unit_id, status, move_out, memo, at, by, done_at, done_from) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (unit_id) DO UPDATE SET status = excluded.status, move_out = excluded.move_out, memo = excluded.memo, at = excluded.at, by = excluded.by, done_at = excluded.done_at, done_from = excluded.done_from')
+    .bind(id, v.status, v.move_out, v.memo, now, by, done_at, done_from).run();
   if (!(await isPubUnit(db, id))) return false;
   if (!canPub(v.status)) { await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); return true; }
   const r = pubRow(id, v.status);   // 공실 ↔ 퇴거확정(매물동의) 사이로 바뀌면 구분만 새로

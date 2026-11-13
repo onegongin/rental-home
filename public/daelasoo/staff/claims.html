@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>수수료 청구서 · MGM</title>
+<!-- R3-3 수수료 청구서 + MGM (시안 preview/r3-claim 확정 2026-11-13) — 서버 src/staff-api/claim.js · 규칙 src/core/claim.js. 대표 · 관리자만 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--card:#fff;--hd:#eef3fb;--grid:#b8c2d0;--est:#d97706;--inv:#5b21b6;--mgm:#ea580c;--link:#0066cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 64px}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead{color:var(--sub);font-size:14px;margin:0;line-height:1.5}
+  .cols{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;align-items:start}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .list{padding:10px;display:flex;flex-direction:column;gap:6px;position:sticky;top:16px}
+  .list small{font-size:11.5px;font-weight:800;color:var(--sub);padding:6px 4px 0}
+  .it{display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px 12px;border-radius:10px;cursor:pointer;border:1px solid var(--line);background:#fff;font:inherit;color:inherit}
+  .it b{font-size:13.5px}.it span{font-size:12px;color:var(--sub)}
+  .it.on.mgm{border-color:var(--mgm);background:#fff7ed}.it.on.est{border-color:var(--est);background:#fffbeb}.it.on.inv{border-color:var(--inv);background:#f5f3ff}
+  .main{padding:18px;min-width:0}
+  .main h2{font-size:18px;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tag{font-size:11.5px;font-weight:800;border-radius:999px;padding:3px 10px}
+  .note{font-size:12.5px;color:var(--sub);line-height:1.6;margin:0 0 12px}
+  .warn{font-size:12.5px;line-height:1.5;margin:0 0 10px;padding:8px 12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412}
+  .sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+  .sum div{background:#f5f5f7;border-radius:10px;padding:10px 12px}
+  .sum small{display:block;font-size:11.5px;color:var(--sub);font-weight:700}
+  .sum b{font-size:18px}
+  .sum .fin{background:#1d1d1f;color:#fff}.sum .fin small{color:#a1a1a6}
+  h3{font-size:14px;font-weight:800;margin:16px 0 6px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{border:1px solid var(--grid);padding:6px 6px;text-align:center;white-space:nowrap}
+  th{background:var(--hd);font-weight:700;font-size:12px}
+  td.r{text-align:right}td.l{text-align:left;white-space:normal;min-width:90px}
+  tr.tot td{background:#f5f5f7;font-weight:800}
+  tr.off td{color:#a1a1a6}tr.off td.u{text-decoration:line-through}
+  select,input{font:inherit;font-size:12.5px;border:1px solid #d2d2d7;border-radius:6px;padding:3px 6px;background:#fff;color:var(--ink)}
+  input.fee{width:64px;text-align:right}
+  .tbl{overflow-x:auto}
+  .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .btn{border-radius:10px;padding:9px 16px;font-weight:700;font-size:13.5px;border:0;cursor:pointer;font-family:inherit}
+  .btn.p{background:var(--on);color:#fff}.btn.s{background:#e8e8ed;color:var(--ink)}.btn.k{background:var(--ink);color:#fff}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .x{border:0;background:none;color:var(--link);cursor:pointer;font-size:12px;font-family:inherit}
+  .agency{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;break-inside:avoid}
+  .agency .hd{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .agency b{font-size:15px}.agency span{font-size:12.5px;color:var(--sub)}
+  .box{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:14px}
+  .box .f{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .msg{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-size:14px;z-index:30;display:none;max-width:calc(100% - 32px)}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7;background:#fff;border:1px solid var(--line);border-radius:14px}
+  .ptitle{display:none}
+  @media (max-width:900px){.cols{grid-template-columns:minmax(0,1fr)}.list{position:static;flex-direction:row;flex-wrap:wrap}.sum{grid-template-columns:repeat(2,1fr)}}
+  @media print{
+    @page{size:A4;margin:12mm}
+    body{background:#fff}.top,.head,.list,.acts,.note,.warn,.box,.x,.noprint,.msg{display:none!important}
+    .wrap{max-width:none;padding:0}.cols{display:block}.card{border:0}.main{padding:0}
+    .ptitle{display:block;text-align:center;font-size:20px;font-weight:800;margin-bottom:4px}
+    .sum div{border:1px solid var(--grid)}.sum .fin{color:#000;background:#f5f5f7}.sum .fin small{color:#555}
+    th,tr.tot td,.sum div{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    select,input{border:0;padding:0;appearance:none;-webkit-appearance:none;background:transparent}
+    table{font-size:11px}th,td{padding:5px 4px}td.l{white-space:normal;min-width:0}
+    .tag{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><a href="kpi.html">KPI</a><a href="units.html">세대 전환 상태</a><a href="consults.html">상담카드</a></div></div>
+<div class="wrap" id="app"><div class="gate">불러오는 중…</div></div>
+<div class="msg" id="msg"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const won = n => Math.round(Number(n) || 0).toLocaleString('ko-KR') + '원';
+const signed = n => n < 0 ? '- ' + won(-n) : n > 0 ? '+ ' + won(n) : '0원';
+const uName = id => { const m = String(id || '').match(/^(\d+)-(\d+)$/); return m ? m[1] + '동 ' + m[2] + '호' : esc(id); };
+function flash(t) { const m = $('msg'); m.textContent = t; m.style.display = 'block'; clearTimeout(flash.t); flash.t = setTimeout(() => m.style.display = 'none', 3200); }
+async function post(path, b) {
+  const r = await fetch('/api/staff/claims' + path, { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(b || {}) });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) flash(j.msg || (j.err === 'perm' ? '권한이 없습니다' : j.err === 'locked' ? '잠긴 청구서입니다' : '처리하지 못했습니다'));
+  return j;
+}
+let V = null, sel = (location.hash.slice(1) || 'est');
+
+async function load() {
+  const r = await fetch('/api/staff/claims', { credentials: 'same-origin' });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { $('app').innerHTML = '<div class="gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; return; }
+  if (!j.ok) { $('app').innerHTML = '<div class="gate">' + esc(j.msg || '불러오지 못했습니다') + '</div>'; return; }
+  V = j;
+  if (sel !== 'mgm' && sel !== 'est' && sel !== 'staff' && !V.invoices.some(i => i.date === sel)) sel = 'est';
+  draw();
+}
+
+function draw() {
+  const sumTxt = s => s.n + '건 · ' + won(s.fin);
+  const mgmTot = V.mgm.reduce((s, a) => s + a.total, 0), mgmN = V.mgm.reduce((s, a) => s + a.rows.length, 0);
+  $('app').innerHTML = `
+  <div class="head"><div><h1>청구서</h1><p class="lead">수수료는 만원 단위 · 기본값은 계약담당 직원에게 정해 둔 금액 (없으면 ${V.fee0.fee}만 · ${esc(V.taxKo[V.fee0.tax])})</p></div></div>
+  <div class="cols">
+    <div class="card list">
+      <small>MGM</small><button class="it mgm ${sel === 'mgm' ? 'on' : ''}" data-s="mgm"><b>MGM 청구 내역서</b><span>${mgmN}호실 · ${won(mgmTot)}${V.mgmWait.length ? ' · 확정 대기 ' + V.mgmWait.length : ''}</span></button>
+      <small>수수료</small><button class="it est ${sel === 'est' ? 'on' : ''}" data-s="est"><b>예상청구 (미확정)</b><span>${sumTxt(V.est.sum)}</span></button>
+      ${V.invoices.map(i => `<button class="it inv ${sel === i.date ? 'on' : ''}" data-s="${i.date}"><b>${i.date} 청구서 ${i.locked ? '🔒' : '· 작성중'}</b><span>${sumTxt(i.sum)}</span></button>`).join('')}
+      <small>설정</small><button class="it ${sel === 'staff' ? 'on' : ''}" data-s="staff"><b>담당자별 기본 수수료</b><span>${V.staff.length}명 지정</span></button>
+    </div>
+    <div class="card main">${sel === 'mgm' ? mgmView() : sel === 'staff' ? staffView() : sel === 'est' ? feeView(V.est.rows, V.est.sum, null) : (() => { const i = V.invoices.find(x => x.date === sel); return feeView(i.rows, i.sum, i); })()}</div>
+  </div>`;
+  document.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { sel = b.dataset.s; history.replaceState(null, '', '#' + sel); draw(); });
+  bind();
+}
+
+function feeView(rows, s, inv) {
+  const est = !inv, ro = inv && inv.locked;
+  const feeCell = r => ro ? (r.fee == null ? '미지정' : r.fee + '만') : `<input class="fee" data-k="${r.key}" data-f="fee" value="${r.fee == null ? '' : r.fee}" placeholder="만원">만`;
+  const taxCell = r => ro ? esc(V.taxKo[r.tax]) : `<select data-k="${r.key}" data-f="tax">${V.taxes.map(t => `<option value="${t}" ${t === r.tax ? 'selected' : ''}>${esc(V.taxKo[t])}</option>`).join('')}</select>`;
+  const byFee = Object.keys(s.byFee).sort((a, b) => b - a);
+  return `<div class="ptitle">첨단 대라수 1차 분양전환 수수료 청구서</div>
+    <h2>${est ? '예상청구 <span class="tag" style="background:#fef3c7;color:#92400e">미확정</span>' : esc(inv.date) + ' 수수료 청구서 ' + (ro ? '<span class="tag" style="background:#ede9fe;color:#5b21b6">🔒 잠금 · ' + esc(inv.lockBy) + '</span>' : '<span class="tag noprint" style="background:#f0f0f3">작성중</span>')}</h2>
+    <p class="note">${est ? '대상: 이 사이트에서 <b>계약완료 · 신규입주</b>가 된 호실 중 아직 청구하지 않은 호실 (날짜 없이 옮겨 온 기존 계약완료는 제외). 금액 · 세금을 고른 뒤 [청구]를 누르면 오늘(' + V.today + ') 청구서로 옮겨지고, 그때의 금액으로 굳습니다. [제외]한 호실은 예상청구에 남습니다.' : ro ? '잠긴 청구서는 고칠 수 없습니다.' + (V.canUnlock ? '' : ' 잠금 해제는 대표만 할 수 있습니다.') : '작성중 — 금액을 고치거나 [예상청구로]로 되돌릴 수 있습니다. 다 맞으면 [잠그기].'}</p>
+    ${s.unset ? `<div class="warn">금액 미지정 ${s.unset}건 — 수수료를 적어야 청구에 들어갑니다</div>` : ''}
+    <div class="sum"><div><small>청구 총액 (수수료)</small><b>${won(s.total)}</b></div><div><small>원천징수 3.3%</small><b>${signed(s.wh)}</b></div><div><small>부가세 10%</small><b>${signed(s.vat)}</b></div><div class="fin"><small>최종 합계</small><b>${won(s.fin)}</b></div></div>
+    <h3>1. 수수료 금액별 집계</h3>
+    ${byFee.length ? `<div class="tbl"><table><tr><th>금액</th><th>호실</th><th>건수</th><th>소계</th></tr>${byFee.map(f => `<tr><td>${Number(f).toLocaleString()}만원</td><td class="l">${s.byFee[f].join(', ')}</td><td>${s.byFee[f].length}</td><td class="r">${won(f * 1e4 * s.byFee[f].length)}</td></tr>`).join('')}<tr class="tot"><td colspan="2">합계</td><td>${s.n}</td><td class="r">${won(s.total)}</td></tr></table></div>` : '<p class="note">청구할 호실이 없습니다.</p>'}
+    <h3>2. 호실별 상세</h3>
+    ${rows.length ? `<div class="tbl"><table><tr><th>No</th><th>동·호</th><th>계약자</th><th>구분</th><th>계약담당</th><th>수수료</th><th>세금</th><th>세액</th><th>최종</th><th>기타</th>${ro ? '' : '<th class="noprint"></th>'}</tr>
+      ${rows.map((r, i) => `<tr class="${r.excluded ? 'off' : ''}"><td>${i + 1}</td><td class="u"><b>${uName(r.unit)}</b></td><td>${esc(r.who || '—')}</td><td>${esc(r.kind)}</td><td>${esc(r.staff || '—')}</td><td>${feeCell(r)}</td><td>${taxCell(r)}</td>
+        <td class="r">${r.fee == null ? '' : signed(r.tx).replace('원', '')}</td><td class="r"><b>${r.fee == null ? '—' : won(r.fin)}</b></td>
+        <td class="l">${r.extra ? '<b>추가</b> · 사유: ' + esc(r.reason) + (r.memo ? ' · ' : '') : ''}${ro ? esc(r.memo) : `<input data-k="${r.key}" data-f="memo" value="${esc(r.memo)}" placeholder="메모" style="width:100%;min-width:70px">`}</td>
+        ${ro ? '' : `<td class="noprint">${est ? `<button class="x" data-ex="${r.key}" data-v="${r.excluded ? 0 : 1}">${r.excluded ? '복원' : '제외'}</button>` : `<button class="x" data-back="${r.key}">예상청구로</button>`}${r.extra ? ` <button class="x" data-delx="${r.key}" style="color:var(--on)">지우기</button>` : ''}</td>`}</tr>`).join('')}
+      <tr class="tot"><td colspan="5">청구 총액 ${won(s.total)} · 원천징수 ${signed(s.wh)} · 부가세 ${signed(s.vat)}</td><td colspan="${ro ? 5 : 6}" class="r">최종 합계 ${won(s.fin)}</td></tr></table></div>` : ''}
+    <div class="acts">${est ? `<span style="flex:1"></span><button class="btn p" id="claim" ${s.n ? '' : 'disabled'}>청구 → 오늘(${V.today}) 청구서</button>`
+      : `<span style="flex:1"></span>${ro ? (V.canUnlock ? '<button class="btn s" id="lock" data-l="0">🔓 잠금 해제</button>' : '') : '<button class="btn s" id="lock" data-l="1">🔒 잠그기</button>'}<button class="btn k" id="print">A4 인쇄 · PDF</button><button class="btn s" id="xlsx">엑셀 받기</button>`}</div>
+    ${est ? `<div class="box"><b style="font-size:13.5px">+ 호실 추가</b> <span style="font-size:12px;color:var(--sub)">— 대상이 아닌 호실(기존 계약완료 등)이나 이미 청구한 호실의 별도 건. 사유 필수</span>
+      <div class="f" style="margin-top:8px"><input id="xu" placeholder="호실 (예: 101-1502)" style="width:150px"><input id="xr" placeholder="사유" style="flex:1;min-width:160px"><input id="xf" class="fee" placeholder="만원" value="${V.fee0.fee}">만
+      <select id="xt">${V.taxes.map(t => `<option value="${t}">${esc(V.taxKo[t])}</option>`).join('')}</select><button class="btn k" id="xadd" style="padding:6px 12px">추가</button></div></div>` : ''}`;
+}
+
+function mgmView() {
+  const all = V.mgm.flatMap(a => a.rows), tot = all.reduce((s, r) => s + r.amt, 0);
+  const by = p => all.filter(r => r.proof === p).reduce((s, r) => s + r.amt, 0);
+  return `<div class="ptitle">첨단 대라수 1차 MGM 청구 내역서</div>
+    <h2>MGM 청구 내역서</h2>
+    <p class="note">신규고객 상담카드 › 계약관리 상담 › <b>최종 MGM 지급 부동산</b>을 적고 [확정]한 호실만 부동산별로 모입니다. 확정 뒤 부동산 · 금액 · 계약할 호실을 바꾸면 확정이 풀립니다.</p>
+    ${V.mgmWait.length ? `<div class="warn"><b>확정 대기 ${V.mgmWait.length}건</b> — ${V.mgmWait.map(w => `${esc(w.agency)} · ${esc(w.name)}${w.unit ? ' (' + uName(w.unit) + ')' : ''} · ${esc(w.fee || '금액 없음')} <button class="x" data-fix="${w.id}">확정</button> <a href="consults.html#id=${w.id}">카드</a>`).join(' / ')}</div>` : ''}
+    <div class="sum"><div><small>부동산</small><b>${V.mgm.length}곳</b></div><div><small>현금영수증</small><b>${won(by('현금영수증'))}</b></div><div><small>세금계산서</small><b>${won(by('세금계산서'))}</b></div><div class="fin"><small>MGM 총액 · ${all.length}호실</small><b>${won(tot)}</b></div></div>
+    ${V.mgm.length ? V.mgm.map(a => `<div class="agency"><div class="hd"><div><b>${esc(a.agency)}</b> <span>${a.brokers.length ? '중개사 ' + esc(a.brokers.join(', ')) : ''}</span></div><span>${a.rows.length}호실 · <b style="color:var(--ink);font-size:14px">${won(a.total)}</b></span></div>
+      <div class="tbl"><table><tr><th>동·호</th><th>계약자</th><th>MGM 금액</th><th>증빙</th><th>확정</th><th class="noprint"></th></tr>${a.rows.map(r => `<tr><td>${r.unit ? uName(r.unit) : '—'}</td><td>${esc(r.name)}</td><td class="r">${won(r.amt)}</td><td>${esc(r.proof)}</td><td>${esc(r.fixed.by || '')} ${r.fixed.at ? new Date(r.fixed.at).toLocaleDateString('ko-KR') : ''}</td><td class="noprint"><button class="x" data-unfix="${r.id}">확정 취소</button></td></tr>`).join('')}</table></div></div>`).join('')
+      : '<p class="note">확정된 MGM 지급 부동산이 없습니다.</p>'}
+    <div class="acts"><span style="flex:1"></span><button class="btn k" id="print">A4 인쇄 · PDF</button><button class="btn s" id="xlsx">엑셀 받기</button></div>`;
+}
+
+function staffView() {
+  const names = [...new Set(V.staffNames.concat(V.staff.map(s => s.name)))].sort();
+  const S = Object.fromEntries(V.staff.map(s => [s.name, s]));
+  return `<h2>담당자별 기본 수수료</h2>
+    <p class="note">예상청구에서 그 직원이 계약담당(상담카드 담당)인 호실의 수수료 · 세금 기본값입니다. 비워 두면 ${V.fee0.fee}만 · ${esc(V.taxKo[V.fee0.tax])}. 이미 청구한 청구서는 바뀌지 않습니다.</p>
+    ${names.length ? `<div class="tbl"><table><tr><th>담당</th><th>수수료</th><th>세금</th><th></th></tr>${names.map(n => `<tr><td><b>${esc(n)}</b></td><td><input class="fee" id="sf-${esc(n)}" value="${S[n] ? S[n].fee : ''}" placeholder="${V.fee0.fee}">만</td>
+      <td><select id="st-${esc(n)}">${V.taxes.map(t => `<option value="${t}" ${(S[n] ? S[n].tax : V.fee0.tax) === t ? 'selected' : ''}>${esc(V.taxKo[t])}</option>`).join('')}</select></td><td><button class="btn k" data-sv="${esc(n)}" style="padding:5px 12px;font-size:12.5px">저장</button></td></tr>`).join('')}</table></div>`
+      : '<p class="note">상담카드에 담당을 적으면 여기에 나옵니다.</p>'}`;
+}
+
+function bind() {
+  document.querySelectorAll('[data-f]').forEach(el => el.addEventListener('change', async () => {
+    const v = el.dataset.f === 'fee' ? (el.value.trim() === '' ? '' : Number(el.value.replace(/[^\d]/g, ''))) : el.value;
+    if ((await post('/item', { key: el.dataset.k, [el.dataset.f]: v })).ok) load();
+  }));
+  document.querySelectorAll('[data-ex]').forEach(b => b.onclick = async () => { if ((await post('/item', { key: b.dataset.ex, excluded: b.dataset.v === '1' })).ok) load(); });
+  document.querySelectorAll('[data-back]').forEach(b => b.onclick = async () => { if ((await post('/item', { key: b.dataset.back, back: true })).ok) { flash('예상청구로 되돌렸습니다'); load(); } });
+  document.querySelectorAll('[data-delx]').forEach(b => b.onclick = async () => { if (confirm('추가 호실을 지울까요?') && (await post('/extra/' + b.dataset.delx + '/del')).ok) load(); });
+  document.querySelectorAll('[data-fix],[data-unfix]').forEach(b => b.onclick = async () => { const fix = !!b.dataset.fix; if (!fix && !confirm('MGM 확정을 취소할까요? 내역서에서 빠집니다')) return; if ((await post('/mgm', { id: b.dataset.fix || b.dataset.unfix, fixed: fix })).ok) { flash(fix ? 'MGM 확정했습니다' : 'MGM 확정을 취소했습니다'); load(); } });
+  document.querySelectorAll('[data-sv]').forEach(b => b.onclick = async () => { const n = b.dataset.sv, f = $('sf-' + n).value.trim(); if ((await post('/staff', { name: n, fee: f === '' ? '' : Number(f), tax: $('st-' + n).value })).ok) { flash(n + ' 기본 수수료를 저장했습니다'); load(); } });
+  if ($('claim')) $('claim').onclick = async () => { if (!confirm('제외하지 않은 ' + V.est.sum.n + '호실을 오늘(' + V.today + ') 청구서로 옮깁니다. 최종 합계 ' + won(V.est.sum.fin))) return; const j = await post('/claim'); if (j.ok) { flash(j.n + '호실을 ' + j.date + ' 청구서로 옮겼습니다'); sel = j.date; history.replaceState(null, '', '#' + sel); load(); } };
+  if ($('lock')) $('lock').onclick = async () => { const l = $('lock').dataset.l === '1'; if (l && !confirm('잠그면 고칠 수 없습니다 (풀기는 대표만). 잠글까요?')) return; if ((await post('/lock', { date: sel, locked: l })).ok) load(); };
+  if ($('xadd')) $('xadd').onclick = async () => { const j = await post('/extra', { unit: $('xu').value, reason: $('xr').value, fee: $('xf').value === '' ? '' : Number($('xf').value), tax: $('xt').value }); if (j.ok) { flash('추가했습니다'); load(); } };
+  if ($('print')) $('print').onclick = () => print();
+  if ($('xlsx')) $('xlsx').onclick = xlsx;
+}
+
+async function xlsx() {
+  const X = await import('https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs');
+  let A, name;
+  if (sel === 'mgm') {
+    A = [['첨단 대라수 1차 MGM 청구 내역서'], [], ['부동산', '중개사', '동·호', '계약자', 'MGM 금액', '증빙']];
+    V.mgm.forEach(a => a.rows.forEach(r => A.push([a.agency, a.brokers.join(', '), r.unit, r.name, r.amt, r.proof])));
+    A.push([], ['합계', '', '', '', V.mgm.reduce((s, a) => s + a.total, 0)]);
+    name = '대라수1차_MGM청구내역서_' + V.today + '.xlsx';
+  } else {
+    const i = V.invoices.find(x => x.date === sel), s = i.sum;
+    A = [['첨단 대라수 1차 분양전환 수수료 청구서'], ['청구일', i.date], [], ['No', '동·호', '계약자', '구분', '계약담당', '수수료(만원)', '세금', '세액', '최종', '기타']];
+    i.rows.filter(r => !r.excluded).forEach((r, k) => A.push([k + 1, r.unit, r.who, r.kind, r.staff, r.fee, V.taxKo[r.tax], r.tx, r.fin, (r.extra ? '추가 · 사유: ' + r.reason + ' ' : '') + (r.memo || '')]));
+    A.push([], ['청구 총액', s.total], ['원천징수 3.3%', s.wh], ['부가세 10%', s.vat], ['최종 합계', s.fin]);
+    name = '대라수1차_수수료청구서_' + i.date + '.xlsx';
+  }
+  const ws = X.utils.aoa_to_sheet(A); ws['!cols'] = [8, 12, 10, 10, 10, 12, 14, 12, 14, 30].map(w => ({ wch: w }));
+  const wb = X.utils.book_new(); X.utils.book_append_sheet(wb, ws, '청구서'); X.writeFile(wb, name);
+}
+load();
+</script>
+</body>
+</html>

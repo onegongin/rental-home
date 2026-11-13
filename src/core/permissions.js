@@ -57,7 +57,9 @@ export function can(u, action, item, perms) {
     // R2 세대 전환 상태 · 공개 세대 (시안 r2-public-pick 2026-11-13): 상태 고치기는 세대 고치기와 같은 권한, 공개는 관리자급만
     case 'conv.edit': return top || (staff && (perm(perms, '직원', 'create') || perm(perms, '직원', 'edit')));
     case 'unit.publish': return top;
-    case 'report.use': return top;   // R3-2 일일업무보고 보기 · 저장 (기존 사이트: 관리자 · 권한자)
+    case 'report.use': return top;
+    case 'claim.use': return u.role === '대표' || u.role === '관리자';   // R3-3 수수료 청구서 · MGM 확정 (돈 — 권한자 제외)
+    case 'claim.unlock': return u.role === '대표';                         // 잠근 청구서 풀기   // R3-2 일일업무보고 보기 · 저장 (기존 사이트: 관리자 · 권한자)
   }
   return false;
 }

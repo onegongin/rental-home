@@ -2,6 +2,7 @@
 //   tenant = 기존 임차인(분양전환, 세대 하나에 카드 하나) · new = 신규고객. 칸은 기존 대라수 사이트 popFields 그대로
 //   진행상태를 바꾸면 세대 전환 상태도 자동으로 (대표 결정): 임차인 → 그 세대 · 신규고객 → 계약할 호실 (계약완료 = 신규입주)
 import { UNIT } from './units.js';
+import { MGM_FEES } from './claim.js';
 
 export const KINDS = ['tenant', 'new'];
 export const PROG = {
@@ -16,14 +17,15 @@ export const SEL = {
   ctype_new: ['실거주', '투자', '가족 대신'],
   visitCoop: ['협조 확인 전', '협조 가능', '협조 불가', '일정 조율 중'],
   fundType: ['자기자금', '주담대 활용', '전세 활용', '가족 지원', '미정'],
-  inflow: ['방문', '유선', '부동산', '지인', '관심등록', '기타']
+  inflow: ['방문', '유선', '부동산', '지인', '관심등록', '기타'],
+  mgmFee: Object.keys(MGM_FEES)   // R3-3 MGM 금액 (기존 사이트 FEES)
 };
 
 // 칸 → 종류 (money = 원 단위 정수 · date = YYYY-MM-DD · unit = 호실 · units = 호실 여러 개 · sel:이름 · text:길이)
 const F_COMMON = { date: 'date', fundType: 'sel:fundType', price: 'money', deposit: 'money', own: 'money', loan: 'money', family: 'text:200', book: 'text:20', memo: 'text:3000' };
 export const FIELDS = {
   tenant: Object.assign({ ctype: 'sel:ctype_tenant', moveOut: 'date', visitCoop: 'sel:visitCoop', visitTime: 'text:100', moveMemo: 'text:300' }, F_COMMON),
-  new: Object.assign({ ctype: 'sel:ctype_new', birth: 'text:20', inflow: 'sel:inflow', inflowAgencyName: 'text:60', inflowBroker: 'text:30', inflowAgencyTel: 'text:20', inflowCall: 'text:100', inflowFriend: 'text:60', inflowEtc: 'text:100', interest: 'text:200', intUnits: 'units', visitNotes: 'text:2000', depDue: 'date', contractUnit: 'unit' }, F_COMMON)
+  new: Object.assign({ ctype: 'sel:ctype_new', birth: 'text:20', inflow: 'sel:inflow', inflowAgencyName: 'text:60', inflowBroker: 'text:30', inflowAgencyTel: 'text:20', inflowCall: 'text:100', inflowFriend: 'text:60', inflowEtc: 'text:100', interest: 'text:200', intUnits: 'units', visitNotes: 'text:2000', depDue: 'date', contractUnit: 'unit', mgmAgency: 'text:60', mgmBroker: 'text:30', mgmFee: 'sel:mgmFee' }, F_COMMON)
 };
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const unitId = s => { const m = String(s || '').trim().match(/^(\d{3})\s*[-동 ]\s*(\d{3,4})호?$/); const id = m ? m[1] + '-' + Number(m[2]) : ''; return UNIT[id] ? id : null; };

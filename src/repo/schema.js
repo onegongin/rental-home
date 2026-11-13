@@ -73,6 +73,11 @@ export async function init(db) {
   // R3-2 일일업무보고 (시안 r3-daily 2026-11-13): 전환 상태가 계약완료 · 신규입주가 된 시각(done_at, 10.16 이전/이후 · 금일계약 구분) · 저장한 보고서
   try { await db.prepare('ALTER TABLE unit_conv ADD COLUMN done_at INTEGER').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS daily_reports (date TEXT PRIMARY KEY, data TEXT, saved_at INTEGER, saved_by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
+  // R3-3 수수료 청구서 + MGM (시안 r3-claim 2026-11-13): 완료 바로 전 상태(done_from, 구분) · 청구 줄(호실 · 추가 호실) · 청구서 잠금 · 담당자별 기본 수수료
+  try { await db.prepare('ALTER TABLE unit_conv ADD COLUMN done_from TEXT').run(); } catch (e) { /* 이미 있음 */ }
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS claims (id TEXT PRIMARY KEY, unit_id TEXT NOT NULL, extra INTEGER DEFAULT 0, reason TEXT, date TEXT, fee INTEGER, tax TEXT, memo TEXT, excluded INTEGER DEFAULT 0, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS claim_locks (date TEXT PRIMARY KEY, locked INTEGER, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS claim_staff (name TEXT PRIMARY KEY, fee INTEGER, tax TEXT, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   // R2 상담카드 2종 (시안 r2-consult-card 2026-11-13): 카드 한 장 + 상담할 때마다 기록 한 줄. 지우기는 숨김(deleted_at · 사유)
   try { await db.prepare('CREATE TABLE IF NOT EXISTS consults (id TEXT PRIMARY KEY, kind TEXT NOT NULL, unit_id TEXT, name TEXT, phone TEXT, progress TEXT, mgr TEXT, writer TEXT, data TEXT, lead_id TEXT, created_at INTEGER, at INTEGER, by TEXT, deleted_at INTEGER, del_by TEXT, del_reason TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS consult_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, consult_id TEXT NOT NULL, at INTEGER, by TEXT, date TEXT, channel TEXT, prob TEXT, memo TEXT, docs TEXT, next_date TEXT, progress TEXT)').run(); } catch (e) { /* 이미 있음 */ }
