@@ -276,6 +276,7 @@ async function route() {
   if (h.get('id')) return openCard(h.get('id'));
   if (h.get('unit')) { const r = await api('/api/staff/consults?unit=' + encodeURIComponent(h.get('unit'))); if (r.j.id) { location.replace('#id=' + r.j.id); return; } return newCard('tenant', h.get('unit')); }
   if (h.get('new')) return newCard(h.get('new') === 'new' ? 'new' : 'tenant');
+  if (h.get('list')) { kind = h.get('list') === 'new' ? 'new' : 'tenant'; return loadList(false); }   // KPI 보드에서 (#list=new)
   loadList(list && list.del);
 }
 window.addEventListener('hashchange', route);

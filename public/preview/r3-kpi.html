@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>시안 · KPI 보드</title>
+<!-- 시안 r3-kpi (2026-11-13) — R3-1 KPI 보드 + 미상담 세대. 기존 대라수 사이트 대시보드 숫자 카드 · 배치도 · 미상담 세대를 참고. 가짜 예시 자료 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--link:#0066cc;--on:#c8381e;--card:#fff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  .pick{position:sticky;top:0;z-index:9;background:#1d1d1f;color:#fff;display:flex;gap:8px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+  .pick b{font-weight:800}.pick span{color:#a1a1a6;font-size:13px}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 64px}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  h1{font-size:22px;font-weight:800;margin:0}
+  .head p{margin:4px 0 0;color:var(--sub);font-size:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  h2{font-size:15px;font-weight:800;margin:0 0 10px}
+  /* 큰 숫자 */
+  .hero{display:grid;grid-template-columns:1.4fr repeat(5,1fr);gap:10px;margin-bottom:12px}
+  .k{padding:14px 16px;position:relative}
+  .k small{display:block;font-size:12px;font-weight:700;color:var(--sub)}
+  .k b{display:block;font-size:28px;font-weight:800;line-height:1.15;margin-top:4px}
+  .k em{font-style:normal;font-size:12px;color:var(--sub);font-weight:600}
+  .k .today{position:absolute;right:12px;top:12px;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:#fdecea;color:var(--on)}
+  .k.main{background:#1d1d1f;color:#fff;border-color:#1d1d1f}.k.main small,.k.main em{color:#a1a1a6}
+  .k.main b{font-size:34px}
+  .prog{height:8px;border-radius:99px;background:#3a3a3c;margin-top:10px;overflow:hidden;display:flex}
+  .prog i{display:block;height:100%}
+  .row2{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
+  .row2 .k b{font-size:22px}
+  /* 상태 막대 */
+  .dist{padding:16px;margin-bottom:16px}
+  .bar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin-bottom:10px}
+  .bar i{display:block;height:100%}
+  .lg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:#3a3a3c}
+  .lg span i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .lg b{margin-left:3px}
+  .cols{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;align-items:start}
+  .sec{padding:16px;margin-bottom:14px}
+  /* 배치도 */
+  .dongs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .dong small{display:block;font-size:12px;font-weight:800;margin-bottom:4px}
+  .g{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+  .g i{display:block;height:9px;border-radius:2px;background:#ececf0}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  th{font-size:11.5px;color:var(--sub);font-weight:700}
+  td.n,th.n{text-align:right}
+  .seg{display:flex;gap:4px}
+  .seg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+  .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px}
+  .note{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.5}
+  @media (max-width:980px){.hero{grid-template-columns:repeat(3,1fr)}.k.main{grid-column:1/-1}.row2{grid-template-columns:repeat(3,1fr)}.cols{grid-template-columns:1fr}}
+  @media (max-width:560px){.hero,.row2{grid-template-columns:repeat(2,1fr)}.dongs{grid-template-columns:repeat(2,1fr)}h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="pick"><b>시안 · KPI 보드</b><span>가짜 예시 자료 · 직원 대시보드 'KPI' 탭으로 들어가는 화면</span></div>
+<div class="wrap">
+  <div class="head"><div><h1>분양전환 KPI</h1><p>2026-11-13 (금) 기준 · 숫자는 전환상태 · 상담카드 · 상담 기록에서 자동으로 셉니다</p></div>
+    <div class="seg" id="mgr"></div></div>
+
+  <div class="hero" id="hero"></div>
+  <div class="row2" id="row2"></div>
+
+  <div class="card dist"><h2>300세대 전환 상태</h2><div class="bar" id="bar"></div><div class="lg" id="lg"></div></div>
+
+  <div class="cols"><div>
+    <div class="card sec">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:0">미상담 세대 <span id="un-n" style="color:var(--on)"></span></h2>
+        <div class="seg" id="days"></div></div>
+      <p class="note" style="margin:4px 0 10px">계약완료 · 신규입주 · 전세연장을 뺀 세대 중, 정한 기간 동안 상담 기록이 없는 세대 — 오래된 순. 줄을 누르면 그 세대 상담카드로</p>
+      <div style="overflow-x:auto"><table><thead><tr><th>동·호</th><th>타입</th><th>전환 상태</th><th>마지막 상담</th><th class="n">지난 날</th><th>담당</th></tr></thead><tbody id="un"></tbody></table></div>
+    </div>
+  </div><div>
+    <div class="card sec"><h2>상태 배치도</h2><div class="dongs" id="map"></div><p class="note">색은 위 '전환 상태' 막대와 같음 · 전환상태 화면에서 크게 보고 고칠 수 있습니다</p></div>
+    <div class="card sec"><h2>담당자별</h2><div style="overflow-x:auto"><table><thead><tr><th>담당</th><th class="n">카드</th><th class="n">이번 달 상담</th><th class="n">오늘</th><th class="n">계약완료</th><th class="n">미상담</th></tr></thead><tbody id="by"></tbody></table></div></div>
+    <div class="card sec"><h2>오늘 · 내일 예약방문</h2><table><tbody id="book"></tbody></table></div>
+  </div></div>
+</div>
+
+<script>
+// 색 · 묶음 (기존 사이트 STC 색)
+const ST = [['계약완료', '#1d4ed8'], ['신규입주', '#0f766e'], ['계약중', '#047857'], ['가계약', '#65a30d'], ['전세연장', '#a16207'], ['상담중', '#f59e0b'], ['호실변경', '#a855f7'], ['장기부재', '#dc2626'], ['퇴거확정', '#e11d48'], ['퇴거확정(매물동의)', '#7e22ce'], ['공실', '#0891b2'], ['미정', '#d2d2d7']];
+const C = Object.fromEntries(ST);
+let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+const W = [['계약완료', .36], ['신규입주', .04], ['계약중', .03], ['가계약', .03], ['전세연장', .1], ['상담중', .2], ['호실변경', .01], ['장기부재', .06], ['퇴거확정', .05], ['퇴거확정(매물동의)', .03], ['공실', .03], ['미정', .06]];
+const pickSt = () => { let r = rnd(), a = 0; for (const [s, w] of W) { a += w; if (r < a) return s; } return '미정'; };
+const MGR = ['홍길동', '김철수', '이영희'];
+const U = [];
+[[101, ['80B', '80B', '80A']], [102, ['80A', '80B', '80B']], [103, ['59C', '59B', '59A']], [104, ['59A', '59B', '59C']]].forEach(([d, t]) => { for (let f = 4; f <= 28; f++) for (let l = 1; l <= 3; l++) U.push({ id: d + '-' + (f * 100 + l), d, f, l, type: t[l - 1], st: pickSt(), mgr: MGR[Math.floor(rnd() * 3)], last: Math.floor(rnd() * 90) }); });
+const n = s => U.filter(u => u.st === s).length;
+let days = 30, mgr = '';
+
+function draw() {
+  const V = mgr ? U.filter(u => u.mgr === mgr) : U, nn = s => V.filter(u => u.st === s).length;
+  const done = nn('계약완료') + nn('신규입주'), tot = V.length;
+  const tile = (l, v, e, cls = '', today = '') => `<div class="card k ${cls}">${today ? `<span class="today">오늘 +${today}</span>` : ''}<small>${l}</small><b>${v}</b>${e ? `<em>${e}</em>` : ''}</div>`;
+  document.getElementById('hero').innerHTML =
+    `<div class="card k main"><small>분양 완료 (전환 계약완료 + 신규입주)</small><b>${done} <span style="font-size:18px;color:#a1a1a6">/ ${tot}</span></b><em>${(done / tot * 100).toFixed(1)}% · 남은 ${tot - done}세대</em><div class="prog"><i style="width:${nn('계약완료') / tot * 100}%;background:#3b82f6"></i><i style="width:${nn('신규입주') / tot * 100}%;background:#14b8a6"></i></div></div>` +
+    tile('계약 진행 (가계약 · 계약중)', nn('가계약') + nn('계약중'), '가 ' + nn('가계약') + ' · 계 ' + nn('계약중'), '', 2) +
+    tile('상담 진행', nn('상담중') + nn('호실변경') + nn('장기부재'), '상담중 ' + nn('상담중') + ' · 장기부재 ' + nn('장기부재')) +
+    tile('전세연장', nn('전세연장'), (nn('전세연장') / tot * 100).toFixed(1) + '%') +
+    tile('퇴거 · 공실', nn('퇴거확정') + nn('퇴거확정(매물동의)') + nn('공실'), '공실 ' + nn('공실') + ' · 매물동의 ' + nn('퇴거확정(매물동의)'), '', 1) +
+    tile('상태 미정', nn('미정'), '전환상태 화면에서 입력');
+  document.getElementById('row2').innerHTML =
+    tile('방문상담', 4, '누계 186') + tile('유선 · 문자 상담', 11, '누계 742') + tile('오늘 예약방문', 3, '내일 2') +
+    tile('신규고객 카드', 27, '상담중 15 · 종료 6') + tile('관심등록 대기', 2, '손님 화면에서 들어옴') + tile('손님 화면 공개', 5, '공실 3 · 매물동의 2');
+  const stTot = ST.map(([s]) => [s, nn(s)]).filter(([, v]) => v);
+  document.getElementById('bar').innerHTML = stTot.map(([s, v]) => `<i title="${s} ${v}" style="width:${v / tot * 100}%;background:${C[s]}"></i>`).join('');
+  document.getElementById('lg').innerHTML = stTot.map(([s, v]) => `<span><i style="background:${C[s]}"></i>${s}<b>${v}</b></span>`).join('');
+  document.getElementById('map').innerHTML = [101, 102, 103, 104].map(d => { let h = `<div class="dong"><small>${d}동</small><div class="g">`; for (let f = 28; f >= 4; f--) for (let l = 1; l <= 3; l++) { const u = U.find(x => x.d === d && x.f === f && x.l === l); h += `<i title="${u.id} · ${u.st}" style="background:${C[u.st]};${mgr && u.mgr !== mgr ? 'opacity:.15' : ''}"></i>`; } return h + '</div></div>'; }).join('');
+  const un = V.filter(u => !['계약완료', '신규입주', '전세연장'].includes(u.st) && u.last >= days).sort((a, b) => b.last - a.last);
+  document.getElementById('un-n').textContent = un.length + '세대';
+  document.getElementById('un').innerHTML = un.slice(0, 12).map(u => `<tr><td><a href="#"><b>${u.d}동 ${u.f * 100 + u.l}호</b></a></td><td>${u.type}</td><td><span class="pill" style="background:${C[u.st]}22;color:${C[u.st]}">${u.st}</span></td><td>${u.last >= 80 ? '기록 없음' : '2026-' + String(10 - Math.floor(u.last / 30)).padStart(2, '0') + '-' + String(28 - u.last % 27).padStart(2, '0')}</td><td class="n">${u.last >= 80 ? '—' : u.last + '일'}</td><td>${u.mgr}</td></tr>`).join('') + (un.length > 12 ? `<tr><td colspan="6" style="color:var(--sub)">… ${un.length - 12}세대 더 (CSV 받기)</td></tr>` : '');
+  document.getElementById('by').innerHTML = MGR.map(m => { const x = U.filter(u => u.mgr === m); return `<tr><td><b>${m}</b></td><td class="n">${x.length}</td><td class="n">${Math.floor(x.length * 1.3)}</td><td class="n">${Math.floor(rnd() * 6)}</td><td class="n">${x.filter(u => u.st === '계약완료' || u.st === '신규입주').length}</td><td class="n" style="color:var(--on)">${x.filter(u => !['계약완료', '신규입주', '전세연장'].includes(u.st) && u.last >= 30).length}</td></tr>`; }).join('');
+  document.getElementById('book').innerHTML = [['오늘 14:00', '102동 1502호 · 김임차', '홍길동'], ['오늘 16:30', '신규 · 박신규 (102동 고층 80B 관심)', '김철수'], ['오늘 18:00', '104동 2203호 · 최임차', '이영희'], ['내일 11:00', '신규 · 정고객', '홍길동'], ['내일 15:00', '101동 903호 · 한임차', '김철수']].map(r => `<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td style="color:var(--sub)">${r[2]}</td></tr>`).join('');
+  document.getElementById('days').innerHTML = [14, 30, 60].map(x => `<button class="${x === days ? 'on' : ''}" onclick="days=${x};draw()">${x}일</button>`).join('');
+  document.getElementById('mgr').innerHTML = ['', ...MGR].map(x => `<button class="${x === mgr ? 'on' : ''}" onclick="mgr='${x}';draw()">${x || '전체'}</button>`).join('');
+}
+draw();
+</script>
+</body>
+</html>

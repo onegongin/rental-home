@@ -8,6 +8,7 @@ import { staffComments } from './comments.js';
 import { staffUnits } from './units.js';
 import { staffConv } from './conv.js';
 import { staffConsult } from './consult.js';
+import { staffKpi } from './kpi.js';
 import { repo } from '../repo/index.js';
 import { staffListings } from './listings.js';
 import { staffAds } from './ads.js';
@@ -33,6 +34,7 @@ export async function staffApi(req, env, url, u) {
   if (p.startsWith('/api/staff/units/') || p.startsWith('/api/staff/tenancies')) return staffUnits(req, env, url, u);
   if (p === '/api/staff/conv' || p.startsWith('/api/staff/conv/')) return staffConv(req, env, url, u);   // R2 세대 전환 상태 · 공개 세대
   if (p === '/api/staff/consults' || p.startsWith('/api/staff/consults/')) return staffConsult(req, env, url, u);   // R2 상담카드 2종
+  if (p === '/api/staff/kpi') return staffKpi(req, env, url, u);   // R3-1 KPI 보드
   if (p === '/api/staff/ads' || /^\/api\/staff\/listings\/[0-9A-Z]{26}\/ads$/.test(p)) return staffAds(req, env, url, u);   // 광고 초안 · 게시기록 · 매칭 고객 (P6)
   if (p === '/api/staff/listings' || p.startsWith('/api/staff/listings/')) return staffListings(req, env, url, u);
   if (p === '/api/staff/broker' || p.startsWith('/api/staff/broker/')) return staffBroker(req, env, url, u);   // 공개 매물 중개요청 알림 · 첫 확인
