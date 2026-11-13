@@ -7,8 +7,8 @@
       "Edit(../site_op/**)",
       "Write(../site_op/**)",
       "NotebookEdit(../site_op/**)",
-      "Edit(./DAELASOO/참고만_CD_DaelaSoo1-main/**)",
-      "Write(./DAELASOO/참고만_CD_DaelaSoo1-main/**)"
+      "Edit(./소스/DAELASOO/참고만_CD_DaelaSoo1-main/**)",
+      "Write(./소스/DAELASOO/참고만_CD_DaelaSoo1-main/**)"
     ]
   }
 }

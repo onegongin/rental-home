@@ -6,7 +6,7 @@
 
 ## 사이트 개요 (2026-11-13 대표 결정)
 - 공개용 + 직원용 겸용. 공개는 **단지소개 · 관심등록이 중심**. 공실 · 분양 가능 세대는 **관리자 모드에서 골라** 공개.
-- 기본틀 = site_Ipark 코드 복사 (보안 · 권한 · 가림 · 알림 · 백업 그대로). 기존 대라수 사이트 기능은 **B안**: `DAELASOO/참고만_CD_DaelaSoo1-main/`(https://cd-daelasoo1.sangmooone.workers.dev 원본, **수정 금지 · git 에 안 올림**)을 보고 다시 만든다.
+- 기본틀 = site_Ipark 코드 복사 (보안 · 권한 · 가림 · 알림 · 백업 그대로). 기존 대라수 사이트 기능은 **B안**: `소스/DAELASOO/참고만_CD_DaelaSoo1-main/`(https://cd-daelasoo1.sangmooone.workers.dev 원본, **수정 금지 · git 에 안 올림**)을 보고 다시 만든다.
 - 주소: 첫 화면 `https://rental-home.onegongin.workers.dev/` · 단지 `/daelasoo/` · 직원 `/daelasoo/staff/` · 검색용 `/daelasoo/plan` · `/daelasoo/sitemap.xml` 등 (서버가 SITE_URL 경로 아래에서만 만듦, `src/worker.js` subPath · withBase)
 - GitHub 저장소 · Cloudflare 이름 **rental-home** · Cloudflare 계정 **onegonginn@gmail.com** (하위주소 onegongin) · DB rental-home-db · R2 rental-home-backup · rental-home-media
 
@@ -14,7 +14,7 @@
 | 단계 | 상태 | 커밋 |
 |---|---|---|
 | R0 폴더 준비 | **완료 (2026-11-13)** — 아이파크 코드만 복사(사진 · 소스 · 설계서 · DB · 비밀값 · git 기록 안 가져옴) · 화면 전체를 `public/daelasoo/` 로 · 첫 화면 `public/index.html`(임시 카드 1개) · wrangler.jsonc 새 이름(database_id 는 0000… — 배포 전 금지) · Turnstile 시험 키 · 새 사무실 코드 `.dev.vars` · 경로 시험 `tests/base-path.test.js` · `npm test` 94개 통과. ⚠ 아직 `public/daelasoo/data/site.json` · 화면 문구 · 검색 페이지 내용 · 직원 화면 팝업 링크(`'/?reg=1'` 등, dashboard 4590줄 · 2171줄)는 아이파크 것 → R1. GitHub 저장소 연결은 대표가 저장소를 만든 뒤 | 3833cff |
-| R1 공개 화면 | 다음 — 첫 화면 `public/index.html` = 단지 카드 방식 (시안 home-first A안 확정 2026-11-13, 단지가 늘면 카드만 추가 · 카드 사진 `daelasoo/assets/dls/hero.jpg` 는 R1 때 로고 새기기 · 가볍게). 확정(2026-11-13 대표): 타입 이름 **80A · 80B** (소스의 84A · 84B 파일 이름은 80A · 80B 로 읽음) · 사무소 **제니스원부동산**(아이파크와 같은 사무소). site.json 대라수로(300세대 · 101~104동 · 4~28층 · 80A/80B · 59A/59B/59C · 광폭테라스 101·104동 4층) · `DAELASOO/소스` 사진에 로고 새기기 · 단지소개 + 관심등록 중심 화면 · 시험 자료를 대라수 호실로 · 첫 화면 모양 | |
+| R1 공개 화면 | 다음 — 첫 화면 `public/index.html` = 단지 카드 방식 (시안 home-first A안 확정 2026-11-13, 단지가 늘면 카드만 추가 · 카드 사진 `daelasoo/assets/dls/hero.jpg` 는 R1 때 로고 새기기 · 가볍게). 확정(2026-11-13 대표): 타입 이름 **80A · 80B** (소스의 84A · 84B 파일 이름은 80A · 80B 로 읽음) · 사무소 **제니스원부동산**(아이파크와 같은 사무소). site.json 대라수로(300세대 · 101~104동 · 4~28층 · 80A/80B · 59A/59B/59C · 광폭테라스 101·104동 4층) · `소스/DAELASOO/소스` 사진에 로고 새기기(tools/watermark.py 의 SRC 경로도 이 폴더로) · 단지소개 + 관심등록 중심 화면 · 시험 자료를 대라수 호실로 · 첫 화면 모양 | |
 | R2 직원 기본 | 세대DB 300호실 · 상담카드(분양전환 · 자금계획 · 계약 정보) · **공실 · 분양 가능 세대 공개 선택(관리자)** | |
 | R3 대라수 전용 기능 | 참고 사이트 기준: KPI 보드 · 일일업무보고 · 요청함 · 상담참고/지시 · 사용 불편사항 · MGM · 수수료 청구서(3.3% · 부가세 10%) · 전세연장 계산 · 미상담 세대 | |
 | R4 기존 자료 옮기기 | 기존 사이트 CSV · 구글시트 BACKUP → 엑셀 가져오기 (개인정보 — git 금지, `_자료/` 에 두기) | |
@@ -27,7 +27,7 @@
 ## 폴더
 - `public/index.html` rental-home 첫 화면 · `public/daelasoo/` 단지 화면 전체(index · staff · dashboard.dc.html · data · assets · maps)
 - `src/` 서버 · `tests/` 자동 시험 · `tools/` 자료 만드는 도구(경로는 public/daelasoo/ 기준)
-- `DAELASOO/소스/` 원본 자료(사진 · 평면 · 배치도). 열지 말고 파일명 · 크기만 다룸 · `DAELASOO/참고만_CD_DaelaSoo1-main/` 기존 사이트(참고만)
+- `소스/` 단지별 원본 자료 (2026-11-13 대표가 정리) — `소스/DAELASOO/소스/` 대라수 사진 · 평면 · 배치도(열지 말고 파일명 · 크기만 다룸) · `소스/DAELASOO/참고만_CD_DaelaSoo1-main/` 기존 사이트(참고만, git 에 안 올림). 다른 단지가 생기면 `소스/<단지>/` 로
 - `_설계서/` 다른단지_만들기 · Supabase_전환_안내 · 스타일 가이드
 
 ## 사용자
