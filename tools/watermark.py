@@ -12,10 +12,11 @@ SRC, OUT = ROOT / '소스' / 'DAELASOO' / '소스', ROOT / 'public' / 'daelasoo'
 LOGO = ROOT / '소스' / '사무소로고.png'
 OPACITY, MAX_W, MAX_H, QUALITY = 0.03, 1600, 6000, 82
 
-# (원본 경로, 저장 경로, 로고 새김 여부[, 'R' = 오른쪽으로 90도 돌림 · 'G' = 제미나이 별 지움 · 'H' = 큰 화면용 폭 2400 · 'U' = 작은 원본을 커뮤니티 사진 크기(1600x1195)로 키움 · 'X' = 작은 원본을 메인 사진 폭 2400으로 키움 · 'S' = 작은 사진(폭 240)도 t/ 폴더에 · (x0, y0, x1, y1) = 그 부분만 잘라 씀]) — 로고·안내문 그림처럼 새기면 안 되는 것은 False
+# (원본 경로, 저장 경로, 로고 새김 여부[, 'R' = 오른쪽으로 90도 돌림 · 'G' = 제미나이 별 지움 · 'H' = 큰 화면용 폭 2400 · 'U' = 작은 원본을 커뮤니티 사진 크기(1600x1195)로 키움 · 'X' = 작은 원본을 메인 사진 폭 2400으로 키움 · 'S' = 작은 사진(폭 240)도 t/ 폴더에 · 'O' = 링크 미리보기 크기(1200x630)로 · (x0, y0, x1, y1) = 그 부분만 잘라 씀]) — 로고·안내문 그림처럼 새기면 안 되는 것은 False
 FILES = [
     ('대라수1차.jpg', 'hero.jpg', True),                 # 첫 화면 카드 · 단지 소개 메인
     ('투시가로.png', 'hero_wide.jpg', True, 'X'),         # 단지 화면 맨 위 큰 사진 (가로 투시도, 2026-11-14 대표 요청 · 시안 r7-hero)
+    ('투시가로.png', 'og.jpg', True, (116, 0, 880, 401), 'O'),  # 링크 미리보기(카톡 · 검색) 그림 1200x630 — 가운데 건물 부분만 (시안 r8-og)
     ('(1차)배치도.jpg', 'siteplan.jpg', True),            # 단지배치도
     ('(1차)동호배치도.jpg', 'dongho.jpg', True),          # 동 · 호 배치도
     ('층개요.jpg', 'floors.jpg', True),                   # 층 개요
@@ -169,6 +170,9 @@ def main():
             if 'X' in opt:   # 메인(첫 화면) 사진: 첫 장(신세계몰 2400)과 같은 폭으로 키우고 살짝 선명하게
                 from PIL import ImageFilter
                 img = img.resize((MAX_W * 3 // 2, round(MAX_W * 3 // 2 * img.height / img.width)), Image.LANCZOS).filter(ImageFilter.UnsharpMask(2, 50, 2))
+            if 'O' in opt:   # 링크 미리보기: 카톡 · 페이스북 권장 크기로 키우고 살짝 선명하게
+                from PIL import ImageFilter
+                img = img.resize((1200, 630), Image.LANCZOS).filter(ImageFilter.UnsharpMask(2, 50, 2))
             if 'G' in opt:
                 img = ungemini(img)
             img.thumbnail((MAX_W * 3 // 2 if 'H' in opt or 'X' in opt else MAX_W, MAX_H), Image.LANCZOS)

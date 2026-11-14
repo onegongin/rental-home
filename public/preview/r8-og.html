@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 · 첫 화면 카드 · 링크 미리보기</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 16px 48px; }
+  h1 { font-size: 24px; margin: 0 0 6px; }
+  h2 { font-size: 18px; margin: 32px 0 4px; }
+  .lead { color: var(--sub); margin: 0 0 14px; font-size: 14px; line-height: 1.6; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .lab { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--sub); }
+  .lab.new { color: var(--tab); }
+  /* 첫 화면 카드 (public/index.html 과 같은 모양) */
+  .cx { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .cx .ph { display: block; aspect-ratio: 16/9; background: #ddd center/cover; }
+  .cx .bd { padding: 18px 20px 20px; }
+  .cx .tag { display: inline-block; font-size: 12px; font-weight: 700; color: var(--tab); background: #fdecea; border-radius: 999px; padding: 3px 10px; margin-bottom: 8px; }
+  .cx b { display: block; font-size: 20px; font-weight: 800; }
+  .cx .meta { color: var(--sub); margin-top: 6px; font-size: 14px; }
+  .cx .go { display: flex; gap: 8px; margin-top: 16px; }
+  .btn { flex: 1; text-align: center; border-radius: 10px; padding: 11px 0; font-weight: 700; font-size: 14px; }
+  .btn.p { background: var(--tab); color: #fff; } .btn.s { background: #f0f0f3; }
+  /* 카톡 링크 미리보기 흉내 */
+  .chat { background: #b2c7d9; border-radius: 14px; padding: 18px; }
+  .msg { background: #fff; border-radius: 4px 14px 14px 14px; overflow: hidden; max-width: 300px; }
+  .msg .u { padding: 8px 12px; font-size: 13px; color: var(--link); background: #fef01b; }
+  .msg .og { display: block; width: 100%; aspect-ratio: 1.91/1; object-fit: cover; }
+  .msg .t { padding: 10px 12px 12px; }
+  .msg .t b { display: block; font-size: 14px; }
+  .msg .t span { display: block; font-size: 12px; color: var(--sub); margin-top: 3px; }
+  .msg .t i { display: block; font-style: normal; font-size: 11px; color: #999; margin-top: 6px; }
+  .memo { margin-top: 32px; font-size: 13px; line-height: 1.7; }
+  .memo .card { padding: 14px 18px; overflow-wrap: anywhere; }
+  @media (max-width: 760px) { .row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>시안 r8-og · 새 투시도로 바꾸기</h1>
+  <p class="lead">왼쪽 = 지금, 오른쪽 = 바꾼 뒤.</p>
+
+  <h2>① 첫 화면 단지 카드</h2>
+  <p class="lead">rental-home 첫 화면(https://rental-home.onegongin.workers.dev/)의 대라수 카드 사진.</p>
+  <div class="row">
+    <div><div class="lab">지금</div><div class="cx"><span class="ph" style="background-image:url(../daelasoo/assets/dls/hero.jpg)"></span>
+      <div class="bd"><span class="tag">분양전환 진행 중</span><b>첨단대라수1차</b><div class="meta">광주 첨단 · 101~104동 · 300세대 · 80A · 80B · 59A · 59B · 59C</div><div class="go"><span class="btn s">단지 소개</span><span class="btn p">관심등록</span></div></div></div></div>
+    <div><div class="lab new">바꾼 뒤 · 투시가로</div><div class="cx"><span class="ph" style="background-image:url(../daelasoo/assets/dls/hero_wide.jpg)"></span>
+      <div class="bd"><span class="tag">분양전환 진행 중</span><b>첨단대라수1차</b><div class="meta">광주 첨단 · 101~104동 · 300세대 · 80A · 80B · 59A · 59B · 59C</div><div class="go"><span class="btn s">단지 소개</span><span class="btn p">관심등록</span></div></div></div></div>
+  </div>
+
+  <h2>② 링크 미리보기 그림 (카톡 · 문자 · 검색)</h2>
+  <p class="lead">사이트 주소를 카톡으로 보내면 뜨는 그림. 첫 화면 · 단지 화면 · 검색용 페이지(평면 · 세대 안내 등) 모두 같은 그림을 씀.</p>
+  <div class="row">
+    <div><div class="lab">지금</div><div class="chat"><div class="msg"><div class="u">rental-home.onegongin.workers.dev/daelasoo/</div>
+      <img class="og" src="../daelasoo/assets/dls/hero.jpg" alt=""><div class="t"><b>첨단대라수1차 분양전환 · 단지 안내</b><span>광주 첨단 민간임대 · 분양전환 · 101~104동 300세대</span><i>rental-home.onegongin.workers.dev</i></div></div></div></div>
+    <div><div class="lab new">바꾼 뒤 · 투시가로 (1200×630 전용 그림)</div><div class="chat"><div class="msg"><div class="u">rental-home.onegongin.workers.dev/daelasoo/</div>
+      <img class="og" src="../daelasoo/assets/dls/og.jpg" alt=""><div class="t"><b>첨단대라수1차 분양전환 · 단지 안내</b><span>광주 첨단 민간임대 · 분양전환 · 101~104동 300세대</span><i>rental-home.onegongin.workers.dev</i></div></div></div></div>
+  </div>
+
+  <div class="memo"><div class="card">
+    <b>바뀌는 것</b><br>
+    ① 첫 화면 카드: 지금 사진 → 가로 투시도 (16:9 칸이라 양옆 하늘만 조금 잘리고 네 동이 다 보임)<br>
+    ② 링크 미리보기: 카톡 · 페이스북 권장 크기(1200×630)로 <b>미리보기 전용 그림 og.jpg</b> 를 새로 만듦 (가로 투시도 가운데 건물 부분, 사무소 로고 새김)<br>
+    <span style="color:var(--sub)">카톡은 한 번 본 미리보기를 한동안 기억해서, 배포 뒤에도 예전 그림이 보이면 카카오 '공유 디버거'에서 캐시를 지워야 바뀝니다. 실제 미리보기는 배포(R5) 뒤에 확인 가능 — 위는 모양 흉내.</span>
+  </div></div>
+</div>
+</body>
+</html>
