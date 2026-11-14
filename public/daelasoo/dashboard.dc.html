@@ -43,6 +43,15 @@ html:root .hgb-st i{color:#fff!important;font-size:12px!important;font-weight:90
 .hga-p{margin:0 0 8px;font-size:13.5px;color:#3a3a3c;line-height:1.6}.hga .k{font-weight:800;color:#1d1d1f}.hga-pts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.hga-pt{background:#f6f6fe;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#3a3a3c;line-height:1.55}.hga-pt>b{display:block;font-size:13.5px;margin-bottom:3px;color:#1d1d1f;font-weight:800}
 .hga-ex{margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;background:#fdecea;border-radius:10px;padding:10px 14px;font-size:13.5px;color:#3a3a3c}.hga-ex>b{color:#c8381e!important;font-weight:900;white-space:nowrap}.hga-ex .k{font-weight:800}.hga-ex small{font-size:11.5px;color:#6e6e73;margin-left:auto}
 @media (max-width:1100px){.hga-pts{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:640px){.hga{grid-template-columns:minmax(0,1fr)}.hga-lb{border-right:0;padding-right:0}.hga-pts{grid-template-columns:minmax(0,1fr)}}
+/* 약정 일정 가로 줄 (시안 r19-hedge-schedule) · 자주 묻는 질문 (시안 r18-hedge-faq) — 글이 span 으로 감싸져 나오므로 바로 아래 칸에만 규칙 */
+.hgs{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px 22px;align-items:center;background:#fff;border:1px solid #e6e3fb;border-radius:14px;padding:16px 20px}.hgs-lb{display:flex;flex-direction:column;gap:2px;padding-right:20px;border-right:1px solid #e6e3fb}.hgs-lb small{font-size:12px;font-weight:800;color:#6b5ce7}.hgs-lb b{font-size:17px;font-weight:900;white-space:nowrap}
+.hgs-line{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.hgs-line::before{content:"";position:absolute;left:16px;right:16px;top:15px;height:2px;background:repeating-linear-gradient(90deg,#c9c2f5 0 8px,transparent 8px 14px)}
+.hgs-st{position:relative;display:flex;flex-direction:column;gap:4px}.hgs-st>i{font-style:normal;width:32px;height:32px;border-radius:50%;background:#6b5ce7;color:#fff;display:grid;place-items:center;font-size:14px;font-weight:900;box-shadow:0 0 0 5px #fff}.hgs-st.now>i{background:#c8381e}
+.hgs-st>small{margin-top:6px;font-size:12.5px;font-weight:700;color:#6e6e73}.hgs-st>b{font-size:clamp(17px,1.4vw,21px);font-weight:900;letter-spacing:-.01em;color:#1d1d1f}.hgs-st.now>b{color:#c8381e}.hgs-st>span{font-size:12px;color:#6e6e73}.hgs-note{grid-column:1/-1;font-size:11.5px;color:#8e8e93;margin:0}
+@media (max-width:640px){.hgs{grid-template-columns:minmax(0,1fr)}.hgs-lb{border-right:0;padding-right:0}.hgs-line{grid-template-columns:minmax(0,1fr);gap:14px}.hgs-line::before{left:15px;right:auto;top:16px;bottom:16px;width:2px;height:auto;background:repeating-linear-gradient(180deg,#c9c2f5 0 8px,transparent 8px 14px)}.hgs-st{display:grid;grid-template-columns:32px minmax(0,1fr);column-gap:12px}.hgs-st>i{grid-row:1/4}.hgs-st>small{margin-top:0}}
+.hgf{grid-column:1/-1;background:#fff;border:1px solid #e6e3fb;border-radius:14px;padding:6px 18px}.hgf-h{display:flex;align-items:baseline;gap:10px;padding:10px 0 6px}.hgf-h>b{font-size:15px;font-weight:900}.hgf-h>span{font-size:12px;color:#6e6e73}
+.hgf details{border-top:1px solid #efedfb}.hgf summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 0;font-size:14.5px;font-weight:700}.hgf summary::-webkit-details-marker{display:none}.hgf summary>i{font-style:normal;flex:none;width:22px;height:22px;border-radius:50%;background:#6b5ce7;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}
+.hgf summary::after{content:"+";margin-left:auto;font-size:20px;color:#6b5ce7;font-weight:400}.hgf details[open] summary::after{content:"−"}.hgf-a{display:flex;gap:10px;padding:0 0 14px;font-size:13.5px;color:#3a3a3c;line-height:1.7}.hgf-a .k{font-weight:800;color:#1d1d1f}.hgf-a>i{font-style:normal;flex:none;width:22px;height:22px;border-radius:50%;background:#fdecea;color:#c8381e;display:grid;place-items:center;font-size:12px;font-weight:900}
 @media (max-width:1280px){.hgb{grid-template-columns:minmax(0,1fr) 180px minmax(0,1fr)}.hgb-qr{display:none}}
 @media (max-width:900px){.hgb{grid-template-columns:minmax(0,1fr)}.hgb-bear{max-width:220px;margin:0 auto}}
 @media (max-width:560px){.hgb-steps,.hgb-why{grid-template-columns:minmax(0,1fr)}}
@@ -2760,6 +2769,12 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <div class="hgb-why"><sc-for list="{{ si.hg.why }}" as="w"><div><b>{{ w.t }}</b>{{ w.s }}</div></sc-for></div>
     </div>
     <a class="hgb-qr" href="{{ si.hg.link }}" target="_blank" rel="noopener" aria-label="헷지했지 앱 QR"><img src="{{ si.hg.qr }}" alt="헷지했지 보호약정 — QR 찍고 헷지했지 앱으로" loading="lazy"></a>
+    <!-- 약정 일정 가로 줄 (site.json content.hedge.schedule, 시안 r19-hedge-schedule 확정 2026-11-14 — 헷지했지 단지 페이지 캡처 날짜) · 휴대폰은 세로 -->
+    <sc-if value="{{ si.hg.hasSch }}"><div class="hgs">
+      <div class="hgs-lb"><small>{{ si.hg.schSmall }}</small><b>{{ si.hg.schTitle }}</b></div>
+      <div class="hgs-line"><sc-for list="{{ si.hg.sch }}" as="x"><div class="{{ x.cls }}"><i>{{ x.n }}</i><small>{{ x.k }}</small><b>{{ x.v }}</b><span>{{ x.s }}</span></div></sc-for></div>
+      <p class="hgs-note">{{ si.hg.schNote }}</p>
+    </div></sc-if>
     <!-- 헷지했지, 쉽게 알기 (site.json content.hedge.about, 시안 r17-hedge-about 확정 2026-11-14) — 글 조각 [글, 1=굵게] -->
     <sc-if value="{{ si.hg.hasAbout }}"><div class="hga">
       <div class="hga-lb"><small>{{ si.hg.aSmall }}</small><b>{{ si.hg.aTitle }}</b></div>
@@ -2768,6 +2783,11 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <div class="hga-pts"><sc-for list="{{ si.hg.aQs }}" as="q"><div class="hga-pt"><b>❓ {{ q.t }}</b><sc-for list="{{ q.segs }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></div></sc-for></div>
         <div class="hga-ex"><b>{{ si.hg.exT }}</b><span><sc-for list="{{ si.hg.exSegs }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></span><small>{{ si.hg.exNote }}</small></div>
       </div>
+    </div></sc-if>
+    <!-- 헷지했지 자주 묻는 질문 (site.json content.hedge.faq, 시안 r18-hedge-faq 확정 2026-11-14) — 누르면 펼침, 첫 질문만 열림 -->
+    <sc-if value="{{ si.hg.hasFaq }}"><div class="hgf">
+      <div class="hgf-h"><b>{{ si.hg.faqTitle }}</b><span>질문을 누르면 답이 열립니다</span></div>
+      <sc-for list="{{ si.hg.faq }}" as="f"><details open="{{ f.open }}"><summary><i>Q</i>{{ f.q }}</summary><div class="hgf-a"><i>A</i><div><sc-for list="{{ f.segs }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></div></div></details></sc-for>
     </div></sc-if>
     <div class="hgb-fine">{{ si.hg.fine }}</div>
   </section></div>
@@ -5169,7 +5189,10 @@ class Component extends DCLogic {
       ...(H => ({ hasHedge: !!H.hl1, hg: { tag1: H.tag1 || '', tag2: H.tag2 || '', hl1: H.hl1 || '', hl2: H.hl2 || '', sub0: H.sub0 || '', subU: H.subU || '', desc1: H.desc1 || '', desc2: H.desc2 || '', link: H.link || '#',
         bear: P(H.bear), qr: P(H.qr), giftT: H.giftT || '', giftS: H.giftS || '', fine: H.fine || '', reg: () => this.setState({ gRegOpen: true, gReg: Object.assign(this.gBlank('client', ''), { interest: '헷지했지 매입보장 혜택 상담' }) }),
         steps: (H.steps || []).map((s, i) => ({ n: String(i + 1), t: s[0], s: s[1] })), why: (H.why || []).map(w => ({ t: w[0], s: w[1] })),
-        ...((A, sg) => ({ hasAbout: !!A.title, aSmall: A.small || '', aTitle: A.title || '', aLead: sg(A.lead), aQs: (A.qs || []).map(q => ({ t: q[0], segs: sg(q[1]) })), exT: (A.ex || {}).title || '', exSegs: sg((A.ex || {}).segs), exNote: (A.ex || {}).note || '' }))(H.about || {}, L => (L || []).map(x => ({ t: [].concat(x)[0], c: [].concat(x)[1] ? 'k' : '' }))) } }))(C.hedge || {}),
+        ...((A, sg) => ({ hasAbout: !!A.title, aSmall: A.small || '', aTitle: A.title || '', aLead: sg(A.lead), aQs: (A.qs || []).map(q => ({ t: q[0], segs: sg(q[1]) })), exT: (A.ex || {}).title || '', exSegs: sg((A.ex || {}).segs), exNote: (A.ex || {}).note || '',
+          hasSch: !!(H.schedule || {}).items, schSmall: (H.schedule || {}).small || '', schTitle: (H.schedule || {}).title || '', schNote: (H.schedule || {}).note || '',
+          sch: ((H.schedule || {}).items || []).map((x, i) => ({ n: String(i + 1), k: x[0], v: x[1], s: x[2] || '', cls: i === 0 ? 'hgs-st now' : 'hgs-st' })),
+          hasFaq: !!(H.faq || []).length, faqTitle: H.faqTitle || '자주 묻는 질문', faq: (H.faq || []).map((f, i) => ({ q: f[0], segs: sg(f[1]), open: i === 0 })) }))(H.about || {}, L => (L || []).map(x => ({ t: [].concat(x)[0], c: [].concat(x)[1] ? 'k' : '' }))) } }))(C.hedge || {}),
       sections: (C.sections || []).filter(s0 => !s0.hidden).map(s0 => { const BK = s0.blocks ? Object.keys(s0.blocks) : []; const bk = BK.length ? ((S.siBlk || {})[s0.id] || BK[0]) : null; const bv = bk ? s0.blocks[bk] : null; const s = Object.assign({}, s0, bv ? (typeof bv === 'string' ? { image: bv } : bv) : {});
         return { title: s0.title, blks: BK.map(k => ({ label: k, bg: k === bk ? '#1d1d1f' : '#fff', fg: k === bk ? '#fff' : '#1d1d1f', bd: k === bk ? '#1d1d1f' : '#d2d2d7', go: () => this.setState(ss => ({ siBlk: Object.assign({}, ss.siBlk, { [s0.id]: k }) })) })), map: s.map || '', hasMap: !!s.map, img: P(s.image), hasImg: !!s.image && !s.map, zoom: zoom(P(s.image)), list: (s.pills ? s.pills.map(k => (s.points || [])[k - 1]).filter(Boolean) : s.points || s.items || []).map((t, i) => ({ n: String(i + 1).padStart(2, '0'), text: txt(t), short: (s.pillsShort || {})[txt(t)] || txt(t) })),
           hasThumbs: !!(s.images || []).length, thumbs: (s.images || []).map((x, i) => ({ src: P(x), alt: s0.title + ' ' + (i + 1), zoom: zoom(P(x)) })), ...this.dhVals(s0.id === 'summary', P) }; }),
