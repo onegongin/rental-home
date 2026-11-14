@@ -1,9 +1,10 @@
 # 단지배치도에서 동 누르는 칸 + 동을 누르면 뜨는 '유니트 배치' 확대 그림을 만든다 (대라수1차, 2026-11-13)
-# - 원본: 소스/DAELASOO/소스/(1차)배치도.jpg → public/daelasoo/assets/dls/units/{동}.jpg (사무소 로고 새김)
+# - 원본: 소스/DAELASOO/소스/(1차)단지배치도.png (2026-11-14 교체) → public/daelasoo/assets/dls/units/{동}.jpg (사무소 로고 새김)
 # - site.json siteplan.dongs[동] = 배치도 위 누르는 칸 [왼쪽%, 위%, 폭%, 높이%]
 #   siteplan.units[동] = { ar, spots: [{ line, box(확대 그림 기준 %), plan, ar }] } — 라인을 누르면 그 타입 평면
 # - 위치는 배치도의 동 이름표 · 라인 번호 동그라미를 보고 잡음 (배치도 전체 기준 %). 배치도가 바뀌면 아래 숫자만 고침
 # 실행: 프로젝트 폴더에서  py tools/make_dongs.py
+# ⚠ site.json 을 통째로 다시 써서(indent 2) 다른 칸의 줄 모양까지 바뀜 — 실행 뒤 git diff 로 siteplan 값만 바뀌었는지 보고, 나머지는 되돌릴 것 (2026-11-14)
 import json, sys
 from pathlib import Path
 from PIL import Image
@@ -13,7 +14,7 @@ from watermark import SRC, OUT, LOGO, stamp, QUALITY
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / 'public' / 'daelasoo' / 'data' / 'site.json'
-PLAN = SRC / '(1차)배치도.jpg'
+PLAN = SRC / '(1차)단지배치도.png'   # 2026-11-14 새 그림 (동 · 라인 위치는 예전 (1차)배치도.jpg 와 같아 아래 숫자 그대로)
 
 # 동: (누르는 칸 [왼쪽, 위, 폭, 높이] %, {라인: 동그라미 가운데 (x, y) %})
 DONGS = {
