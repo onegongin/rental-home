@@ -23,6 +23,8 @@ html:root [data-m=setnav]>button:nth-child(1){order:1!important}html:root [data-
 html:root [data-sec=ntf]{grid-column:1 / -1!important;order:9}
 @media (max-width:560px){html:root [data-m=ntfrow]{grid-template-columns:70px minmax(0,1fr) auto!important}html:root [data-m=ntfrow]>span:nth-child(2){display:none}}
 @media (max-width:560px){html:root [data-m=xbgrid]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* 6대 메가 프리미엄 미니칩 (시안 r11-premium-3x2 확정 2026-11-14): PC 3칸 × 2줄 · 왼쪽 입지환경 높이에 맞춰 늘어남 / 휴대폰 2칸 × 3줄 */
+@media (max-width:560px){html:root [data-m=pmgrid]{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:none!important;flex:none!important}html:root [data-m=pmph]{flex:none!important;aspect-ratio:16/10;min-height:0!important}}
 /* 단지 개요: 왼쪽 단지배치도 · 오른쪽 동 · 호 배치도(같은 칸 나눔, 아래쪽 맞춤) + 동호개요 표 — 오른쪽은 왼쪽 그림 높이에 맞춤 (시안 preview/dongho-layout D) */
 .hwdh-go{position:relative;display:block;border:none;padding:0;background:none;cursor:pointer;max-width:100%}.hwdh-go img{display:block;height:100%;width:auto;max-width:100%;border-radius:6px}.hwdh-go>span{position:absolute;left:50%;top:6px;transform:translateX(-50%);background:rgba(29,29,31,.85);color:#fff;font-size:11px;font-weight:700;border-radius:9999px;padding:3px 9px;white-space:nowrap;opacity:0;transition:opacity .15s;pointer-events:none}.hwdh-go:hover>span,.hwdh-go:focus>span{opacity:1}.hwdh-go:hover img{outline:2px solid #0066cc;outline-offset:2px}@media (hover:none){.hwdh-go>span{opacity:1}}
 .hwdh{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:stretch}.hwdh-r{position:relative;min-width:0}.hwdh-in{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:8px;container-type:inline-size}
@@ -2657,20 +2659,20 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     <div style="min-width:0;background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
       <sc-if value="{{ si.hasBoard }}">
       <div style="display:flex;align-items:baseline;gap:6px 10px;flex-wrap:wrap"><span style="font-size:17px;font-weight:700">{{ si.bdTitle }}</span><span style="font-size:13px;color:#6e6e73">{{ si.bdSub }}</span><sc-if value="{{ si.bdHasTag }}"><span data-m="bdtag" style="margin-left:auto;font-size:14px;font-weight:800;letter-spacing:-.01em">{{ si.bdTag0 }}<span style="color:#c8381e">{{ si.bdTag1 }}</span>{{ si.bdTag2 }}</span></sc-if></div>
-      <!-- 6대 메가 프리미엄 미니칩 (시안 r10-premium A안 확정 2026-11-14) — PC 3칸 · 휴대폰 2칸 -->
+      <!-- 6대 메가 프리미엄 미니칩 (시안 r10-premium A안 · r11-premium-3x2 확정 2026-11-14) — PC 3칸 × 2줄, 두 줄이 남는 높이를 나눠 그림이 커짐(왼쪽 입지환경과 같은 높이) · 휴대폰 2칸 (위 @media pmgrid) -->
       <sc-if value="{{ si.bdHasPm }}">
       <div style="padding-top:12px;border-top:1px solid #ececf0">
-        <sc-if value="{{ si.pmTag }}"><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:#c8381e;border:1px solid #f1c9c1;background:#fff;border-radius:9999px;padding:3px 10px;letter-spacing:.4px">✦ {{ si.pmTag }}</span></sc-if>
-        <div style="margin:6px 0 4px;font-size:19px;font-weight:800;letter-spacing:-.01em">{{ si.pmTitle }}</div>
+        <sc-if value="{{ si.pmTag }}"><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:#c8381e;border:1px solid #f1c9c1;background:#fff;border-radius:9999px;padding:3px 10px;margin-bottom:6px;letter-spacing:.4px">✦ {{ si.pmTag }}</span></sc-if>
+        <div style="margin:0 0 4px;font-size:19px;font-weight:800;letter-spacing:-.01em">{{ si.pmTitle }}</div>
         <div style="font-size:13px;color:#3a3a3c;font-weight:600;line-height:1.5">{{ si.pmLead }}</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:10px">
+      <div data-m="pmgrid" style="flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:10px">
         <sc-for list="{{ si.pmItems }}" as="m">
-        <button type="button" onClick="{{ m.zoom }}" aria-label="{{ m.title }} 크게 보기" style="display:flex;flex-direction:column;text-align:left;min-width:0;background:#fff;border:1px solid #e5e5ea;border-radius:12px;padding:8px 8px 10px;cursor:zoom-in;font:inherit;color:inherit">
-          <div style="aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:#f5f5f7"><img loading="lazy" src="{{ m.src }}" alt="{{ m.alt }}" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block"></div>
-          <span style="font-size:10.5px;font-weight:800;color:#c8381e;margin:8px 0 2px;letter-spacing:.3px">{{ m.no }}</span>
-          <span style="font-size:14px;font-weight:800;line-height:1.3">{{ m.title }}</span>
-          <span style="font-size:12px;color:#475569;line-height:1.5;margin-top:4px">{{ m.desc }}</span>
+        <button type="button" onClick="{{ m.zoom }}" aria-label="{{ m.title }} 크게 보기" style="display:flex;flex-direction:column;text-align:left;min-width:0;min-height:0;background:#fff;border:1px solid #e5e5ea;border-radius:12px;padding:8px 8px 10px;cursor:zoom-in;font:inherit;color:inherit">
+          <div data-m="pmph" style="flex:1 1 auto;min-height:96px;border-radius:8px;overflow:hidden;background:#f5f5f7"><img loading="lazy" src="{{ m.src }}" alt="{{ m.alt }}" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block"></div>
+          <span style="flex-shrink:0;font-size:10.5px;font-weight:800;color:#c8381e;margin:8px 0 2px;letter-spacing:.3px">{{ m.no }}</span>
+          <span style="flex-shrink:0;font-size:14px;font-weight:800;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ m.title }}</span>
+          <span style="flex-shrink:0;font-size:12px;color:#475569;line-height:1.5;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ m.desc }}</span>
         </button>
         </sc-for>
       </div>
