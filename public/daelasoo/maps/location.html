@@ -11,14 +11,25 @@
 </style>
 </head>
 <body>
-<!-- 카카오맵 지도퍼가기 (원본: 소스/입지/카카오맵_지도퍼가기.txt). 사이트의 '입지 · 생활권' 칸에 iframe으로 들어감 -->
-<div id="daumRoughmapContainer" class="root_daum_roughmap root_daum_roughmap_landing"></div>
+<!-- 카카오맵 지도퍼가기 — 단지 화면 '입지환경' 칸에 iframe 으로 들어감 (2026-11-14)
+     ?p=0 단지 전체(대표가 map.kakao.com '지도 퍼가기'에서 받은 코드) · 1 롯데마트 · 2 쌍암공원 · 3 빛고을대로 (대표 imweb 페이지 onegongin.imweb.me/Daelasoo 의 코드 그대로)
+     아래 P 목록은 site.json 에서 만듦 (seo.map = 0번 · content.siteMap.spots[].map = 1번부터) — 고칠 땐 site.json 을 고치고 node tools/apply_site.mjs
+     칸 id = daumRoughmapContainer + timestamp (카카오 규칙) -->
+<div id="box"></div>
 <script charset="UTF-8" class="daum_roughmap_loader_script" src="https://t1.kakaocdn.net/kakaomapweb/roughmap/loader/prod/roughmapLoader.js"></script>
 <script charset="UTF-8">
+  var P = [
+    ["1794656078149", "5zmk8iht5d5"],   // 0 첨단대라수1차
+    ["1788012828096", "2hyuo4kg6scq"],   // 1 롯데마트 · 의료
+    ["1788012916737", "tsxjvh57c4y"],   // 2 쌍암공원 호수
+    ["1788012968113", "tt5u7uryrdt"]   // 3 빛고을대로 교통
+  ];
+  var i = Number((location.search.match(/[?&]p=(\d+)/) || [])[1]) || 0, c = P[i] || P[0];
+  document.getElementById('box').outerHTML = '<div id="daumRoughmapContainer' + c[0] + '" class="root_daum_roughmap root_daum_roughmap_landing"></div>';
   // 지도 크기를 끼워 넣은 칸(iframe) 크기에 꽉 맞춤. 아래쪽 카카오 안내 줄(로드뷰 · 길찾기 · 지도 크게 보기)은 칸 밖으로 밀려 안 보임 (2026-10-28)
   new daum.roughmap.Lander({
-    "timestamp" : "",
-    "key" : "",
+    "timestamp" : c[0],
+    "key" : c[1],
     "mapWidth" : String(Math.max(280, window.innerWidth)),
     "mapHeight" : String(Math.max(240, window.innerHeight))
   }).render();

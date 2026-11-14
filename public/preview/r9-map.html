@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>시안 · 입지환경 카카오맵</title>
+<!-- 시안 r9-map B안 (2026-11-14) — 단지 화면 '입지환경' 칸: 카카오맵 + 사진 칩 3개 (대표 imweb 페이지 '도보 5분에서 누리는 원스톱 프리미엄 인프라'와 같게)
+     칩을 누르면 그 장소 지도로 바뀜 (maps/location.html?p=1~3) · '단지 전체 위치 보기'로 처음 지도. 칩 사진은 시안에서만 imweb 주소 그대로 (연결 때는 사이트에 내려받아 로고 새김)
+     로컬 서버(http://localhost:8787/preview/r9-map.html)에서 열어야 지도가 뜸 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--on:#c8381e;--line:#d2d2d7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  .pick{position:sticky;top:0;z-index:9;background:#1d1d1f;color:#fff;display:flex;gap:8px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+  .pick b{font-weight:800}.pick span{color:#a1a1a6;font-size:13px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 16px 64px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,492px),1fr));gap:12px;align-items:stretch}
+  .card{min-width:0;background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.hd b{font-size:17px}.hd span{font-size:13px;color:var(--sub)}
+  .map{position:relative;width:100%;flex:1 1 0;min-height:clamp(360px,36vw,470px);border-radius:12px;overflow:hidden;background:#f5f5f7;border:1.5px solid var(--line);transition:border-color .2s,box-shadow .2s}
+  .map.sel{border:2.5px solid var(--on);box-shadow:0 4px 14px rgba(200,56,30,.2)}
+  .map iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .big{position:absolute;top:10px;right:10px;z-index:5;height:32px;display:flex;align-items:center;border-radius:999px;padding:0 12px;background:#fff;color:#1d1d1f;text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  .where{position:absolute;left:10px;top:10px;z-index:5;height:30px;display:none;align-items:center;border-radius:999px;padding:0 12px;background:var(--on);color:#fff;font-size:12px;font-weight:800;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  .map.sel .where{display:flex}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .bar b{font-size:13px}
+  .reset{font:inherit;font-size:12.5px;font-weight:700;color:var(--sub);background:none;border:0;cursor:pointer;text-decoration:underline;padding:0}
+  .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .chip{position:relative;overflow:hidden;aspect-ratio:16/10;border-radius:10px;border:1.5px solid var(--line);padding:0;cursor:pointer;background:#f5f5f7;opacity:.9;transition:all .2s}
+  .chip:hover{transform:translateY(-2px);opacity:1}
+  .chip img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+  .chip span{position:absolute;left:0;right:0;bottom:0;padding:6px 6px 5px;background:linear-gradient(to top,rgba(15,23,42,.9),rgba(15,23,42,.3) 70%,transparent);color:#fff;font-size:12px;font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chip i{display:none;position:absolute;top:5px;right:5px;background:var(--on);color:#fff;font-style:normal;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px}
+  .chip.on{border:2.5px solid var(--on);box-shadow:0 3px 10px rgba(200,56,30,.3);opacity:1}
+  .chip.on i{display:block}
+  .board{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .board div{aspect-ratio:4/3;border-radius:10px;background:#e8e8ed;display:grid;place-items:center;color:#a1a1a6;font-size:12px;text-align:center;padding:8px}
+  .note{font-size:12.5px;color:var(--sub);margin:12px 0 0;line-height:1.7}
+  @media (max-width:560px){.chips{gap:6px}.chip span{font-size:11px}}
+</style>
+</head>
+<body>
+<div class="pick"><b>시안 · 입지환경 지도 (B안)</b><span>사진 칩을 누르면 그 장소 지도로 바뀜 · 대표님 imweb 페이지와 같은 방식</span></div>
+<div class="wrap">
+  <div class="grid">
+    <div class="card">
+      <div class="hd"><b>입지환경</b><span>쌍암공원 생활권 · 도시철도 2호선 쌍암역(예정)</span></div>
+      <div class="map" id="map"><iframe id="frame" src="/daelasoo/maps/location.html?p=0" title="입지환경 지도" loading="lazy"></iframe>
+        <span class="where" id="where"></span>
+        <a class="big" id="big" href="https://map.kakao.com/?q=%EC%B2%A8%EB%8B%A8%EB%8C%80%EB%9D%BC%EC%88%981%EC%B0%A8" target="_blank" rel="noopener">카카오맵에서 크게 보기 ↗</a></div>
+      <div class="bar"><b>📍 보고 싶은 생활시설을 누르세요</b><button class="reset" id="reset" type="button">↺ 단지 전체 위치 보기</button></div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="card">
+      <div class="hd"><b>입지 · 개발 계획</b><span>개발 · 교통 계획은 예정 사항으로 바뀌거나 취소될 수 있습니다</span></div>
+      <div class="board"><div>도시철도 2호선 쌍암역<br>(지금 화면 그대로)</div><div>입지 보드 2</div><div>입지 보드 3</div><div>입지 보드 4</div></div>
+      <span style="font-size:12px;color:var(--sub)">오른쪽 '입지 · 개발 계획' 칸은 바꾸지 않음 (자리만 표시)</span>
+    </div>
+  </div>
+  <p class="note">• 처음엔 <b>단지 전체 지도</b> (오늘 주신 지도 퍼가기 코드). 사진 칩을 누르면 그 장소 지도로 바뀌고, 지도 테두리 · 칩이 빨갛게 + '선택됨' · 지도 왼쪽 위에 장소 이름.<br>
+  • 칩 3개 = imweb 페이지와 같은 사진 · 이름 · 지도 코드 (롯데마트 · 의료 / 쌍암공원 호수 / 빛고을대로 교통). <b>[카카오맵에서 크게 보기]</b>도 고른 장소로 바뀜.<br>
+  • 지금 있는 쌍암공원 벚꽃길 사진(park.jpg)은 쌍암공원 칩 사진으로 바꿔 쓸 수도 있음 — 말씀해 주세요.<br>
+  • 휴대폰에서는 지도 · 칩이 위, 입지 · 개발 계획이 아래로 내려갑니다.</p>
+</div>
+<script>
+const Q = n => 'https://map.kakao.com/?q=' + encodeURIComponent(n);
+const P = [
+  { name: '첨단대라수1차', link: Q('첨단대라수1차') },
+  { name: '롯데마트 · 의료', img: 'https://cdn.imweb.me/thumbnail/20260829/d967d79b0e03f.jpg', alt: '롯데마트 및 중심상권', link: Q('롯데마트 첨단점') },
+  { name: '쌍암공원 호수', img: 'https://cdn.imweb.me/thumbnail/20260829/5e3b605a61697.jpg', alt: '쌍암공원 호수산책로', link: Q('쌍암공원') },
+  { name: '빛고을대로 교통', img: 'https://cdn.imweb.me/thumbnail/20260829/a82e509bee57b.jpg', alt: '빛고을대로 광역교통', link: Q('빛고을대로') }
+];
+let cur = 0;
+function go(i) {
+  cur = i;
+  document.getElementById('frame').src = '/daelasoo/maps/location.html?p=' + i;
+  document.getElementById('map').classList.toggle('sel', i > 0);
+  document.getElementById('where').textContent = '📍 ' + P[i].name;
+  document.getElementById('big').href = P[i].link;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', Number(c.dataset.i) === i));
+}
+document.getElementById('chips').innerHTML = P.slice(1).map((p, k) => `<button class="chip" type="button" data-i="${k + 1}" aria-label="${p.name} 지도 보기"><img src="${p.img}" alt="${p.alt}" loading="lazy"><span>${p.name}</span><i>선택됨</i></button>`).join('');
+document.querySelectorAll('.chip').forEach(c => c.onclick = () => go(Number(c.dataset.i)));
+document.getElementById('reset').onclick = () => go(0);
+</script>
+</body>
+</html>

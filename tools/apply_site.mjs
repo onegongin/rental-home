@@ -117,9 +117,10 @@ export function build(root = ROOT) {
   out[f] = swap(rd(f), /<title>[^<]*<\/title>/, () => '<title>' + esc(S.name) + ' · 직원 대시보드</title>', f);
   f = 'public/daelasoo/maps/location.html'; h = rd(f);
   h = swap(h, /<title>[^<]*<\/title>/, () => '<title>' + esc(S.name) + ' 위치</title>', f);
-  h = swap(h, /daumRoughmapContainer\d*/, () => 'daumRoughmapContainer' + (MAP.timestamp || ''), f);
-  h = swap(h, /"timestamp" : "[^"]*"/, () => '"timestamp" : ' + J(MAP.timestamp), f);
-  out[f] = swap(h, /"key" : "[^"]*"/, () => '"key" : ' + J(MAP.key), f);
+  // 카카오 지도 퍼가기 목록: 0 = 단지(seo.map) · 1부터 = 입지환경 사진 칩(content.siteMap.spots[].map) — 지도 페이지 ?p=번호 (시안 r9-map 2026-11-14)
+  const spots = ((D.content || {}).siteMap || {}).spots || [];
+  const rows = [MAP].concat(spots.map(s => s.map || {})).map((m, i, a) => '    [' + J(m.timestamp || '') + ', ' + J(m.key || '') + ']' + (i < a.length - 1 ? ',' : '') + '   // ' + i + ' ' + (i ? spots[i - 1].name : S.name));
+  out[f] = swap(h, /var P = \[[\s\S]*?\n  \];/, () => 'var P = [\n' + rows.join('\n') + '\n  ];', f);
   f = 'public/robots.txt';
   out[f] = swap(rd(f), /^Sitemap: .*$/m, () => 'Sitemap: ' + U + '/sitemap.xml', f);
   return Object.fromEntries(Object.entries(out).filter(([k, v]) => v !== rd(k)));

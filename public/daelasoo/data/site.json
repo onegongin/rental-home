@@ -292,8 +292,8 @@
     "ogAlt": "첨단대라수1차 단지 사진",
     "locationDesc": "쌍암공원 생활권 · 도시철도 2호선 쌍암역 예정 · 첨단3지구 개발",
     "map": {
-      "timestamp": "",
-      "key": ""
+      "timestamp": "1794656078149",
+      "key": "5zmk8iht5d5"
     },
     "tags": [
       "첨단대라수1차",
@@ -674,6 +674,14 @@
       "sub": "쌍암공원 생활권 · 도시철도 2호선 쌍암역(예정)",
       "photo": "park.jpg",
       "photoAlt": "쌍암공원 벚꽃길",
+      "map": "maps/location.html",
+      "link": "https://map.kakao.com/?q=%EC%B2%A8%EB%8B%A8%EB%8C%80%EB%9D%BC%EC%88%981%EC%B0%A8",
+      "spotsTitle": "📍 보고 싶은 생활시설을 누르세요",
+      "spots": [
+        { "name": "롯데마트 · 의료", "img": "infra/lotte.jpg", "alt": "롯데마트 및 중심상권", "link": "https://map.kakao.com/?q=%EB%A1%AF%EB%8D%B0%EB%A7%88%ED%8A%B8%20%EC%B2%A8%EB%8B%A8%EC%A0%90", "map": { "timestamp": "1788012828096", "key": "2hyuo4kg6scq" } },
+        { "name": "쌍암공원 호수", "img": "infra/park.jpg", "alt": "쌍암공원 호수산책로", "link": "https://map.kakao.com/?q=%EC%8C%8D%EC%95%94%EA%B3%B5%EC%9B%90", "map": { "timestamp": "1788012916737", "key": "tsxjvh57c4y" } },
+        { "name": "빛고을대로 교통", "img": "infra/road.jpg", "alt": "빛고을대로 광역교통", "link": "https://map.kakao.com/?q=%EB%B9%9B%EA%B3%A0%EC%9D%84%EB%8C%80%EB%A1%9C", "map": { "timestamp": "1788012968113", "key": "tt5u7uryrdt" } }
+      ],
       "side": [],
       "board": {
         "title": "입지 · 개발 계획",

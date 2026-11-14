@@ -21,6 +21,10 @@ FILES = [
     ('(1차)동호배치도.jpg', 'dongho.jpg', True),          # 동 · 호 배치도
     ('층개요.jpg', 'floors.jpg', True),                   # 층 개요
     ('쌍암공원벚꽃.jpg', 'park.jpg', True),               # 사업지 옆 사진 · 59㎡ 칸 배경
+    # 입지환경 지도 아래 사진 칩 (대표 imweb 페이지 사진 그대로, 시안 r9-map B안 확정 2026-11-14) — 누르면 그 장소 카카오맵
+    ('인프라_롯데마트.jpg', 'infra/lotte.jpg', True),
+    ('인프라_쌍암공원.jpg', 'infra/park.jpg', True),
+    ('인프라_빛고을대로.jpg', 'infra/road.jpg', True),
     # 타입 평면 (평면 창 · 검색용 /plan 페이지)
     ('(1차)80A.jpg', 'plans/80A.jpg', True),
     ('(1차)80B.jpg', 'plans/80B.jpg', True),

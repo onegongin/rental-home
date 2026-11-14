@@ -2634,14 +2634,25 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,492px),1fr));gap:12px;align-items:stretch">
     <div style="min-width:0;background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
       <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><span style="font-size:17px;font-weight:700">{{ si.smTitle }}</span><span style="font-size:13px;color:#6e6e73">{{ si.smSub }}</span></div>
-      <div data-m="smmap" style="position:relative;width:100%;flex:1 1 0;min-height:clamp(360px,40vw,535px);border-radius:12px;overflow:hidden;background:#f5f5f7">
+      <div data-m="smmap" style="position:relative;width:100%;flex:1 1 0;min-height:clamp(360px,36vw,470px);border-radius:12px;overflow:hidden;background:#f5f5f7;box-sizing:border-box;border:{{ si.smBorder }};box-shadow:{{ si.smShadow }};transition:border-color .2s,box-shadow .2s">
         <sc-if value="{{ si.smHasMap }}">
         <iframe src="{{ si.smMap }}" title="{{ si.smTitle }} 지도" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
+        <!-- 칩으로 고른 장소 이름 (시안 r9-map B안 2026-11-14) -->
+        <sc-if value="{{ si.smSel }}"><span style="position:absolute;left:10px;top:10px;z-index:5;height:30px;display:flex;align-items:center;border-radius:9999px;padding:0 12px;background:#c8381e;color:#fff;font-size:12px;font-weight:800;box-shadow:0 1px 4px rgba(0,0,0,.25)">📍 {{ si.smWhere }}</span></sc-if>
         <a href="{{ si.smLink }}" target="_blank" rel="noopener" style="position:absolute;top:10px;right:10px;z-index:5;height:32px;display:flex;align-items:center;border-radius:9999px;padding:0 12px;background:#fff;color:#1d1d1f;text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.25)">카카오맵에서 크게 보기 ↗</a>
         </sc-if>
         <!-- 지도 퍼가기 키가 없는 단지(대라수): 지도 자리에 사진 (site.json siteMap.photo, R1 2026-11-13) -->
         <sc-if value="{{ si.smNoMap }}"><button onClick="{{ si.smPhotoZoom }}" title="크게 보기" aria-label="{{ si.smPhotoAlt }} 크게 보기" style="position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;cursor:zoom-in;background:#f5f5f7"><img src="{{ si.smPhoto }}" alt="{{ si.smPhotoAlt }}" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover"></button></sc-if>
       </div>
+      <!-- 생활시설 사진 칩 (site.json siteMap.spots, 시안 r9-map B안 확정 2026-11-14): 누르면 그 장소 카카오맵(maps/location.html?p=번호) · '단지 전체 위치 보기'로 처음 지도 -->
+      <sc-if value="{{ si.smHasSpots }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap"><span style="font-size:13px;font-weight:700">{{ si.smSpotsTitle }}</span><button type="button" onClick="{{ si.smReset }}" style="font:inherit;font-size:12.5px;font-weight:700;color:#6e6e73;background:none;border:0;cursor:pointer;text-decoration:underline;padding:0">↺ 단지 전체 위치 보기</button></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(6px,1.2vw,10px)">
+        <sc-for list="{{ si.smSpots }}" as="c">
+        <button type="button" onClick="{{ c.go }}" aria-label="{{ c.name }} 지도 보기" style="position:relative;overflow:hidden;aspect-ratio:16/10;border-radius:10px;padding:0;cursor:pointer;background:#f5f5f7;box-sizing:border-box;border:{{ c.bd }};box-shadow:{{ c.sh }};opacity:{{ c.op }};transition:all .2s"><img src="{{ c.img }}" alt="{{ c.alt }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none"><span style="position:absolute;left:0;right:0;bottom:0;padding:6px 6px 5px;background:linear-gradient(to top,rgba(15,23,42,.9),rgba(15,23,42,.3) 70%,transparent);color:#fff;font-size:clamp(11px,1.1vw,12px);font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</span><sc-if value="{{ c.on }}"><span style="position:absolute;top:5px;right:5px;background:#c8381e;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:9999px">선택됨</span></sc-if></button>
+        </sc-for>
+      </div>
+      </sc-if>
     </div>
     <div style="min-width:0;background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
       <sc-if value="{{ si.hasBoard }}">
@@ -5061,7 +5072,11 @@ class Component extends DCLogic {
       ...(G => ({ hasGal: G.length > 1, noGal: G.length < 2, gal: G.map(([f, c], i) => ({ src: P(f), alt: D.S.site.name + ' ' + (c || '투시도'), cap: c || '', cls: i ? 'bzg-ph' : 'bzg-ph bzg-main', isMain: !i,
         zoom: () => this.setState({ siZoom: P(f), siZoomSet: G.map(([g, d, n]) => [P(g), d || '', n || '']), siZoomI: i }) })) }))((C.overview || {}).gallery || []), /* 3번째 값 = 확대 창 사진 안 안내 글(연회색, 예: AI 생성 이미지) */
       ...this.trVals(),
-      hasSiteMap: !!((C.siteMap || {}).map || (C.siteMap || {}).photo), smHasMap: !!(C.siteMap || {}).map, smNoMap: !(C.siteMap || {}).map && !!(C.siteMap || {}).photo, smPhoto: (C.siteMap || {}).photo ? P((C.siteMap || {}).photo) : '', smPhotoAlt: (C.siteMap || {}).photoAlt || D.S.site.name + ' 주변', smPhotoZoom: (C.siteMap || {}).photo ? zoom(P((C.siteMap || {}).photo)) : () => {}, smTitle: (C.siteMap || {}).title || '사업지', smSub: (C.siteMap || {}).sub || '', smMap: (C.siteMap || {}).map || '', smLink: (C.siteMap || {}).link || 'https://map.kakao.com/',
+      hasSiteMap: !!((C.siteMap || {}).map || (C.siteMap || {}).photo), smHasMap: !!(C.siteMap || {}).map, smNoMap: !(C.siteMap || {}).map && !!(C.siteMap || {}).photo, smPhoto: (C.siteMap || {}).photo ? P((C.siteMap || {}).photo) : '', smPhotoAlt: (C.siteMap || {}).photoAlt || D.S.site.name + ' 주변', smPhotoZoom: (C.siteMap || {}).photo ? zoom(P((C.siteMap || {}).photo)) : () => {}, smTitle: (C.siteMap || {}).title || '사업지', smSub: (C.siteMap || {}).sub || '', smMap: (C.siteMap || {}).map ? (C.siteMap || {}).map + ((C.siteMap || {}).spots ? '?p=' + (S.smSpot || 0) : '') : '',
+      /* 생활시설 칩 (시안 r9-map B안 2026-11-14): S.smSpot = 고른 칩 번호(1부터, 0 = 단지 전체) → 지도 · 크게 보기 링크 · 테두리 */
+      ...((SP, k) => ({ smHasSpots: !!SP.length && !!(C.siteMap || {}).map, smSpotsTitle: (C.siteMap || {}).spotsTitle || '보고 싶은 생활시설을 누르세요', smSel: k > 0 && !!SP[k - 1], smWhere: k > 0 && SP[k - 1] ? SP[k - 1].name : '',
+        smBorder: k > 0 ? '2.5px solid #c8381e' : SP.length ? '1.5px solid #d2d2d7' : '0', smShadow: k > 0 ? '0 4px 14px rgba(200,56,30,.2)' : 'none', smReset: () => this.setState({ smSpot: 0 }),
+        smSpots: SP.map((x, i) => ({ name: x.name, alt: x.alt || x.name, img: P(x.img), on: k === i + 1, bd: k === i + 1 ? '2.5px solid #c8381e' : '1.5px solid #d2d2d7', sh: k === i + 1 ? '0 3px 10px rgba(200,56,30,.3)' : 'none', op: k === i + 1 ? '1' : '.9', go: () => this.setState({ smSpot: i + 1 }) })) }))((C.siteMap || {}).spots || [], S.smSpot || 0), smLink: (((C.siteMap || {}).spots || [])[(S.smSpot || 0) - 1] || {}).link || (C.siteMap || {}).link || 'https://map.kakao.com/',
       smSide: ((C.siteMap || {}).side || []).map((x, i) => ({ src: P(x), alt: ((C.siteMap || {}).title || '사업지') + ' 그림 ' + (i + 1), zoom: zoom(P(x)) })), smEmpty: !((C.siteMap || {}).side || []).length && !(C.siteMap || {}).board,
       /* 입지환경 보드 (site.json siteMap.board): 사진 3장 + 설명 카드 4개. 글자는 화면에서 짬 */
       ...(B => ({ hasBoard: !!(B.pics || B.cards), bdTitle: B.title || '', bdSub: B.sub || '', bdTag0: (B.tag || [])[0] || '', bdTag1: (B.tag || [])[1] || '', bdTag2: (B.tag || [])[2] || '', bdHasTag: !!(B.tag || []).length,
