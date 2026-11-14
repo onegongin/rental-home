@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 · 단지 투시도</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  .bar { position: sticky; top: 0; z-index: 5; background: #1d1d1f; color: #fff; padding: 10px 16px; font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .bar button { border: 1px solid #555; background: transparent; color: #fff; border-radius: 999px; padding: 6px 14px; font: inherit; cursor: pointer; }
+  .bar button.on { background: #fff; color: #1d1d1f; }
+  .wrap { max-width: 1720px; margin: 0 auto; padding: 20px 20px 0; }
+  .hero { position: relative; border-radius: 18px; overflow: hidden; background: #1d1d1f; }
+  .hero .bg { position: absolute; inset: -40px; background: url(../daelasoo/assets/dls/hero.jpg) center/cover; filter: blur(28px) brightness(.85); }
+  .hero img.main { position: relative; display: block; width: 100%; height: 100%; }
+  .hero .txt { position: absolute; left: 0; right: 0; bottom: 0; padding: 60px 28px 26px; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.55)); }
+  .hero .txt b { display: block; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; }
+  .hero .txt span { font-size: 16px; opacity: .92; }
+  /* 지금 */
+  .now { aspect-ratio: 2.3 / 1; }
+  .now img.main { object-fit: cover; object-position: center 40%; }
+  /* 새 사진: 투시가로 (2.5:1) — 틀 그대로, 양옆만 조금 잘림 */
+  .w { aspect-ratio: 2.3 / 1; }
+  .w img.main { object-fit: cover; object-position: center 40%; }
+  .w .bg { display: none; }
+  /* A안: 틀 그대로, 사진 전체 + 양옆은 같은 사진 흐리게 */
+  .a { aspect-ratio: 2.3 / 1; }
+  .a img.main { object-fit: contain; }
+  /* B안: 틀을 높여 건물 전체가 들어오게 (하늘 · 공원 일부만 잘림) */
+  .b { aspect-ratio: 1.6 / 1; }
+  .b img.main { object-fit: cover; object-position: center 53%; }
+  .memo { max-width: 1720px; margin: 18px auto 40px; padding: 0 20px; font-size: 14px; line-height: 1.7; }
+  .memo .card { padding: 14px 18px; overflow-wrap: anywhere; }
+  @media (max-width: 560px) {
+    .wrap { padding: 12px 16px 0; }
+    .now, .a, .w { aspect-ratio: 4 / 3; }
+    .b { aspect-ratio: 1 / 1; }
+    .b img.main { object-position: center center; }
+    .hero .txt { padding: 40px 16px 16px; } .hero .txt b { font-size: 24px; } .hero .txt span { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="bar"><b>시안 r7-hero</b> 단지 투시도:
+  <button data-k="now">지금 (정사각형 사진, 위아래 잘림)</button>
+  <button data-k="w" class="on">새 사진 · 투시가로</button>
+</div>
+<div class="wrap">
+  <div class="hero w" id="hero">
+    <div class="bg"></div>
+    <img class="main" id="img" src="../daelasoo/assets/dls/hero_wide.jpg" alt="첨단대라수1차 단지 투시도">
+    <div class="txt"><b>첨단대라수1차</b><span>광주 첨단 민간임대 · 분양전환 · 101~104동 아파트 300세대 · 80㎡ · 59㎡ 5개 타입 · 분양전환 · 관심등록 상담 1800-7240</span></div>
+  </div>
+</div>
+<div class="memo"><div class="card">
+  <b>새 사진 · 투시가로</b> — 원본 <code>소스/DAELASOO/소스/투시가로.png</code>(가로:세로 약 2.5:1)에 사무소 로고를 새겨 <code>assets/dls/hero_wide.jpg</code> 로 만듦. 사진 틀(2.3:1)과 비율이 거의 같아 <b>네 동 건물 · 상가 전체가 보이고 양옆만 아주 조금 잘립니다</b>. 틀 높이는 지금과 같아 아래 화면 위치도 그대로.<br>
+  휴대폰(4:3)에서는 양옆 하늘 · 나무가 잘리고 건물은 다 보입니다.<br>
+  <span style="color:var(--sub)">바꾸는 곳은 단지 화면 맨 위 큰 사진만. 첫 화면 단지 카드 · 사업개요 · 검색 미리보기 그림은 지금 사진(hero.jpg) 그대로 — 같이 바꿀지 알려 주세요.</span>
+</div></div>
+<script>
+document.querySelectorAll('.bar button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.bar button').forEach(x => x.classList.toggle('on', x === b));
+  document.getElementById('hero').className = 'hero ' + b.dataset.k;
+  document.getElementById('img').src = '../daelasoo/assets/dls/' + (b.dataset.k === 'w' ? 'hero_wide.jpg' : 'hero.jpg');
+});
+</script>
+</body>
+</html>
