@@ -2657,12 +2657,33 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     <div style="min-width:0;background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
       <sc-if value="{{ si.hasBoard }}">
       <div style="display:flex;align-items:baseline;gap:6px 10px;flex-wrap:wrap"><span style="font-size:17px;font-weight:700">{{ si.bdTitle }}</span><span style="font-size:13px;color:#6e6e73">{{ si.bdSub }}</span><sc-if value="{{ si.bdHasTag }}"><span data-m="bdtag" style="margin-left:auto;font-size:14px;font-weight:800;letter-spacing:-.01em">{{ si.bdTag0 }}<span style="color:#c8381e">{{ si.bdTag1 }}</span>{{ si.bdTag2 }}</span></sc-if></div>
+      <!-- 6대 메가 프리미엄 미니칩 (시안 r10-premium A안 확정 2026-11-14) — PC 3칸 · 휴대폰 2칸 -->
+      <sc-if value="{{ si.bdHasPm }}">
+      <div style="padding-top:12px;border-top:1px solid #ececf0">
+        <sc-if value="{{ si.pmTag }}"><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:#c8381e;border:1px solid #f1c9c1;background:#fff;border-radius:9999px;padding:3px 10px;letter-spacing:.4px">✦ {{ si.pmTag }}</span></sc-if>
+        <div style="margin:6px 0 4px;font-size:19px;font-weight:800;letter-spacing:-.01em">{{ si.pmTitle }}</div>
+        <div style="font-size:13px;color:#3a3a3c;font-weight:600;line-height:1.5">{{ si.pmLead }}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:10px">
+        <sc-for list="{{ si.pmItems }}" as="m">
+        <button type="button" onClick="{{ m.zoom }}" aria-label="{{ m.title }} 크게 보기" style="display:flex;flex-direction:column;text-align:left;min-width:0;background:#fff;border:1px solid #e5e5ea;border-radius:12px;padding:8px 8px 10px;cursor:zoom-in;font:inherit;color:inherit">
+          <div style="aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:#f5f5f7"><img loading="lazy" src="{{ m.src }}" alt="{{ m.alt }}" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block"></div>
+          <span style="font-size:10.5px;font-weight:800;color:#c8381e;margin:8px 0 2px;letter-spacing:.3px">{{ m.no }}</span>
+          <span style="font-size:14px;font-weight:800;line-height:1.3">{{ m.title }}</span>
+          <span style="font-size:12px;color:#475569;line-height:1.5;margin-top:4px">{{ m.desc }}</span>
+        </button>
+        </sc-for>
+      </div>
+      </sc-if>
+      <sc-if value="{{ si.bdHasPics }}">
       <div data-m="bdpics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:10px;align-items:stretch">
         <sc-for list="{{ si.bdPics }}" as="p"><div style="min-width:0;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;border:1px solid #ececf0;background:#fff">
           <button onClick="{{ p.zoom }}" title="크게 보기" aria-label="{{ p.alt }} 크게 보기" style="flex:1 1 auto;display:block;border:none;padding:0;margin:0;cursor:zoom-in;background:#f5f5f7;min-height:0"><img loading="lazy" src="{{ p.src }}" alt="{{ p.alt }}" style="display:block;width:100%;height:100%;object-fit:cover"></button>
           <sc-if value="{{ p.hasCap }}"><div style="flex-shrink:0;padding:9px 12px 10px;display:flex;flex-direction:column;gap:3px"><span style="font-size:15px;font-weight:800">{{ p.cap }}</span><span style="font-size:13px;font-weight:700;color:#c8381e">{{ p.capSub }}</span></div></sc-if>
         </div></sc-for>
       </div>
+      </sc-if>
+      <sc-if value="{{ si.bdHasCards }}">
       <div data-m="bdcards" style="flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));grid-auto-rows:1fr;gap:10px">
         <sc-for list="{{ si.bdCards }}" as="c"><div onClick="{{ c.open }}" style="min-width:0;display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid #f3d6d0;border-radius:14px;background:#fff">
           <div style="flex-shrink:0;align-self:flex-start;width:46px;height:46px;border-radius:50%;background:#f6eeec;display:flex;align-items:center;justify-content:center">
@@ -2680,6 +2701,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
           <div class="bdm"><small>{{ c.pre }}</small><b>{{ c.hl }}</b><ul><sc-for list="{{ c.short }}" as="x"><li>{{ x }}</li></sc-for></ul><em>자세히 보기 ›</em></div>
         </div></sc-for>
       </div>
+      </sc-if>
       </sc-if>
       <sc-for list="{{ si.smSide }}" as="t"><button onClick="{{ t.zoom }}" title="크게 보기" aria-label="{{ t.alt }} 크게 보기" style="flex-shrink:0;border:none;padding:0;border-radius:10px;overflow:hidden;cursor:zoom-in;background:#fff"><img loading="lazy" src="{{ t.src }}" alt="{{ t.alt }}" style="display:block;width:100%;height:auto"></button></sc-for>
       <sc-if value="{{ si.smEmpty }}"><div style="flex:1 1 auto;min-height:clamp(240px,30vw,535px);border:2px dashed #ececf0;border-radius:12px"></div></sc-if>
@@ -5079,7 +5101,11 @@ class Component extends DCLogic {
         smSpots: SP.map((x, i) => ({ name: x.name, alt: x.alt || x.name, img: P(x.img), on: k === i + 1, bd: k === i + 1 ? '2.5px solid #c8381e' : '1.5px solid #d2d2d7', sh: k === i + 1 ? '0 3px 10px rgba(200,56,30,.3)' : 'none', op: k === i + 1 ? '1' : '.9', go: () => this.setState({ smSpot: i + 1 }) })) }))((C.siteMap || {}).spots || [], S.smSpot || 0), smLink: (((C.siteMap || {}).spots || [])[(S.smSpot || 0) - 1] || {}).link || (C.siteMap || {}).link || 'https://map.kakao.com/',
       smSide: ((C.siteMap || {}).side || []).map((x, i) => ({ src: P(x), alt: ((C.siteMap || {}).title || '사업지') + ' 그림 ' + (i + 1), zoom: zoom(P(x)) })), smEmpty: !((C.siteMap || {}).side || []).length && !(C.siteMap || {}).board,
       /* 입지환경 보드 (site.json siteMap.board): 사진 3장 + 설명 카드 4개. 글자는 화면에서 짬 */
-      ...(B => ({ hasBoard: !!(B.pics || B.cards), bdTitle: B.title || '', bdSub: B.sub || '', bdTag0: (B.tag || [])[0] || '', bdTag1: (B.tag || [])[1] || '', bdTag2: (B.tag || [])[2] || '', bdHasTag: !!(B.tag || []).length,
+      ...(B => ({ hasBoard: !!(B.pics || B.cards || B.premium), bdTitle: B.title || '', bdHasPics: !!(B.pics || []).length, bdHasCards: !!(B.cards || []).length,
+        /* 6대 메가 프리미엄 미니칩 (site.json siteMap.board.premium, 시안 r10-premium A안 확정 2026-11-14 — 대표 imweb 페이지와 같은 순서 · 글). 누르면 그림 크게 */
+        ...((M) => ({ bdHasPm: !!(M.items || []).length, pmTag: M.tag || '', pmTitle: M.title || '', pmLead: M.lead || '',
+          pmItems: (M.items || []).map((x, i) => ({ src: P(x.img), alt: x.title || '', no: 'PREMIUM ' + String(i + 1).padStart(2, '0'), title: x.title || '', desc: x.desc || '',
+            zoom: () => this.setState({ siZoom: P(x.big || x.img), siZoomSet: null, siZoomNote: x.note || '' }) })) }))(B.premium || {}), bdSub: B.sub || '', bdTag0: (B.tag || [])[0] || '', bdTag1: (B.tag || [])[1] || '', bdTag2: (B.tag || [])[2] || '', bdHasTag: !!(B.tag || []).length,
         bdPics: (B.pics || []).map(x => ({ src: P(x.img), alt: x.alt || '', zoom: x.note ? () => this.setState({ siZoom: P(x.big || x.img), siZoomSet: null, siZoomNote: x.note }) : zoom(P(x.big || x.img)), /* note = 확대 창 사진 안 오른쪽 아래 연회색 안내 글('AI 생성 이미지' 등) */ /* 누르면 큰 그림(big — 글씨 · 출처 새김, tools/make_board_big.py) */ hasCap: !!x.cap, cap: x.cap || '', capSub: x.capSub || '' })),
         bdCards: (B.cards || []).map((c, ci) => ({ short: c.short || [], open: () => { if (window.innerWidth <= 560) this.setState({ bdPop: ci }); }, pre: (c.head || [])[0] || '', hl: (c.head || [])[1] || '', car: c.icon === 'car', cart: c.icon === 'cart', school: c.icon === 'school', park: c.icon === 'park',
           items: (c.items || []).map(t => ({ b: [].concat(t)[1] === undefined ? '' : [].concat(t)[0], t: [].concat(t)[1] === undefined ? [].concat(t)[0] : [].concat(t)[1] })) })) }))((C.siteMap || {}).board || {}),
