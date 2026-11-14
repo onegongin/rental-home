@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 · 실내 둘러보기</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  body { padding: 0 0 60px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: #1d1d1f; color: #fff; padding: 10px 16px; font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .bar b { margin-right: 6px; }
+  .bar button { border: 1px solid #555; background: transparent; color: #fff; border-radius: 999px; padding: 6px 14px; font: inherit; cursor: pointer; }
+  .bar button.on { background: #fff; color: #1d1d1f; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 16px 0; }
+  h2 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .lead { color: var(--sub); margin: 0 0 18px; font-size: 15px; }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tab { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .tab i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .tab small { color: var(--sub); }
+  .tab.on { border-color: var(--tab); color: var(--tab); font-weight: 700; }
+  .panel { padding: 18px; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .head h3 { margin: 0; font-size: 20px; }
+  .head p { margin: 2px 0 0; color: var(--sub); font-size: 14px; }
+  .cta { background: var(--tab); color: #fff; border: 0; border-radius: 10px; padding: 11px 18px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+  img { display: block; }
+  /* A안: 큰 사진 + 아래 작은 사진 줄 + 옆 영상 */
+  .a-grid { display: grid; grid-template-columns: 1fr; gap: 14px; max-width: 900px; margin: 0 auto; }
+  .a-main { position: relative; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 4/3; cursor: zoom-in; }
+  .a-main { background: #e9e9ee; }
+  .a-main img { width: 100%; height: 100%; object-fit: contain; }
+  .a-main .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.85); font-size: 20px; cursor: pointer; }
+  .a-main .prev { left: 10px; } .a-main .next { right: 10px; }
+  .a-main .cnt { position: absolute; right: 10px; bottom: 10px; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; padding: 4px 10px; border-radius: 999px; }
+  .strip { display: flex; gap: 8px; overflow-x: auto; margin-top: 10px; padding-bottom: 4px; }
+  .strip img { width: 92px; height: 69px; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: .55; border: 2px solid transparent; flex: none; }
+  .strip img.on { opacity: 1; border-color: var(--tab); }
+  .side h4 { margin: 0 0 8px; font-size: 14px; color: var(--sub); font-weight: 600; }
+  .vids { display: flex; flex-direction: column; gap: 10px; }
+  .a-grid .vids { max-height: 640px; overflow-y: auto; }
+  /* 영상 카드 (세로 영상) */
+  .vid { position: relative; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 9/16; cursor: pointer; flex: none; }
+  .vid img { width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+  .vid .play { position: absolute; inset: 0; margin: auto; width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,.9); display: grid; place-items: center; font-size: 22px; }
+  .vid .len { position: absolute; left: 8px; bottom: 8px; background: rgba(0,0,0,.65); color: #fff; font-size: 12px; padding: 3px 8px; border-radius: 6px; }
+  .a-grid .vid { width: 100%; max-width: 260px; aspect-ratio: 9/12; }
+  .novid { color: var(--sub); font-size: 13px; background: var(--bg); border-radius: 10px; padding: 14px; }
+  /* B안: 사진 격자 + 영상 가로 줄 */
+  .b-vids { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 4px; }
+  .b-vids .vid { width: 160px; }
+  .b-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .b-grid img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 10px; cursor: zoom-in; }
+  .b-grid img:first-child { grid-column: span 2; grid-row: span 2; }
+  .note { margin-top: 14px; font-size: 12px; color: var(--sub); }
+  /* 크게 보기 */
+  .lb { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 20; display: none; align-items: center; justify-content: center; }
+  .lb.on { display: flex; }
+  .lb img { max-width: 94vw; max-height: 86vh; border-radius: 6px; }
+  .lb button { position: absolute; border: 0; background: rgba(255,255,255,.15); color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 22px; cursor: pointer; }
+  .lb .x { top: 14px; right: 14px; } .lb .l { left: 14px; top: 50%; } .lb .r { right: 14px; top: 50%; }
+  .lb .t { position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; color: #ddd; font-size: 13px; }
+  .lb .vmsg { color: #fff; text-align: center; line-height: 1.7; }
+  .lb .vmsg img { max-height: 70vh; margin: 0 auto 10px; }
+  .memo { max-width: 1120px; margin: 24px auto 0; padding: 0 16px; font-size: 13px; color: #3a3a3c; line-height: 1.7; }
+  .memo .card { padding: 14px 18px; }
+  @media (max-width: 760px) {
+    .a-grid { grid-template-columns: 1fr; }
+    .a-grid .vids { flex-direction: row; overflow-x: auto; max-height: none; }
+    .a-grid .vid { width: 150px; aspect-ratio: 9/16; }
+    .b-grid { grid-template-columns: repeat(2, 1fr); }
+    h2 { font-size: 22px; }
+    .panel { padding: 14px; }
+    .cta { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="bar"><b>시안 r6-interior</b> (A안 확정 2026-11-14) 모양 고르기:
+  <button data-lay="a" class="on">A안 · 큰 사진 넘기기</button>
+  <button data-lay="b">B안 · 사진 격자 + 영상 줄</button>
+</div>
+
+<section class="wrap">
+  <h2>실내 둘러보기</h2>
+  <p class="lead">첨단대라수1차 실제 세대를 촬영한 사진입니다. 타입을 골라 보세요.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="card panel" id="panel"></div>
+</section>
+
+<div class="memo"><div class="card">
+  <b>대표 확인할 것</b><br>
+  ① 모양: A안 / B안 (위 단추로 바꿔 보기, 휴대폰 폭에서도 확인)<br>
+  ② 촬영 호실 표시: 시안은 <b>호수 안 보임</b>(공개 세대와 같은 원칙). '102동 16층' 처럼 동 · 층까지 보일지<br>
+  ③ 사진에 사무소 로고 새김(다른 사진과 같게) · 80B · 59C 는 촬영본이 없어 탭이 안 보임(생기면 자동 추가) · 영상은 쓰지 않음(대표 결정)<br>
+  <span style="color:var(--sub)">시안의 사진은 작게 줄인 사본입니다.</span>
+</div></div>
+
+<div class="lb" id="lb"><button class="x">✕</button><button class="l">‹</button><button class="r">›</button><div id="lbBody"></div><div class="t" id="lbT"></div></div>
+
+<script>
+const P = '../daelasoo/assets/dls/interior/';
+const pics = (type, n) => Array.from({length: n}, (_, i) => P + type + '_' + String(i + 1).padStart(2, '0') + '.jpg');
+const TYPES = [
+  { key: '80A', color: '#f7d94c', area: '전용 80.38㎡', rooms: '방3 · 욕실2', where: '102동 중층', photos: pics('80A', 7) },
+  { key: '59A', color: '#8bc53f', area: '전용 59.96㎡', rooms: '방3 · 욕실2', where: '104동 중층', photos: pics('59A', 9) },
+  { key: '59B', color: '#f4a7c8', area: '전용 59.65㎡', rooms: '방3 · 욕실2', where: '103동 중층', photos: pics('59B', 6) },
+];
+let lay = 'a', cur = 0, idx = 0;
+const $ = s => document.querySelector(s);
+
+function tabs() {
+  $('#tabs').innerHTML = TYPES.map((t, i) =>
+    `<button class="tab ${i === cur ? 'on' : ''}" data-i="${i}"><i style="background:${t.color}"></i>${t.key} <small>사진 ${t.photos.length}</small></button>`).join('');
+}
+function head(t) {
+  return `<div class="head"><div><h3>${t.key} 타입 · ${t.area}</h3><p>${t.rooms} · ${t.where} 실제 세대 촬영</p></div>
+    <a class="cta" href="#" onclick="alert('신규고객 관심 등록 창이 열립니다 (?reg=client&int=${t.key})');return false">${t.key} 관심 등록</a></div>`;
+}
+function render() {
+  const t = TYPES[cur];
+  if (lay === 'a') {
+    $('#panel').innerHTML = head(t) + `<div class="a-grid"><div>
+        <div class="a-main" id="main"><img src="${t.photos[idx]}" alt="${t.key} 실내 사진 ${idx + 1}">
+          <button class="nav prev">‹</button><button class="nav next">›</button><span class="cnt">${idx + 1} / ${t.photos.length}</span></div>
+        <div class="strip">${t.photos.map((p, i) => `<img src="${p}" data-i="${i}" class="${i === idx ? 'on' : ''}" alt="">`).join('')}</div>
+      </div></div>`;
+  } else {
+    $('#panel').innerHTML = head(t) +
+      `<div class="b-grid">${t.photos.map((p, i) => `<img src="${p}" data-z="${i}" alt="${t.key} 실내 사진 ${i + 1}">`).join('')}</div>`;
+  }
+  tabs();
+}
+function go(d) { const n = TYPES[cur].photos.length; idx = (idx + d + n) % n; }
+function openLb(i) { idx = i; $('#lb').classList.add('on'); lbShow(); }
+function lbShow() { const t = TYPES[cur]; $('#lbBody').innerHTML = `<img src="${t.photos[idx]}" alt="">`; $('#lbT').textContent = `${t.key} · ${idx + 1} / ${t.photos.length}`; $('#lb .l').style.display = $('#lb .r').style.display = ''; }
+document.addEventListener('click', e => {
+  const el = e.target;
+  if (el.closest('.bar button')) { lay = el.dataset.lay; document.querySelectorAll('.bar button').forEach(b => b.classList.toggle('on', b === el)); idx = 0; render(); return; }
+  if (el.closest('.tab')) { cur = +el.closest('.tab').dataset.i; idx = 0; render(); return; }
+  if (el.classList.contains('prev')) { go(-1); render(); return; }
+  if (el.classList.contains('next')) { go(1); render(); return; }
+  if (el.closest('.strip img')) { idx = +el.dataset.i; render(); return; }
+  if (el.closest('#main')) { openLb(idx); return; }
+  if (el.dataset.z) { openLb(+el.dataset.z); return; }
+  if (el.closest('#lb .x') || el.id === 'lb') { $('#lb').classList.remove('on'); render(); return; }
+  if (el.closest('#lb .l')) { go(-1); lbShow(); return; }
+  if (el.closest('#lb .r')) { go(1); lbShow(); return; }
+});
+document.addEventListener('keydown', e => {
+  if (!$('#lb').classList.contains('on')) return;
+  if (e.key === 'Escape') { $('#lb').classList.remove('on'); render(); }
+  if (e.key === 'ArrowLeft') { go(-1); lbShow(); }
+  if (e.key === 'ArrowRight') { go(1); lbShow(); }
+});
+render();
+</script>
+</body>
+</html>

@@ -10,3 +10,4 @@ node_modules/
 *.xlsx
 _자료/
 __pycache__/
+소스/DAELASOO/내부/*.mp4

@@ -33,3 +33,18 @@ test('다른 단지 이름 · 주소로 바꾸면 고정 화면에 옛 이름이
     assert.match(out['public/robots.txt'], /Sitemap: https:\/\/new\.example\.kr\/sitemap\.xml/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('실내 둘러보기: site.json interior 사진 파일이 다 있고 · 호수가 공개 화면에 안 나감', async () => {
+  const { existsSync, readdirSync } = await import('node:fs');
+  const D = JSON.parse(readFileSync('public/daelasoo/data/site.json', 'utf8'));
+  const dir = 'public/daelasoo/assets/dls/interior/';
+  (D.interior?.types || []).forEach(t => {
+    assert.ok(D.types[t.type], t.type + ' 는 site.json types 에 있어야 함');
+    assert.doesNotMatch(t.where, /\d+호|\d{3,4}$/, '촬영 위치는 동 · 층구간까지만');
+    for (let i = 1; i <= t.photos; i++) {
+      const f = t.type + '_' + String(i).padStart(2, '0') + '.jpg';
+      assert.ok(existsSync(dir + f) && existsSync(dir + 't/' + f), f + ' (큰 · 작은 사진) 없음');
+    }
+  });
+  readdirSync(dir).forEach(f => assert.doesNotMatch(f, /\d-\d{3,4}/, '파일 이름에 동-호수: ' + f));
+});

@@ -59,6 +59,85 @@ a{color:#0066cc;text-decoration:none}a:hover{text-decoration:underline}
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#c8381e"></rect><text x="50" y="62" font-size="34" font-weight="800" text-anchor="middle" fill="#fff" font-family="sans-serif">CC</text></svg></template>
 <dc-import name="dashboard" guest-only="{{ true }}" is-public="{{ isPublic }}" sync-url="{{ syncUrl }}" hint-size="100%,100vh"></dc-import>
 </x-dc>
+<!-- 실내 둘러보기 (시안 preview/r6-interior A안 확정 2026-11-14) — site.json interior 에서 그림. 타입별 실제 세대 사진, 동 · 층구간까지만(호수 X), 영상 없음. 자료가 없으면 칸 자체를 숨김 -->
+<section id="interior" hidden style="max-width:1720px;margin:0 auto;padding:28px 20px 0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#1d1d1f">
+  <style>
+    #interior h2{font-size:20px;font-weight:800;margin:0 0 4px}
+    #interior .in-lead{color:#6e6e73;font-size:14px;margin:0 0 14px;line-height:1.5}
+    #interior .in-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+    #interior .in-tabs button{border:1px solid #ececf0;background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:#1d1d1f;display:flex;align-items:center;gap:6px}
+    #interior .in-tabs button i{width:9px;height:9px;border-radius:50%;display:inline-block}
+    #interior .in-tabs button small{color:#6e6e73;font-weight:600}
+    #interior .in-tabs button.on{border-color:#c8381e;color:#c8381e}
+    #interior .in-card{background:#fff;border:1px solid #ececf0;border-radius:14px;padding:18px}
+    #interior .in-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    #interior .in-head b{display:block;font-size:19px;font-weight:800}
+    #interior .in-head span{color:#6e6e73;font-size:14px}
+    #interior .in-btn{border-radius:10px;padding:11px 18px;font-weight:700;font-size:14px;background:#c8381e;color:#fff;text-decoration:none}
+    #interior .in-body{max-width:900px;margin:0 auto}
+    #interior .in-main{position:relative;border-radius:12px;overflow:hidden;background:#e9e9ee;aspect-ratio:4/3;cursor:zoom-in}
+    #interior .in-main img{display:block;width:100%;height:100%;object-fit:contain}
+    #interior .in-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.85);font-size:20px;cursor:pointer;color:#1d1d1f}
+    #interior .in-prev{left:10px}#interior .in-next{right:10px}
+    #interior .in-cnt{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:4px 10px;border-radius:999px}
+    #interior .in-strip{display:flex;gap:8px;overflow-x:auto;margin-top:10px;padding-bottom:4px}
+    #interior .in-strip img{width:92px;height:69px;object-fit:cover;border-radius:8px;cursor:pointer;opacity:.55;border:2px solid transparent;flex:none}
+    #interior .in-strip img.on{opacity:1;border-color:#c8381e}
+    #in-lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center}
+    #in-lb.on{display:flex}
+    #in-lb img{max-width:94vw;max-height:86vh;border-radius:6px}
+    #in-lb button{position:absolute;border:0;background:rgba(255,255,255,.15);color:#fff;width:48px;height:48px;border-radius:50%;font-size:22px;cursor:pointer}
+    #in-lb .x{top:14px;right:14px}#in-lb .l{left:14px;top:50%}#in-lb .r{right:14px;top:50%}
+    #in-lb .t{position:absolute;bottom:16px;left:0;right:0;text-align:center;color:#ddd;font-size:13px}
+    @media (max-width:560px){#interior{padding:20px 16px 0}#interior h2{font-size:18px}#interior .in-card{padding:14px}#interior .in-btn{width:100%;text-align:center}}
+  </style>
+  <h2>실내 둘러보기</h2>
+  <p class="in-lead">실제 세대를 촬영한 사진입니다. 타입을 골라 보세요.</p>
+  <div class="in-tabs" id="in-tabs"></div>
+  <div class="in-card" id="in-card"></div>
+  <div id="in-lb"><button class="x" aria-label="닫기">✕</button><button class="l" aria-label="이전">‹</button><button class="r" aria-label="다음">›</button><img alt=""><div class="t"></div></div>
+</section>
+<script>
+(function () {
+  var S = window.__SITE || {}, list = ((S.interior || {}).types || []).filter(function (t) { return t.photos > 0; });
+  if (!list.length) return;
+  var V = S.assetVer ? '?v=' + S.assetVer : '', cur = 0, idx = 0, $ = function (s) { return document.querySelector(s); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var pic = function (t, i, small) { return 'assets/dls/interior/' + (small ? 't/' : '') + t.type + '_' + (i < 9 ? '0' : '') + (i + 1) + '.jpg' + V; };
+  var info = function (k) { var t = (S.types || {})[k] || {}, b = t.byBlock || {}, f = b[Object.keys(b)[0]] || {}; return { color: t.color || '#ccc', ex: f.exclusive, rooms: t.rooms, baths: t.baths }; };
+  function draw() {
+    var t = list[cur], n = t.photos, d = info(t.type);
+    $('#in-tabs').innerHTML = list.map(function (x, i) { return '<button class="' + (i === cur ? 'on' : '') + '" data-i="' + i + '"><i style="background:' + esc(info(x.type).color) + '"></i>' + esc(x.type) + ' <small>사진 ' + x.photos + '</small></button>'; }).join('');
+    var strip = ''; for (var i = 0; i < n; i++) strip += '<img loading="lazy" src="' + pic(t, i, 1) + '" data-i="' + i + '" class="' + (i === idx ? 'on' : '') + '" alt="">';
+    $('#in-card').innerHTML = '<div class="in-head"><div><b>' + esc(t.type) + ' 타입' + (d.ex ? ' · 전용 ' + Number(d.ex).toFixed(2) + '㎡' : '') + '</b>' +
+      '<span>' + (d.rooms ? '방' + d.rooms + ' · 욕실' + d.baths + ' · ' : '') + esc(t.where || '') + ' 실제 세대 촬영</span></div>' +
+      '<a class="in-btn" href="?reg=client&int=' + encodeURIComponent(t.type + ' 실내 사진 보고 관심') + '">' + esc(t.type) + ' 관심 등록</a></div>' +
+      '<div class="in-body"><div class="in-main"><img src="' + pic(t, idx) + '" alt="' + esc(t.type) + ' 실내 사진 ' + (idx + 1) + '">' +
+      '<button class="in-nav in-prev" aria-label="이전">‹</button><button class="in-nav in-next" aria-label="다음">›</button><span class="in-cnt">' + (idx + 1) + ' / ' + n + '</span></div>' +
+      '<div class="in-strip">' + strip + '</div></div>';
+  }
+  function go(dd) { var n = list[cur].photos; idx = (idx + dd + n) % n; }
+  function lb() { var t = list[cur]; $('#in-lb img').src = pic(t, idx); $('#in-lb .t').textContent = t.type + ' · ' + (idx + 1) + ' / ' + t.photos; }
+  $('#interior').addEventListener('click', function (e) {
+    var el = e.target, tab = el.closest('#in-tabs button');
+    if (tab) { cur = +tab.getAttribute('data-i'); idx = 0; draw(); return; }
+    if (el.closest('.in-prev')) { go(-1); draw(); return; }
+    if (el.closest('.in-next')) { go(1); draw(); return; }
+    if (el.closest('.in-strip img')) { idx = +el.getAttribute('data-i'); draw(); return; }
+    if (el.closest('.in-main')) { $('#in-lb').classList.add('on'); lb(); return; }
+    if (el.closest('#in-lb .x') || el.id === 'in-lb') { $('#in-lb').classList.remove('on'); draw(); return; }
+    if (el.closest('#in-lb .l')) { go(-1); lb(); return; }
+    if (el.closest('#in-lb .r')) { go(1); lb(); return; }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!$('#in-lb').classList.contains('on')) return;
+    if (e.key === 'Escape') { $('#in-lb').classList.remove('on'); draw(); }
+    if (e.key === 'ArrowLeft') { go(-1); lb(); }
+    if (e.key === 'ArrowRight') { go(1); lb(); }
+  });
+  draw(); $('#interior').hidden = false;
+})();
+</script>
 <!-- R2 공개 세대 (시안 preview/r2-public-pick 확정 2026-11-13) — 관리자가 고른 공실 · 퇴거확정(매물동의) 세대. 동 · 층구간 · 타입만, 공개 세대가 없으면 칸 자체를 숨김 -->
 <section id="pub-units" hidden style="max-width:1720px;margin:0 auto;padding:28px 20px 0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#1d1d1f">
   <style>

@@ -5,14 +5,14 @@
 # - 사진은 폭 MAX_W · 높이 MAX_H 픽셀 이하로 (세로로 긴 안내 그림은 폭 유지) 줄이고 JPG(품질 82)로 저장. 원본(소스/)은 건드리지 않는다
 # 실행: 프로젝트 폴더에서  python tools/watermark.py   (처음 한 번: py -m pip install --user pillow)
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / '소스' / 'DAELASOO' / '소스', ROOT / 'public' / 'daelasoo' / 'assets' / 'dls'
 LOGO = ROOT / '소스' / '사무소로고.png'
 OPACITY, MAX_W, MAX_H, QUALITY = 0.03, 1600, 6000, 82
 
-# (원본 경로, 저장 경로, 로고 새김 여부[, 'R' = 오른쪽으로 90도 돌림 · 'G' = 제미나이 별 지움 · 'H' = 큰 화면용 폭 2400 · 'U' = 작은 원본을 커뮤니티 사진 크기(1600x1195)로 키움 · 'X' = 작은 원본을 메인 사진 폭 2400으로 키움 · (x0, y0, x1, y1) = 그 부분만 잘라 씀]) — 로고·안내문 그림처럼 새기면 안 되는 것은 False
+# (원본 경로, 저장 경로, 로고 새김 여부[, 'R' = 오른쪽으로 90도 돌림 · 'G' = 제미나이 별 지움 · 'H' = 큰 화면용 폭 2400 · 'U' = 작은 원본을 커뮤니티 사진 크기(1600x1195)로 키움 · 'X' = 작은 원본을 메인 사진 폭 2400으로 키움 · 'S' = 작은 사진(폭 240)도 t/ 폴더에 · (x0, y0, x1, y1) = 그 부분만 잘라 씀]) — 로고·안내문 그림처럼 새기면 안 되는 것은 False
 FILES = [
     ('대라수1차.jpg', 'hero.jpg', True),                 # 첫 화면 카드 · 단지 소개 메인
     ('(1차)배치도.jpg', 'siteplan.jpg', True),            # 단지배치도
@@ -54,6 +54,29 @@ FILES = [
     ('daelasoo1_B011d.png', 'info/invest.jpg', True),         # 서남권 896조원 투자계획
     ('daelasoo1_B011e.png', 'info/airport.jpg', True),        # 군공항 이전 & 재건축
     ('daelasoo1_B011f.png', 'info/samsung.jpg', True),        # 하남 삼성전자 AI공조시스템
+    # 실내 사진 (소스/DAELASOO/내부, 2026-11-14 대표 확정 시안 r6-interior A안) — 저장 이름에 호수 안 넣음(공개 원칙), 영상은 안 씀(대표 결정)
+    ('../내부/2-1601_84A001.jpg', 'interior/80A_01.jpg', True, 'S'),
+    ('../내부/2-1601_84A002.jpg', 'interior/80A_02.jpg', True, 'S'),
+    ('../내부/2-1601_84A003.jpg', 'interior/80A_03.jpg', True, 'S'),
+    ('../내부/2-1601_84A004.jpg', 'interior/80A_04.jpg', True, 'S'),
+    ('../내부/2-1601_84A005.jpg', 'interior/80A_05.jpg', True, 'S'),
+    ('../내부/2-1601_84A006.jpg', 'interior/80A_06.jpg', True, 'S'),
+    ('../내부/2-1601_84A007.jpg', 'interior/80A_07.jpg', True, 'S'),
+    ('../내부/4-1301_59A001.jpg', 'interior/59A_01.jpg', True, 'S'),
+    ('../내부/4-1301_59A002.jpg', 'interior/59A_02.jpg', True, 'S'),
+    ('../내부/4-1301_59A003.jpg', 'interior/59A_03.jpg', True, 'S'),
+    ('../내부/4-1301_59A004.jpg', 'interior/59A_04.jpg', True, 'S'),
+    ('../내부/4-1301_59A005.jpg', 'interior/59A_05.jpg', True, 'S'),
+    ('../내부/4-1301_59A006.jpg', 'interior/59A_06.jpg', True, 'S'),
+    ('../내부/4-1301_59A007.jpg', 'interior/59A_07.jpg', True, 'S'),
+    ('../내부/4-1301_59A008.jpg', 'interior/59A_08.jpg', True, 'S'),
+    ('../내부/4-1301_59A009.jpg', 'interior/59A_09.jpg', True, 'S'),
+    ('../내부/3-2002_59B001.jpg', 'interior/59B_01.jpg', True, 'S'),
+    ('../내부/3-2002_59B002.jpg', 'interior/59B_02.jpg', True, 'S'),
+    ('../내부/3-2002_59B003.jpg', 'interior/59B_03.jpg', True, 'S'),
+    ('../내부/3-2002_59B004.jpg', 'interior/59B_04.jpg', True, 'S'),
+    ('../내부/3-2002_59B005.jpg', 'interior/59B_05.jpg', True, 'S'),
+    ('../내부/3-2002_59B006.jpg', 'interior/59B_06.jpg', True, 'S'),
     # 머리글 로고 (새기지 않음)
     ('logo.png', 'logo.png', False),
     ('logo1.png', 'logo1.png', False),
@@ -127,6 +150,7 @@ def main():
             continue
         q.parent.mkdir(parents=True, exist_ok=True)
         img = stack([flat(Image.open(SRC / s)) for s in srcs]) if len(srcs) > 1 else Image.open(SRC / srcs[0])
+        img = ImageOps.exif_transpose(img)   # 휴대폰 사진의 '돌려서 보기' 표시대로 바로 세움 (59B 6번째 사진, 2026-11-14)
         for box in (o for o in opt if isinstance(o, tuple)):
             img = img.crop(box)
         if 'R' in opt:  # 세로로 그려진 평면(84B·69)을 다른 타입처럼 가로로 맞춤
@@ -152,6 +176,10 @@ def main():
                 out.thumbnail((600, 600), Image.LANCZOS); out.save(q, 'PNG', optimize=True)
             else:
                 out.save(q, 'JPEG', quality=QUALITY, optimize=True, progressive=True)
+            if 'S' in opt:   # 실내 사진 아래 작은 사진 줄용
+                t = q.parent / 't' / q.name
+                t.parent.mkdir(parents=True, exist_ok=True)
+                sm = out.copy(); sm.thumbnail((240, 240), Image.LANCZOS); sm.save(t, 'JPEG', quality=75, optimize=True)
         print(f'{dst:22s} {q.stat().st_size // 1024:5d} KB  {img.size[0]}x{img.size[1]}')
 
 

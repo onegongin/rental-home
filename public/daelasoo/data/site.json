@@ -580,6 +580,26 @@
     },
     "spots": []
   },
+  "interior": {
+    "_": "실내 둘러보기 (2026-11-14 시안 r6-interior A안 확정). 사진 = assets/dls/interior/<타입>_01.jpg … (작은 사진 t/), 만들기는 tools/watermark.py. where = 동 · 층구간까지만(호수 X, 대표 결정). 영상은 안 씀",
+    "types": [
+      {
+        "type": "80A",
+        "where": "102동 중층",
+        "photos": 7
+      },
+      {
+        "type": "59A",
+        "where": "104동 중층",
+        "photos": 9
+      },
+      {
+        "type": "59B",
+        "where": "103동 중층",
+        "photos": 6
+      }
+    ]
+  },
   "popups": {},
   "content": {
     "hero": {
