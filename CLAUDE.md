@@ -24,7 +24,7 @@
 | 사진 손질 (2026-11-14) | **완료** — 머리글 로고 `logo1.png`(site.logo) · 단지 화면 맨 위 사진 = 가로 투시도 `hero_wide.jpg`(원본 `소스/DAELASOO/소스/투시가로.png`, 시안 r7-hero) · 사업개요 옆 3칸 = 실내 사진(80A 주방 · 59A 거실 · 59B 거실, 예전 혜택 · 생활권 그림 3장은 화면에서 빠짐) · 첫 화면 카드 = hero_wide.jpg · 링크 미리보기 = `og.jpg` 1200×630(시안 r8-og, site.json seo.ogImage → `node tools/apply_site.mjs`). ⚠ 남은 질문: `소스/DAELASOO/전세상승.png` 쓸 곳(대표 답 기다림, git 에 안 올림) · 내부 영상 4개는 이 PC(작업한 PC)에만 있음 | |
 | R5 배포 | **보류 (2026-11-13 대표: 아직 배포 안 함)** — 확인됨: wrangler 로그인 onegonginn 됨 · rental-home DB · R2 · Worker 아직 없음(아이파크 hwip · 123공실 것만 있음, 건드리지 않음) · 배포할 때 main 에도 push(대표 결정) · Turnstile 위젯은 대표가 만들어 키 2개 전달. `npx.cmd wrangler login`(onegonginn) → D1 · R2 만들기 → Turnstile 위젯 · 비밀값(STAFF_KEY · TG_TOKEN 새 봇 · GEMINI_API_KEY) → deploy → 검색 등록. 순서는 `_설계서/다른단지_만들기.md` 5장 | |
 
-- 작업 시작 전 `git pull`, 끝나면 커밋 + push (저장소 연결 뒤)
+- 작업 시작 전 `git pull origin preview` (R5 전까지 최신 작업은 GitHub **preview** 브랜치에만 있음 — origin/main 은 예전 것), 끝나면 커밋 + `git push origin main:preview`
 - 프로젝트 안에 `O:\` 같은 절대 경로를 쓰지 않는다
 - 로컬 확인: `npx.cmd wrangler dev` → http://localhost:8787/daelasoo/ (직원 사무실 코드 = `.dev.vars` STAFF_KEY, PC마다 직접)
 
