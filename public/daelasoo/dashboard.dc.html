@@ -24,7 +24,7 @@ html:root [data-sec=ntf]{grid-column:1 / -1!important;order:9}
 @media (max-width:560px){html:root [data-m=ntfrow]{grid-template-columns:70px minmax(0,1fr) auto!important}html:root [data-m=ntfrow]>span:nth-child(2){display:none}}
 @media (max-width:560px){html:root [data-m=xbgrid]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 /* 헷지했지 혜택 보드 (시안 r15-hedge-soft 확정 2026-11-14) — 바탕 = 곰 그림 바탕색 연보라, 강조 = 사이트 빨강 */
-.hgb{background:#f6f6fe;border:1px solid #e6e3fb;border-radius:14px;padding:clamp(18px,2.4vw,32px);display:grid;grid-template-columns:minmax(0,1.15fr) 240px minmax(0,1fr) 190px;gap:clamp(14px,2vw,28px);align-items:center;color:#1d1d1f}
+.hgb{background:#f6f6fe;border:1px solid #e6e3fb;border-radius:14px;padding:clamp(18px,2.4vw,32px);display:grid;grid-template-columns:minmax(0,1fr) 190px minmax(0,1.3fr) 180px;gap:clamp(14px,2vw,28px);align-items:center;color:#1d1d1f}
 .hgb-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.hgb-tag{font-size:12.5px;font-weight:800;border-radius:9999px;padding:5px 12px;background:#fff;color:#6b5ce7;border:1px solid #e6e3fb}.hgb-tag.r{background:#c8381e;color:#fff;border-color:#c8381e}
 .hgb-hl{font-size:clamp(28px,3vw,46px);font-weight:900;letter-spacing:-.03em;line-height:1.18;margin:0}.hgb-hl em{font-style:normal;color:#c8381e}
 .hgb-hl2{font-size:clamp(18px,1.6vw,24px);font-weight:800;margin:10px 0 0;letter-spacing:-.02em}.hgb-hl2 u{text-decoration:none;background:linear-gradient(transparent 62%,rgba(200,56,30,.18) 62%)}
@@ -33,12 +33,17 @@ html:root [data-sec=ntf]{grid-column:1 / -1!important;order:9}
 .hgb-bear{width:100%;display:block}
 .hgb-rt{display:flex;flex-direction:column;gap:10px;min-width:0}
 .hgb-gift{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #f3c7bd;border-radius:14px;padding:12px 14px}.hgb-gift .ic{flex:none;width:42px;height:42px;border-radius:50%;background:#fdecea;display:grid;place-items:center;font-size:21px}.hgb-gift b{display:block;font-size:16px;font-weight:900;color:#c8381e}.hgb-gift div>span{font-size:12.5px;color:#3a3a3c;font-weight:600}
-.hgb-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hgb-st{background:#fff;border:1px solid #e6e3fb;border-radius:12px;padding:11px}.hgb-st i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#6b5ce7;color:#fff;font-size:12px;font-weight:900;margin-bottom:6px}.hgb-st b{display:block;font-size:14.5px}.hgb-st>span{display:block;font-size:12px;color:#6e6e73;line-height:1.5}
+.hgb-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hgb-st{background:#fff;border:1px solid #e6e3fb;border-radius:12px;padding:11px}.hgb-st i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#6b5ce7;color:#fff;font-size:12px;font-weight:900;margin-bottom:6px}.hgb-st b{display:block;font-size:14.5px}.hgb-st>span{display:block;font-size:12px;color:#6e6e73;line-height:1.5;white-space:nowrap}
 .hgb-why{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hgb-why div{background:rgba(255,255,255,.6);border-radius:12px;padding:9px 12px;font-size:12px;color:#6e6e73;line-height:1.5}.hgb-why b{display:block;color:#1d1d1f;font-size:13.5px;margin-bottom:2px}
 .hgb-qr{display:block;border-radius:12px;overflow:hidden;border:1px solid #e6e3fb;background:#fff}.hgb-qr img{width:100%;display:block}
 .hgb-fine{grid-column:1/-1;font-size:12px;color:#6e6e73;line-height:1.6;border-top:1px solid #e6e3fb;padding-top:12px}
 html:root .hgb-st i{color:#fff!important;font-size:12px!important;font-weight:900!important;font-style:normal!important}html:root .hgb-st b,html:root .hgb-why b{font-weight:800!important;color:#1d1d1f!important}html:root .hgb-gift b{color:#c8381e!important;font-weight:900!important;font-size:16px!important}html:root .hgb-sub b{font-weight:700!important}   /* 화면 공통 b · i 글자 규칙에 덮이지 않게 */
-@media (max-width:1280px){.hgb{grid-template-columns:minmax(0,1fr) 200px minmax(0,1fr)}.hgb-qr{display:none}}
+@media (max-width:1600px){.hgb-st>span{white-space:normal}}   /* 1600px 보다 좁으면 3단계 설명 두 줄 허용 (시안 r16-hedge-wide) */
+.hga{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 18px;align-items:center;background:#fff;border:1px solid #e6e3fb;border-radius:14px;padding:14px 18px}.hga-lb{display:flex;flex-direction:column;gap:2px;padding-right:18px;border-right:1px solid #e6e3fb}.hga-lb small{font-size:11px;font-weight:800;color:#6b5ce7}.hga-lb b{font-size:17px;font-weight:900;white-space:nowrap}
+.hga-p{margin:0 0 8px;font-size:13.5px;color:#3a3a3c;line-height:1.6}.hga .k{font-weight:800;color:#1d1d1f}.hga-pts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.hga-pt{background:#f6f6fe;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#3a3a3c;line-height:1.55}.hga-pt>b{display:block;font-size:13.5px;margin-bottom:3px;color:#1d1d1f;font-weight:800}
+.hga-ex{margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;background:#fdecea;border-radius:10px;padding:10px 14px;font-size:13.5px;color:#3a3a3c}.hga-ex>b{color:#c8381e!important;font-weight:900;white-space:nowrap}.hga-ex .k{font-weight:800}.hga-ex small{font-size:11.5px;color:#6e6e73;margin-left:auto}
+@media (max-width:1100px){.hga-pts{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:640px){.hga{grid-template-columns:minmax(0,1fr)}.hga-lb{border-right:0;padding-right:0}.hga-pts{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:1280px){.hgb{grid-template-columns:minmax(0,1fr) 180px minmax(0,1fr)}.hgb-qr{display:none}}
 @media (max-width:900px){.hgb{grid-template-columns:minmax(0,1fr)}.hgb-bear{max-width:220px;margin:0 auto}}
 @media (max-width:560px){.hgb-steps,.hgb-why{grid-template-columns:minmax(0,1fr)}}
 /* 6대 메가 프리미엄 미니칩 (시안 r11-premium-3x2 확정 2026-11-14): PC 3칸 × 2줄 · 왼쪽 입지환경 높이에 맞춰 늘어남 / 휴대폰 2칸 × 3줄 */
@@ -2755,6 +2760,15 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <div class="hgb-why"><sc-for list="{{ si.hg.why }}" as="w"><div><b>{{ w.t }}</b>{{ w.s }}</div></sc-for></div>
     </div>
     <a class="hgb-qr" href="{{ si.hg.link }}" target="_blank" rel="noopener" aria-label="헷지했지 앱 QR"><img src="{{ si.hg.qr }}" alt="헷지했지 보호약정 — QR 찍고 헷지했지 앱으로" loading="lazy"></a>
+    <!-- 헷지했지, 쉽게 알기 (site.json content.hedge.about, 시안 r17-hedge-about 확정 2026-11-14) — 글 조각 [글, 1=굵게] -->
+    <sc-if value="{{ si.hg.hasAbout }}"><div class="hga">
+      <div class="hga-lb"><small>{{ si.hg.aSmall }}</small><b>{{ si.hg.aTitle }}</b></div>
+      <div>
+        <p class="hga-p"><sc-for list="{{ si.hg.aLead }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></p>
+        <div class="hga-pts"><sc-for list="{{ si.hg.aQs }}" as="q"><div class="hga-pt"><b>❓ {{ q.t }}</b><sc-for list="{{ q.segs }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></div></sc-for></div>
+        <div class="hga-ex"><b>{{ si.hg.exT }}</b><span><sc-for list="{{ si.hg.exSegs }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></span><small>{{ si.hg.exNote }}</small></div>
+      </div>
+    </div></sc-if>
     <div class="hgb-fine">{{ si.hg.fine }}</div>
   </section></div>
   </sc-if>
@@ -5154,7 +5168,8 @@ class Component extends DCLogic {
       /* 헷지했지 혜택 보드 (site.json content.hedge, 시안 r15-hedge-soft 확정 2026-11-14) */
       ...(H => ({ hasHedge: !!H.hl1, hg: { tag1: H.tag1 || '', tag2: H.tag2 || '', hl1: H.hl1 || '', hl2: H.hl2 || '', sub0: H.sub0 || '', subU: H.subU || '', desc1: H.desc1 || '', desc2: H.desc2 || '', link: H.link || '#',
         bear: P(H.bear), qr: P(H.qr), giftT: H.giftT || '', giftS: H.giftS || '', fine: H.fine || '', reg: () => this.setState({ gRegOpen: true, gReg: Object.assign(this.gBlank('client', ''), { interest: '헷지했지 매입보장 혜택 상담' }) }),
-        steps: (H.steps || []).map((s, i) => ({ n: String(i + 1), t: s[0], s: s[1] })), why: (H.why || []).map(w => ({ t: w[0], s: w[1] })) } }))(C.hedge || {}),
+        steps: (H.steps || []).map((s, i) => ({ n: String(i + 1), t: s[0], s: s[1] })), why: (H.why || []).map(w => ({ t: w[0], s: w[1] })),
+        ...((A, sg) => ({ hasAbout: !!A.title, aSmall: A.small || '', aTitle: A.title || '', aLead: sg(A.lead), aQs: (A.qs || []).map(q => ({ t: q[0], segs: sg(q[1]) })), exT: (A.ex || {}).title || '', exSegs: sg((A.ex || {}).segs), exNote: (A.ex || {}).note || '' }))(H.about || {}, L => (L || []).map(x => ({ t: [].concat(x)[0], c: [].concat(x)[1] ? 'k' : '' }))) } }))(C.hedge || {}),
       sections: (C.sections || []).filter(s0 => !s0.hidden).map(s0 => { const BK = s0.blocks ? Object.keys(s0.blocks) : []; const bk = BK.length ? ((S.siBlk || {})[s0.id] || BK[0]) : null; const bv = bk ? s0.blocks[bk] : null; const s = Object.assign({}, s0, bv ? (typeof bv === 'string' ? { image: bv } : bv) : {});
         return { title: s0.title, blks: BK.map(k => ({ label: k, bg: k === bk ? '#1d1d1f' : '#fff', fg: k === bk ? '#fff' : '#1d1d1f', bd: k === bk ? '#1d1d1f' : '#d2d2d7', go: () => this.setState(ss => ({ siBlk: Object.assign({}, ss.siBlk, { [s0.id]: k }) })) })), map: s.map || '', hasMap: !!s.map, img: P(s.image), hasImg: !!s.image && !s.map, zoom: zoom(P(s.image)), list: (s.pills ? s.pills.map(k => (s.points || [])[k - 1]).filter(Boolean) : s.points || s.items || []).map((t, i) => ({ n: String(i + 1).padStart(2, '0'), text: txt(t), short: (s.pillsShort || {})[txt(t)] || txt(t) })),
           hasThumbs: !!(s.images || []).length, thumbs: (s.images || []).map((x, i) => ({ src: P(x), alt: s0.title + ' ' + (i + 1), zoom: zoom(P(x)) })), ...this.dhVals(s0.id === 'summary', P) }; }),
