@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>시안 · 평면도 창</title>
+<!-- 시안 r12-planpop (2026-11-14) — 평면도 창: 메인 = 새 3D 평면(소스 80A_3D … 59C_3D, plans/main3d_*.jpg) · 오른쪽 = 타입별 실내 사진(큰 사진 1 + 작은 사진 줄) + '| 평면 |' 칸
+     실내 사진 없는 타입(80B · 59C)은 오른쪽에 평면만 크게. 로컬 서버(http://localhost:8787/preview/r12-planpop.html)에서 열기 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--ink:#1d1d1f;--sub:#6e6e73;--on:#c8381e;--line:#ececf0}
+  *{box-sizing:border-box}
+  body{margin:0;background:rgba(0,0,0,.55);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif;color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .pop{width:100%;max-width:1440px;max-height:calc(100vh - 40px);background:#fff;border-radius:20px;display:flex;flex-direction:column;overflow:hidden}
+  .hd{display:flex;align-items:center;gap:8px 10px;padding:14px 18px 10px;flex-wrap:wrap}
+  .dot{width:12px;height:12px;border-radius:4px}.t{font-size:18px;font-weight:800}.s{font-size:12.5px;color:var(--sub)}
+  .x{margin-left:auto;border:0;background:#f0f0f2;border-radius:999px;width:32px;height:32px;cursor:pointer}
+  .nav{display:flex;gap:6px;align-items:center;padding:0 18px 10px;font-size:12px;color:var(--sub);border-bottom:1px solid var(--line)}
+  .nav button{border:1px solid #d2d2d7;background:#fff;border-radius:999px;padding:4px 12px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+  .nav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .bd{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;padding:14px 18px}
+  .stage{position:relative;min-height:0;height:calc(100vh - 240px);max-height:680px;background:#f7f7f9;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .stage img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+  .stage .zm{position:absolute;right:12px;bottom:12px;background:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+  .stage .hint{position:absolute;left:12px;bottom:12px;font-size:11.5px;color:var(--sub);background:rgba(255,255,255,.85);border-radius:6px;padding:3px 8px}
+  .side{min-height:0;height:calc(100vh - 240px);max-height:680px;display:flex;flex-direction:column;gap:12px;overflow:auto;scrollbar-width:thin}
+  .blk{border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+  .blk h4{margin:0;display:flex;align-items:baseline;gap:8px;font-size:14px}.blk h4 span{font-size:11.5px;color:var(--sub);font-weight:600}
+  .big{position:relative;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#f5f5f7;cursor:zoom-in}
+  .big img{width:100%;height:100%;object-fit:cover;display:block}
+  .big .n{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px}
+  .big .pv,.big .nx{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.9);cursor:pointer;font-size:15px}
+  .big .pv{left:8px}.big .nx{right:8px}
+  .strip{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 18px)/4);gap:6px;overflow-x:auto;scrollbar-width:none}
+  .strip button{aspect-ratio:1/1;border-radius:8px;overflow:hidden;border:2px solid transparent;padding:0;cursor:pointer;background:#f5f5f7}
+  .strip button.on{border-color:var(--on)}
+  .strip img{width:100%;height:100%;object-fit:cover;display:block}
+  .plan{flex:1 1 auto;min-height:180px;border-radius:10px;background:#fff center/contain no-repeat;cursor:zoom-in;border:1px solid var(--line)}
+  .cap{background:#4a7a96;color:#fff;font-size:13px;font-weight:800;text-align:center;border-radius:8px;padding:6px}
+  .more{font-size:11.5px;color:var(--sub);text-align:right}
+  .none{font-size:12.5px;color:var(--sub);background:#f5f5f7;border-radius:10px;padding:10px 12px;line-height:1.5}
+  .ft{display:flex;align-items:center;gap:8px;padding:10px 18px 14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--sub)}
+  .ft .sp{flex:1}.b1,.b2{border-radius:999px;padding:10px 18px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+  .b1{background:#fff;border:1px solid #d2d2d7}.b2{background:var(--on);color:#fff;border:0}
+  .note{position:fixed;left:16px;top:16px;max-width:360px;background:#1d1d1f;color:#fff;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.6;z-index:5}
+  @media (max-width:900px){.bd{grid-template-columns:minmax(0,1fr)}.stage,.side{height:auto;max-height:none}.stage{aspect-ratio:4/3}.note{display:none}}
+</style>
+</head>
+<body>
+<div class="note"><b>시안 · 평면도 창</b><br>타입 버튼을 눌러 비교 — 메인 = 새 3D 평면 · 오른쪽 = 실내 사진 + 평면<br>80B · 59C 는 실내 사진이 없어 평면만 크게</div>
+<div class="pop">
+  <div class="hd"><span class="dot" id="dot"></span><span class="t" id="t"></span><span class="s" id="s"></span><button class="x" aria-label="닫기">✕</button></div>
+  <div class="nav" id="nav"></div>
+  <div class="bd">
+    <div class="stage"><img id="main" alt=""><span class="hint">마우스 휠로 원하는 곳을 확대 · 끌어서 이동 · 두 번 누르면 원래대로</span><span class="zm">− 100% +</span></div>
+    <div class="side" id="side"></div>
+  </div>
+  <div class="ft"><span id="u"></span><span class="sp"></span><button class="b1">동호배치표에서 보기</button><button class="b2">관심등록하기</button></div>
+</div>
+<script>
+const B = '/daelasoo/assets/dls/';
+const T = {
+  // main = 대표 사진 번호 (대표 지정 2026-11-14: 59A 8번 · 59B 2번 · 80A 6번) → 맨 앞으로
+  '59A': { c: '#8bc53f', s: '전용 59.96㎡ · 공급 81.12㎡ (24.5평) · 50세대', pics: 9, main: 8, where: '104동 중층' },
+  '59B': { c: '#f4a7c8', s: '전용 59.65㎡ · 공급 80.61㎡ (24.4평) · 50세대', pics: 6, main: 2, where: '103동 중층' },
+  '59C': { c: '#8fd3ef', s: '전용 59.65㎡ · 공급 80.78㎡ (24.4평) · 50세대', pics: 0 },
+  '80A': { c: '#f7d94c', s: '전용 80.38㎡ · 공급 106.81㎡ (32.3평) · 50세대', pics: 7, main: 6, where: '102동 중층' },
+  '80B': { c: '#f0913f', s: '전용 80.88㎡ · 공급 108.38㎡ (32.8평) · 100세대', pics: 0 }
+};
+let k = '59A', ci = 0;
+const pad = i => String(i + 1).padStart(2, '0');
+function draw() {
+  const t = T[k];
+  dot.style.background = t.c; document.getElementById('t').textContent = k + ' 평면도'; s.textContent = t.s; u.textContent = '1차 ' + t.s.split(' · ').pop();
+  nav.innerHTML = '<span>타입</span>' + Object.keys(T).map(x => `<button class="${x === k ? 'on' : ''}" onclick="k='${x}';ci=0;draw()">${x}</button>`).join('');
+  main.src = B + 'plans/main3d_' + k + '.jpg'; main.alt = k + ' 3D 평면도';
+  const plan = `<div class="blk" style="flex:1 1 auto;min-height:0"><div class="cap">| 평면 | ${k}</div><div class="plan" style="background-image:url(${B}plans/plan_${k}.jpg)"></div><div class="more">누르면 크게 보기 ↗</div></div>`;
+  const ord = t.pics ? [t.main - 1].concat(Array.from({ length: t.pics }, (_, i) => i).filter(i => i !== t.main - 1)) : [];   // 대표 사진 먼저
+  side.innerHTML = t.pics ? `<div class="blk"><h4>실내 사진 <span>${t.where} 실제 세대 · ${t.pics}장</span></h4>
+      <div class="big"><img id="bigi" src="${B}interior/${k}_${pad(ord[ci])}.jpg" alt="${k} 실내 ${ci + 1}"><button class="pv" onclick="mv(-1)">‹</button><button class="nx" onclick="mv(1)">›</button><span class="n">${ci + 1} / ${t.pics}</span></div>
+      <div class="strip">${ord.map((p, i) => `<button class="${i === ci ? 'on' : ''}" onclick="ci=${i};draw()"><img src="${B}interior/t/${k}_${pad(p)}.jpg" alt=""></button>`).join('')}</div></div>` + plan
+    : `<div class="none">${k} 타입은 아직 실제 세대 사진이 없습니다 — 평면을 크게 보여 드립니다.</div>` + plan;
+}
+function mv(d) { const n = T[k].pics; ci = (ci + d + n) % n; draw(); }
+draw();
+</script>
+</body>
+</html>

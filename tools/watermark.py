@@ -38,6 +38,18 @@ FILES = [
     ('(1차)59A.jpg', 'plans/intro_59A.jpg', True),
     ('(1차)59B.jpg', 'plans/intro_59B.jpg', True),
     ('(1차)59C.jpg', 'plans/intro_59C.jpg', True),
+    # 평면 창 메인 그림을 새 3D 평면으로 (대표가 소스에 넣은 80A_3D … 59C_3D, 2026-11-14 · 시안 r12-planpop)
+    ('80A_3D.png', 'plans/main3d_80A.jpg', True, 'P'),
+    ('80B_3D.png', 'plans/main3d_80B.jpg', True, 'P'),
+    ('59A_3D.png', 'plans/main3d_59A.jpg', True, 'P'),
+    ('59B_3D.png', 'plans/main3d_59B.jpg', True, 'P'),
+    ('59C_3D.png', 'plans/main3d_59C.jpg', True, 'P'),
+    # 평면 창 오른쪽 '| 평면 |' 칸 그림 (대표가 소스에 넣은 *_001, 2026-11-14 · 시안 r12-planpop. 84A_001 은 없어 80A 는 80A_001)
+    ('80A_001.png', 'plans/plan_80A.jpg', True),
+    ('80B_001.jpg', 'plans/plan_80B.jpg', True),
+    ('59A_001.png', 'plans/plan_59A.jpg', True),
+    ('59B_001.png', 'plans/plan_59B.jpg', True),
+    ('59C_001.png', 'plans/plan_59C.jpg', True),
     ('84A_2.png', 'plans/ext_80A.jpg', True),   ('84A_1.png', 'plans/basic_80A.jpg', True),
     ('84B_2.png', 'plans/ext_80B.jpg', True),   ('84B_1.png', 'plans/basic_80B.jpg', True),
     ('59A_3.png', 'plans/ext_59A.jpg', True),   ('59A_1.png', 'plans/basic_59A.jpg', True),   # 59A 위에서 본 3D(59A_2)는 작아서(600x400) 컬러 평면(_1)을 씀
@@ -165,6 +177,9 @@ def main():
             img.save(q)
         else:
             img = flat(img)
+            if 'P' in opt:   # 평면 창 메인(5:3 칸)에 잘리지 않게 흰 여백으로 5:3 맞춤 (새 3D 평면, 2026-11-14 시안 r12-planpop)
+                W, H = (img.width, round(img.width * 3 / 5)) if img.width * 3 >= img.height * 5 else (round(img.height * 5 / 3), img.height)
+                bg = Image.new('RGB', (W, H), (255, 255, 255)); bg.paste(img, ((W - img.width) // 2, (H - img.height) // 2)); img = bg
             if 'U' in opt:   # 커뮤니티 사진(2400x1792)과 같은 비율로 왼쪽을 조금 자르고(오른쪽 아래 '이미지 컷' 글자 유지) 키운 뒤 살짝 선명하게
                 from PIL import ImageFilter
                 w = round(img.height * 2400 / 1792)

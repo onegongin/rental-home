@@ -4,7 +4,7 @@
 // - 화면(dashboard)에서 window.hwPlanPop.open(타입, { types, base, ver, onBoard, onReg }) 로 연다
 (function () {
   const OT = { 69: 1, 79: 1 };
-  const VN = { ext: '확장형', basic: '기본형' };
+  const VN = { ext: '확장형', basic: '기본형', plan: '평면' };
   // 오른쪽 두 평면 칸 이름: site.json types[타입].views 가 있으면 그것 (대라수: 입체 평면 · 위에서 본 평면, R1 2026-11-13)
   const vn = (k, v) => (((O.types || {})[k] || {}).views || {})[v] || VN[v];
   // 실내 사진 (소스/실내 → assets/hwip/interior/타입_번호.jpg)
@@ -83,7 +83,28 @@
 #hpp3 .pv { left: 14px; } #hpp3 .nx { right: 14px; }
 #hpp3 .cl { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255,255,255,.9); font-size: 18px; cursor: pointer; color: #1d1d1f; }
 #hpp3 .lb { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); color: #fff; font-size: 13px; font-weight: 700; background: rgba(0,0,0,.5); border-radius: 9999px; padding: 4px 12px; white-space: nowrap; }
+/* 대라수 구성 (site.json types[타입].pop, 시안 r12-planpop 확정 2026-11-14): 메인 = 3D 평면(5:3 여백 맞춤) · 오른쪽 = 실내 사진(대표 사진 + 작은 사진 줄) + '| 평면 |' 한 칸 */
+#hpp .dside { display: none; }
+#hpp .pop.dls .stage img { width: 100%; }
+#hpp .pop.dls .side { flex-basis: 27%; justify-content: flex-start; gap: 12px; padding: 14px 0; }
+#hpp .pop.dls .side > .card { display: none; }
+#hpp .pop.dls .dside { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+#hpp .ib { border: 1px solid #ececf0; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+#hpp .ib .ph-h { margin: 0; }
+#hpp .ibig { position: relative; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: #f5f5f7; cursor: zoom-in; border: none; padding: 0; display: block; width: 100%; }
+#hpp .ibig img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#hpp .ibig .n { position: absolute; right: 8px; bottom: 8px; background: rgba(0,0,0,.6); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 9999px; padding: 3px 9px; }
+#hpp .ib .ar { position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,.92); cursor: pointer; font-size: 15px; color: #1d1d1f; z-index: 1; }
+#hpp .ib .ar.l { left: 8px; } #hpp .ib .ar.r { right: 8px; }
+#hpp .istrip { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 18px) / 4); gap: 6px; overflow-x: auto; scrollbar-width: none; }
+#hpp .istrip button { aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; border: 2px solid transparent; padding: 0; cursor: pointer; background: #f5f5f7; }
+#hpp .istrip button.on { border-color: #c8381e; }
+#hpp .istrip img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#hpp .dside.solo { flex: 1 1 auto; } #hpp .dside.solo .card { flex: 1 1 auto; } #hpp .dside.solo .card .box { flex: 1 1 auto; aspect-ratio: auto; min-height: 260px; }   /* 실내 사진 없는 타입: 평면을 크게 */
+#hpp .inone { font-size: 12.5px; color: #6e6e73; background: #f5f5f7; border-radius: 10px; padding: 10px 12px; line-height: 1.5; }
+#hpp2.dls .tg { display: none; }
 @media (max-width: 760px) {
+  #hpp .pop.dls .side { flex-direction: column; padding: 0 12px 12px; }
   #hpp .body { flex-direction: column; padding: 0; }
   #hpp .side, #hpp .pop.pcols .side { flex: none; flex-direction: row; padding: 0 12px 12px; gap: 10px; }
   #hpp .card { flex: 1 1 0; min-width: 0; }
@@ -107,6 +128,7 @@
     <div class="side">
       <button class="card" data-v="ext"><span class="cap"></span><span class="box"></span><span class="more">누르면 크게 보기 ↗</span></button>
       <button class="card" data-v="basic"><span class="cap"></span><span class="box"></span><span class="more">누르면 크게 보기 ↗</span></button>
+      <div class="dside"></div>
     </div>
     <div class="pcol"></div>
     <div class="oside"></div>
@@ -142,7 +164,7 @@
     return { reset };
   }
 
-  let R = null, O = {}, cur = null, c3 = 0;
+  let R = null, O = {}, cur = null, c3 = 0, LB = null;   // LB = 대라수 실내 사진 목록 [{ src, label }] (크게 보기 넘기기)
   const A = f => O.base + 'plans/' + f + O.v;
   const IA = (k, i) => O.base + 'interior/' + k + '_' + (i + 1) + '.jpg' + O.v;
 
@@ -171,16 +193,19 @@
     if (!R) build();
     const T = O.types || {}, q = R.q; cur = k;
     const t = T[k] || {}, b = Object.values(t.byBlock || {})[0] || {}, op = t.kind === '오피스텔';
-    const L = INT[k] || [], otPics = !!OT[k] && L.length > 0, aptPics = !OT[k] && L.length > 0;
-    const pop = q('.pop'); pop.classList.toggle('ot', !!OT[k]); pop.classList.toggle('hasPics', otPics); pop.classList.toggle('pcols', aptPics);
+    const PP = t.pop || null, dls = !!PP;   // 대라수 구성 (site.json types[타입].pop)
+    const L = dls ? [] : INT[k] || [], otPics = !!OT[k] && L.length > 0, aptPics = !OT[k] && L.length > 0;
+    const pop = q('.pop'); pop.classList.toggle('ot', !!OT[k]); pop.classList.toggle('hasPics', otPics); pop.classList.toggle('pcols', aptPics); pop.classList.toggle('dls', dls);
     q('.dot').style.background = t.color || '#ddd';
     q('.t').textContent = name(k) + ' 평면도';
     q('.s').textContent = (b.exclusive ? '전용 ' + (+b.exclusive).toFixed(2) + '㎡ · 공급 ' + (+b.supply).toFixed(2) + '㎡ (' + (b.supply * 0.3025).toFixed(1) + '평) · ' : '') + sumBy(t, 'households') + (op ? '실' : '세대');
     q('.u').textContent = Object.keys(t.byBlock || {}).map(g => g + ' ' + t.byBlock[g].households + (op ? '실' : '세대')).join(' · ');
     q('.nav').innerHTML = '<span>타입</span>' + order(T).map(x => `<button class="${x === k ? 'on' : ''}" data-k="${x}">${name(x)}</button>`).join('');
     q('.nav').querySelectorAll('button').forEach(b => b.onclick = () => open(b.dataset.k));
-    const im = q('.stage img'); im.src = A('intro_' + k + '.jpg'); im.alt = name(k) + ' 타입 소개 평면도';
-    if (!OT[k]) { const cs = R.D1.querySelectorAll('.card');
+    const im = q('.stage img'); im.src = A(dls ? PP.main : 'intro_' + k + '.jpg'); im.alt = name(k) + (dls ? ' 3D 평면도' : ' 타입 소개 평면도');
+    LB = null;
+    if (dls) drawSide(k, PP, 0);
+    else if (!OT[k]) { const cs = R.D1.querySelectorAll('.card');
       cs[0].querySelector('.cap').textContent = '| ' + vn(k, 'ext') + ' |  ' + name(k); cs[1].querySelector('.cap').textContent = '| ' + vn(k, 'basic') + ' |  ' + name(k);
       cs[0].querySelector('.box').style.backgroundImage = `url(${A('ext_' + k + '.jpg')})`; cs[1].querySelector('.box').style.backgroundImage = `url(${A('basic_' + k + '.jpg')})`; }
     // 실내 사진: 84A · 84B는 평면 칸 옆, 79OT는 그림 오른쪽 (거실 크게 + 나머지 2칸씩)
@@ -193,6 +218,28 @@
   }
   function close() { if (R) { R.D1.classList.remove('on'); R.D2.classList.remove('on'); R.D3.classList.remove('on'); } }
 
+  // 대라수 오른쪽 칸: 실내 사진(대표 사진 먼저 — interior.main 번호) + '| 평면 |' 한 칸. 사진 없는 타입은 평면만
+  //   사진 = assets/dls/interior/<타입>_01.jpg … · 작은 사진 interior/t/ (tools/watermark.py)
+  function drawSide(k, PP, ci) {
+    const I = PP.interior, box = R.q('.dside'), p2 = i => String(i + 1).padStart(2, '0');
+    const n = I ? I.n : 0, m = I ? Math.min(Math.max((I.main || 1) - 1, 0), n - 1) : 0;
+    const ord = n ? [m].concat(Array.from({ length: n }, (_, i) => i).filter(i => i !== m)) : [];
+    LB = ord.map((p, i) => ({ src: O.base + 'interior/' + k + '_' + p2(p) + '.jpg' + O.v, label: name(k) + ' 실내 ' + (i + 1) + ' / ' + n }));
+    const plan = `<button class="card" data-v="${PP.plan.replace(/_[^_]*$/, '')}"><span class="cap">| ${PP.planName || '평면'} |  ${name(k)}</span><span class="box" style="background-image:url(${A(PP.plan)})"></span><span class="more">누르면 크게 보기 ↗</span></button>`;
+    box.innerHTML = (n ? `<div class="ib"><div class="ph-h"><b>실내 사진</b><span>${I.where ? I.where + ' 실제 세대 · ' : ''}${n}장 · 실제와 다를 수 있음</span></div>
+      <div style="position:relative"><button class="ibig" aria-label="${name(k)} 실내 사진 크게 보기"><img src="${LB[ci].src}" alt="${name(k)} 실내 ${ci + 1}"><span class="n">${ci + 1} / ${n}</span></button>
+      <button class="ar l" aria-label="이전 사진">‹</button><button class="ar r" aria-label="다음 사진">›</button></div>
+      <div class="istrip">${ord.map((p, i) => `<button class="${i === ci ? 'on' : ''}" data-i="${i}" aria-label="실내 사진 ${i + 1}"><img src="${O.base}interior/t/${k}_${p2(p)}.jpg${O.v}" alt="" loading="lazy"></button>`).join('')}</div></div>`
+      : `<div class="inone">${name(k)} 타입은 아직 실제 세대 사진이 없습니다 — 평면을 크게 보여 드립니다.</div>`) + plan;
+    box.classList.toggle('solo', !n);
+    const go = i => drawSide(k, PP, (i + n) % n);
+    box.querySelectorAll('.istrip button').forEach(b => b.onclick = () => go(+b.dataset.i));
+    const l = box.querySelector('.ar.l'), r = box.querySelector('.ar.r'), big = box.querySelector('.ibig');
+    if (l) { l.onclick = () => go(ci - 1); r.onclick = () => go(ci + 1); big.onclick = () => show3(ci); }
+    const st = box.querySelector('.istrip'), s = st && st.querySelector('.on'); if (s) st.scrollLeft = Math.max(0, s.offsetLeft - (st.clientWidth - s.clientWidth) / 2);
+    box.querySelector('.card').onclick = () => open2(box.querySelector('.card').dataset.v);
+  }
+
   // ── 평면 크게 보기 창 ──
   function open2(v) {
     const D2 = R.D2, im = D2.querySelector('img');
@@ -201,12 +248,15 @@
     D2.querySelector('.cap').textContent = '| ' + vn(cur, v) + ' |  ' + name(cur);
     D2.querySelectorAll('.tg button').forEach(b => { b.textContent = vn(cur, b.dataset.v); });
     D2.querySelectorAll('.tg button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+    D2.classList.toggle('dls', v === 'plan');   // 대라수 '| 평면 |' 은 한 장이라 확장형/기본형 바꾸기 단추 숨김
     D2.classList.add('on');
   }
   function close2() { R.D2.classList.remove('on'); }
 
   // ── 실내 사진 크게 보기 ──
-  function show3(i) { const L = INT[cur] || [], D3 = R.D3; c3 = (i + L.length) % L.length; const im = D3.querySelector('img'); im.src = IA(cur, c3); im.alt = name(cur) + ' 실내 · ' + L[c3]; D3.querySelector('.lb').textContent = name(cur) + ' 실내 · ' + L[c3] + ' (' + (c3 + 1) + ' / ' + L.length + ')'; D3.classList.add('on'); }
+  function show3(i) {
+    if (LB && LB.length) { const D3 = R.D3; c3 = (i + LB.length) % LB.length; const im = D3.querySelector('img'); im.src = LB[c3].src; im.alt = LB[c3].label; D3.querySelector('.lb').textContent = LB[c3].label; D3.classList.add('on'); return; }   // 대라수 실내 사진
+    const L = INT[cur] || [], D3 = R.D3; c3 = (i + L.length) % L.length; const im = D3.querySelector('img'); im.src = IA(cur, c3); im.alt = name(cur) + ' 실내 · ' + L[c3]; D3.querySelector('.lb').textContent = name(cur) + ' 실내 · ' + L[c3] + ' (' + (c3 + 1) + ' / ' + L.length + ')'; D3.classList.add('on'); }
 
   window.hwPlanPop = { open, close };
 })();

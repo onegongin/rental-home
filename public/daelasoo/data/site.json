@@ -77,7 +77,8 @@
       "views": {
         "ext": "입체 평면",
         "basic": "위에서 본 평면"
-      }
+      },
+      "pop": {"main":"main3d_80A.jpg","plan":"plan_80A.jpg","planName":"평면","interior":{"n":7,"main":6,"where":"102동 중층"}}
     },
     "80B": {
       "color": "#f0913f",
@@ -100,7 +101,8 @@
       "views": {
         "ext": "입체 평면",
         "basic": "위에서 본 평면"
-      }
+      },
+      "pop": {"main":"main3d_80B.jpg","plan":"plan_80B.jpg","planName":"평면"}
     },
     "59A": {
       "color": "#8bc53f",
@@ -123,7 +125,8 @@
       "views": {
         "ext": "입체 평면",
         "basic": "컬러 평면"
-      }
+      },
+      "pop": {"main":"main3d_59A.jpg","plan":"plan_59A.jpg","planName":"평면","interior":{"n":9,"main":8,"where":"104동 중층"}}
     },
     "59B": {
       "color": "#f4a7c8",
@@ -146,7 +149,8 @@
       "views": {
         "ext": "입체 평면",
         "basic": "위에서 본 평면"
-      }
+      },
+      "pop": {"main":"main3d_59B.jpg","plan":"plan_59B.jpg","planName":"평면","interior":{"n":6,"main":2,"where":"103동 중층"}}
     },
     "59C": {
       "color": "#8fd3ef",
@@ -169,7 +173,8 @@
       "views": {
         "ext": "입체 평면",
         "basic": "위에서 본 평면"
-      }
+      },
+      "pop": {"main":"main3d_59C.jpg","plan":"plan_59C.jpg","planName":"평면"}
     }
   },
   "units": {
