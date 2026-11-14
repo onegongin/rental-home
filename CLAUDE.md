@@ -26,6 +26,7 @@
 
 - 작업 시작 전 `git pull origin preview` (R5 전까지 최신 작업은 GitHub **preview** 브랜치에만 있음 — origin/main 은 예전 것), 끝나면 커밋 + `git push origin main:preview`
 - 프로젝트 안에 `O:\` 같은 절대 경로를 쓰지 않는다
+- **작업 폴더는 각 PC 내장 디스크** (`C:\클로드코드\site_rental-home`, 대표 결정 2026-11-14). 외장 SSD(O:, exFAT)에서 직접 작업 금지 — 2026-11-14 SSD 손상으로 `.git` · CLAUDE.md · 그림 1개가 깨짐(작업은 GitHub 에 있어 복구). PC 사이는 GitHub 로만 주고받고, git 에 없는 파일(`.dev.vars` · `소스/DAELASOO/고객DB_양식.xlsx` · 참고 사이트 원본)만 따로 옮긴다. 새로 받을 땐 `git config core.autocrlf false`(CRLF 로 바뀌면 site-files 시험 2개 실패)
 - 로컬 확인: `npx.cmd wrangler dev` → http://localhost:8787/daelasoo/ (직원 사무실 코드 = `.dev.vars` STAFF_KEY, PC마다 직접)
 
 ## 폴더
