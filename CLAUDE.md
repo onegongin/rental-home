@@ -31,6 +31,7 @@
 - 프로젝트 안에 `O:\` 같은 절대 경로를 쓰지 않는다
 - **작업 폴더는 각 PC 내장 디스크** (`C:\클로드코드\site_rental-home`, 대표 결정 2026-11-14). 외장 SSD(O:, exFAT)에서 직접 작업 금지 — 2026-11-14 SSD 손상으로 `.git` · CLAUDE.md · 그림 1개가 깨짐(작업은 GitHub 에 있어 복구). PC 사이는 GitHub 로만 주고받고, git 에 없는 파일(`.dev.vars` · `소스/DAELASOO/고객DB_양식.xlsx` · 참고 사이트 원본)만 따로 옮긴다. 새로 받을 땐 `git config core.autocrlf false`(CRLF 로 바뀌면 site-files 시험 2개 실패)
 - 로컬 확인: `npx.cmd wrangler dev` → http://localhost:8787/daelasoo/ (직원 사무실 코드 = `.dev.vars` STAFF_KEY, PC마다 직접)
+- **PC 를 바꿔 시작할 때 = `작업시작.cmd` 더블클릭** (2026-11-15 대표 요청): 사이트 3개 중 고름 → rental-home 은 C:\클로드코드 에 없으면 GitHub preview 에서 받고(+ SSD 의 .dev.vars · 고객DB_양식.xlsx · 참고 사이트 원본 복사 · npm ci), 있으면 최신본 받기 → VS Code 로 엶. 아이파크 · 123공실은 옮기지 않고 C: 또는 SSD 폴더를 엶. 원본 `tools/start-work.ps1`(UTF-8 BOM 필수 — PowerShell 5.1) · 복사본: SSD 맨 위 `작업시작.cmd`+`작업시작.ps1`(새 PC 용), 각 PC 바탕화면 `작업시작.cmd`. 원본을 고치면 SSD 복사본도 다시 복사
 
 ## 폴더
 - `public/index.html` rental-home 첫 화면 · `public/daelasoo/` 단지 화면 전체(index · staff · dashboard.dc.html · data · assets · maps)
