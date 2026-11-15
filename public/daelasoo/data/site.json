@@ -613,10 +613,10 @@
       "subMobile": "광주 첨단 민간임대 · 분양전환\n101~104동 · 아파트 300세대\n80㎡ · 59㎡ 5개 타입\n분양전환 · 관심등록 상담 1800-7240",
       "sub": "광주 첨단 민간임대 · 분양전환 · 101~104동 아파트 300세대 · 80㎡ · 59㎡ 5개 타입 · 분양전환 · 관심등록 상담 1800-7240",
       "images": [
-        ["sky1.jpg", "center 0%"],
-        ["sky3.jpg", "center 45%"],
-        ["sky2.jpg", "center 0%"],
-        ["sky4.jpg", "center 45%"],
+        ["sky1.jpg", "center 0%", "", "drift"],
+        ["sky3.jpg", "center 45%", "남동향 조망", "drift"],
+        ["sky2.jpg", "center 0%", "", "drift"],
+        ["sky4.jpg", "center 45%", "남서향 조망", "drift"],
         ["hero_wide.jpg", "center 40%"]
       ],
       "ar": "2.3 / 1"
