@@ -90,7 +90,12 @@ export function pricePage(base) {
 // /dongho — 메인 '단지 개요' 칸 그대로 (단지배치도 · 동 · 호 배치도 · 동호개요 · 설명 타원 · 단지 조경), 누르는 기능 없이 그림 · 글만 (시안 seo-pages2 확정 2026-11-05)
 const SP = SITE.siteplan || {}, DH = SP.dongho || {}, GD = SP.garden || {};
 const SUMSEC = ((SITE.content || {}).sections || []).find(x => x.id === 'summary') || {};
-const CSS3 = '.sec{background:#fff;border-radius:18px;padding:18px;margin-bottom:12px}.sec>h2{font-size:22px;font-weight:800;margin:0 0 12px}' +
+// .pm* = 입지 페이지 6대 메가 프리미엄 (시안 r22-location-premium 확정 2026-11-15)
+const CSS3 = '.pmh{padding-top:12px;border-top:1px solid #ececf0;margin-bottom:12px}.pmh h2{margin:0 0 4px;font-size:19px;font-weight:800;letter-spacing:-.01em}.pmh p{margin:0;font-size:13px;color:#3a3a3c;font-weight:600;line-height:1.5}' +
+  '.pm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.pm a{display:flex;flex-direction:column;min-width:0;border:1px solid #e5e5ea;border-radius:12px;padding:8px 8px 12px;text-decoration:none;color:inherit;background:#fff}.pm a:hover{border-color:#c8381e}' +
+  '.pm img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center top;border-radius:8px;background:#f5f5f7;display:block}.pm i{font-style:normal;font-size:10.5px;font-weight:800;color:#c8381e;margin:9px 0 2px;letter-spacing:.3px}' +
+  '.pm h3{margin:0;font-size:14.5px;font-weight:800;line-height:1.35}.pm p{margin:4px 0 0;font-size:12.5px;color:#475569;line-height:1.55}.pmn{margin:10px 0 0;font-size:11.5px;color:#8e8e93}@media(max-width:560px){.pm{grid-template-columns:repeat(2,minmax(0,1fr))}}' +
+  '.sec{background:#fff;border-radius:18px;padding:18px;margin-bottom:12px}.sec>h2{font-size:22px;font-weight:800;margin:0 0 12px}' +
   '.h3{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:8px}.h3 b{font-size:15px;font-weight:800}.h3 span{font-size:12px;color:#6e6e73}' +
   '.sum{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}.sp img{width:100%;display:block;border-radius:12px;background:#1d1d1f}' +
   '.blk{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:6px}.blk:before{content:"";width:7px;height:7px;border-radius:50%;background:#0066cc}' +
@@ -119,18 +124,19 @@ export function donghoPage(base) {
   return shell(base, '/dongho', title, desc, body, [Object.assign({ '@context': 'https://schema.org' }, apt()), crumbs(base, [['홈', '/'], ['단지 개요', '/dongho']])], IMG(SUMSEC.image || 'siteplan.jpg'));
 }
 
-// /location — 메인 '입지환경' 보드 그대로 (사진 3장 · 설명 카드 4개)
+// /location — 메인 '입지환경' 보드 그대로 (6대 메가 프리미엄 · 사진 · 설명 카드 중 있는 것)
 const ICON = { car: '🚇', cart: '🛒', school: '🎓', park: '🌳' };
 export function locationPage(base) {
-  const M = (SITE.content || {}).siteMap || {}, B = M.board || {};
+  const M = (SITE.content || {}).siteMap || {}, B = M.board || {}, PM = B.premium || {}, VER = '?v=' + (SITE.assetVer || 1);
   const title = NAME + ' 입지환경 · 교통 · 생활권', desc = NAMEX + ' ' + ((SITE.seo || {}).locationDesc || '');
   const tag = B.tag || [];
   const body = '<style>' + CSS3 + '</style><nav class="bc"><a href="/">홈</a> › 입지</nav><h1>' + esc(NAME) + ' 입지환경</h1><p class="sub">' + esc(S.address + ' · ' + (M.sub || '')) + '</p>' +
     '<div class="sec"><div class="bhd"><b>' + esc(B.title || '입지환경') + '</b><span>' + esc(B.sub || '') + '</span>' + (tag.length ? '<em>' + esc(tag[0] || '') + '<i>' + esc(tag[1] || '') + '</i>' + esc(tag[2] || '') + '</em>' : '') + '</div>' +
+    ((PM.items || []).length ? '<div class="pmh"><h2>' + esc(PM.title || '') + '</h2>' + (PM.lead ? '<p>' + esc(PM.lead) + '</p>' : '') + '</div><div class="pm">' + PM.items.map((x, i) => '<a href="' + IMG(x.img) + VER + '" target="_blank" title="크게 보기"><img src="' + IMG(x.img) + VER + '" alt="' + esc(x.title || '') + '" loading="lazy"><i>PREMIUM ' + String(i + 1).padStart(2, '0') + '</i><h3>' + esc(x.title || '') + '</h3><p>' + esc(x.desc || '') + '</p></a>').join('') + '</div><p class="pmn">※ 안내 그림입니다. 예정 사항은 관계기관 사정에 따라 바뀔 수 있습니다.</p>' : '') +
     '<div class="pics">' + (B.pics || []).map(p => '<figure><img src="' + IMG(p.img) + '" alt="' + esc(p.alt || '') + '" loading="lazy">' + (p.note ? '<span class="ai">' + esc(p.note) + '</span>' : '') + '<figcaption>' + esc(p.cap || String(p.alt || '').replace(/\s*\(.*\)$/, '')) + (p.capSub ? '<span>' + esc(p.capSub) + '</span>' : '') + '</figcaption></figure>').join('') + '</div>' +
     '<div class="bcards">' + (B.cards || []).map(c => '<div class="cd"><div class="ic">' + (ICON[c.icon] || '•') + '</div><div><h3>' + esc((c.head || [])[0] || '') + '<i>' + esc((c.head || [])[1] || '') + '</i></h3><ul>' + (c.items || []).map(([b, t]) => '<li>' + (b ? '<b>' + esc(b) + '</b>' : '') + esc(t || '') + '</li>').join('') + '</ul></div></div>').join('') + '</div></div>' +
     cta('입지 · 생활권 상담');
-  return shell(base, '/location', title, desc, body, [Object.assign({ '@context': 'https://schema.org' }, apt()), crumbs(base, [['홈', '/'], ['입지', '/location']])], IMG(((B.pics || [])[1] || {}).img || 'location.jpg'));
+  return shell(base, '/location', title, desc, body, [Object.assign({ '@context': 'https://schema.org' }, apt()), crumbs(base, [['홈', '/'], ['입지', '/location']])], IMG(((B.pics || [])[1] || {}).img || ((PM.items || [])[0] || {}).img || 'location.jpg'));
 }
 
 // 주소 판별 · 사이트맵에 넣을 주소
