@@ -49,6 +49,7 @@ html:root .hgb-st i{color:#fff!important;font-size:12px!important;font-weight:90
 .hgs-st{position:relative;display:flex;flex-direction:column;gap:4px}.hgs-st>i{font-style:normal;width:32px;height:32px;border-radius:50%;background:#6b5ce7;color:#fff;display:grid;place-items:center;font-size:14px;font-weight:900;box-shadow:0 0 0 5px #fff}.hgs-st.now>i{background:#c8381e}
 .hgs-st>small{margin-top:6px;font-size:12.5px;font-weight:700;color:#6e6e73}.hgs-st>b{font-size:clamp(17px,1.4vw,21px);font-weight:900;letter-spacing:-.01em;color:#1d1d1f}.hgs-st.now>b{color:#c8381e}.hgs-st>span{font-size:12px;color:#6e6e73}.hgs-note{grid-column:1/-1;font-size:11.5px;color:#8e8e93;margin:0}
 @media (max-width:640px){.hgs{grid-template-columns:minmax(0,1fr)}.hgs-lb{border-right:0;padding-right:0}.hgs-line{grid-template-columns:minmax(0,1fr);gap:14px}.hgs-line::before{left:15px;right:auto;top:16px;bottom:16px;width:2px;height:auto;background:repeating-linear-gradient(180deg,#c9c2f5 0 8px,transparent 8px 14px)}.hgs-st{display:grid;grid-template-columns:32px minmax(0,1fr);column-gap:12px}.hgs-st>i{grid-row:1/4}.hgs-st>small{margin-top:0}}
+.fq{background:#fff;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}.fq-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.fq-h>h2{margin:0;font-size:clamp(18px,2vw,24px);font-weight:800;letter-spacing:-.02em;color:#1d1d1f}.fq-h>span{font-size:12.5px;color:#6e6e73}.fq-g{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#6b5ce7;margin-top:4px}.fq-g:before{content:"";width:8px;height:8px;border-radius:50%;background:#6b5ce7}.fq-list{display:grid;gap:8px}.fq details{border:1px solid #ececf0;border-radius:12px;background:#fff;transition:border-color .15s}.fq details[open]{border-color:#d9d4fb;background:#fbfaff}.fq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 14px;font-size:14.5px;font-weight:700;color:#1d1d1f}.fq summary::-webkit-details-marker{display:none}.fq summary>i{font-style:normal;flex:none;width:22px;height:22px;border-radius:50%;background:#6b5ce7;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}.fq summary::after{content:"+";margin-left:auto;font-size:20px;color:#6b5ce7;font-weight:400;line-height:1}.fq details[open] summary::after{content:"−"}.fq-a{display:flex;gap:10px;padding:0 14px 14px;font-size:13.5px;color:#3a3a3c;line-height:1.7}.fq-a>i{font-style:normal;flex:none;width:22px;height:22px;border-radius:50%;background:#fdecea;color:#c8381e;display:grid;place-items:center;font-size:12px;font-weight:900}html:root .fq-a .k,html:root .fq-a .k>span{font-weight:800!important;color:#1d1d1f!important}
 .hgf{grid-column:1/-1;background:#fff;border:1px solid #e6e3fb;border-radius:14px;padding:6px 18px}.hgf-h{display:flex;align-items:baseline;gap:10px;padding:10px 0 6px}.hgf-h>b{font-size:15px;font-weight:900}.hgf-h>span{font-size:12px;color:#6e6e73}
 .hgf details{border-top:1px solid #efedfb}.hgf summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 0;font-size:14.5px;font-weight:700}.hgf summary::-webkit-details-marker{display:none}.hgf summary>i{font-style:normal;flex:none;width:22px;height:22px;border-radius:50%;background:#6b5ce7;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}
 .hgf summary::after{content:"+";margin-left:auto;font-size:20px;color:#6b5ce7;font-weight:400}.hgf details[open] summary::after{content:"−"}.hgf-a{display:flex;gap:10px;padding:0 0 14px;font-size:13.5px;color:#3a3a3c;line-height:1.7}.hgf-a .k{font-weight:800;color:#1d1d1f}.hgf-a>i{font-style:normal;flex:none;width:22px;height:22px;border-radius:50%;background:#fdecea;color:#c8381e;display:grid;place-items:center;font-size:12px;font-weight:900}
@@ -2786,11 +2787,6 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <div class="hga-ex"><b>{{ si.hg.exT }}</b><span><sc-for list="{{ si.hg.exSegs }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></span><small>{{ si.hg.exNote }}</small></div>
       </div>
     </div></sc-if>
-    <!-- 헷지했지 자주 묻는 질문 (site.json content.hedge.faq, 시안 r18-hedge-faq 확정 2026-11-14) — 누르면 펼침, 첫 질문만 열림 -->
-    <sc-if value="{{ si.hg.hasFaq }}"><div class="hgf">
-      <div class="hgf-h"><b>{{ si.hg.faqTitle }}</b><span>질문을 누르면 답이 열립니다</span></div>
-      <sc-for list="{{ si.hg.faq }}" as="f"><details open="{{ f.open }}"><summary><i>Q</i>{{ f.q }}</summary><div class="hgf-a"><i>A</i><div><sc-for list="{{ f.segs }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></div></div></details></sc-for>
-    </div></sc-if>
     <div class="hgb-fine">{{ si.hg.fine }}</div>
   </section></div>
   </sc-if>
@@ -2890,13 +2886,12 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     </div>
   </div>
   </sc-for>
+  <!-- 자주 묻는 질문 (시안 r29-faq-bottom A안 확정 2026-11-16): 묶음별(헷지했지 = content.hedge.faq · 일반 = content.faq) · 질문을 누르면 답이 열림 · 처음엔 모두 닫힘 -->
   <sc-if value="{{ si.hasFaq }}">
-  <div style="background:#fff;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0">
-    <h2 style="margin:0;font-size:clamp(18px,2vw,24px);font-weight:800;color:#1d1d1f">자주 묻는 질문</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:8px">
-      <sc-for list="{{ si.faq }}" as="q"><div style="border:1px solid #ececf0;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:800;color:#1d1d1f">Q. {{ q.q }}</span><span style="font-size:13.5px;line-height:1.5;color:#3a3a3c">{{ q.a }}</span></div></sc-for>
-    </div>
-  </div>
+  <section class="fq">
+    <div class="fq-h"><h2>자주 묻는 질문</h2><span>질문을 누르면 답이 열립니다</span></div>
+    <sc-for list="{{ si.faqGroups }}" as="fg"><sc-if value="{{ fg.name }}" hint-placeholder-val="{{ true }}"><div class="fq-g">{{ fg.name }}</div></sc-if><div class="fq-list"><sc-for list="{{ fg.items }}" as="f"><details><summary><i>Q</i>{{ f.q }}</summary><div class="fq-a"><i>A</i><div><sc-for list="{{ f.segs }}" as="g"><span class="{{ g.c }}">{{ g.t }}</span></sc-for></div></div></details></sc-for></div></sc-for>
+  </section>
   </sc-if>
 </div>
 </sc-if>
@@ -5221,7 +5216,7 @@ class Component extends DCLogic {
               go: () => this.setState({ siUg: f.id }) }; }) }; })(),
       hasSched: !!((C.schedule || {}).items || []).length, sched: ((C.schedule || {}).items || []).map(([k, v]) => ({ k, v })),
       notices: (C.notices || []).map(n => ({ title: n.title, img: P(n.image), hasImg: !!n.image, zoom: zoom(P(n.image)), summary: n.summary || [], pdfs: (n.pdfs || []).map((p, i) => ({ href: P(p), name: p.split('/').pop(), label: (n.pdfLabels || [])[i] || String(i + 1) })) })),
-      hasFaq: !!(C.faq || []).length, faq: (C.faq || []).map(([q, a]) => ({ q, a })),
+      ...(() => { const sgs = a => [].concat(a).map(x => Array.isArray(x) ? { t: x[0], c: 'k' } : { t: String(x), c: '' }), G = [((C.hedge || {}).faq || []).length && { name: (C.hedge || {}).faqGroup || '헷지했지 (분양가 보호 약정)', items: C.hedge.faq.map(([q, a]) => ({ q, segs: sgs(a) })) }, (C.faq || []).length && { name: ((C.hedge || {}).faq || []).length ? '분양 · 계약' : '', items: C.faq.map(([q, a]) => ({ q, segs: sgs(a) })) }].filter(Boolean); return { hasFaq: G.length > 0, faqGroups: G }; })(),
       ...(() => { const cs = ((C.siteMap || {}).board || {}).cards || [], c = S.bdPop != null ? cs[S.bdPop] : null;   /* 휴대폰 입지환경 설명 카드 → 전체 내용 창 */
         return { bdPopOn: !!c, bdPopClose: () => this.setState({ bdPop: null }), bdPop: c ? { pre: (c.head || [])[0] || '', hl: (c.head || [])[1] || '', items: (c.items || []).map(t => ({ b: [].concat(t)[1] === undefined ? '' : [].concat(t)[0], t: [].concat(t)[1] === undefined ? [].concat(t)[0] : [].concat(t)[1] })) } : { pre: '', hl: '', items: [] } }; })(),
       zoomOn: !!S.siZoom, zoomSrc: S.siZoom || '', zoomNote: (S.siZoomSet ? (S.siZoomSet[S.siZoomI || 0] || [])[2] : S.siZoomNote) || '', zoomLabAbs: !!(S.siZoom && S.siZoomSet), /* 안내 글(zoomNote)은 사진 안 오른쪽 아래에 연회색 작은 글씨 (m8 확정 2026-11-01) */ zoomClose: () => this.setState({ siZoom: null, siZoomSet: null }),
