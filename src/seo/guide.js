@@ -1,6 +1,7 @@
 // 검색용 안내 페이지 (시안 preview/seo-pages 확정 2026-11-05) — 화면 탭(평면 · 분양가 · 동호배치 · 입지)을 주소가 있는 가벼운 글자 페이지로
 //   /plan · /plan/{84a|84b|…|79} · /price · /dongho · /location — site.json · prices.json · 공개 매물 사본으로 서버가 만든다 (자료가 바뀌면 바로 반영)
 //   제목 40자 · 설명 80자 이내 (네이버 · 구글 권고), 대표 주소(canonical) · 구조화 데이터 · 사진 그림 설명(alt) · 상담 단추는 화면의 그 창으로 (/?reg=1 · /?visit=1)
+import { ZOOM_CSS, ZOOM_HTML, swapFig } from './plan-zoom.js';
 import SITE from '../../public/daelasoo/data/site.json' with { type: 'json' };
 import PRICES from '../../public/daelasoo/data/prices.json' with { type: 'json' };
 import { page, esc, crumbs, DEAL } from './pages.js';
@@ -68,11 +69,11 @@ export function planPage(base, slug, rows) {
     [['방 · 욕실', '방 ' + T.rooms + ' · 욕실 ' + T.baths], ['있는 동', dongsOf(t).join(' · ')], ['향', '라인 · 호실마다 다름 (매물에 표시)']], pr ? [['분양가', won(pr.min) + ' ~ ' + won(pr.max) + ' (층 · 동별, 발코니 확장 · 옵션 별도)']] : []);
   const body = '<nav class="bc"><a href="/">홈</a> › <a href="/plan">평면</a> › ' + esc(t) + '</nav><h1>' + esc(NAME + ' ' + t + '타입 평면') + '</h1>' +
     '<p class="sub">' + esc(NAMEX + ' ' + t + '타입은 ' + kindOf(t) + ' 전용 ' + ex + '㎡, 방 ' + T.rooms + '개 · 욕실 ' + T.baths + '개 구조로 ' + (bl.length > 1 ? bl.map(x => x.b).join(' · ') + '에 ' : '') + '모두 ' + hhOf(t) + '세대가 있습니다.' + (moveIn ? ' ' + moveIn + ' 입주입니다.' : '')) + '</p>' +
-    '<div class="card grid2 g3d"><figure class="fig"><img src="' + esc(IMG('plans/main3d_' + t + '.jpg')) + '" alt="' + esc(NAME + ' ' + t + '타입 3D 평면도') + '"><figcaption>' + esc(t + '타입 3D 평면 (' + bl[0].b + ')') + '</figcaption></figure>' +
+    '<div class="card grid2 g3d">' + swapFig(t, IMG('plans/main3d_' + t + '.jpg'), IMG('plans/plan_' + t + '.jpg'), NAME) + '' +
     '<table>' + tr.map(([k, v]) => '<tr><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>').join('') + '</table></div>' +
     '<div class="card"><h2>지금 나와 있는 ' + esc(t) + ' 매물</h2>' + (mine.length ? mine.map(r => '<a class="row" href="/listings/' + esc(r.id) + '"><span class="deal ' + r.deal + '">' + DEAL[r.deal] + '</span><b>' + esc(String(r.label || '').replace(/\/\d+층$/, '') + ' ' + r.type) + '</b><span>' + esc(priceText(r).replace(/^\S+ /, '')) + '</span><i>자세히 ›</i></a>').join('')
       : '<p class="sub" style="margin:0">지금 공개 중인 매물이 없습니다 · <a href="/?reg=1">관심등록</a>하시면 나오는 대로 알려 드립니다</p>') + '</div>' +
-    '<div class="card"><h2>다른 타입</h2>' + typeTabs(t) + '</div>' + cta(t + ' 매매 · 전세 · 월세 상담');
+    '<div class="card"><h2>다른 타입</h2>' + typeTabs(t) + '</div>' + cta(t + ' 매매 · 전세 · 월세 상담') + '<style>' + ZOOM_CSS + '</style>' + ZOOM_HTML;
   const json = [{ '@context': 'https://schema.org', '@type': 'FloorPlan', name: NAME + ' ' + t + '타입', url: base + path, numberOfRooms: T.rooms, numberOfBathroomsTotal: T.baths, floorSize: { '@type': 'QuantitativeValue', value: ex, unitCode: 'MTK' }, layoutImage: base + planImg(t), isPlanForApartment: apt() },
     crumbs(base, [['홈', '/'], ['평면', '/plan'], [t, path]])];
   return shell(base, path, title, desc, body, json, planImg(t));
