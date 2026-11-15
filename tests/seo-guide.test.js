@@ -28,7 +28,7 @@ test('안내 페이지 모두 열림 · 제목 40자 · 설명 80자 이내 · �
 
 test('타입 페이지: 평면도 · 면적 · 세대수 · 분양가 범위 · 다른 타입 링크, 없는 타입은 404', async () => {
   const r = await get('/daelasoo/plan/80a');
-  for (const s of ['80A타입 평면도', '전용 80.3831㎡', '50세대', '/daelasoo/plan/80b', '/daelasoo/assets/dls/plans/80A.jpg', 'FloorPlan']) assert.ok(r.text.includes(s), s);
+  for (const s of ['80A타입 3D 평면', '/daelasoo/assets/dls/plans/main3d_80A.jpg', '전용 80.3831㎡', '50세대', '/daelasoo/plan/80b', '/daelasoo/assets/dls/plans/80A.jpg', 'FloorPlan']) assert.ok(r.text.includes(s), s);
   assert.equal((await get('/daelasoo/plan/99z')).status, 404);
   const sm = (await get('/daelasoo/sitemap.xml')).text;
   for (const t of TYPES) assert.ok(sm.includes('/daelasoo/plan/' + slugOf(t) + '</loc>'), t + ' 사이트맵');
