@@ -16,6 +16,11 @@ OPACITY, MAX_W, MAX_H, QUALITY = 0.03, 1600, 6000, 82
 FILES = [
     ('대라수1차.jpg', 'hero.jpg', True),                 # 첫 화면 카드 · 단지 소개 메인
     ('투시가로.png', 'hero_wide.jpg', True, 'X'),         # 단지 화면 맨 위 큰 사진 (가로 투시도, 2026-11-14 대표 요청 · 시안 r7-hero)
+    # 단지 화면 맨 위 슬라이드 sky001 > sky003 > sky002 > sky004 > hero_wide (2026-11-16 대표 요청 · 시안 r28-hero-slide)
+    ('sky001.PNG', 'sky1.jpg', True, 'X'),
+    ('sky003.PNG', 'sky3.jpg', True, 'X'),
+    ('sky002.PNG', 'sky2.jpg', True, 'X'),
+    ('sky004.PNG', 'sky4.jpg', True, 'X'),
     ('투시가로.png', 'og.jpg', True, (116, 0, 880, 401), 'O'),  # 링크 미리보기(카톡 · 검색) 그림 1200x630 — 가운데 건물 부분만 (시안 r8-og)
     ('(1차)단지배치도.png', 'siteplan.jpg', True),        # 단지배치도 · 단지 개요 그림 (2026-11-14 대표 요청으로 새 그림, 동 위치는 예전 (1차)배치도.jpg 와 같음)
     ('(1차)동호배치도.jpg', 'dongho.jpg', True),          # 동 · 호 배치도
