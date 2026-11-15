@@ -103,6 +103,23 @@
 #hpp .dside.solo { flex: 1 1 auto; } #hpp .dside.solo .card { flex: 1 1 auto; } #hpp .dside.solo .card .box { flex: 1 1 auto; aspect-ratio: auto; min-height: 260px; }   /* 실내 사진 없는 타입: 평면을 크게 */
 #hpp .inone { font-size: 12.5px; color: #6e6e73; background: #f5f5f7; border-radius: 10px; padding: 10px 12px; line-height: 1.5; }
 #hpp2.dls .tg { display: none; }
+/* 한 화면 맞춤 (시안 r20-planpop-fit 확정 2026-11-15): 창 높이 = 화면 높이(최대 920px) 고정, 스크롤 없음 · 모든 타입 같은 높이 · 메인 그림은 잘리지 않게 맞춤 */
+#hpp .pop.dls { height: min(calc(100vh - 40px), 920px); max-height: none; overflow: hidden; max-width: min(1500px, calc(100vw - 40px)); }
+#hpp .pop.dls .body { flex: 1 1 auto; min-height: 0; }
+#hpp .pop.dls .stage { aspect-ratio: auto; align-self: stretch; }
+#hpp .pop.dls .stage img { width: 100%; height: 100%; object-fit: contain; }
+#hpp .pop.dls .side { min-height: 0; padding: 12px 0; gap: 10px; }
+#hpp .pop.dls .dside { flex: 1 1 auto; min-height: 0; gap: 10px; }
+#hpp .pop.dls .ib { flex: 1 1 0; min-height: 0; }
+#hpp .pop.dls .ib > div[style] { flex: 1 1 auto; min-height: 0; }
+#hpp .pop.dls .ibig { aspect-ratio: auto; height: 100%; }
+#hpp .pop.dls .istrip { flex: none; }   /* 작은 사진 줄은 줄이지 않음 — 큰 사진이 대신 줄어듦 */
+#hpp .pop.dls .dside > .card { flex: 0 0 auto; }
+#hpp .pop.dls .dside > .card .box { aspect-ratio: 923 / 600; }
+#hpp .pop.dls .dside.solo > .card { flex: 1 1 auto; }
+#hpp .pop.dls .dside.solo > .card .box { aspect-ratio: auto; flex: 1 1 auto; min-height: 0; }
+#hpp .pop.dls .ft { padding: 10px 18px 12px; }
+@media (max-width: 760px) { #hpp .pop.dls { height: auto; max-height: calc(100vh - 40px); overflow-y: auto; } #hpp .pop.dls .stage { aspect-ratio: 5 / 3; } #hpp .pop.dls .ibig { aspect-ratio: 4 / 3; height: auto; } }
 @media (max-width: 760px) {
   #hpp .pop.dls .side { flex-direction: column; padding: 0 12px 12px; }
   #hpp .body { flex-direction: column; padding: 0; }
