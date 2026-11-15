@@ -67,6 +67,9 @@ function head(D, U) {
 function info(D) {
   const S = D.site, O = D.office, I = (D.seo || {}).info || {}, sc = I.scale || [];
   const faq = (I.faq || []).map(([q, a]) => '        <div><dt style="display:inline;font-weight:700">Q. ' + esc(q) + '</dt> <dd style="display:inline;margin:0">' + esc(a) + '</dd></div>');
+  // 헷지했지 질문 (content.hedge.faq, 시안 r30-footer-faq A안 확정 2026-11-16) — 답이 길어 질문만 보이고 누르면 답. [글, 1] = 진하게
+  const HQ = ((D.content || {}).hedge || {}).faq || [], seg = a => [].concat(a).map(x => Array.isArray(x) ? '<b>' + esc(x[0]) + '</b>' : esc(x)).join('');
+  const hfq = HQ.length ? ['      <div class="hfq"><b>헷지했지 <span>· 분양가 보호 약정 · 질문을 누르면 답이 열립니다</span></b>', ...HQ.map(([q, a]) => '        <details><summary>Q. ' + esc(q) + '</summary><div>' + seg(a) + '</div></details>'), '      </div>'] : [];
   const links = (I.links || []).map(([h, t]) => '<a href="' + esc(h) + '">' + esc(t) + '</a>').join('');
   return [
     '    <section style="flex:1 1 auto;min-width:0">',
@@ -81,6 +84,7 @@ function info(D) {
     '      <dl class="si-faq" style="margin:0;display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);gap:4px 28px;justify-content:start">',
     ...faq,
     '      </dl>',
+    ...(hfq.length ? ['      <style>.hfq{margin-top:10px;padding-top:8px;border-top:1px dashed #e5e5ea}.hfq>b{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:#6b5ce7;margin-bottom:2px}.hfq>b:before{content:"";width:7px;height:7px;border-radius:50%;background:#6b5ce7}.hfq>b span{font-weight:500;color:#8e8e93}.hfq details{padding:2px 0}.hfq summary{cursor:pointer;list-style:none;font-weight:700;color:#1d1d1f}.hfq summary::-webkit-details-marker{display:none}.hfq summary::after{content:"+";color:#6b5ce7;font-weight:500;margin-left:6px}.hfq details[open] summary::after{content:"−"}.hfq details>div{padding:2px 0 6px 18px;color:#3a3a3c;max-width:760px}.hfq details>div b{color:#1d1d1f}</style>', ...hfq] : []),
     '    </section>',
     '    <!-- 안내 페이지 링크 한 줄 (시안 preview/home-links A안, 2026-11-05) — 손님 이동 + 검색 로봇이 안내 페이지를 따라 들어오게 -->',
     '    <nav class="hwln" aria-label="단지 안내" style="flex:1 1 100%;font-size:12.5px;line-height:1.9">',

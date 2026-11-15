@@ -21,7 +21,7 @@ test('다른 단지 이름 · 주소로 바꾸면 고정 화면에 옛 이름이
     const OLD = /대라수/;   // 지금 단지(첨단대라수1차) 이름
     // 새 단지 값으로 바꿈: 옛 이름이 든 글자는 모두 '새단지'로
     const swap = v => typeof v === 'string' ? (OLD.test(v) ? '새단지' : v) : Array.isArray(v) ? v.map(swap) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, swap(x)])) : v;
-    D.site = swap(D.site); D.seo = swap(D.seo);
+    D.site = swap(D.site); D.seo = swap(D.seo); D.content = swap(D.content);   // content.hedge.faq 도 맨 아래 안내 칸에 들어감 (2026-11-16)
     writeFileSync(join(dir, 'public/daelasoo/data/site.json'), JSON.stringify(D));
     writeFileSync(join(dir, 'wrangler.jsonc'), readFileSync('wrangler.jsonc', 'utf8').replace(/"SITE_URL": "[^"]+"/, '"SITE_URL": "https://new.example.kr"'));
     const out = build(dir);

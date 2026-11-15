@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>시안 · 맨 아래 자주 묻는 질문 합치기</title>
+<!-- 시안 r30-footer-faq (2026-11-16) — 큰 '자주 묻는 질문' 칸(헷지했지 3개)을 없애고, 맨 아래 안내 칸의 '자주 묻는 질문'(4개)에 같이 넣음.
+     맨 아래 칸은 site.json seo.info.faq 로 고정 화면(index.html)에 미리 써 둠 → 검색 로봇도 읽음 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  body{margin:0;background:#f5f5f7;color:#3a3a3c;font-family:"Pretendard Variable",Pretendard,sans-serif;font-size:13px;line-height:1.6}
+  .wrap{max-width:1720px;margin:0 auto;padding:24px 20px 60px;box-sizing:border-box}
+  .lead{color:#6e6e73;font-size:14px;margin:0 0 14px;line-height:1.6} h1.t{font-size:22px;margin:0 0 6px;color:#1d1d1f}
+  .ttl{font-size:16px;font-weight:800;margin:22px 0 8px;color:#1d1d1f}.ttl em{font-style:normal;color:#c8381e;font-size:13px;margin-left:6px}
+  .ft{background:#fff;border-radius:18px;padding:20px 22px;display:flex;flex-wrap:wrap;gap:20px 40px}
+  .ft h1{margin:0 0 6px;font-size:18px;font-weight:800;color:#1d1d1f}.ft p{margin:0}
+  .ft a{color:#0066cc;text-decoration:none}
+  .ft h2{margin:0 0 6px;font-size:14px;font-weight:800;color:#1d1d1f}
+  .si-faq{margin:0;display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);gap:4px 28px;justify-content:start}
+  .si-faq dt{display:inline;font-weight:700}.si-faq dd{display:inline;margin:0}
+  /* ↓ A안: 헷지했지 묶음 — 질문만 보이고 누르면 답 */
+  .hfq{margin-top:10px;padding-top:8px;border-top:1px dashed #e5e5ea}
+  .hfq>b{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:#6b5ce7;margin-bottom:2px}
+  .hfq>b:before{content:"";width:7px;height:7px;border-radius:50%;background:#6b5ce7}
+  .hfq>b span{font-weight:500;color:#8e8e93}
+  .hfq details{padding:2px 0}
+  .hfq summary{cursor:pointer;list-style:none;font-weight:700;color:#1d1d1f;display:flex;gap:6px;align-items:baseline}
+  .hfq summary::-webkit-details-marker{display:none}
+  .hfq summary::after{content:"+";color:#6b5ce7;font-weight:500;margin-left:4px}
+  .hfq details[open] summary::after{content:"−"}
+  .hfq details>div{padding:2px 0 6px 18px;color:#3a3a3c}
+  .hfq details>div b{color:#1d1d1f}
+  /* B안: 7개 모두 같은 모양으로 펼쳐 둠 */
+  .all{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 28px}
+  .all dt{display:inline;font-weight:700}.all dd{display:inline;margin:0}.all .h dt{color:#6b5ce7}
+  @media (max-width:760px){.si-faq{grid-auto-flow:row;grid-template-rows:none}.all{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="t">맨 아래 '자주 묻는 질문'에 헷지했지 질문 합치기</h1>
+  <p class="lead">바로 위에 따로 있던 큰 '자주 묻는 질문' 칸은 없애고, 맨 아래 안내 칸의 '자주 묻는 질문'(단지 질문 4개) 안에 헷지했지 질문 3개를 같이 넣습니다. 헷지했지 답은 길어서 두 가지 모양 중 골라 주세요.</p>
+
+  <div class="ttl">A안 — 단지 질문은 지금처럼, 헷지했지는 질문만 보이고 누르면 답 <em>추천</em></div>
+  <div class="ft" id="a"></div>
+
+  <div class="ttl">B안 — 7개 모두 답까지 펼쳐 둠 (2줄로)</div>
+  <div class="ft" id="b"></div>
+</div>
+<script>
+fetch('/daelasoo/data/site.json').then(r => r.json()).then(S => {
+  const e = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const seg = a => [].concat(a).map(x => Array.isArray(x) ? '<b>' + e(x[0]) + '</b>' : e(x)).join('');
+  const I = S.seo.info, H = S.content.hedge.faq;
+  const left = '<section style="flex:1 1 auto;min-width:0"><h1>' + e(S.site.name) + '</h1><p>' + e(I.addr) + '</p><p style="font-weight:700;color:#c8381e">' + e(I.deals) + '</p><p>' + e(I.scale[0]) + '</p><p style="margin-top:6px">상담문의 <a href="#">' + e(S.office.tel) + '</a></p></section>';
+  const base = '<dl class="si-faq">' + I.faq.map(([q, a]) => '<div><dt>Q. ' + e(q) + '</dt> <dd>' + e(a) + '</dd></div>').join('') + '</dl>';
+  document.getElementById('a').innerHTML = left + '<section style="flex:0 1 auto;margin-left:auto;min-width:0"><h2>자주 묻는 질문</h2>' + base +
+    '<div class="hfq"><b>헷지했지 <span>· 분양가 보호 약정 · 질문을 누르면 답이 열립니다</span></b>' + H.map(([q, a]) => '<details><summary>Q. ' + e(q) + '</summary><div>' + seg(a) + '</div></details>').join('') + '</div></section>';
+  document.getElementById('b').innerHTML = left + '<section style="flex:1 1 560px;min-width:0"><h2>자주 묻는 질문</h2><dl class="all">' +
+    I.faq.map(([q, a]) => '<div><dt>Q. ' + e(q) + '</dt> <dd>' + e(a) + '</dd></div>').join('') +
+    H.map(([q, a]) => '<div class="h"><dt>Q. [헷지했지] ' + e(q) + '</dt> <dd>' + seg(a) + '</dd></div>').join('') + '</dl></section>';
+});
+</script>
+</body>
+</html>
