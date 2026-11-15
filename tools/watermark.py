@@ -88,7 +88,7 @@ FILES = [
     ('../내부/4-1301_59A006.jpg', 'interior/59A_06.jpg', True, 'S'),
     ('../내부/4-1301_59A007.jpg', 'interior/59A_07.jpg', True, 'S'),
     ('../내부/4-1301_59A008.jpg', 'interior/59A_08.jpg', True, 'S'),
-    ('../내부/4-1301_59A009.jpg', 'interior/59A_09.jpg', True, 'S'),
+    ('../내부/4-1301_59A009.jpg', 'interior/80A_08.jpg', True, 'S'),   # 파일 이름은 59A 지만 실제는 80A 실내 (대표 확인 2026-11-15)
     ('../내부/3-2002_59B001.jpg', 'interior/59B_01.jpg', True, 'S'),
     ('../내부/3-2002_59B002.jpg', 'interior/59B_02.jpg', True, 'S'),
     ('../내부/3-2002_59B003.jpg', 'interior/59B_03.jpg', True, 'S'),
