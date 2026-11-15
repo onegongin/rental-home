@@ -758,6 +758,7 @@
         "hidden": true,
         "title": "단지 개요",
         "image": "siteplan.jpg",
+        "dongho": "dongho_all.jpg",
         "pills": [
           1,
           2,

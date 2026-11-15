@@ -20,6 +20,7 @@ FILES = [
     ('(1차)단지배치도.png', 'siteplan.jpg', True),        # 단지배치도 · 단지 개요 그림 (2026-11-14 대표 요청으로 새 그림, 동 위치는 예전 (1차)배치도.jpg 와 같음)
     ('(1차)동호배치도.jpg', 'dongho.jpg', True),          # 동 · 호 배치도
     ('층개요.jpg', 'floors.jpg', True),                   # 층 개요
+    ('층호배치_101-104동.png', 'dongho_all.jpg', True),   # 단지 개요(/dongho) 단지배치 옆 101~104동 층 · 호 배치 (2026-11-15 시안 r24-dongho)
     ('쌍암공원벚꽃.jpg', 'park.jpg', True),               # 사업지 옆 사진 · 59㎡ 칸 배경
     # 입지환경 지도 아래 사진 칩 (대표 imweb 페이지 사진 그대로, 시안 r9-map B안 확정 2026-11-14) — 누르면 그 장소 카카오맵
     ('인프라_롯데마트.jpg', 'infra/lotte.jpg', True),
