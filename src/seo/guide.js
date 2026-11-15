@@ -1,7 +1,7 @@
 // 검색용 안내 페이지 (시안 preview/seo-pages 확정 2026-11-05) — 화면 탭(평면 · 분양가 · 동호배치 · 입지)을 주소가 있는 가벼운 글자 페이지로
 //   /plan · /plan/{84a|84b|…|79} · /price · /dongho · /location — site.json · prices.json · 공개 매물 사본으로 서버가 만든다 (자료가 바뀌면 바로 반영)
 //   제목 40자 · 설명 80자 이내 (네이버 · 구글 권고), 대표 주소(canonical) · 구조화 데이터 · 사진 그림 설명(alt) · 상담 단추는 화면의 그 창으로 (/?reg=1 · /?visit=1)
-import { ZOOM_CSS, ZOOM_HTML, swapFig } from './plan-zoom.js';
+import { SW_CSS, ZV, PV, swapFig } from './plan-zoom.js';
 import SITE from '../../public/daelasoo/data/site.json' with { type: 'json' };
 import PRICES from '../../public/daelasoo/data/prices.json' with { type: 'json' };
 import { page, esc, crumbs, DEAL } from './pages.js';
@@ -73,7 +73,7 @@ export function planPage(base, slug, rows) {
     '<table>' + tr.map(([k, v]) => '<tr><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>').join('') + '</table></div>' +
     '<div class="card"><h2>지금 나와 있는 ' + esc(t) + ' 매물</h2>' + (mine.length ? mine.map(r => '<a class="row" href="/listings/' + esc(r.id) + '"><span class="deal ' + r.deal + '">' + DEAL[r.deal] + '</span><b>' + esc(String(r.label || '').replace(/\/\d+층$/, '') + ' ' + r.type) + '</b><span>' + esc(priceText(r).replace(/^\S+ /, '')) + '</span><i>자세히 ›</i></a>').join('')
       : '<p class="sub" style="margin:0">지금 공개 중인 매물이 없습니다 · <a href="/?reg=1">관심등록</a>하시면 나오는 대로 알려 드립니다</p>') + '</div>' +
-    '<div class="card"><h2>다른 타입</h2>' + typeTabs(t) + '</div>' + cta(t + ' 매매 · 전세 · 월세 상담') + '<style>' + ZOOM_CSS + '</style>' + ZOOM_HTML;
+    '<div class="card"><h2>다른 타입</h2>' + typeTabs(t) + '</div>' + cta(t + ' 매매 · 전세 · 월세 상담') + '<style>' + SW_CSS + '</style>' + ZV;
   const json = [{ '@context': 'https://schema.org', '@type': 'FloorPlan', name: NAME + ' ' + t + '타입', url: base + path, numberOfRooms: T.rooms, numberOfBathroomsTotal: T.baths, floorSize: { '@type': 'QuantitativeValue', value: ex, unitCode: 'MTK' }, layoutImage: base + planImg(t), isPlanForApartment: apt() },
     crumbs(base, [['홈', '/'], ['평면', '/plan'], [t, path]])];
   return shell(base, path, title, desc, body, json, planImg(t));
@@ -115,15 +115,15 @@ export function donghoPage(base) {
   const title = NAME + ' 단지 개요 · 동호배치도', desc = NAMEX + ' ' + ((S.groups || []).length > 1 ? (S.groups || []).length + '개 단지 ' : '') + BLD.length + '개동 ' + SCALE + ' 단지배치도 · 동호배치도';
   const pts = SUMSEC.points || [], pills = (SUMSEC.pills || []).map(i => pts[i]).filter(Boolean);
   const body = '<style>' + CSS3 + '</style><nav class="bc"><a href="/">홈</a> › 단지 개요</nav><h1>' + esc(NAME) + ' 단지 개요</h1><p class="sub">' + esc([pts[0], pts[1], pts[5]].filter(Boolean).join(' · ')) + '</p>' +
-    '<div class="sec"><h2>단지 개요</h2><div class="sum' + (SUMSEC.dongho ? ' sum1' : '') + '"><div class="sp"><div class="h3"><b>단지배치</b><span>' + esc((S.groups || []).map(g => g.label).join(' · ')) + '</span></div><img src="' + IMG(SUMSEC.image || S.sitePlan || 'siteplan.jpg') + '" alt="' + esc(NAME + ' 단지배치도') + '"></div>' +
+    '<div class="sec"><h2>단지 개요</h2><div class="sum' + (SUMSEC.dongho ? ' sum1' : '') + '"><div class="sp"><div class="h3"><b>단지배치</b><span>' + esc((S.groups || []).map(g => g.label).concat('누르면 크게').join(' · ')) + '</span></div><img data-zg="dh" data-zl="단지배치도" src="' + IMG(SUMSEC.image || S.sitePlan || 'siteplan.jpg') + '" alt="' + esc(NAME + ' 단지배치도') + '"></div>' +
     // 동 · 호 배치도: 그림 한 장(site.json summary.dongho, 시안 r24-dongho A안 확정 2026-11-15 — 단지배치와 높이 맞춤, 누르면 크게) 또는 동별 그림 줄
     '<div><div class="h3"><b>동 · 호 배치도</b><span>' + (SUMSEC.dongho ? esc(BLD.length ? BLD[0].no + ' ~ ' + BLD[BLD.length - 1].no + '동 · 누르면 크게' : '누르면 크게') : '호실은 동호배치표 화면에서') + '</span></div>' +
-    (SUMSEC.dongho ? '<a class="dh1" href="' + IMG(SUMSEC.dongho) + '" target="_blank" title="크게 보기"><img src="' + IMG(SUMSEC.dongho) + '" alt="' + esc(NAME + ' 동호배치도 (층 · 호수)') + '"></a>' : dongRow(0, grpLabel(0))) +
+    (SUMSEC.dongho ? '<div class="dh1"><img data-zg="dh" data-zl="동 · 호 배치도" src="' + IMG(SUMSEC.dongho) + '" alt="' + esc(NAME + ' 동호배치도 (층 · 호수)') + '"></div>' : dongRow(0, grpLabel(0))) +
     (DH.sum ? '<div class="h3" style="margin:12px 0 0"><b>동호개요</b><span>' + esc('총 ' + ((S.households || 0) + (S.officetels || 0)) + '세대 · ' + SCALE) + '</span></div><img class="sumtbl" src="' + IMG(DH.sum[0]) + '" alt="' + esc(NAME + ' 동호개요 (타입별 세대수)') + '" loading="lazy">' : '') + '</div></div>' +
     ((DH.blocks || []).length > 1 ? '<div class="h3" style="margin-top:16px"><b>동 · 호 배치도 (' + esc(((S.groups || [])[1] || {}).label || '2단지') + ')</b></div><div style="max-width:560px">' + dongRow(1, grpLabel(1)) + '</div>' : '') +
     (pills.length ? '<div class="pills">' + pills.map(t => '<span>' + esc(t) + '</span>').join('') + '</div>' : '') +
     ((GD.photos || []).length ? '<div class="h3" style="margin-top:16px"><b>' + esc(GD.title || '단지 조경') + '</b><span>' + esc(GD.photos.map(x => x[1]).join(' · ')) + '</span></div><div class="garden">' + GD.photos.map(([f, n]) => '<figure><img src="' + IMG(f) + '" alt="' + esc(NAME + ' ' + n) + '" loading="lazy"><figcaption>' + esc(n) + '</figcaption></figure>').join('') + '</div>' : '') + '</div>' +
-    '<div class="card cta"><b>호실 · 층 · 향까지 보려면</b><a class="btn b3" href="/?tab=board">동호배치표 화면 →</a><a class="btn b2" href="/?reg=1">관심등록하기</a><a class="btn p" href="tel:' + esc(O.tel) + '">☎ ' + esc(O.tel) + '</a></div>';
+    '<div class="card cta"><b>호실 · 층 · 향까지 보려면</b><a class="btn b3" href="/?tab=board">동호배치표 화면 →</a><a class="btn b2" href="/?reg=1">관심등록하기</a><a class="btn p" href="tel:' + esc(O.tel) + '">☎ ' + esc(O.tel) + '</a></div>' + ZV;
   return shell(base, '/dongho', title, desc, body, [Object.assign({ '@context': 'https://schema.org' }, apt()), crumbs(base, [['홈', '/'], ['단지 개요', '/dongho']])], IMG(SUMSEC.image || 'siteplan.jpg'));
 }
 
@@ -135,10 +135,10 @@ export function locationPage(base) {
   const tag = B.tag || [];
   const body = '<style>' + CSS3 + '</style><nav class="bc"><a href="/">홈</a> › 입지</nav><h1>' + esc(NAME) + ' 입지환경</h1><p class="sub">' + esc(S.address + ' · ' + (M.sub || '')) + '</p>' +
     '<div class="sec"><div class="bhd"><b>' + esc(B.title || '입지환경') + '</b><span>' + esc(B.sub || '') + '</span>' + (tag.length ? '<em>' + esc(tag[0] || '') + '<i>' + esc(tag[1] || '') + '</i>' + esc(tag[2] || '') + '</em>' : '') + '</div>' +
-    ((PM.items || []).length ? '<div class="pmh"><h2>' + esc(PM.title || '') + '</h2>' + (PM.lead ? '<p>' + esc(PM.lead) + '</p>' : '') + '</div><div class="pm">' + PM.items.map((x, i) => '<a href="' + IMG(x.img) + VER + '" target="_blank" title="크게 보기"><img src="' + IMG(x.img) + VER + '" alt="' + esc(x.title || '') + '" loading="lazy"><i>PREMIUM ' + String(i + 1).padStart(2, '0') + '</i><h3>' + esc(x.title || '') + '</h3><p>' + esc(x.desc || '') + '</p></a>').join('') + '</div><p class="pmn">※ 안내 그림입니다. 예정 사항은 관계기관 사정에 따라 바뀔 수 있습니다.</p>' : '') +
+    ((PM.items || []).length ? '<div class="pmh"><h2>' + esc(PM.title || '') + '</h2>' + (PM.lead ? '<p>' + esc(PM.lead) + '</p>' : '') + '</div><div class="pm">' + PM.items.map((x, i) => '<a href="' + IMG(x.img) + VER + '" title="크게 보기"><img src="' + IMG(x.img) + VER + '" alt="' + esc(x.title || '') + '" loading="lazy"><i>PREMIUM ' + String(i + 1).padStart(2, '0') + '</i><h3>' + esc(x.title || '') + '</h3><p>' + esc(x.desc || '') + '</p></a>').join('') + '</div><p class="pmn">※ 안내 그림입니다. 예정 사항은 관계기관 사정에 따라 바뀔 수 있습니다.</p>' : '') +
     '<div class="pics">' + (B.pics || []).map(p => '<figure><img src="' + IMG(p.img) + '" alt="' + esc(p.alt || '') + '" loading="lazy">' + (p.note ? '<span class="ai">' + esc(p.note) + '</span>' : '') + '<figcaption>' + esc(p.cap || String(p.alt || '').replace(/\s*\(.*\)$/, '')) + (p.capSub ? '<span>' + esc(p.capSub) + '</span>' : '') + '</figcaption></figure>').join('') + '</div>' +
     '<div class="bcards">' + (B.cards || []).map(c => '<div class="cd"><div class="ic">' + (ICON[c.icon] || '•') + '</div><div><h3>' + esc((c.head || [])[0] || '') + '<i>' + esc((c.head || [])[1] || '') + '</i></h3><ul>' + (c.items || []).map(([b, t]) => '<li>' + (b ? '<b>' + esc(b) + '</b>' : '') + esc(t || '') + '</li>').join('') + '</ul></div></div>').join('') + '</div></div>' +
-    cta('입지 · 생활권 상담');
+    cta('입지 · 생활권 상담') + PV;
   return shell(base, '/location', title, desc, body, [Object.assign({ '@context': 'https://schema.org' }, apt()), crumbs(base, [['홈', '/'], ['입지', '/location']])], IMG(((B.pics || [])[1] || {}).img || ((PM.items || [])[0] || {}).img || 'location.jpg'));
 }
 
