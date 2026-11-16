@@ -6,7 +6,9 @@ import { J, body, ip, device } from '../lib/http.js';
 import { can } from '../core/permissions.js';
 import { CONV, PUB_KIND, KIND_KO, cleanConv } from '../core/conv.js';
 import { UNIT } from '../core/units.js';
-import { listConv, getConv, setConv, setPub } from '../repo/conv.js';
+import { listConv, getConv, setConv, setPub, listVacancy } from '../repo/conv.js';
+import { DEALS, DEAL_KO } from '../core/conv.js';
+import { priceOf } from '../core/price.js';
 import { getOne } from '../repo/kv.js';
 import { audit } from '../repo/audit.js';
 
@@ -17,6 +19,12 @@ export async function staffConv(req, env, url, u) {
   if (p === '/api/staff/conv' && req.method === 'GET') {
     const { conv, pub } = await listConv(db);
     return J({ ok: true, statuses: CONV, pubKinds: PUB_KIND, kindKo: KIND_KO, canEdit: can(u, 'conv.edit', null, perms), canPub: can(u, 'unit.publish'), conv, pub });
+  }
+
+  // 공실 · 신규분양 목록 (시안 r46 확정 2026-11-17) — 계약조건 빈칸 · 현재 임대차 있는 세대: 만기 · 공실 여부 · 공개 거래 구분 · 분양가
+  if (p === '/api/staff/conv/vacancy' && req.method === 'GET') {
+    const rows = (await listVacancy(db)).filter(r => UNIT[r.id]).map(r => { const u = UNIT[r.id], pr = priceOf(r.id) || {}; return Object.assign(r, { dong: u.dong, floor: u.floor, line: u.line, type: u.type, hedge: pr.hedge || 0, benefit: pr.benefit || 0 }); });
+    return J({ ok: true, rows, deals: DEALS, dealKo: DEAL_KO, canPub: can(u, 'unit.publish') });
   }
 
   let m = p.match(/^\/api\/staff\/conv\/(\d+-\d+)$/);
@@ -36,10 +44,10 @@ export async function staffConv(req, env, url, u) {
   if (m && req.method === 'POST') {
     if (!UNIT[m[1]]) return J({ ok: false, err: 'notfound' }, 404);
     if (!can(u, 'unit.publish')) return J({ ok: false, err: 'perm' }, 403);
-    const on = !!((await body(req)) || {}).on;
-    const r = await setPub(db, m[1], on, u.name);
-    if (r === 'status') return J({ ok: false, err: 'status', msg: '공실 · 퇴거확정(매물동의) 세대만 공개할 수 있습니다' }, 409);
-    await audit(db, Object.assign({ act: on ? '세대 공개' : '세대 공개 내림', target: '세대 ' + m[1] }, who));
+    const b = (await body(req)) || {}, on = !!b.on;
+    const r = await setPub(db, m[1], on, u.name, Date.now(), b.deal);
+    if (r === 'status') return J({ ok: false, err: 'status', msg: '신규분양 대상(계약조건 빈칸 · 임대차 있음) 또는 공실 · 퇴거확정(매물동의) 세대만 공개할 수 있습니다' }, 409);
+    await audit(db, Object.assign({ act: on ? '세대 공개' : '세대 공개 내림', target: '세대 ' + m[1], detail: on ? DEAL_KO[b.deal] || '신규분양' : '' }, who));
     return J({ ok: true });
   }
 

@@ -7,7 +7,7 @@
   var page = (location.pathname.split('/').pop() || '').toLowerCase();
   var G = [
     ['상담', [['consults.html', '🗂️ 분양전환상담', '임차인 · 신규고객 카드'], ['board.html', '💬 소통', '상담참고 · 요청함 · 불편사항']]],
-    ['세대 · 가격', [['units.html', '🏠 전환상태', '세대 상태 · 손님 공개 세대'], ['prices.html', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금']]],
+    ['세대 · 가격', [['vacancy.html', '🔑 공실 · 신규분양', '공실 일수 · 손님 화면 공개'], ['units.html', '🏠 전환상태', '세대 상태 · 손님 공개 세대'], ['prices.html', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금']]],
     ['관리', [['kpi.html', '📊 KPI', '담당별 실적 · 미상담 세대'], ['report.html', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', 'top'], ['claims.html', '📑 청구서', '수수료 청구 · MGM', 'boss'], ['migrate.html', '📥 자료 옮기기', '고객DB 엑셀 옮기기', 'boss']]]
   ];
   var css = document.createElement('style');

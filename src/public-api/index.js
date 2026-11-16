@@ -42,7 +42,7 @@ export function cleanLead(c) {
 }
 
 // 그룹방 알림 글 (원문 — 대표가 초대한 사람만 있는 방, 2026-11-02 결정). 담당이 없으니 개인 알림은 없음
-const KIND_KO = { buyer: '분양권 매수', seller: '분양권 매도', client: '신규고객', owner: '소유자' };
+const KIND_KO = { buyer: '전세 희망', seller: '임차인', client: '신규분양 매수', owner: '개인 소유자' };   // 상담카드 구분 이름 (시안 r46 확정 2026-11-17)
 export function leadNote(c) {
   const deals = c.trades && typeof c.trades === 'object' ? Object.keys(c.trades).filter(k => c.trades[k]).map(k => DEAL_KO[k] || k) : [];
   const sell = c.kind === 'owner' && deals.length;

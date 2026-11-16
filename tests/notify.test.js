@@ -126,7 +126,7 @@ test('관심등록 → 그룹방에 원문(이름 · 번호) · 개인 알림 �
   assert.equal(r.status, 200);
   const m = await waitSent(x => x.chat === GROUP);
   assert.equal(m.length, 1);
-  assert.match(m[0].text, /^\[관심등록\] 신규고객 · 홍길동 · 010-2222-3333/);
+  assert.match(m[0].text, /^\[관심등록\] 신규분양 매수 · 홍길동 · 010-2222-3333/);
   assert.match(m[0].text, /\/staff\/\?go=c:g\d+/, '직원 화면 바로가기');
   await pause(100);
   assert.equal(sent.filter(x => x.chat !== GROUP).length, 0);
@@ -195,7 +195,7 @@ test('조용한 시간: 보류 → 아침 요약에 합쳐서 한 번 · 긴급(
   assert.equal(grp.length, 1, '그룹방엔 요약 한 통');
   assert.match(grp[0].text, /아침 요약/);
   assert.match(grp[0].text, /밤사이 알림 2건/);
-  assert.match(grp[0].text, /\[관심등록\] 분양권 매수 · 김밤중/);
+  assert.match(grp[0].text, /\[관심등록\] 전세 희망 · 김밤중/);
   const mine = sent.filter(m => m.chat === A_TG);
   assert.equal(mine.length, 1);
   assert.match(mine[0].text, /직원가님 담당[\s\S]*밤사이 내 알림 1건[\s\S]*\[가계약\]/);

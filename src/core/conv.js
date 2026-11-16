@@ -10,6 +10,16 @@ export const PUB_KIND = { '공실': 'vac', '퇴거확정(매물동의)': 'out' }
 export const KIND_KO = { vac: '즉시 입주', out: '입주일 협의' };
 
 export const canPub = status => !!PUB_KIND[status];
+// 손님 화면 거래 구분 (시안 r46 확정 2026-11-17) — 직원이 고름: 신규분양(매매) · 전세 · 둘 다
+export const DEALS = ['매매', '전세', '둘 다'];
+export const DEAL_KO = { 매매: '신규분양', 전세: '전세', '둘 다': '신규분양 · 전세' };
+export const cleanDeal = d => DEALS.includes(d) ? d : '매매';
+// 계약조건 빈칸(신규분양 대상) 세대 공개용 한 줄 — 구분은 임대차 만기로 (지남 = 즉시 입주 · 아니면 입주일 협의)
+export function pubRowKind(id, kind) {
+  const u = UNIT[id];
+  if (!u || !KIND_KO[kind]) return null;
+  return { dong: u.dong, band: band(u.floor, TOP[u.dong]), type: u.type, kind, exclusive: areaOf(u).exclusive };
+}
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // 직원이 보낸 상태 고치기 → 저장할 값. 틀리면 null
@@ -33,6 +43,6 @@ export function pubRow(id, status) {
 const BAND_ORD = { 저층: 0, 중층: 1, 고층: 2 };
 export function groupPub(rows) {
   const g = {};
-  rows.forEach(r => { const k = [r.dong, r.band, r.type, r.kind].join('|'); (g[k] = g[k] || { dong: r.dong, band: r.band, type: r.type, kind: r.kind, exclusive: r.exclusive, n: 0 }).n++; });
+  rows.forEach(r => { const k = [r.dong, r.band, r.type, r.kind, r.deal || ''].join('|'); (g[k] = g[k] || { dong: r.dong, band: r.band, type: r.type, kind: r.kind, deal: r.deal || '매매', exclusive: r.exclusive, n: 0 }).n++; });
   return Object.values(g).sort((a, b) => (a.kind === 'vac' ? 0 : 1) - (b.kind === 'vac' ? 0 : 1) || a.dong - b.dong || BAND_ORD[a.band] - BAND_ORD[b.band] || a.type.localeCompare(b.type));
 }
