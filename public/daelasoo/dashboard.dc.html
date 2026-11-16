@@ -3488,14 +3488,15 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <span style="background:{{ pp.typeBg }};border-radius:9999px;padding:2px 9px;font-size:12px;font-weight:700">{{ pp.type }}</span>
       <span style="font-size:11px;color:#6e6e73">{{ pp.sub }}</span>
       <span style="margin-left:auto"></span>
+      <sc-if value="{{ pp.canPop }}" hint-placeholder-val="{{ false }}"><button onClick="{{ pp.openPop }}" style="height:30px;border:none;background:#0066cc;color:#fff;border-radius:9999px;padding:0 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">평면도 · 실내 사진</button></sc-if>
       <button onClick="{{ backUP }}" style="height:30px;border:none;background:#1d1d1f;color:#fff;border-radius:9999px;padding:0 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">← 배치도</button>
       <span style="display:flex;align-items:center;gap:2px;background:#f5f5f7;border-radius:9999px;padding:2px"><button onClick="{{ pp.zOut }}" style="width:26px;height:26px;border:none;border-radius:9999px;background:transparent;font-size:15px;cursor:pointer">−</button><button onClick="{{ pp.zFit }}" style="min-width:44px;height:26px;border:none;border-radius:9999px;background:#fff;font-size:11px;font-weight:700;cursor:pointer">{{ pp.zoomPct }}</button><button onClick="{{ pp.zIn }}" style="width:26px;height:26px;border:none;border-radius:9999px;background:transparent;font-size:15px;cursor:pointer">+</button></span>
       <button onClick="{{ closePP }}" style="border:none;background:#f0f0f2;border-radius:9999px;width:30px;height:30px;font-size:14px;cursor:pointer">✕</button>
     </div>
     <sc-if value="{{ pp.hasSubs }}"><div style="display:flex;gap:4px;padding:0 16px 10px;align-items:center"><span style="font-size:11px;color:#6e6e73;margin-right:2px">타입</span><sc-for list="{{ pp.subChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for></div></sc-if>
     <div style="display:flex;border-top:1px solid #f0f0f2;flex-shrink:0">
-    <div data-zk="ppZoom" style="flex:1;min-width:0;aspect-ratio:1 / 1;overflow:auto;background:#fff;cursor:grab;touch-action:none">
-      <div style="position:relative;width:{{ pp.zw }};aspect-ratio:1 / 1">
+    <div data-zk="ppZoom" style="flex:1;min-width:0;aspect-ratio:{{ pp.boxAr }};overflow:auto;background:#fff;cursor:grab;touch-action:none">
+      <div style="position:relative;width:{{ pp.zw }};aspect-ratio:{{ pp.boxAr }}">
         <span role="img" aria-label="챔피언스시티 1차 {{ altType }} 평면도" style="position:absolute;left:50%;top:50%;width:{{ pp.pw }};aspect-ratio:{{ pp.par }};transform:{{ pp.tf }};background-image:url({{ pp.src }});background-size:{{ pp.bsize }};background-position:{{ pp.bpos }};background-repeat:no-repeat"></span>
       </div>
     </div>
@@ -3524,7 +3525,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <sc-if value="{{ up.ovOff }}">
         <span role="img" aria-label="{{ up.alt }}" style="position:absolute;inset:0;background-image:url({{ up.src }});background-size:100% 100%;background-repeat:no-repeat;pointer-events:none"></span>
         <sc-for list="{{ up.spots }}" as="s">
-          <div onClick="{{ s.go }}" title="{{ s.title }}" style="position:absolute;left:{{ s.l }};top:{{ s.t }};width:{{ s.w }};height:{{ s.h }};transform:translate(-50%,-50%) rotate({{ s.rot }});cursor:pointer;border-radius:4px;box-shadow:{{ s.ring }}" style-hover="background:rgba(255,255,255,.18);box-shadow:0 0 0 2px #fff">
+          <div onClick="{{ s.go }}" title="{{ s.title }}" style="position:absolute;left:{{ s.l }};top:{{ s.t }};width:{{ s.w }};height:{{ s.h }};transform:translate(-50%,-50%) rotate({{ s.rot }});cursor:pointer;border-radius:{{ s.rad }};box-shadow:{{ s.ring }};clip-path:{{ s.clip }}" style-hover="background:{{ s.hov }};box-shadow:{{ s.hovRing }}">
             <sc-if value="{{ s.showPlan }}"><div style="position:absolute;inset:0;background:{{ s.bg }};border-radius:2px;display:flex;align-items:center;justify-content:center;overflow:hidden"><span style="display:block;mix-blend-mode:multiply;width:{{ s.pw }};aspect-ratio:{{ s.par }};background-image:url({{ s.src }});background-size:{{ s.bsize }};background-position:{{ s.bpos }};background-repeat:no-repeat;transform:{{ s.flip }}"></span></div></sc-if>
           </div>
         </sc-for>
@@ -5273,9 +5274,10 @@ class Component extends DCLogic {
     const fr = (code, l) => { const f = up.units.filter(u => u.type === code && (l == null || u.l === l)).map(u => u.f); const lo = Math.min.apply(null, f), hi = Math.max.apply(null, f); return f.length ? (lo === hi ? lo : lo + '~' + hi) + '층' : ''; };
     const open = (sp, code) => this.setState({ upPlan: { g: true, b: up.no, i: sp.line - 1, code, src: base + sp.plan, par: sp.ar }, ppZoom: 1 });
     const spots = v.spots.map(sp => { const [l, t, w, h] = sp.box, code = typeOf(sp.line);
-      return { l: (l + w / 2) + '%', t: (t + h / 2) + '%', w: w + '%', h: h + '%', rot: '0deg', showPlan: false, title: sp.line + '호 라인 · ' + code + ' 평면 보기 (배치 방향)', ring: ov === sp.line - 1 ? '0 0 0 3px #1d1d1f' : 'none', go: () => open(sp, code) }; });
+      const cl = sp.clip ? 'polygon(' + sp.clip.map(q => q[0] + '% ' + q[1] + '%').join(',') + ')' : 'none', is3d = /main3d_/.test(sp.plan || '');
+      return { l: (l + w / 2) + '%', t: (t + h / 2) + '%', w: w + '%', h: h + '%', rot: '0deg', showPlan: false, title: sp.line + '호 라인 · ' + code + (is3d ? ' 3D 평면 보기' : ' 평면 보기 (배치 방향)'), ring: sp.clip ? 'none' : ov === sp.line - 1 ? '0 0 0 3px #1d1d1f' : 'none', clip: cl, rad: sp.clip ? '0' : '4px', hov: sp.clip ? 'rgba(255,255,255,.3)' : 'rgba(255,255,255,.18)', hovRing: sp.clip ? 'none' : '0 0 0 2px #fff', go: () => open(sp, code) }; });
     const lines = v.spots.map(sp => { const code = typeOf(sp.line), on = ov === sp.line - 1;
-      return { k: sp.line + '호 라인', v: code, bg: (D.types[code] || {}).color || '#f5f5f7', ring: on ? '0 0 0 2px #1d1d1f' : 'none', onClick: () => this.setState({ upOv: on ? null : sp.line - 1, upZoom: 1 }) }; });
+      return { k: sp.line + '호 라인', v: code, bg: (D.types[code] || {}).color || '#f5f5f7', ring: on ? '0 0 0 2px #1d1d1f' : 'none', onClick: () => /main3d_/.test(sp.plan || '') ? open(sp, code) : this.setState({ upOv: on ? null : sp.line - 1, upZoom: 1 }) }; });
     const osp = ov != null ? v.spots.find(sp => sp.line === ov + 1) : null;
     // 위층 큰 평형(148 · 218)은 두 라인을 합친 세대 → 칩으로 평면 (배치 방향 그림 없음)
     const seen = {}, wide = (B.wide || []).filter(w => !seen[w.type] && (seen[w.type] = 1)).map(w => ({ fg: '#1d1d1f', label: w.type + ' · ' + fr(w.type), bg: (D.types[w.type] || {}).color || '#1d1d1f', ring: 'none',
@@ -5285,7 +5287,7 @@ class Component extends DCLogic {
       src: base + 'units/' + up.no + '.jpg?v=' + (D.S.assetVer || 1),
       spots, phBoxes: [], ovOn: !!osp, ovOff: !osp, ovSrc: osp ? base + osp.plan : '', ovBsize: '100% 100%', ovBpos: 'center', ovPar: osp ? String(osp.ar) : '1', ovPw: osp ? (osp.ar >= ar ? 94 : osp.ar / ar * 94).toFixed(2) + '%' : '94%',
       ovSubsOn: false, ovSubChips: [], hasPh: wide.length > 0, phChips: wide,
-      ovHint: osp ? osp.line + '호 라인 ' + typeOf(osp.line) + ' 평면 (배치 방향) · 다시 누르면 배치도' : '배치도에서 유니트를 누르면 배치 방향 평면 · 아래 라인을 누르면 이 자리에 평면',
+      ovHint: osp ? osp.line + '호 라인 ' + typeOf(osp.line) + ' 평면 (배치 방향) · 다시 누르면 배치도' : v.spots.some(sp => /main3d_/.test(sp.plan || '')) ? '그림에서 세대를 누르거나 아래 라인을 누르면 그 타입의 3D 평면이 나옵니다' : '배치도에서 유니트를 누르면 배치 방향 평면 · 아래 라인을 누르면 이 자리에 평면',
       title: up.no + '동 유니트 배치', group: this.gName(gi) + (op ? ' 오피스텔' : ''), color: D.GCOLOR[gi],
       meta: up.units.length + (op ? '실' : '세대') + ' · ' + up.min + '~' + up.max + '층 · 기준층 확대',
       stat: isGuest ? '' : '매물 ' + (nSale || 0), canBack: !!(S.upPlan || ov != null || upZ !== 1), showGo: !isGuest || gbOn, lines, go: () => { this.setState({ unitPop: null }); this.goGroupOf(up.no); } };
@@ -5294,7 +5296,8 @@ class Component extends DCLogic {
     const S = this.state, D = this.D, P = S.upPlan, b = D.bmap[P.b], z = S.ppZoom || 1;
     if (P.g) { const a = P.par || 1, op = b.kind === '오피스텔', f = b.units.filter(u => u.type === P.code && (P.i < 0 || u.l === P.i + 1)).map(u => u.f);
       return { maxW: 'min(' + (a >= 1 ? 900 : 640) + 'px, calc((100vh - 150px) * ' + Math.max(1, a).toFixed(3) + '), 100%)', title: P.b + '동 ' + (P.i >= 0 ? (P.i + 1) + '호 라인' : '상층부'), type: P.code, typeBg: (D.types[P.code] || {}).color || '#f5f5f7',
-        sub: (f.length ? Math.min.apply(null, f) + '~' + Math.max.apply(null, f) + '층 · ' + f.length + (op ? '실' : '세대') : '') + (P.i >= 0 ? ' · 배치도 방향' : ''), hasSubs: false, subChips: [],
+        sub: (f.length ? Math.min.apply(null, f) + '~' + Math.max.apply(null, f) + '층 · ' + f.length + (op ? '실' : '세대') : '') + (P.i >= 0 && !/main3d_/.test(P.src || '') ? ' · 배치도 방향' : ''), hasSubs: false, subChips: [],
+        boxAr: /main3d_/.test(P.src || '') && a >= 1 ? a.toFixed(4) : '1 / 1', canPop: /main3d_/.test(P.src || '') && !!((D.S.types || {})[P.code] || {}).pop, openPop: () => { const k = P.code; this.setState({ upPlan: null, unitPop: null, upOv: null }); this.planPop(k); },
         zw: (z * 100) + '%', zoomPct: Math.round(z * 100) + '%', zIn: () => this.setZK('ppZoom', z * 1.25), zOut: () => this.setZK('ppZoom', z / 1.25), zFit: () => this.setZK('ppZoom', 1),
         src: P.src, bsize: '100% 100%', bpos: 'center', par: String(a), pw: (a >= 1 ? 96 : a * 96).toFixed(2) + '%', tf: 'translate(-50%,-50%)' }; }
     const pc = this.planCrop(P.code) || { src: '', ar: 1, bsize: '', bpos: '' };
@@ -6583,7 +6586,7 @@ class Component extends DCLogic {
 cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.commPop.slice(5) : ''; const v = this.mhVals(code, this.MH_84A); const ly = this.mhLay(code), g = !!ly.right; const all = v.all || []; const M3 = this.MH3[code], pick = fs => fs.map(f => all.find(x => x.src.endsWith('/' + f + '.jpg'))).filter(Boolean); const port = M3 ? pick(M3.bot) : g ? all.filter(x => x.o === 'b') : v.port; return Object.assign(v, { w: 'calc(' + ly.wr + ')', grid: g, nogrid: !g && !M3, g3: !!M3, r3: M3 ? pick(M3.r3) : [], r4: M3 ? pick(M3.r4) : [], rg: g ? ly.right.map(f => all.find(x => x.src.endsWith('/' + f + '.jpg'))).filter(Boolean).map(x => Object.assign({}, x, { ar: x.name === '테라스' || x.name === '거실' ? '972 / 640' : '460 / 640', gc: x.name === '테라스' || x.name === '거실' ? '1 / -1' : 'auto' })) : [], port: port.map(x => Object.assign({}, x, { ar: g && !M3 ? '972 / 640' : '604 / 844' })), topH: 'calc(' + (commV.boxH || '0px') + ' - 13px)', small: v.land.slice(1), cols: Math.max(1, port.length), big: v.land[0] || {}, strip: (() => { const L = all.filter(x => x.name === '거실').concat(all.filter(x => x.name !== '거실')); return L.map((x, i) => Object.assign({}, x, { no: (i + 1) + '/' + L.length })); })() }); })(),
       commMaxW: commV.maxW ? commV.maxW : S.commPop && S.commPop.indexOf('plan:') === 0 && this.MH_84A[S.commPop.slice(5)] ? this.mhLay(S.commPop.slice(5)).maxW + 'px' : '1200px',
       planOpenCW: D.generic && S.planOpen ? 'min(100%, 900px, calc((80vh - 60px) * ' + this.planAr(S.planOpen, S.planBlk) + '))' : S.planOpen && this.MH[S.planOpen] ? 'min(100%, 1600px)' : 'min(100%, calc((100vh - 90px) * ' + (D.types[S.planOpen] && D.types[S.planOpen].ph ? 0.927 : 2.6) + '))',
-      ppOpen: !!S.upPlan, pp: S.upPlan ? this.upPlanVals() : {}, closePP: () => this.setState({ upPlan: null, upPh: null }), backUP: this.backUP,
+      ppOpen: !!S.upPlan, pp: S.upPlan ? Object.assign({ boxAr: '1 / 1', canPop: false }, this.upPlanVals()) : {}, closePP: () => this.setState({ upPlan: null, upPh: null }), backUP: this.backUP,
       planOpen: !!S.planOpen, planOpenSrc: S.planOpen ? this.planSrc(S.planOpen, S.planBlk) : '', planOpenRatio: D.generic && S.planOpen ? String(this.planAr(S.planOpen, S.planBlk)) : S.planOpen && D.types[S.planOpen] && D.types[S.planOpen].ph ? '0.927' : '2.6', planOpenLabel: S.planOpen ? S.planOpen + ' 평면도' : '', closePlan: () => this.setState({ planOpen: null, planBlk: null }),
       tabs, me: S.me, onMe: e => this.setState({ me: e.target.value, dbDraft: null }), staff: Object.keys(S.roles),
       isDb: tab === 'db', db: tab === 'db' ? this.dbVals(role, can) : {}, isLease: tab === 'lease', ls: tab === 'lease' ? this.leaseVals(role, can) : {},

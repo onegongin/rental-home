@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r36 · 동별 유니트 배치 창</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .w { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: #6e6e73; font-size: 14px; line-height: 1.6; margin: 0 0 14px; }
+  .card { background: #fff; border-radius: 14px; padding: 16px; }
+  .card h2 { font-size: 16px; margin: 0 0 10px; }
+  .card h2 small { font-weight: 400; color: #6e6e73; font-size: 12px; margin-left: 6px; }
+  .sp { position: relative; width: 100%; line-height: 0; border-radius: 10px; overflow: hidden; }
+  .sp img { width: 100%; display: block; }
+  .dg { position: absolute; cursor: pointer; border-radius: 10px; }
+  .dg:hover { background: rgba(255,255,255,.22); box-shadow: 0 0 0 3px #fff; }
+  /* 창 */
+  .dim { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.72); display: none; align-items: center; justify-content: center; padding: 20px; }
+  .dim.show { display: flex; }
+  .pop { width: 100%; max-width: 760px; max-height: calc(100vh - 40px); overflow-y: auto; background: #fff; border-radius: 20px; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+  .ph { display: flex; align-items: center; gap: 10px; padding: 12px 18px 4px; flex-wrap: wrap; }
+  .ph .dot { width: 10px; height: 10px; border-radius: 3px; background: #0066cc; }
+  .ph b { font-size: 18px; }
+  .ph .back { margin-left: auto; height: 30px; border: 0; background: #1d1d1f; color: #fff; border-radius: 9999px; padding: 0 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .meta { padding: 0 18px 10px; font-size: 12px; color: #6e6e73; }
+  .stage { position: relative; width: 100%; line-height: 0; background: #fff; }
+  .stage img { width: 100%; display: block; }
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .stage polygon { fill: transparent; stroke: none; cursor: pointer; transition: fill .15s; }
+  .stage polygon:hover, .stage polygon.on { fill: rgba(255,255,255,.3); }
+  .plan { display: none; padding: 6px 18px 0; }
+  .plan.show { display: block; }
+  .plan img { width: 100%; display: block; border-radius: 10px; border: 1px solid #ececf0; }
+  .plan .cap { font-size: 13px; margin: 8px 0 0; color: #424245; }
+  .lines { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 12px 18px 0; }
+  .lines button { border: 0; border-radius: 10px; padding: 7px 4px; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .lines button span { font-size: 11px; color: #424245; }
+  .lines button b { font-size: 15px; }
+  .lines button.on { box-shadow: 0 0 0 2px #1d1d1f; }
+  .hint { padding: 8px 18px 0; font-size: 11px; color: #6e6e73; }
+  .ft { display: flex; gap: 8px; padding: 12px 18px 16px; justify-content: flex-end; }
+  .ft button { height: 38px; border-radius: 10px; padding: 0 14px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .ft .c { border: 1px solid #d2d2d7; background: #fff; }
+  .ft .g { border: 0; background: #0066cc; color: #fff; }
+  .note { margin-top: 16px; background: #fff; border-radius: 14px; padding: 14px 18px; font-size: 13px; line-height: 1.75; color: #3a3a3c; }
+  .note b { color: #1d1d1f; }
+  @media (max-width: 560px) {
+    .dim { padding: 0; align-items: flex-end; }
+    .pop { max-height: 94vh; border-radius: 18px 18px 0 0; }
+    .ph b { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>시안 r36 · 단지배치에서 동을 눌렀을 때</h1>
+  <p class="sub">아래 배치도에서 <b>동</b>을 눌러 보세요 → 유니트 배치 그림(유니트배치.png 의 분홍 테두리 부분)이 뜹니다 → 그림에서 <b>호 라인(세대)</b>을 누르거나 아래 라인 단추를 누르면 그 타입의 <b>3D 평면</b>이 나옵니다. (예: 104동 1라인 → 59A 3D)</p>
+
+  <div class="card">
+    <h2>단지배치<small>동을 누르면 유니트 배치가 확대됩니다</small></h2>
+    <div class="sp" id="sp"><img src="../daelasoo/assets/dls/siteplan.jpg" alt="첨단대라수1차 단지배치도"></div>
+  </div>
+
+  <div class="note">
+    <b>바뀌는 점</b><br>
+    · 동을 누르면: 지금은 지붕 사진(번호만) → <b>각 세대 평면이 그려진 확대 그림</b> (101~104동 모두, 원본 <code>소스/DAELASOO/소스/단지_10X동_유니트배치.png</code>)<br>
+    · 라인을 누르면: 지금은 작은 평면 그림 → <b>그 타입의 3D 평면</b> (평면도 창에 쓰는 것과 같은 그림)<br>
+    · 누르는 자리는 세대 모양(비스듬한 모양) 그대로 맞춰서, 마우스를 올리면 그 세대가 밝게 표시됩니다<br>
+    · [평면도 · 실내 사진 보기] 를 누르면 지금의 평면도 창(3D + 실내 사진)이 열립니다
+  </div>
+</div>
+
+<div class="dim" id="dim" onclick="if(event.target===this)closePop()">
+  <div class="pop">
+    <div class="ph"><span class="dot"></span><b id="t"></b><button class="back" id="back" onclick="showMap()" hidden>← 배치도</button></div>
+    <div class="meta" id="meta"></div>
+    <div class="stage" id="stage"><img id="uimg" alt=""><svg id="svg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
+    <div class="plan" id="plan"><img id="pimg" alt=""><p class="cap" id="cap"></p></div>
+    <div class="lines" id="lines"></div>
+    <div class="hint" id="hint"></div>
+    <div class="ft"><button class="c" onclick="closePop()">닫기</button><button class="g" id="pp" hidden onclick="alert('실제 사이트에서는 이 타입의 평면도 창(3D + 실내 사진)이 열립니다')">평면도 · 실내 사진 보기</button></div>
+  </div>
+</div>
+
+<script>
+var COLOR = { '59A': '#8cc63f', '59B': '#f4a6c8', '59C': '#9fd4f0', '80A': '#ffd34d', '80B': '#f39c4a' };
+// 동 누르는 칸 = site.json siteplan.dongs [왼쪽%, 위%, 폭%, 높이%] 그대로
+var DONGS = { 101: [58, 52, 24, 31], 102: [21, 52, 25, 31], 103: [23, 13, 23, 28], 104: [60, 13, 21, 28] };
+// 라인별 타입 = site.json units.buildings
+var TYPES = { 101: ['80B', '80B', '80A'], 102: ['80A', '80B', '80B'], 103: ['59C', '59B', '59A'], 104: ['59A', '59B', '59C'] };
+// 확대 그림 크기 + 세대 모양(그림 픽셀 좌표, 라인 1 · 2 · 3)
+var U = {
+  101: { W: 699, H: 571, P: [[[418,140],[475,76],[627,205],[512,345],[450,280],[430,205]], [[240,335],[290,280],[450,280],[512,345],[395,478],[275,410]], [[28,160],[135,32],[330,240],[290,280],[240,335],[95,210]]] },
+  102: { W: 699, H: 571, P: [[[412,200],[545,68],[645,182],[480,350],[420,285]], [[218,322],[275,268],[400,262],[480,350],[355,470],[248,400]], [[92,205],[225,68],[300,130],[300,245],[218,322]]] },
+  103: { W: 699, H: 562, P: [[[395,120],[460,65],[610,235],[500,330],[420,240]], [[250,358],[320,290],[470,270],[500,330],[445,400],[335,465]], [[98,180],[188,102],[245,140],[320,290],[250,358]]] },
+  104: { W: 699, H: 554, P: [[[400,298],[525,120],[545,112],[625,198],[465,378]], [[212,325],[285,272],[400,298],[465,378],[368,478],[255,412]], [[96,232],[245,68],[335,128],[300,245],[212,325],[190,322]]] }
+};
+var cur = null, sel = null;
+var sp = document.getElementById('sp');
+Object.keys(DONGS).forEach(function (n) {
+  var b = DONGS[n], d = document.createElement('div');
+  d.className = 'dg'; d.title = n + '동 유니트 배치 보기';
+  d.style.cssText = 'left:' + b[0] + '%;top:' + b[1] + '%;width:' + b[2] + '%;height:' + b[3] + '%';
+  d.onclick = function () { openPop(+n); };
+  sp.appendChild(d);
+});
+function openPop(n) {
+  cur = n; sel = null;
+  document.getElementById('t').textContent = n + '동 유니트 배치';
+  document.getElementById('meta').textContent = '1차 · 75세대 · 4~28층 · 기준층 확대 · 1호 ' + TYPES[n][0] + ' · 2호 ' + TYPES[n][1] + ' · 3호 ' + TYPES[n][2];
+  var u = U[n], img = document.getElementById('uimg');
+  img.src = 'units/u' + n + '.jpg'; img.alt = '첨단대라수1차 ' + n + '동 기준층 유니트 배치도';
+  document.getElementById('svg').innerHTML = u.P.map(function (pts, i) {
+    return '<polygon data-i="' + i + '" points="' + pts.map(function (p) { return (p[0] / u.W * 100).toFixed(2) + ',' + (p[1] / u.H * 100).toFixed(2); }).join(' ') + '"><title>' + (i + 1) + '호 라인 · ' + TYPES[n][i] + ' 3D 평면 보기</title></polygon>';
+  }).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('#svg polygon'), function (pg) { pg.onclick = function () { showPlan(+pg.getAttribute('data-i')); }; });
+  showMap();
+  document.getElementById('dim').className = 'dim show';
+}
+function lines() {
+  document.getElementById('lines').innerHTML = TYPES[cur].map(function (t, i) {
+    return '<button class="' + (sel === i ? 'on' : '') + '" style="background:' + COLOR[t] + '" onclick="' + (sel === i ? 'showMap()' : 'showPlan(' + i + ')') + '"><span>' + (i + 1) + '호 라인</span><b>' + t + '</b></button>';
+  }).join('');
+}
+function showMap() {
+  sel = null;
+  document.getElementById('stage').style.display = '';
+  document.getElementById('plan').className = 'plan';
+  document.getElementById('back').hidden = true; document.getElementById('pp').hidden = true;
+  document.getElementById('hint').textContent = '그림에서 세대를 누르거나 아래 라인을 누르면 그 타입의 3D 평면이 나옵니다';
+  lines();
+}
+function showPlan(i) {
+  sel = i; var t = TYPES[cur][i];
+  document.getElementById('stage').style.display = 'none';
+  document.getElementById('pimg').src = '../daelasoo/assets/dls/plans/main3d_' + t + '.jpg';
+  document.getElementById('pimg').alt = '첨단대라수1차 ' + t + ' 3D 평면';
+  document.getElementById('cap').innerHTML = '<b>' + cur + '동 ' + (i + 1) + '호 라인 · ' + t + '</b> — 4~28층 · 25세대';
+  document.getElementById('plan').className = 'plan show';
+  document.getElementById('back').hidden = false; document.getElementById('pp').hidden = false;
+  document.getElementById('hint').textContent = '다른 라인을 누르면 바로 바뀝니다 · [← 배치도] 로 돌아가기';
+  lines();
+}
+function closePop() { document.getElementById('dim').className = 'dim'; }
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePop(); });
+</script>
+</body>
+</html>

@@ -1,10 +1,9 @@
-# 단지배치도에서 동 누르는 칸 + 동을 누르면 뜨는 '유니트 배치' 확대 그림을 만든다 (대라수1차, 2026-11-13)
-# - 원본: 소스/DAELASOO/소스/(1차)단지배치도.png (2026-11-14 교체) → public/daelasoo/assets/dls/units/{동}.jpg (사무소 로고 새김)
-# - site.json siteplan.dongs[동] = 배치도 위 누르는 칸 [왼쪽%, 위%, 폭%, 높이%]
-#   siteplan.units[동] = { ar, spots: [{ line, box(확대 그림 기준 %), plan, ar }] } — 라인을 누르면 그 타입 평면
-# - 위치는 배치도의 동 이름표 · 라인 번호 동그라미를 보고 잡음 (배치도 전체 기준 %). 배치도가 바뀌면 아래 숫자만 고침
-# 실행: 프로젝트 폴더에서  py tools/make_dongs.py
-# ⚠ site.json 을 통째로 다시 써서(indent 2) 다른 칸의 줄 모양까지 바뀜 — 실행 뒤 git diff 로 siteplan 값만 바뀌었는지 보고, 나머지는 되돌릴 것 (2026-11-14)
+# 단지배치도에서 동 누르는 칸 + 동을 누르면 뜨는 '유니트 배치' 확대 그림을 만든다 (대라수1차, 2026-11-13 · 2026-11-16 시안 r36 확정으로 바꿈)
+# - 동 누르는 칸: 단지배치도(siteplan.jpg) 기준 % — 아래 DONGS
+# - 확대 그림: 소스/DAELASOO/소스/단지_{동}동_유니트배치.png 의 '기준층 확대'(분홍 테두리 안쪽)만 잘라 public/daelasoo/assets/dls/units/{동}.jpg (사무소 로고 새김)
+# - 라인 누르는 자리 = 세대 모양 그대로(다각형, 확대 그림 픽셀 좌표) → site.json siteplan.units[동].spots[] = { line, box(바깥 네모 %), clip(네모 안 다각형 %), plan(3D 평면), ar }
+#   라인을 누르면 그 타입의 3D 평면(plans/main3d_타입.jpg) — 104동 1라인 → 59A
+# 실행: 프로젝트 폴더에서  py tools/make_dongs.py   — site.json 은 "siteplan" 덩어리만 바꿔 씀 (다른 칸 줄 모양 그대로)
 import json, sys
 from pathlib import Path
 from PIL import Image
@@ -14,49 +13,54 @@ from watermark import SRC, OUT, LOGO, stamp, QUALITY
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / 'public' / 'daelasoo' / 'data' / 'site.json'
-PLAN = SRC / '(1차)단지배치도.png'   # 2026-11-14 새 그림 (동 · 라인 위치는 예전 (1차)배치도.jpg 와 같아 아래 숫자 그대로)
-
-# 동: (누르는 칸 [왼쪽, 위, 폭, 높이] %, {라인: 동그라미 가운데 (x, y) %})
-DONGS = {
-    101: ([58, 52, 24, 31], {1: (75, 64.5), 2: (69, 74.5), 3: (64, 65.5)}),
-    102: ([21, 52, 25, 31], {1: (39, 64.5), 2: (34, 74.5), 3: (28, 65.5)}),
-    103: ([23, 13, 23, 28], {1: (39, 22), 2: (33.5, 33), 3: (28, 23)}),
-    104: ([60, 13, 21, 28], {1: (76, 22), 2: (70, 33), 3: (64, 23)}),
+# 동: 배치도 위 누르는 칸 [왼쪽, 위, 폭, 높이] %
+DONGS = {101: [58, 52, 24, 31], 102: [21, 52, 25, 31], 103: [23, 13, 23, 28], 104: [60, 13, 21, 28]}
+# 유니트배치.png 안 분홍 테두리 상자 (x0, y0, x1, y1) — 테두리 두께만큼 안쪽
+CROP = {101: (806, 312, 1505, 883), 102: (806, 312, 1505, 883), 103: (806, 312, 1505, 874), 104: (806, 312, 1505, 866)}
+# 라인 1 · 2 · 3 세대 모양 (잘라낸 그림 픽셀 좌표) — 그림 보고 잡음 (2026-11-16)
+POLY = {
+    101: [[(418, 140), (475, 76), (627, 205), (512, 345), (450, 280), (430, 205)], [(240, 335), (290, 280), (450, 280), (512, 345), (395, 478), (275, 410)], [(28, 160), (135, 32), (330, 240), (290, 280), (240, 335), (95, 210)]],
+    102: [[(412, 200), (545, 68), (645, 182), (480, 350), (420, 285)], [(218, 322), (275, 268), (400, 262), (480, 350), (355, 470), (248, 400)], [(92, 205), (225, 68), (300, 130), (300, 245), (218, 322)]],
+    103: [[(395, 120), (460, 65), (610, 235), (500, 330), (420, 240)], [(250, 358), (320, 290), (470, 270), (500, 330), (445, 400), (335, 465)], [(98, 180), (188, 102), (245, 140), (320, 290), (250, 358)]],
+    104: [[(400, 298), (525, 120), (545, 112), (625, 198), (465, 378)], [(212, 325), (285, 272), (400, 298), (465, 378), (368, 478), (255, 412)], [(96, 232), (245, 68), (335, 128), (300, 245), (212, 325), (190, 322)]],
 }
-SPOT_W, SPOT_H, PAD = 10, 13, 1.5   # 라인 칸 크기 · 확대 그림 여백 (배치도 전체 기준 %)
+PLAN_AR = 1.6667   # plans/main3d_*.jpg = 5:3 (watermark.py 'P')
 
 
 def main():
-    D = json.loads(SITE.read_text(encoding='utf-8'))
-    T = D['types']
+    text = SITE.read_text(encoding='utf-8')
+    D = json.loads(text)
     typeOf = {b['no']: {l['line']: l['type'] for l in b['lines']} for b in D['units']['buildings']}
-    img = Image.open(PLAN).convert('RGB'); W, H = img.size
     logo = Image.open(LOGO).convert('RGBA')
     (OUT / 'units').mkdir(parents=True, exist_ok=True)
-    dongs, units = {}, {}
-    for no, (box, circles) in DONGS.items():
-        l, t, w, h = box
-        dongs[str(no)] = box
-        x0, y0, x1, y1 = max(0, l - PAD), max(0, t - PAD), min(100, l + w + PAD), min(100, t + h + PAD)
-        crop = img.crop((round(W * x0 / 100), round(H * y0 / 100), round(W * x1 / 100), round(H * y1 / 100)))
-        crop.thumbnail((1400, 1400), Image.LANCZOS)
-        stamp(crop, logo).save(OUT / 'units' / f'{no}.jpg', 'JPEG', quality=QUALITY, optimize=True, progressive=True)
-        cw, ch = x1 - x0, y1 - y0
+    units = {}
+    for no, box in CROP.items():
+        crop = Image.open(SRC / f'단지_{no}동_유니트배치.png').convert('RGB').crop(box)
+        W, H = crop.size
+        stamp(crop, logo).save(OUT / 'units' / f'{no}.jpg', 'JPEG', quality=88, optimize=True, progressive=True)
         spots = []
-        for line, (cx, cy) in sorted(circles.items()):
-            sx0, sy0 = max(x0, cx - SPOT_W / 2), max(y0, cy - SPOT_H / 2)
-            sx1, sy1 = min(x1, cx + SPOT_W / 2), min(y1, cy + SPOT_H / 2)
-            ty = typeOf[no][line]
-            spots.append({'line': line, 'box': [round((sx0 - x0) / cw * 100, 1), round((sy0 - y0) / ch * 100, 1), round((sx1 - sx0) / cw * 100, 1), round((sy1 - sy0) / ch * 100, 1)],
-                          'plan': 'plans/intro_' + ty + '.jpg', 'ar': T[ty]['planAr']})
-        units[str(no)] = {'ar': round(crop.width / crop.height, 4), 'spots': spots}
-        print(f'units/{no}.jpg {crop.width}x{crop.height}', ' · '.join(f"{s['line']}라인 {typeOf[no][s['line']]}" for s in spots))
-    D['siteplan']['dongs'] = dongs
-    D['siteplan']['units'] = units
-    D['siteplan']['note'] = '단지배치도(assets/dls/siteplan.jpg) 위 동 누르는 칸 [왼쪽%, 위%, 폭%, 높이%] · units = 동을 누르면 뜨는 확대 그림의 라인 칸 — tools/make_dongs.py 가 만듦'
-    SITE.write_text(json.dumps(D, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        for i, pts in enumerate(POLY[no]):
+            xs, ys = [x for x, _ in pts], [y for _, y in pts]
+            x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
+            ty = typeOf[no][i + 1]
+            spots.append({'line': i + 1, 'box': [round(x0 / W * 100, 2), round(y0 / H * 100, 2), round((x1 - x0) / W * 100, 2), round((y1 - y0) / H * 100, 2)],
+                          'clip': [[round((x - x0) / (x1 - x0) * 100, 1), round((y - y0) / (y1 - y0) * 100, 1)] for x, y in pts],
+                          'plan': 'plans/main3d_' + ty + '.jpg', 'ar': PLAN_AR})
+        units[str(no)] = {'ar': round(W / H, 4), 'spots': spots}
+        print(f'units/{no}.jpg {W}x{H}', ' · '.join(f"{s['line']}라인 {typeOf[no][s['line']]}" for s in spots))
+    sp = dict(D.get('siteplan') or {})
+    sp['note'] = '단지배치도(assets/dls/siteplan.jpg) 위 동 누르는 칸 [왼쪽%, 위%, 폭%, 높이%] · units = 동을 누르면 뜨는 유니트배치 확대 그림 + 세대 모양 누르는 자리(box + clip) → 3D 평면 — tools/make_dongs.py 가 만듦'
+    sp['dongs'] = {str(k): v for k, v in DONGS.items()}
+    sp['units'] = units
+    # "siteplan": { … } 덩어리만 바꿔 씀
+    i = text.index('"siteplan"'); j = text.index('{', i); depth = 0
+    for k in range(j, len(text)):
+        depth += {'{': 1, '}': -1}.get(text[k], 0)
+        if depth == 0: break
+    ind = text[text.rindex('\n', 0, i) + 1:i]
+    body = json.dumps(sp, ensure_ascii=False, indent=2).replace('\n', '\n' + ind)
+    SITE.write_text(text[:j] + body + text[k + 1:], encoding='utf-8', newline='')
     print('site.json siteplan 갱신')
-
 
 if __name__ == '__main__':
     main()
