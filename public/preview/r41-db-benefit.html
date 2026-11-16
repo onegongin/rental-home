@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r41 · 계약자DB 계약조건</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .w { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: #6e6e73; font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
+  .card { background: #fff; border-radius: 16px; padding: 14px; }
+  .tools { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .tools input { height: 34px; width: 220px; border: 1px solid #d2d2d7; border-radius: 9999px; padding: 0 14px; font-size: 13px; font-family: inherit; }
+  .chip { border: 1px solid #d2d2d7; background: #fff; border-radius: 9999px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .chip.on { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+  .chip.new { outline: 2px dashed #f5b400; outline-offset: 2px; }
+  .cnt { margin-left: auto; font-size: 12px; color: #6e6e73; }
+  .wrap { overflow-x: auto; }
+  .tbl { min-width: 1160px; }
+  .hd, .row { display: grid; grid-template-columns: 64px 70px 70px 104px minmax(90px, 1fr) 130px 90px 86px 150px 150px 120px; }
+  .hd { font-size: 12px; font-weight: 700; color: #6e6e73; border-bottom: 1px solid #e5e5ea; }
+  .hd div, .row span { padding: 8px; }
+  .hd .nw { background: #fff8e1; color: #8a6100; }
+  .row { border-bottom: 1px solid #f0f0f2; font-size: 13px; cursor: pointer; }
+  .row:hover { background: #f5f5f7; }
+  .row .nw { background: #fffcf0; }
+  .bf { display: inline-block; border-radius: 9999px; padding: 2px 9px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .muted { color: #c7c7cc; }
+  .dlg { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  .pane { background: #fff; border-radius: 16px; padding: 16px; }
+  .pane h3 { margin: 0 0 10px; font-size: 15px; }
+  .f { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 13px; }
+  .f label { color: #6e6e73; }
+  .f select, .f input { height: 36px; border: 1px solid #d2d2d7; border-radius: 10px; padding: 0 10px; font-size: 14px; font-family: inherit; background: #fff; }
+  .f.nw { background: #fff8e1; border-radius: 10px; padding: 6px; }
+  .q { background: #fff; border-radius: 14px; padding: 14px 18px; font-size: 13px; line-height: 1.8; color: #3a3a3c; margin-top: 18px; }
+  .q b { color: #1d1d1f; }
+  @media (max-width: 860px) { .dlg { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>시안 r41 · 계약자DB 에 '계약조건' 칸 (계약자 앞)</h1>
+  <p class="sub">노란색이 새로 생기는 곳입니다. 표에서 줄을 누르면 아래 '세대 정보 고치기' 창에서 계약조건을 고를 수 있습니다 (시안에서 직접 바꿔 보세요).</p>
+
+  <div class="card">
+    <div class="tools">
+      <input placeholder="동 · 호 · 계약자 · 연락처 찾기">
+      <button class="chip on">전체</button><button class="chip">101동</button><button class="chip">102동</button><button class="chip">103동</button><button class="chip">104동</button>
+      <span id="bfChips"></span>
+      <span class="cnt" id="cnt"></span>
+    </div>
+    <div class="wrap"><div class="tbl">
+      <div class="hd"><div>동</div><div>호</div><div>타입</div><div class="nw">계약조건</div><div>계약자</div><div>핸드폰</div><div>통신사</div><div>매물상태</div><div>관계 · 연락처1</div><div>관계 · 연락처2</div><div>최근수정</div></div>
+      <div id="rows"></div>
+    </div></div>
+  </div>
+
+  <div class="dlg">
+    <div class="pane">
+      <h3 id="edT">세대 정보 고치기</h3>
+      <div class="f"><label>동 · 호</label><input id="edU" readonly></div>
+      <div class="f nw"><label>계약조건</label><select id="edB" onchange="setB(this.value)"></select></div>
+      <div class="f"><label>계약자</label><input id="edN"></div>
+      <div class="f"><label>핸드폰</label><input id="edP"></div>
+      <div style="font-size:12px;color:#6e6e73;margin-top:6px">· 고치면 '최근수정' 에 날짜 · 고친 사람이 남습니다 (지금과 같음)</div>
+    </div>
+    <div class="pane">
+      <h3>함께 바뀌는 곳</h3>
+      <div style="font-size:13px;line-height:1.8;color:#3a3a3c">
+        · 표 위에 <b>계약조건 거르기 단추</b> (조건 전체 · 10.16 혜택가 · 헷지했지 · 전세연장 · 빈칸)<br>
+        · <b>엑셀 내려받기 · 올리기</b> 양식에 '계약조건' 칸 추가 (계약자 앞)<br>
+        · 비워 두면 '—' (예전 자료는 모두 빈칸으로 시작)<br>
+        · 권한은 계약자DB 와 같음: 보기 = 계약자DB 보기 권한, 고치기 = 수정 권한
+      </div>
+    </div>
+  </div>
+
+  <div class="q">
+    <b>계약조건 값 (대표 확인)</b>: <span class="bf" style="background:#e8f5ec;color:#157a3f">10.16 혜택가</span> <span class="bf" style="background:#f3e8fb;color:#7a2fb0">헷지했지</span> <span class="bf" style="background:#e8f0fb;color:#0066cc">전세연장</span> 세 가지 + 비움(—, 아직 없음)<br>
+    · '대상' · '신청' 은 뺐습니다 · 나중에 값을 더 넣고 싶으면 말씀만 해 주세요
+  </div>
+</div>
+
+<script>
+var BF = { '': ['—', 'transparent', '#c7c7cc'], '10.16 혜택가': ['10.16 혜택가', '#e8f5ec', '#157a3f'], '헷지했지': ['헷지했지', '#f3e8fb', '#7a2fb0'], '전세연장': ['전세연장', '#e8f0fb', '#0066cc'] };
+var R = [
+  ['101', '401', '80B', '10.16 혜택가', '김*수', '010-****-1234', 'SKT', '보유', '배우자 010-****-2211', '', '11.14 · 홍길동'],
+  ['101', '1503', '80A', '', '이*영', '010-****-5678', 'KT', '매물', '자녀 010-****-9090', '', '11.15 · 김담당'],
+  ['102', '2102', '80B', '전세연장', '박*호', '010-****-3456', 'LGU', '보유', '', '', '11.10 · 홍길동'],
+  ['103', '902', '59B', '10.16 혜택가', '최*진', '010-****-7788', 'SKT_알뜰', '계약', '부 010-****-1100', '모 010-****-1200', '11.16 · 대표'],
+  ['104', '1201', '59A', '헷지했지', '정*희', '010-****-4545', 'KT', '보유', '', '', '11.12 · 김담당'],
+  ['104', '2303', '59C', '10.16 혜택가', '한*민', '010-****-6767', 'SKT', '매물', '배우자 010-****-3030', '', '11.16 · 홍길동']
+];
+var sel = 0, flt = '';
+function chip(v) { var b = BF[v || '']; return v ? '<span class="bf" style="background:' + b[1] + ';color:' + b[2] + '">' + b[0] + '</span>' : '<span class="muted">—</span>'; }
+function draw() {
+  var list = R.map(function (r, i) { return [r, i]; }).filter(function (x) { return !flt || (flt === '_' ? !x[0][3] : x[0][3] === flt); });
+  document.getElementById('rows').innerHTML = list.map(function (x) { var r = x[0], i = x[1];
+    return '<div class="row" style="' + (i === sel ? 'background:#f0f6ff' : '') + '" onclick="pick(' + i + ')"><span>' + r[0] + '</span><span style="font-weight:600">' + r[1] + '</span><span style="color:#6e6e73">' + r[2] + '</span><span class="nw">' + chip(r[3]) + '</span><span>' + r[4] + '</span><span>' + r[5] + '</span><span>' + r[6] + '</span><span style="font-size:12px;color:#6e6e73">' + r[7] + '</span><span style="font-size:12px">' + r[8] + '</span><span style="font-size:12px">' + r[9] + '</span><span style="font-size:11px;color:#8e8e93">' + r[10] + '</span></div>'; }).join('');
+  document.getElementById('cnt').textContent = list.length + '세대';
+  document.getElementById('bfChips').innerHTML = ['', '10.16 혜택가', '헷지했지', '전세연장', '_'].map(function (v) { return '<button class="chip new' + (flt === v ? ' on' : '') + '" onclick="flt=\'' + v + '\';draw()">' + (v === '_' ? '조건 빈칸' : v ? v : '조건 전체') + '</button> '; }).join('');
+  var r = R[sel];
+  document.getElementById('edT').textContent = '세대 정보 고치기 · ' + r[0] + '동 ' + r[1] + '호';
+  document.getElementById('edU').value = r[0] + '동 ' + r[1] + '호 · ' + r[2];
+  document.getElementById('edB').innerHTML = Object.keys(BF).map(function (v) { return '<option value="' + v + '"' + (v === r[3] ? ' selected' : '') + '>' + (v || '— (비움)') + '</option>'; }).join('');
+  document.getElementById('edN').value = r[4]; document.getElementById('edP').value = r[5];
+}
+function pick(i) { sel = i; draw(); }
+function setB(v) { R[sel][3] = v; R[sel][10] = '방금 · 대표'; draw(); }
+draw();
+</script>
+</body>
+</html>

@@ -378,18 +378,19 @@ html:root [data-m=bcond3],html:root [data-m=ccond]{grid-template-columns:repeat(
 [data-m=glsep]{display:none!important}
 [data-m=dbwrap]{overflow:visible!important}
 [data-m=dbin]{min-width:0!important;display:flex;flex-direction:column;gap:8px}
-[data-m=dbrow]{grid-template-columns:auto auto minmax(0,1fr)!important;grid-template-areas:"dg ho tp" "ow ow st" "ph ph cr" "c1 c1 c1" "c2 c2 c2" "up up up";border:1px solid #e5e5ea!important;border-radius:12px;padding:6px 4px!important}
+[data-m=dbrow]{grid-template-columns:auto auto minmax(0,1fr)!important;grid-template-areas:"dg ho tp" "ow ow st" "ph ph cr" "cd cd cd" "c1 c1 c1" "c2 c2 c2" "up up up";border:1px solid #e5e5ea!important;border-radius:12px;padding:6px 4px!important}
 [data-m=dbrow]>span{padding:3px 8px!important}
 [data-m=dbrow]>span:nth-child(1){grid-area:dg;font-weight:700}
 [data-m=dbrow]>span:nth-child(2){grid-area:ho}
 [data-m=dbrow]>span:nth-child(3){grid-area:tp;text-align:right}
-[data-m=dbrow]>span:nth-child(4){grid-area:ow;font-weight:700;font-size:14px}
-[data-m=dbrow]>span:nth-child(5){grid-area:ph}
-[data-m=dbrow]>span:nth-child(6){grid-area:cr;text-align:right;font-size:12px;color:#6e6e73}
-[data-m=dbrow]>span:nth-child(7){grid-area:st;text-align:right}
-[data-m=dbrow]>span:nth-child(8){grid-area:c1;white-space:normal!important}
-[data-m=dbrow]>span:nth-child(9){grid-area:c2;white-space:normal!important}
-[data-m=dbrow]>span:nth-child(10){grid-area:up}
+[data-m=dbrow]>span:nth-child(4){grid-area:cd}
+[data-m=dbrow]>span:nth-child(5){grid-area:ow;font-weight:700;font-size:14px}
+[data-m=dbrow]>span:nth-child(6){grid-area:ph}
+[data-m=dbrow]>span:nth-child(7){grid-area:cr;text-align:right;font-size:12px;color:#6e6e73}
+[data-m=dbrow]>span:nth-child(8){grid-area:st;text-align:right}
+[data-m=dbrow]>span:nth-child(9){grid-area:c1;white-space:normal!important}
+[data-m=dbrow]>span:nth-child(10){grid-area:c2;white-space:normal!important}
+[data-m=dbrow]>span:nth-child(11){grid-area:up}
 [data-m=cardpg]{grid-template-columns:minmax(0,1fr)!important;padding:10px 10px 90px!important;gap:12px!important}
 [data-m=dbpg]{grid-template-columns:minmax(0,1fr)!important;padding:10px!important;gap:12px!important}
 [data-m=pask]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));flex-wrap:nowrap!important;gap:6px!important}
@@ -2025,17 +2026,19 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <input value="{{ db.q }}" onChange="{{ db.onQ }}" placeholder="{{ db.qPh }}" style="box-sizing:border-box;height:34px;width:240px;max-width:100%;border:1px solid #d2d2d7;border-radius:9999px;padding:0 14px;font-size:13px">
       <sc-for list="{{ db.groupChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for>
       <button onClick="{{ db.emptyChip.onClick }}" style="border:1px solid {{ db.emptyChip.bd }};background:{{ db.emptyChip.bg }};color:{{ db.emptyChip.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ db.emptyChip.label }}</button>
+      <sc-for list="{{ db.condChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for>
       <span style="margin-left:auto;font-size:12px;color:#6e6e73">{{ db.count }}</span>
     </div>
     <sc-if value="{{ db.hasMaskNote }}"><div style="font-size:11px;color:#8e8e93;margin-top:-6px">{{ db.maskNote }} · {{ db.roleText }}</div></sc-if>
     <div data-m="dbwrap" style="overflow-x:auto">
-      <div data-m="dbin" style="min-width:1060px">
-        <div data-m="dbhd" style="display:grid;grid-template-columns:64px 70px 70px minmax(90px,1fr) 130px 90px 86px 150px 150px 120px;font-size:12px;font-weight:700;color:#6e6e73;border-bottom:1px solid #e5e5ea">
-          <div style="padding:8px">동</div><div style="padding:8px">호</div><div style="padding:8px">타입</div><div style="padding:8px">계약자</div><div style="padding:8px">핸드폰</div><div style="padding:8px">통신사</div><div style="padding:8px">매물상태</div><div style="padding:8px">관계 · 연락처1</div><div style="padding:8px">관계 · 연락처2</div><div style="padding:8px">최근수정</div>
+      <div data-m="dbin" style="min-width:1170px">
+        <div data-m="dbhd" style="display:grid;grid-template-columns:64px 70px 70px 104px minmax(90px,1fr) 130px 90px 86px 150px 150px 120px;font-size:12px;font-weight:700;color:#6e6e73;border-bottom:1px solid #e5e5ea">
+          <div style="padding:8px">동</div><div style="padding:8px">호</div><div style="padding:8px">타입</div><div style="padding:8px">계약조건</div><div style="padding:8px">계약자</div><div style="padding:8px">핸드폰</div><div style="padding:8px">통신사</div><div style="padding:8px">매물상태</div><div style="padding:8px">관계 · 연락처1</div><div style="padding:8px">관계 · 연락처2</div><div style="padding:8px">최근수정</div>
         </div>
         <sc-for list="{{ db.rows }}" as="r" hint-placeholder-count="12">
-          <button data-m="dbrow" onClick="{{ r.onClick }}" style="display:grid;grid-template-columns:64px 70px 70px minmax(90px,1fr) 130px 90px 86px 150px 150px 120px;width:100%;border:none;border-bottom:1px solid #f0f0f2;background:{{ r.bg }};text-align:left;font-size:13px;cursor:pointer;padding:0" style-hover="background:#f5f5f7">
+          <button data-m="dbrow" onClick="{{ r.onClick }}" style="display:grid;grid-template-columns:64px 70px 70px 104px minmax(90px,1fr) 130px 90px 86px 150px 150px 120px;width:100%;border:none;border-bottom:1px solid #f0f0f2;background:{{ r.bg }};text-align:left;font-size:13px;cursor:pointer;padding:0" style-hover="background:#f5f5f7">
             <span style="padding:8px">{{ r.dong }}</span><span style="padding:8px;font-weight:600">{{ r.ho }}</span><span style="padding:8px;color:#6e6e73">{{ r.type }}</span>
+            <span style="padding:8px;display:flex;align-items:center;gap:4px;min-width:0"><span style="border-radius:9999px;padding:2px 8px;font-size:11.5px;font-weight:700;white-space:nowrap;background:{{ r.condBg }};color:{{ r.condFg }}">{{ r.cond }}</span><sc-if value="{{ r.condAuto }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;color:#8e8e93">자동</span></sc-if></span>
             <span style="padding:8px;color:{{ r.ownerFg }};display:flex;flex-direction:column;gap:2px">{{ r.owner }}<sc-if value="{{ r.hasChg }}"><span style="font-size:10px;font-weight:700;color:#fff;background:#6e6e73;border-radius:9999px;padding:1px 6px;align-self:flex-start">{{ r.chg }}</span></sc-if></span><span style="padding:8px;font-variant-numeric:tabular-nums">{{ r.phone }}</span><span style="padding:8px">{{ r.carrier }}</span>
             <span style="padding:8px;font-size:12px;color:#6e6e73">{{ r.status }}</span><span style="padding:8px;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.ct1 }}</span><span style="padding:8px;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.ct2 }}</span><span style="padding:8px;font-size:11px;color:#8e8e93">{{ r.upd }}</span>
           </button>
@@ -2056,6 +2059,8 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <sc-if value="{{ db.hasPanel }}">
         <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:18px;font-weight:700">{{ db.panel.title }}</span><span style="font-size:12px;color:#6e6e73">{{ db.panel.type }} · {{ db.panel.floor }}</span>
           <button onClick="{{ db.panel.goBoard }}" style="margin-left:auto;border:none;background:#f5f5f7;border-radius:9999px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer">배치표 →</button></div>
+        <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73">계약조건<select value="{{ db.panel.cond }}" onChange="{{ db.panel.onCond }}" disabled="{{ db.panel.roCond }}" style="box-sizing:border-box;width:100%;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ db.panel.condOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
+        <sc-if value="{{ db.panel.hasCondNote }}"><div style="font-size:11px;color:#0066cc;margin-top:-6px">{{ db.panel.condNote }}</div></sc-if>
         <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73">성명<input value="{{ db.panel.owner }}" onChange="{{ db.panel.onOwner }}" readOnly="{{ db.panel.roOwner }}" style="box-sizing:border-box;width:100%;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:14px;color:#1d1d1f"></label>
         <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73">핸드폰<input value="{{ db.panel.phone }}" onChange="{{ db.panel.onPhone }}" readOnly="{{ db.panel.roPhone }}" inputmode="numeric" placeholder="010-0000-0000" style="box-sizing:border-box;width:100%;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:14px;color:#1d1d1f;font-variant-numeric:tabular-nums"></label>
         <sc-if value="{{ db.panel.hasMasked }}"><div style="font-size:11px;color:#8e8e93;margin-top:-6px">{{ db.panel.maskedNow }}</div></sc-if>
@@ -5027,8 +5032,12 @@ class Component extends DCLogic {
       hasHist: !!(c.edits && c.edits.length),
       hist: (c.edits || []).slice().reverse().map(e => ({ head: e.at + ' · ' + e.by, reason: e.reason, diff: e.changes.map(x => x.f + ': ' + (x.from || '(빈칸)') + ' → ' + (x.to || '(빈칸)')).join(' / ') })) };
   }
+  // 계약조건 (시안 r41 확정 2026-11-16): 10.16 혜택가 · 헷지했지 · 전세연장 중 하나. S.u[id].cond ('-' = 일부러 비움). 비어 있으면 전환상태(staff/units.html)가 '전세연장'인 세대는 자동 '전세연장'
+  COND = { '10.16 혜택가': ['#e8f5ec', '#157a3f'], '헷지했지': ['#f3e8fb', '#7a2fb0'], '전세연장': ['#e8f0fb', '#0066cc'] };
+  convLoad() { if (this._convL) return; this._convL = 1; fetch('/api/staff/conv', { credentials: 'same-origin' }).then(r => r.json()).then(j => { if (j && j.ok) { const m = {}; (j.conv || []).forEach(x => { m[x.unit_id] = x.status; }); this.setState({ convSt: m }); } }).catch(() => { this._convL = 0; }); }
+  condOf(id, s) { s = s || {}; if (s.cond === '-') return { v: '', auto: false }; if (s.cond && this.COND[s.cond]) return { v: s.cond, auto: false }; return (this.state.convSt || {})[id] === '전세연장' ? { v: '전세연장', auto: true } : { v: '', auto: false }; }
   dbVals(role, can) {
-    const S = this.state, D = this.D; const canPhone = can('phone'), canEdit = can('edit'), canCreate = can('create'), canXl = can('excel');
+    const S = this.state, D = this.D; this.convLoad(); const canPhone = can('phone'), canEdit = can('edit'), canCreate = can('create'), canXl = can('excel');
     const q = S.dbQ.trim(), qd = q.replace(/\D/g, ''); let filled = 0;
     const cardU = {}; S.cards.forEach(c => { if (c.unit && (c.kind === 'seller' || c.kind === 'owner')) cardU[c.unit] = true; });
     const srcOf = id => [cardU[id] ? '상담카드' : '', (S.u[id] || {}).srcXl ? '엑셀' : ''].filter(Boolean).join(' · ');
@@ -5036,16 +5045,18 @@ class Component extends DCLogic {
     const list = inDb.filter(u => { const s = S.u[u.id] || {};
       if (S.dbGroup !== 'all' && Math.floor((u.b - 101) / 3) !== +S.dbGroup) return false;
       if (S.dbEmpty && s.owner && s.phone && s.carrier) return false;
+      if (S.dbCond) { const cv = this.condOf(u.id, s).v; if (S.dbCond === '_' ? cv : cv !== S.dbCond) return false; }
       if (q) { const hay = u.b + '동 ' + u.ho + '호 ' + u.b + u.ho + ' ' + (s.owner || ''); const ph = (s.phone || '').replace(/\D/g, '');
         if (!(hay.includes(q) || (qd.length >= 4 && canPhone && ph.includes(qd)))) return false; }
       return true; }).sort((a, b) => a.b - b.b || a.ho - b.ho);
     const PER = 100, pages = Math.max(1, Math.ceil(list.length / PER)), pg = Math.min(S.dbPage, pages - 1);
     const rows = list.slice(pg * PER, pg * PER + PER).map(u => { const s = S.u[u.id] || {}; const sel = S.dbSel === u.id;
-      return { dong: u.b + '동', ho: u.ho + '호', type: u.type, owner: s.owner || '—', phone: s.phone ? (canPhone ? s.phone : this.maskPhone(s.phone)) : '—', carrier: s.carrier || '—',
+      const cd = this.condOf(u.id, s), cc = this.COND[cd.v] || ['transparent', '#c7c7cc'];
+      return { cond: cd.v || '—', condAuto: cd.auto, condBg: cc[0], condFg: cc[1], dong: u.b + '동', ho: u.ho + '호', type: u.type, owner: s.owner || '—', phone: s.phone ? (canPhone ? s.phone : this.maskPhone(s.phone)) : '—', carrier: s.carrier || '—',
         status: s.status || '미확인', ct1: this.contactCell(s, 1, canPhone), ct2: this.contactCell(s, 2, canPhone), upd: s.dbAt ? s.dbAt.slice(5) + ' ' + (s.dbBy || '') : '', hasChg: !!(s.ownerHist && s.ownerHist.length), chg: s.ownerHist && s.ownerHist.length ? '명의변경 ' + s.ownerHist[s.ownerHist.length - 1].at.slice(5, 10) : '', bg: sel ? '#f0f6ff' : '#fff', ownerFg: s.owner ? '#1d1d1f' : '#c7c7cc',
         onClick: () => this.setState({ dbSel: u.id, dbDraft: null }) }; });
     const su = S.dbSel && D.byId[S.dbSel]; let panel = null;
-    if (su) { const s = S.u[su.id] || {}; const dr = S.dbDraft && S.dbDraft.id === su.id ? S.dbDraft : { id: su.id, c1Rel: s.c1Rel || '', c1Etc: s.c1Etc || '', c1Phone: canPhone ? (s.c1Phone || '') : '', c2Rel: s.c2Rel || '', c2Etc: s.c2Etc || '', c2Phone: canPhone ? (s.c2Phone || '') : '', owner: s.owner || '', phone: canPhone ? (s.phone || '') : '', carrier: s.carrier || '' };
+    if (su) { const s = S.u[su.id] || {}; const dr = S.dbDraft && S.dbDraft.id === su.id ? S.dbDraft : { id: su.id, c1Rel: s.c1Rel || '', c1Etc: s.c1Etc || '', c1Phone: canPhone ? (s.c1Phone || '') : '', c2Rel: s.c2Rel || '', c2Etc: s.c2Etc || '', c2Phone: canPhone ? (s.c2Phone || '') : '', owner: s.owner || '', phone: canPhone ? (s.phone || '') : '', carrier: s.carrier || '', cond: this.condOf(su.id, s).v, condT: false };
       const setD = p => this.setState({ dbDraft: Object.assign({}, dr, p) });
       const may = k => canEdit; const ro = k => !may(k);
       panel = { roOwner: ro('owner'), roPhone: ro('phone'), roCarrier: ro('carrier'),
@@ -5055,13 +5066,15 @@ class Component extends DCLogic {
           masked: !canPhone && s[k + 'Phone'] ? '현재 ' + this.maskPhone(s[k + 'Phone']) : '', hasMasked: !canPhone && !!s[k + 'Phone'] }; }),
         title: su.b + '동 ' + su.ho + '호', type: su.type, floor: su.f + '층', owner: dr.owner, phone: dr.phone, carrier: dr.carrier,
         maskedNow: !canPhone && s.phone ? '현재 ' + this.maskPhone(s.phone) + ' · 바꿀 때만 새 번호 입력' : '', hasMasked: !canPhone && !!s.phone,
+        cond: dr.cond, condOpts: [{ v: '', l: '— (비움)' }].concat(Object.keys(this.COND).map(k => ({ v: k, l: k }))), onCond: e => setD({ cond: e.target.value, condT: true }), roCond: ro('cond'),
+        condNote: this.condOf(su.id, s).auto && !dr.condT ? "전환상태가 '전세연장'이라 자동으로 채움 · 바꾸려면 고르세요" : '', hasCondNote: this.condOf(su.id, s).auto && !dr.condT,
         onOwner: e => setD({ owner: e.target.value }), onPhone: e => setD({ phone: this.fmtPhone(e.target.value) }), onCarrier: e => setD({ carrier: e.target.value }),
         carrierOpts: [{ v: '', l: '선택' }].concat(S.carriers.concat(this.CARRIERS.filter(c => !S.carriers.includes(c))).map(c => ({ v: c, l: c }))), canEdit, readOnly: !canEdit, src: '입력 출처 ' + srcOf(su.id),
         permNote: canCreate && !canEdit ? '작성 권한만 있어 비어 있는 칸만 입력할 수 있습니다' : !canCreate && canEdit ? '수정 권한만 있어 이미 입력된 칸만 고칠 수 있습니다' : '', hasPermNote: false,
         upd: s.dbAt ? '최근 수정 ' + s.dbAt + ' · ' + (s.dbBy || '') : '수정 기록 없음',
         hasHist: !!(s.ownerHist && s.ownerHist.length), hist: (s.ownerHist || []).slice().reverse().map(x => ({ head: x.at + ' · ' + x.by, text: (x.from.owner || '미입력') + (x.from.phone ? ' (' + (canPhone ? x.from.phone : this.maskPhone(x.from.phone)) + ')' : '') + ' → ' + x.to.owner + (x.to.phone ? ' (' + (canPhone ? x.to.phone : this.maskPhone(x.to.phone)) + ')' : '') })),
         save: () => { if (!canEdit) return this.flash('수정 권한이 없습니다'); const d = new Date(); const at = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-          const p = { owner: dr.owner.trim(), carrier: dr.carrier, dbAt: at, dbBy: S.me }; if (canPhone || dr.phone) p.phone = dr.phone;
+          const p = { owner: dr.owner.trim(), carrier: dr.carrier, dbAt: at, dbBy: S.me }; if (canPhone || dr.phone) p.phone = dr.phone; if (dr.condT) p.cond = dr.cond || '-';
           [1, 2].forEach(n => { const k = 'c' + n; p[k + 'Rel'] = dr[k + 'Rel']; p[k + 'Etc'] = dr[k + 'Rel'] === '기타' ? dr[k + 'Etc'].trim() : ''; if (canPhone || dr[k + 'Phone']) p[k + 'Phone'] = dr[k + 'Phone']; });
           Object.keys(p).forEach(k => { if (k === 'dbAt' || k === 'dbBy') return; const base = k.replace(/Etc$/, 'Rel'); if (!may(base) || (s[k] || '') === (p[k] || '')) delete p[k]; });
           if (Object.keys(p).length <= 2) { this.setState({ dbDraft: null }); return this.flash('변경된 내용이 없습니다'); }
@@ -5072,6 +5085,7 @@ class Component extends DCLogic {
       q: S.dbQ, onQ: e => this.setState({ dbQ: e.target.value, dbPage: 0 }), qPh: canPhone ? '호실 · 이름 · 번호 검색' : '호실 · 이름 검색',
       groupChips: [['all', '전체']].concat(D.GROUPS.map((g, i) => [String(i), (D.GLABEL ? D.GLABEL[i] + ' ' : '') + g[0] + '~' + g[g.length - 1]])).map(([k, l]) => Object.assign(this.chip(S.dbGroup === k, '#1d1d1f'), { label: l, onClick: () => this.setState({ dbGroup: k, dbPage: 0 }) })),
       emptyChip: Object.assign(this.chip(S.dbEmpty, '#b25000'), { label: '미입력 세대만', onClick: () => this.setState({ dbEmpty: !S.dbEmpty, dbPage: 0 }) }),
+      condChips: [['', '조건 전체']].concat(Object.keys(this.COND).map(k => [k, k]), [['_', '조건 빈칸']]).map(([k, l]) => Object.assign(this.chip((S.dbCond || '') === k, k && this.COND[k] ? this.COND[k][1] : '#1d1d1f'), { label: l, onClick: () => this.setState({ dbCond: k, dbPage: 0 }) })),
       rows, pageText: (pg + 1) + ' / ' + pages, prev: () => this.setState({ dbPage: Math.max(0, pg - 1) }), next: () => this.setState({ dbPage: Math.min(pages - 1, pg + 1) }),
       canXl, noXl: !canXl, openImp: () => this.impOpen(), exp: () => { this.setState({ settingsOpen: true, setSec: 'xb', setOpenM: { xb: true } }); if (!this.state.xbM) this.xbLoad(); }, canExp: ['대표', '관리자'].includes((S.roles || {})[S.me]),
       ...(() => { const L = canXl && S.impSrv ? S.impSrv.list || [] : []; if (canXl && !S.impSrv && !this._impL) { this._impL = true; setTimeout(() => this.impList(), 0); } const KL = { units: '세대현황', owners: '소유자', tenancies: '임대차' }, fmt = t => { const d = new Date(t); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
