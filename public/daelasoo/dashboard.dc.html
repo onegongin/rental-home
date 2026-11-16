@@ -3626,12 +3626,19 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
 <div onClick="{{ closePlan }}" style="position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.78);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;cursor:zoom-out">
   <div style="display:flex;flex-direction:column;gap:10px;width:{{ planOpenCW }};max-width:100%">
   <div style="display:flex;gap:10px;align-items:stretch">
-  <span role="img" aria-label="챔피언스시티 1차 {{ altType }} 평면도 확대" style="display:block;flex:1;min-width:0;aspect-ratio:{{ planOpenRatio }};border-radius:12px;background:#fff url({{ planOpenSrc }}) center / contain no-repeat"></span>
+  <div data-zk="planZ" onClick="{{ stop }}" title="휠 = 확대 · 끌기 = 이동 · 두 번 누르기 = 크게/원래대로" style="flex:1;min-width:0;aspect-ratio:{{ planOpenRatio }};border-radius:12px;background:#fff;overflow:auto;scrollbar-width:none;cursor:grab;touch-action:none;line-height:0">
+    <div style="position:relative;width:{{ planZw }};aspect-ratio:{{ planOpenRatio }}"><span role="img" aria-label="첨단대라수1차 {{ planOpenLabel }} 확대" style="position:absolute;inset:0;background:#fff url({{ planOpenSrc }}) center / contain no-repeat;pointer-events:none"></span></div>
+  </div>
   <sc-if value="{{ mh.has }}" hint-placeholder-val="{{ false }}"><div style="width:200px;flex-shrink:0;box-sizing:border-box;border-radius:12px;padding:8px;display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:0;background:#fff"><sc-for list="{{ mh.land }}" as="m" hint-placeholder-count="5"><button onClick="{{ m.open }}" title="{{ m.name }}" aria-label="{{ m.name }}" style="flex-shrink:0;width:100%;aspect-ratio:1272 / 844;border:none;padding:0;border-radius:8px;cursor:zoom-in;background:#f5f5f7 url({{ m.src }}) center / cover no-repeat"></button></sc-for></div></sc-if>
   </div>
   <sc-if value="{{ mh.has }}" hint-placeholder-val="{{ false }}"><div style="border-radius:12px;padding:8px;overflow-x:auto;background:#fff"><div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px"><sc-for list="{{ mh.port }}" as="m" hint-placeholder-count="8"><button onClick="{{ m.open }}" title="{{ m.name }}" aria-label="{{ m.name }}" style="border:none;padding:0;border-radius:8px;cursor:zoom-in;aspect-ratio:604 / 844;background:#f5f5f7 url({{ m.src }}) center / cover no-repeat"></button></sc-for></div></div></sc-if>
   </div>
-  <span style="color:#fff;font-size:13px;font-weight:600;opacity:.85">{{ planOpenLabel }} · 아무 곳이나 누르면 닫힙니다</span>
+  <div onClick="{{ stop }}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;cursor:default">
+    <span style="color:#fff;font-size:14px;font-weight:700">{{ planOpenLabel }}</span>
+    <span style="display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.16);border-radius:9999px;padding:3px"><button onClick="{{ planZOut }}" title="축소" style="height:32px;min-width:32px;border:none;border-radius:9999px;background:transparent;color:#fff;font-size:16px;font-weight:700;cursor:pointer">−</button><button onClick="{{ planZFit }}" title="처음 크기" style="height:32px;min-width:54px;border:none;border-radius:9999px;background:transparent;color:#fff;font-size:12px;font-weight:700;cursor:pointer">{{ planZPct }}</button><button onClick="{{ planZIn }}" title="확대" style="height:32px;min-width:32px;border:none;border-radius:9999px;background:transparent;color:#fff;font-size:16px;font-weight:700;cursor:pointer">+</button></span>
+    <button onClick="{{ closePlan }}" style="height:36px;border:none;border-radius:9999px;background:#fff;color:#1d1d1f;font-size:13px;font-weight:700;padding:0 16px;cursor:pointer">닫기</button>
+  </div>
+  <span style="color:#c7c7cc;font-size:12px">휠 = 확대 · 끌기 = 이동 · 두 번 누르기 = 크게/원래대로 · 휴대폰은 두 손가락 · 어두운 곳을 누르면 닫힘</span>
 </div>
 </sc-if>
 
@@ -5137,7 +5144,7 @@ class Component extends DCLogic {
     this._zmKey = e => { if (!this.state.siZoomSet || !this.state.siZoom) return; if (e.key === 'ArrowLeft') this.siZoomStep(-1); else if (e.key === 'ArrowRight') this.siZoomStep(1); else if (e.key === 'Escape') this.setState({ siZoom: null, siZoomSet: null }); }; window.addEventListener('keydown', this._zmKey);
     if (!this.D.generic && window.__SITE) { this.D = this.buildData(); this.setState(this.loadState()); }
     if (!this.D.generic) fetch('data/subtypes.json').then(r => r.json()).then(m => { Object.keys(m).forEach(id => { const u = this.D.byId[id]; if (u && !u.ph) u.type = m[id]; }); this.setState({ subtypesOk: true }); }).catch(() => {});
-    this._esc = e => { if (e.key === 'Escape') { if (this.state.upPlan || this.state.upOv != null || this.state.upOvPh) return this.backUP(); this.setState({ planOpen: null, plan3d: false, unitPop: null, commPop: null }); } }; window.addEventListener('keydown', this._esc);
+    this._esc = e => { if (e.key === 'Escape') { if (this.state.upPlan || this.state.upOv != null || this.state.upOvPh) return this.backUP(); this.setState({ planOpen: null, plan3d: false, planZ: 1, unitPop: null, commPop: null }); } }; window.addEventListener('keydown', this._esc);
     if (this.props.guestOnly) { this._cfg = e => { if (e && e.key && e.key !== 'cc-dash-v1') return; try { const s = JSON.parse(localStorage.getItem(this.k('cc-dash-v1')) || 'null'); if (s) this.setState(ss => ({ modules: this.normMods(Object.assign({}, ss.modules, s.modules)), guest: Object.assign({}, ss.guest, s.guest) })); } catch (x) {} }; window.addEventListener('storage', this._cfg); window.addEventListener('focus', this._cfg); }
     if (!this.props.guestOnly) { this._inbox = e => { if (!e || !e.key || e.key === 'cc-guest-inbox') this.pullInbox(); }; window.addEventListener('storage', this._inbox); window.addEventListener('focus', this._inbox); setTimeout(() => this.pullInbox(), 300); setTimeout(() => this.pullRemote(), 2000); this._feedT = setInterval(() => this.pullRemote(), 60000); this._t0 = document.title; if (this.props.requireLogin) this.srvInit(); }
     // 옵션계산기 품목: data/options.json (generic 단지는 tools/make_options.py 로 엑셀에서 만듦)
@@ -5356,10 +5363,10 @@ class Component extends DCLogic {
   bindZK() {
     document.querySelectorAll('[data-zk]').forEach(box => { if (box._zkb) return; box._zkb = true; const key = box.getAttribute('data-zk');
       box.addEventListener('wheel', e => { e.preventDefault(); this.setZK(key, (this.state[key] || 1) * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY); }, { passive: false });
-      let d = null, moved = false;
-      box.addEventListener('pointerdown', e => { d = { x: e.clientX, y: e.clientY, l: box.scrollLeft, t: box.scrollTop, id: e.pointerId }; moved = false; });
-      box.addEventListener('pointermove', e => { if (!d) return; const dx = e.clientX - d.x, dy = e.clientY - d.y; if (!moved && Math.abs(dx) + Math.abs(dy) > 5) { moved = true; try { box.setPointerCapture(d.id); } catch (er) {} box.style.cursor = 'grabbing'; } if (moved) { box.scrollLeft = d.l - dx; box.scrollTop = d.t - dy; } });
-      const end = () => { d = null; box.style.cursor = ''; setTimeout(() => { moved = false; }, 0); }; box.addEventListener('pointerup', end); box.addEventListener('pointercancel', end);
+      let d = null, moved = false; const P = {}; let pin = null;
+      box.addEventListener('pointerdown', e => { P[e.pointerId] = [e.clientX, e.clientY]; const k = Object.keys(P); if (k.length === 2) { const a = P[k[0]], b = P[k[1]]; pin = { g: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, z: this.state[key] || 1 }; d = null; moved = true; return; } d = { x: e.clientX, y: e.clientY, l: box.scrollLeft, t: box.scrollTop, id: e.pointerId }; moved = false; });
+      box.addEventListener('pointermove', e => { if (P[e.pointerId]) P[e.pointerId] = [e.clientX, e.clientY]; const k = Object.keys(P); if (pin && k.length === 2) { const a = P[k[0]], b = P[k[1]]; this.setZK(key, pin.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / pin.g, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); return; } if (!d) return; const dx = e.clientX - d.x, dy = e.clientY - d.y; if (!moved && Math.abs(dx) + Math.abs(dy) > 5) { moved = true; try { box.setPointerCapture(d.id); } catch (er) {} box.style.cursor = 'grabbing'; } if (moved) { box.scrollLeft = d.l - dx; box.scrollTop = d.t - dy; } });
+      const end = e => { if (e) delete P[e.pointerId]; if (Object.keys(P).length < 2) pin = null; d = null; box.style.cursor = ''; setTimeout(() => { moved = false; }, 0); }; box.addEventListener('pointerup', end); box.addEventListener('pointercancel', end);
       box.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); } }, true);
       box.addEventListener('dblclick', e => this.setZK(key, (this.state[key] || 1) > 1.5 ? 1 : 2.5, e.clientX, e.clientY)); });
   }
@@ -5386,7 +5393,7 @@ class Component extends DCLogic {
     if (prevS && (prevS.roles !== S.roles || prevS.mails !== S.mails || prevS.tels !== S.tels || prevS.pins !== S.pins) && (S.sync || {}).url && !this.props.guestOnly) { clearTimeout(this._stT); this._stT = setTimeout(() => this.syncPost([this.staffItem()]), 1500); } const lk = S.lmOpen;
     if (!lk && S.lmH) { this._lmHs = null; this.setState({ lmH: null }); }
     else if ((lk === 'lm' || lk === 'sg') && !S.lmH) { const el = document.querySelector('[data-lmpop]'); if (el) { const hs = Object.assign({}, this._lmHs); hs[lk] = el.offsetHeight; this._lmHs = hs; const o = lk === 'lm' ? 'sg' : 'lm'; if (hs[o] == null) { this._lmBack = this._lmBack || lk; this.setState({ lmOpen: o }); } else { const b = this._lmBack || lk; this._lmBack = null; this.setState({ lmH: Math.max(hs.lm, hs.sg), lmOpen: b }); } } }
-    if (S.commPop) this.bindZoomBox(); else this._zb = null; if (S.unitPop || S.upPlan) this.bindZK(); const ps = this._prev || {};
+    if (S.commPop) this.bindZoomBox(); else this._zb = null; if (S.unitPop || S.upPlan || S.planOpen) this.bindZK(); const ps = this._prev || {};
     const K = ['u', 'cards', 'cardsGone', 'complexes', 'complexDef', 'modules', 'menus', 'me', 'guest', 'roles', 'perms', 'impLog', 'lastUndo', 'brokers', 'media', 'carriers', 'inflow', 'sync', 'pins', 'mails', 'popups', 'popKeep', 'menuOrder', 'tels', 'listResetAt', 'gNotes', 'gSince', 'gRead'];
     this._prev = {}; K.forEach(k => this._prev[k] = S[k]);
     if (this.props.guestOnly) return;
@@ -6188,7 +6195,7 @@ class Component extends DCLogic {
         areas: (() => { const v = D.generic ? this.planOf(su.type, su.blk) : null, ex = v ? v.exclusive || 0 : t.ex, sup = v ? v.supply || 0 : t.sup, con = v ? v.contract || 0 : t.con; // 면적·세대수는 호실의 단지 값
           return [{ k: '전용', v: ex.toFixed(2) + '㎡', s: '' }, { k: '공급', v: sup.toFixed(2) + '㎡', s: (sup * 0.3025).toFixed(1) + '평' }, { k: '계약', v: con.toFixed(2) + '㎡', s: '' }, { k: '세대수', v: (v ? v.households : t.n) + '세대', s: v ? su.blk + ' ' + su.type + ' · 전체 ' + t.n : '전체 ' + su.type }]; })(),
         hasPlan: true, noPlan: false, planSrc: this.has3d(su.type) ? this.plan3dSrc(su.type) : this.planSrc(su.type, su.blk), planRatio: this.has3d(su.type) ? '1.6667' : D.generic ? '1.365' : t.ph ? '1.2' : '2.6',
-        openPlan: () => this.setState({ planOpen: su.type, planBlk: su.blk, plan3d: this.has3d(su.type) }),
+        openPlan: () => this.setState({ planOpen: su.type, planBlk: su.blk, plan3d: this.has3d(su.type), planZ: 1 }),
         planHint: t.ph ? su.type + ' 평면도\n공식 홈페이지·견본주택 자료 필요' : su.type + ' 평면도 이미지 자리\n공급안내 UNIT PLAN (' + (t.fam === '84' ? 'p.10~11' : t.fam === '103' ? 'p.12~13' : 'p.14~15') + ')',
         statusChips: [s.status || '미확인'].map(v => Object.assign(this.chip(true, ((STATUS[v] || {}).dot || '#1d1d1f')), { label: v === '보유' ? '보유(매물없음)' : v })), stDates: this.stDates(s), hasStDates: !!this.stDates(s),
         fromCard: !!S.boardReturn && S.boardReturn === su.id && tab === 'board', cardUnit: (S.form && S.form.unit) || (su.b + '동 ' + su.ho + '호'), backToCard: () => this.setState({ tab: 'card', boardReturn: null }),
@@ -6622,7 +6629,7 @@ cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.com
       commMaxW: commV.maxW ? commV.maxW : S.commPop && S.commPop.indexOf('plan:') === 0 && this.MH_84A[S.commPop.slice(5)] ? this.mhLay(S.commPop.slice(5)).maxW + 'px' : '1200px',
       planOpenCW: D.generic && S.planOpen ? 'min(100%, 900px, calc((80vh - 60px) * ' + (S.plan3d ? 1.6667 : this.planAr(S.planOpen, S.planBlk)) + '))' : S.planOpen && this.MH[S.planOpen] ? 'min(100%, 1600px)' : 'min(100%, calc((100vh - 90px) * ' + (D.types[S.planOpen] && D.types[S.planOpen].ph ? 0.927 : 2.6) + '))',
       ppOpen: !!S.upPlan, pp: S.upPlan ? Object.assign({ boxAr: '1 / 1', canPop: false }, this.upPlanVals()) : {}, closePP: () => this.setState({ upPlan: null, upPh: null }), backUP: this.backUP,
-      planOpen: !!S.planOpen, planOpenSrc: S.planOpen ? (S.plan3d ? this.plan3dSrc(S.planOpen) : this.planSrc(S.planOpen, S.planBlk)) : '', planOpenRatio: D.generic && S.planOpen ? String((S.plan3d ? 1.6667 : this.planAr(S.planOpen, S.planBlk))) : S.planOpen && D.types[S.planOpen] && D.types[S.planOpen].ph ? '0.927' : '2.6', planOpenLabel: S.planOpen ? S.planOpen + (S.plan3d ? ' 3D 평면' : ' 평면도') : '', closePlan: () => this.setState({ planOpen: null, planBlk: null, plan3d: false }),
+      planOpen: !!S.planOpen, planOpenSrc: S.planOpen ? (S.plan3d ? this.plan3dSrc(S.planOpen) : this.planSrc(S.planOpen, S.planBlk)) : '', planOpenRatio: D.generic && S.planOpen ? String((S.plan3d ? 1.6667 : this.planAr(S.planOpen, S.planBlk))) : S.planOpen && D.types[S.planOpen] && D.types[S.planOpen].ph ? '0.927' : '2.6', planOpenLabel: S.planOpen ? S.planOpen + (S.plan3d ? ' 3D 평면' : ' 평면도') : '', closePlan: () => this.setState({ planOpen: null, planBlk: null, plan3d: false, planZ: 1 }), planZw: ((S.planZ || 1) * 100) + '%', planZPct: Math.round((S.planZ || 1) * 100) + '%', planZIn: () => this.setZK('planZ', (S.planZ || 1) * 1.25), planZOut: () => this.setZK('planZ', (S.planZ || 1) / 1.25), planZFit: () => this.setZK('planZ', 1),
       tabs, me: S.me, onMe: e => this.setState({ me: e.target.value, dbDraft: null }), staff: Object.keys(S.roles),
       isDb: tab === 'db', db: tab === 'db' ? this.dbVals(role, can) : {}, isLease: tab === 'lease', ls: tab === 'lease' ? this.leaseVals(role, can) : {},
       isLb: tab === 'lb', lb: tab === 'lb' ? this.lbVals() : {}, ldOpen: !!S.lbSel, ld: S.lbSel ? this.ldVals() : {}, la: S.lbSel ? this.ladVals() : {}, isAd: tab === 'ad', ad: tab === 'ad' ? this.adTabVals() : {}, cfOpen: !!S.lbCfg, cf: S.lbCfg ? this.lbCfgVals() : {},
