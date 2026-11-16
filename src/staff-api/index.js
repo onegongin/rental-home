@@ -7,7 +7,8 @@ import { audit } from '../repo/audit.js';
 import { staffComments } from './comments.js';
 import { staffUnits } from './units.js';
 import { staffConv } from './conv.js';
-import { cleanupPub } from '../repo/conv.js';
+import { cleanupPub, syncConv, getConv } from '../repo/conv.js';
+import { UNIT } from '../core/units.js';
 import { staffConsult } from './consult.js';
 import { staffKpi } from './kpi.js';
 import { staffReport } from './report.js';
@@ -118,6 +119,11 @@ export async function staffApi(req, env, url, u) {
     }
     // R1: 소유자 상담카드 '입주 후 거래' → 매물보드 (설계서 10.1) · 공개 설정이 바뀌면 공개 사본 다시 만들기
     for (const x of kvRows) if (x.s === 'c') await syncFromCard(db, parse(x.v), u.name);
+    // 상담카드(신규분양 매수) '2. 계약관리 상담' 진행 → 계약할 호실 전환상태 (2026-11-17) — 바뀐 때만
+    for (const x of kvRows) { if (x.s !== 'c') continue; const v = parse(x.v) || {}, ct = v.ct || {}, CTS = { 가계약: '가계약', 계약중: '계약중', 계약완료: '신규입주' };
+      if (v.kind !== 'client' || !ct.unit || !UNIT[ct.unit] || !CTS[ct.prog]) continue;
+      const cur0 = await getConv(db, ct.unit); if (cur0 && cur0.status === CTS[ct.prog]) continue;
+      if (can(u, 'conv.edit', null, perms)) { await syncConv(db, ct.unit, CTS[ct.prog], u.name); await audit(db, { who: u.name, ip: ip(req), dev: device(req), act: '전환 상태', target: '세대 ' + ct.unit, detail: ((cur0 && cur0.status) || '미정') + ' → ' + CTS[ct.prog] + ' (상담카드 계약관리)' }); } }
     if (kvRows.some(x => x.s === 'cfg' && x.k === 'listingCfg')) await rebuildPublic(db, u.name);
     return J({ ok: true, n: ok.length, rejected });
   }
