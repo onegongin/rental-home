@@ -2272,6 +2272,25 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
 </sc-if>
 
 <!-- 임차만기 탭 (P3, 시안 preview/unit-db ① 확정 2026-11-01): 현재 임대차를 만기 가까운 순으로 · 숫자 칸 · 월 막대 · 거르기 -->
+<sc-if value="{{ isSched }}" hint-placeholder-val="{{ false }}">
+<div data-m="schpg" style="max-width:1320px;margin:0 auto;padding:16px 20px 40px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px">
+  <div style="background:#fff;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="font-size:18px;font-weight:800">예약방문 상담 스케줄</span><span style="font-size:12.5px;color:#6e6e73">{{ sc.sub }}</span>
+    <span style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12.5px">기준일<input type="date" value="{{ sc.from }}" onChange="{{ sc.onFrom }}" style="height:32px;border:1px solid #d2d2d7;border-radius:9px;padding:0 8px;font-family:inherit">
+      <sc-for list="{{ sc.chips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer">{{ c.label }}</button></sc-for></span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+    <sc-for list="{{ sc.days }}" as="d"><div style="background:#fff;border-radius:16px;padding:12px;border:1px solid {{ d.bd }};box-shadow:{{ d.sh }}">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><b style="font-size:14px;color:{{ d.fg }}">{{ d.label }}</b><span style="font-size:11.5px;color:#0066cc;font-weight:700">{{ d.n }}</span></div>
+      <sc-for list="{{ d.slots }}" as="x"><div onClick="{{ x.go }}" title="{{ x.title }}" style="border:1px solid {{ x.bd }};background:{{ x.bg }};border-radius:8px;padding:6px 8px;margin-bottom:4px;font-size:11.5px;color:#8e8e93;display:flex;gap:8px;align-items:flex-start;cursor:pointer;min-height:28px" style-hover="border-color:#b9d3f3">
+        <span style="width:36px;flex:none">{{ x.t }}</span>
+        <sc-if value="{{ x.on }}" hint-placeholder-val="{{ false }}"><span style="flex:1;min-width:0;color:#1d1d1f"><b style="font-size:12.5px">{{ x.name }}</b><span style="display:block;font-size:11px;font-weight:700;color:{{ x.mgFg }}">{{ x.mg }}</span><span style="display:block;font-size:11px;color:#6e6e73">{{ x.units }}</span></span><span style="font-size:11px;color:#424245;white-space:nowrap">{{ x.ph }}</span></sc-if>
+      </div></sc-for>
+    </div></sc-for>
+  </div>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#424245"><span><i style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#eef5ff;border:1px solid #b9d3f3;vertical-align:-1px;margin-right:4px"></i>상담카드 예약</span><span><i style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#fff4e8;border:1px solid #f5d0a8;vertical-align:-1px;margin-right:4px"></i>손님 방문상담 예약 (사이트 신청 · 담당 배정 전)</span><span>· 빈 칸 = 그 시간으로 새 상담카드 · 예약 = 그 손님 상담카드</span></div>
+</div>
+</sc-if>
 <sc-if value="{{ isVac }}" hint-placeholder-val="{{ false }}">
 <div data-m="vacpg" style="max-width:1280px;margin:0 auto;padding:16px 20px 40px;box-sizing:border-box">
   <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px"><span style="font-size:20px;font-weight:800">공실 · 신규분양</span><span style="font-size:12.5px;color:#6e6e73">계약조건 빈칸 세대 · 동 · 호 순서 · 손님 화면 공개 고르기</span></div>
@@ -5308,7 +5327,7 @@ class Component extends DCLogic {
   heroGo(i) { const n = (((this.D.S.content || {}).hero || {}).images || []).length || 1; this._heroAt = Date.now(); this.setState({ siHeroP: this.state.siHero || 0, siHero: ((i % n) + n) % n, siHeroN: (this.state.siHeroN || 0) + 1 }); }
   componentDidMount() {
     if (!this.props.guestOnly) { window.addEventListener('message', e => { if (e.origin !== location.origin || !e.data) return; if (e.data.vacH) this.setState({ vacH: Math.max(400, Math.ceil(e.data.vacH) + 4) }); if (e.data.vacGo && this.D.byId[e.data.vacGo]) this.setState({ tab: 'board', sel: e.data.vacGo, colorMode: 'status' }); });   /* 공실 · 신규분양 탭 (iframe) */
-      document.addEventListener('click', e => { if (this.state.grpOpen && !(e.target.closest && e.target.closest('[data-grp]'))) this.setState({ grpOpen: false }); }); try { const q = new URLSearchParams(location.search), un = q.get('unit'); if (q.get('tab') === 'card' || q.get('tab') === 'vac') { const tq = q.get('tab'); setTimeout(() => this.setState({ tab: tq }), 0); } if (un && this.D.byId[un]) setTimeout(() => this.setState({ tab: 'board', sel: un, colorMode: 'status' }), 0); } catch (e) {} }
+      document.addEventListener('click', e => { if (this.state.grpOpen && !(e.target.closest && e.target.closest('[data-grp]'))) this.setState({ grpOpen: false }); }); try { const q = new URLSearchParams(location.search), un = q.get('unit'); if (q.get('tab') === 'card' || q.get('tab') === 'vac' || q.get('tab') === 'sched') { const tq = q.get('tab'); setTimeout(() => this.setState({ tab: tq }), 0); } if (un && this.D.byId[un]) setTimeout(() => this.setState({ tab: 'board', sel: un, colorMode: 'status' }), 0); } catch (e) {} }
     if (this.props.guestOnly) fetch('/api/public/complexes').then(r => r.json()).then(j => { if (j && j.ok && Array.isArray(j.list)) this.setState({ complexes: j.list, complexDef: j.def }); }).catch(() => {});
     this._pmKey = e => { if (this.state.pmPop == null) return; if (e.key === 'Escape') this.setState({ pmPop: null }); else if (e.key === 'ArrowLeft') this.pmStep(-1); else if (e.key === 'ArrowRight') this.pmStep(1); }; window.addEventListener('keydown', this._pmKey);
     this._heroAt = Date.now(); this._heroT = setInterval(() => { if (document.hidden || Date.now() - this._heroAt < 4950 || (((this.D.S.content || {}).hero || {}).images || []).length < 2 || !document.querySelector('[data-m=sihero]')) return; this.heroGo((this.state.siHero || 0) + 1); }, 250);
@@ -6020,6 +6039,25 @@ class Component extends DCLogic {
     const add = (key, list) => { const v = ct[key]; if (!v) return; const n = S.cards.filter(x => x.ct && x.ct[key] === v).length + 1; if (n >= 3 && !(S[list] || []).includes(v)) setTimeout(() => this.setState(ss => ({ [list]: (ss[list] || []).concat(v) })), 0); };
     if (ct.intro === 'MGM') add('bk', 'brokers'); if (ct.intro === '사이드') add('side', 'sides');
     delete ct._d; delete ct._h; delete ct._free; return ct; }
+  // 예약방문 스케줄 (시안 r49 확정 2026-11-17) — 상담카드 '방문 · 관심호실'의 예약방문(손님별 가장 최근 카드) + 손님 사이트 방문상담 예약(같은 손님 카드가 아직 없을 때)
+  visList() { const S = this.state, dg = v => String(v || '').replace(/\D/g, ''), last = {}, out = [];
+    S.cards.filter(c => !c.deleted && c.vis).forEach(c => { const k = dg(c.phone) || c.id; if (!last[k] || String(c.at || '') > String(last[k].at || '')) last[k] = c; });
+    Object.values(last).forEach(c => { const v = c.vis; if (v.on && v.date) out.push({ d: v.date, t: v.time || '10:00', c, g: false, mg: v.mgr || c.mgr || '', units: (v.units || []).map(x => x.unit.replace('-', '-')).join(' · ') }); });
+    S.cards.filter(c => !c.deleted && c.guest && c.visit && !last[dg(c.phone)]).forEach(c => { const m = String(c.visit).match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/); if (m) out.push({ d: m[1], t: m[2], c, g: true, mg: '', units: c.interest || '' }); });
+    return out; }
+  schedVals() { const S = this.state, today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10), from = S.schFrom || today, past = !!S.schPast, mine = !!S.schMine, me = S.me;
+    const L = this.visList().filter(x => (past || x.d >= from) && (!mine || x.mg === me)), DW = ['일', '월', '화', '수', '목', '금', '토'], ds = {}; if (!past) ds[from] = 1; L.forEach(x => { ds[x.d] = 1; });
+    const slots = []; for (let m = 600; m <= 1110; m += 30) slots.push(String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'));
+    const openC = x => { if (x.g) return this.openNote(x.c.id); const c = x.c; this.setState({ tab: 'card', vsOpen: true, form: Object.assign(this.blankForm(), { kind: c.kind || 'client', name: c.name || '', phone: c.phone || '', mgr: c.mgr || S.me || '', inflow: (c.inflow || []).slice(), interest: c.interest || '', unit: c.interest || '' }) }); this.flash(c.name + ' 님 상담카드 · 방문 · 관심호실 칸에 예약이 이어집니다'); };
+    const openN = (d, t) => this.setState({ tab: 'card', vsOpen: true, form: Object.assign(this.blankForm(), { kind: 'client', mgr: S.me || '', vis: { on: true, date: d, time: t, mgr: S.me || '', note: '', units: [] } }) });
+    const chip = (on, label, fn) => Object.assign(this.chip(on, '#1d1d1f'), { label, onClick: fn });
+    return { from, onFrom: e => this.setState({ schFrom: e.target.value }), sub: (past ? '전체 일정' : from.replace(/-/g, '.') + ' 이후 일정') + ' · 예약 ' + L.length + '건',
+      chips: [chip(past, '지난 일정 포함', () => this.setState({ schPast: !past })), chip(!mine, '전체', () => this.setState({ schMine: false })), chip(mine, '내 담당', () => this.setState({ schMine: true }))],
+      days: Object.keys(ds).sort().map(d => { const w = new Date(d + 'T00:00:00').getDay(), xs = L.filter(x => x.d === d);
+        return { label: d.slice(5).replace('-', '/') + ' (' + DW[w] + ')' + (d === today ? ' · 오늘' : ''), fg: w === 0 ? '#d2264b' : w === 6 ? '#0066cc' : '#1d1d1f', n: xs.length ? xs.length + '건' : '', bd: d === today ? '#0066cc' : '#ececf0', sh: d === today ? '0 0 0 2px #e8f0fb' : 'none',
+          slots: slots.concat(xs.map(x => x.t).filter(t => !slots.includes(t))).sort().map(t => { const x = xs.find(y => y.t === t);
+            return x ? { t, on: true, name: x.c.name || '(이름 없음)', ph: x.c.phone || '', mg: x.g ? '손님 신청 · 담당 미배정' : x.mg ? '담당 ' + x.mg : '담당 미정', mgFg: x.g ? '#b25000' : '#0066cc', units: x.units, bg: x.g ? '#fff4e8' : '#eef5ff', bd: x.g ? '#f5d0a8' : '#b9d3f3', title: '상담카드 열기', go: () => openC(x) }
+              : { t, on: false, bg: '#fff', bd: '#f0f0f2', title: d + ' ' + t + ' 새 상담카드', go: () => openN(d, t) }; }) }; }) }; }
   cplxOpts() { return this.cplx().list.map(n => ({ v: n, l: n })); }
   cplxVals(canEdit) { const S = this.state, C = this.cplx(), L = C.list, deny = () => this.flash('관심단지 목록은 대표 · 관리자만 고칠 수 있습니다'), set = (a, d) => this.setState(Object.assign({ complexes: a }, d !== undefined ? { complexDef: d } : {}));
     return { canEdit, ro: !canEdit, count: L.length + '개',
@@ -6142,7 +6180,7 @@ class Component extends DCLogic {
     const S = this.state, D = this.D, mods = S.modules, menus = S.menus;
     const STATUS = { '미확인': { bg: '#ffffff', fg: '#8e8e93', dot: '' }, '보유': { bg: '#e8e8ed', fg: '#1d1d1f', dot: '' }, '매물': { bg: '#d2264b', fg: '#fff', dot: '#d2264b' }, '가계약': { bg: '#b25000', fg: '#fff', dot: '#b25000' }, '계약': { bg: '#0066cc', fg: '#fff', dot: '#0066cc' }, '전세': { bg: '#cdeeed', fg: '#0b5e5e', dot: '#0f8a8a' }, '전세연장': { bg: '#cdeeed', fg: '#0b5e5e', dot: '' }, '명의변경완료': { bg: '#6e6e73', fg: '#fff', dot: '#6e6e73' }, '분양전환 계약': { bg: '#0066cc', fg: '#fff', dot: '' }, '퇴거 예정': { bg: '#fff4e8', fg: '#b25000', dot: '' }, '공실': { bg: '#d2264b', fg: '#fff', dot: '' }, '신규분양 계약': { bg: '#157a3f', fg: '#fff', dot: '' } };
     const PROGK = ['분양전환 계약', '전세연장', '퇴거 예정', '공실', '신규분양 계약'];   /* 진행상태 (시안 r46) — 전세연장 색은 위 '전세' 와 같게 */
-    const TABS = [['overview','단지배치'],['board','동호배치표'],['option','옵션계산기'],['card','상담카드'],['log','상담이력대장']].concat(D.generic ? [['vac','공실 · 신규분양']] : [], [['price','분양가표']]);   /* 공실 · 신규분양 = 상담이력대장 옆, 대시보드 안에서 열림 (2026-11-17 대표) */   /* 상담카드는 상담이력대장 앞 (게스트 등록 · 상담 기록, 2026-11-16 대표 요청으로 [대라수 업무]에서 다시 뺌) */
+    const TABS = [['overview','단지배치'],['board','동호배치표'],['option','옵션계산기'],['card','상담카드']].concat(D.generic ? [['sched','예약방문 스케줄']] : [], [['log','상담이력대장']], D.generic ? [['vac','공실 · 신규분양']] : [], [['price','분양가표']]);   /* 예약방문 스케줄 = 상담카드 옆 (시안 r49 확정 2026-11-17) */   /* 공실 · 신규분양 = 상담이력대장 옆, 대시보드 안에서 열림 (2026-11-17 대표) */   /* 상담카드는 상담이력대장 앞 (게스트 등록 · 상담 기록, 2026-11-16 대표 요청으로 [대라수 업무]에서 다시 뺌) */
     const guestOnly = !!this.props.guestOnly; const GS = S.guest;
     const role = this.rl(S.me); const can = k => !!(S.perms[k] || {})[role];
     const SETTAB = role === '관리자'; /* 설정 · 모듈을 창 대신 탭으로, 세대DB 옆 · 관리자만 (시안 ?m6=1 확정 2026-10-31) */
@@ -6907,7 +6945,7 @@ cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.com
       ppOpen: !!S.upPlan, pp: S.upPlan ? Object.assign({ boxAr: '1 / 1', canPop: false }, this.upPlanVals()) : {}, closePP: () => this.setState({ upPlan: null, upPh: null }), backUP: this.backUP,
       planOpen: !!S.planOpen, planOpenSrc: S.planOpen ? (S.plan3d ? this.plan3dSrc(S.planOpen) : this.planSrc(S.planOpen, S.planBlk)) : '', planOpenRatio: D.generic && S.planOpen ? String((S.plan3d ? 1.6667 : this.planAr(S.planOpen, S.planBlk))) : S.planOpen && D.types[S.planOpen] && D.types[S.planOpen].ph ? '0.927' : '2.6', planOpenLabel: S.planOpen ? S.planOpen + (S.plan3d ? ' 3D 평면' : ' 평면도') : '', closePlan: () => this.setState({ planOpen: null, planBlk: null, plan3d: false, planZ: 1 }), planZw: ((S.planZ || 1) * 100) + '%', planZPct: Math.round((S.planZ || 1) * 100) + '%', planZIn: () => this.setZK('planZ', (S.planZ || 1) * 1.25), planZOut: () => this.setZK('planZ', (S.planZ || 1) / 1.25), planZFit: () => this.setZK('planZ', 1),
       tabs, me: S.me, onMe: e => this.setState({ me: e.target.value, dbDraft: null }), staff: Object.keys(S.roles),
-      isDb: tab === 'db', db: tab === 'db' ? this.dbVals(role, can) : {}, isLease: tab === 'lease', isVac: tab === 'vac', vacH: (S.vacH || 700) + 'px', ls: tab === 'lease' ? this.leaseVals(role, can) : {},
+      isDb: tab === 'db', db: tab === 'db' ? this.dbVals(role, can) : {}, isLease: tab === 'lease', isVac: tab === 'vac', isSched: tab === 'sched', sc: tab === 'sched' ? this.schedVals() : {}, vacH: (S.vacH || 700) + 'px', ls: tab === 'lease' ? this.leaseVals(role, can) : {},
       isLb: tab === 'lb', lb: tab === 'lb' ? this.lbVals() : {}, ldOpen: !!S.lbSel, ld: S.lbSel ? this.ldVals() : {}, la: S.lbSel ? this.ladVals() : {}, isAd: tab === 'ad', ad: tab === 'ad' ? this.adTabVals() : {}, cfOpen: !!S.lbCfg, cf: S.lbCfg ? this.lbCfgVals() : {},
       isGl: tab === 'glist', gl: tab === 'glist' ? this.glVals() : {}, bkOpen: !!S.bkReq, bq: S.bkReq ? this.bkVals() : {}, glOpen: !!S.glSel, gd: S.glSel ? this.gdVals() : {},impOpen: !!S.imp, imp: S.imp ? this.impVals() : {},
       roleRows: Object.keys(S.roles).map(n => ({ name: n, isMe: n === S.me ? '(나)' : '', chips: ['대표', '관리자', '권한자', '직원', '열람'].map(r => Object.assign(this.chip(S.roles[n] === r, '#0066cc'), { label: r,
