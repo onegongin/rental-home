@@ -834,6 +834,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
           <button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button>
         </sc-for>
         <button onClick="{{ togglePrice }}" style="border:1px solid {{ priceChip.bd }};background:{{ priceChip.bg }};color:{{ priceChip.fg }};border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer"><span data-pcl="1">분양가 보기(억)</span><span data-mol="1">분양가(억)</span></button>
+        <sc-if value="{{ priceSegOn }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;background:#f2f2f5;border-radius:9999px;padding:3px"><sc-for list="{{ priceSeg }}" as="b"><button onClick="{{ b.onClick }}" style="border:none;border-radius:9999px;padding:3px 10px;font-size:11.5px;font-weight:700;cursor:pointer;background:{{ b.bg }};color:{{ b.fg }};box-shadow:{{ b.sh }}">{{ b.label }}</button></sc-for></span></sc-if>
       </div>
       </sc-if>
     </div>
@@ -1084,7 +1085,21 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         </div>
         </sc-if>
 
-        <sc-if value="{{ tradeOn }}">
+        <sc-if value="{{ p.pr.on }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px 18px;border-bottom:1px solid #f0f0f2;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#6e6e73">분양가</span>
+            <span style="display:inline-flex;background:#f2f2f5;border-radius:9999px;padding:3px"><sc-for list="{{ p.pr.seg }}" as="b"><button onClick="{{ b.onClick }}" style="border:none;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;background:{{ b.bg }};color:{{ b.fg }};box-shadow:{{ b.sh }}">{{ b.label }}</button></sc-for></span></div>
+          <div style="font-size:24px;font-weight:800;font-variant-numeric:tabular-nums">{{ p.pr.amt }}</div>
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#6e6e73;font-variant-numeric:tabular-nums"><span>{{ p.pr.oLbl }}</span><span>{{ p.pr.oAmt }}</span></div>
+          <sc-if value="{{ p.pr.depOn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#424245;font-variant-numeric:tabular-nums"><span>임대보증금 (고객DB)</span><b style="color:#1d1d1f">{{ p.pr.dep }}</b></div>
+            <div style="background:#1d1d1f;color:#fff;border-radius:12px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font-size:12px">{{ p.pr.needLbl }}</span><b style="font-size:17px;font-variant-numeric:tabular-nums">{{ p.pr.need }}</b></div>
+          </sc-if>
+          <sc-if value="{{ p.pr.expOn }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;font-weight:600;color:#d2264b">{{ p.pr.exp }}</div></sc-if>
+          <div style="font-size:11px;color:#8e8e93">분양가표와 같은 금액 · 고른 쪽은 이 기기에 기억 · 직원 화면 전용</div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ tradeOldOn }}" hint-placeholder-val="{{ false }}">
         <div style="padding:14px 18px;border-bottom:1px solid #f0f0f2;display:flex;flex-direction:column;gap:8px">
           <div style="font-size:12px;font-weight:700;color:#6e6e73">입주 후 거래 (활성화된 모듈)</div>
           <!-- 상세 동호실 내역에서는 보기만 (시안 ?m5=1 확정 2026-10-31) — 입력 · 수정은 상담카드에서 -->
@@ -5034,6 +5049,16 @@ class Component extends DCLogic {
   }
   // 계약조건 (시안 r41 확정 2026-11-16): 10.16 혜택가 · 헷지했지 · 전세연장 중 하나. S.u[id].cond ('-' = 일부러 비움). 비어 있으면 전환상태(staff/units.html)가 '전세연장'인 세대는 자동 '전세연장'
   COND = { '10.16 혜택가': ['#e8f5ec', '#157a3f'], '헷지했지': ['#f3e8fb', '#7a2fb0'], '전세연장': ['#e8f0fb', '#0066cc'] };
+  // 호실 분양가 (시안 r43 확정 2026-11-17): 매입보장가 / 10.16 혜택가 고르기 (기본 매입보장가, 기기에 기억) · 금액 = /api/staff/prices (분양가표와 같음) · 임차 만기 지난 호실은 보증금 · 필요금액 숨김
+  prMode() { const m = this.state.prMode; if (m) return m; try { return localStorage.getItem('dls-pr-mode') || 'hedge'; } catch (e) { return 'hedge'; } }
+  setPrMode(m) { try { localStorage.setItem('dls-pr-mode', m); } catch (e) {} this.setState({ prMode: m }); }
+  prLoad() { if (this._prOk || (this._prAt && Date.now() - this._prAt < 30000)) return; this._prAt = Date.now(); fetch('/api/staff/prices', { credentials: 'same-origin' }).then(r => r.json()).then(j => { if (j && j.ok) { this._prOk = true; const m = {}; (j.rows || []).forEach(r => { m[r.id] = r; }); this.setState({ prRows: m }); } }).catch(() => {}); }
+  prSeg() { const m = this.prMode(); return [['hedge', '매입보장가'], ['benefit', '10.16 혜택가']].map(([k, l]) => ({ label: l, bg: m === k ? '#fff' : 'transparent', fg: m === k ? '#1d1d1f' : '#6e6e73', sh: m === k ? '0 1px 3px rgba(0,0,0,.12)' : 'none', onClick: e => { if (e) e.stopPropagation(); this.setPrMode(k); } })); }
+  prAmt(id) { const r = (this.state.prRows || {})[id]; return r ? (this.prMode() === 'hedge' ? r.hedge : r.benefit) : null; }
+  leaseExpOf(id) { const r = ((this.state.lease || {}).rows || []).find(t => t.dong + '-' + t.ho === id); if (!r) return ''; const d = this.ddays(r.end_date); return d != null && d < 0 ? r.end_date : ''; }
+  prVals(id) { if (this._gm || this.props.guestOnly || !this.D.generic) return { on: false }; this.prLoad(); const r = (this.state.prRows || {})[id]; if (!r) return { on: false };
+    const m = this.prMode(), v = m === 'hedge' ? r.hedge : r.benefit, ov = m === 'hedge' ? r.benefit : r.hedge, ex = this.leaseExpOf(id), w = n => Math.round(n).toLocaleString() + '원', nm = m === 'hedge' ? '매입보장가' : '10.16 혜택가';
+    return { on: true, seg: this.prSeg(), amt: w(v), oLbl: m === 'hedge' ? '10.16 혜택가' : '매입보장가', oAmt: w(ov), depOn: !ex && r.dep > 0, dep: w(r.dep), needLbl: '필요금액 (' + nm + ' − 보증금)', need: w(Math.max(v - r.dep, 0)), expOn: !!ex, exp: '임차 만기 ' + ex + ' 지남 — 임대보증금 · 필요금액은 표시하지 않습니다' }; }
   convLoad() { if (this._convOk || (this._convAt && Date.now() - this._convAt < 30000)) return; this._convAt = Date.now(); fetch('/api/staff/conv', { credentials: 'same-origin' }).then(r => r.json()).then(j => { if (j && j.ok) { this._convOk = true; const m = {}; (j.conv || []).forEach(x => { m[x.unit_id] = x.status; }); this.setState({ convSt: m }); } }).catch(() => {}); }   /* 로그인 전이면 30초 뒤 다시 */
   condOf(id, s) { s = s || {}; if (s.cond === '-') return { v: '', auto: false }; if (s.cond && this.COND[s.cond]) return { v: s.cond, auto: false }; return (this.state.convSt || {})[id] === '전세연장' ? { v: '전세연장', auto: true } : { v: '', auto: false }; }
   dbVals(role, can) {
@@ -6173,7 +6198,7 @@ class Component extends DCLogic {
       const urg = (s.tags || []).includes('급매');
       const cc = !isGB && !guestOnly ? (S.cmCnt || {})[u.id] : null;   /* 호실 이야기 글 수 (시안 staff-unit-talk A안) */
       if (S.sel === u.id) rings.push(S.flashCell === u.id ? '0 0 0 3px #0066cc' : '0 0 0 2px #1d1d1f');
-      const label = S.showPrice && !isGB ? (this.priceOf(u) / 1e8).toFixed(2) : (t.ph && span > 1 ? u.ho + ' · ' + u.type : String(u.ho));
+      const label = S.showPrice && !isGB ? (D.generic ? (this.prAmt(u.id) != null ? (this.prAmt(u.id) / 1e8).toFixed(2) : '—') : (this.priceOf(u) / 1e8).toFixed(2)) : (t.ph && span > 1 ? u.ho + ' · ' + u.type : String(u.ho));
       return { span, bg, fg, op: !on ? 0.16 : (cm === 'type' && !F && s._cond ? 0.22 : 1), ring: rings.length ? rings.join(',') : 'none', label, title: u.b + '동 ' + u.ho + '호 · ' + u.type + (isGB ? '' : ' · ' + s.status + (s._exp ? ' (임차 만기 ' + s._exp + ' 지남)' : '') + (urg ? ' · 급매' : '')), cur: 'pointer', fw: S.sel === u.id ? 700 : 500,
         hasDot: cm === 'type' && !!sc.dot && !s._eff, dot: sc.dot || 'transparent', dotPos: cc ? 'left:2px' : 'right:2px', cmOn: !!cc, cmN: cc ? String(cc.n) : '', cmBg: cc && cc.need ? '#d2264b' : '#0066cc', urg, uid: u.id, onClick: () => this.setState({ sel: u.id, optDraft: null }) }; };
     const blank = (span, bg, label, ring) => ({ span, bg: bg || 'transparent', fg: '#8e8e93', op: 1, ring: ring || 'none', label: label || '', title: '', cur: 'default', fw: 500, hasDot: false, dot: 'transparent', dotPos: 'right:2px', cmOn: false, cmN: '', cmBg: '', urg: false, uid: '', onClick: null });
@@ -6258,7 +6283,7 @@ class Component extends DCLogic {
         supply: sb.supply, cdate: sb.cdate,
         resaleText: sb.resaleText, resaleBg: sb.resaleBg, resaleFg: sb.resaleFg, holding: sb.holding,
         stageChips: sb.stageChips.map(c => Object.assign({}, c, { onClick: null })), cdateText: s.cdate || '미입력',
-        tradeFields: tradeFields.map(f => ({ label: f.label, type: f.type, ph: f.ph, value: s[f.key] || '', onChange: setF(f.key), shown: s[f.key] || '—', fg: s[f.key] ? '#1d1d1f' : '#aeaeb2' })), tradeRO: true, tradeRW: false,
+        pr: this.prVals(su.id), tradeFields: tradeFields.map(f => ({ label: f.label, type: f.type, ph: f.ph, value: s[f.key] || '', onChange: setF(f.key), shown: s[f.key] || '—', fg: s[f.key] ? '#1d1d1f' : '#aeaeb2' })), tradeRO: true, tradeRW: false,
         logCount: logs.length + '건', logs: logs.map(c => ({ kind: this.kindName(c.kind), kindFg: this.kindColor(c.kind), at: c.at, writer: c.writer, text: c.text })),
         writeCard: () => { const kd = mods.presale ? 'seller' : 'owner'; const pc = S.cards.find(c => c.unit === su.id && c.mgr); this.setState({ tab: 'card', form: Object.assign(this.blankForm(), this.unitPrefill(su.id), kd === 'owner' ? this.ownPre(su.id) : {}, pc ? { mgr: pc.mgr, mgrOk: pc.mgrOk || null, mgrBase: pc.mgr, mgrBaseOk: pc.mgrOk || null } : {}, { kind: kd, unit: su.b + '동 ' + su.ho + '호', unitLock: true, unitUnlock: false, unitBaseId: su.id, unitAsk: false, unitAskText: '', unitReason: '' }) }); }
       };
@@ -6727,7 +6752,7 @@ cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.com
       guestRows: /* 게스트 칸 (시안 guest-settings 확정 2026-11-03) — 공개 사이트 탭 → 방문상담 단추 → 직원 미리 보기. 옛 'public'(챔피언스시티 파일용) 스위치는 뺌 */ [['noCity', (((window.__SITE || {}).site || {}).short || '단지') + ' 소개 탭 숨기기', '켜면 맨 앞 소개 탭(사업개요 · 입지환경 · 단지 개요 · 평면 안내)을 뺍니다'], ['noBoard', '동호배치표 탭 숨기기', '켜면 공개 사이트에서 동호배치표 탭을 뺍니다'], ['noOption', '옵션계산기 탭 숨기기', '켜면 공개 사이트에서 옵션계산기 탭을 뺍니다 · 손님이 고른 옵션은 저장되지 않습니다'], ['noPrice', '분양가표 탭 숨기기', '켜면 공개 사이트에서 분양가표 탭을 뺍니다'], ['noCmt', '호실 이야기(댓글) 숨기기', '켜면 동호배치표 호실 안내 아래 댓글 칸을 숨깁니다'], ['visit', '방문상담 예약 단추', '켜면 공개 사이트 위쪽 보드에 [방문상담 예약] 단추가 보입니다 · 관심등록 단추는 항상 있음'], ['enabled', '직원 화면에서 미리 보기', "켜면 직원 화면 위쪽에 '게스트' 탭들이 생겨 공개 사이트를 그대로 볼 수 있습니다"], ['hideStaff', '미리 보기 탭 잠깐 숨기기', '켜면 직원 화면에서만 게스트 탭을 뺍니다 · 공개 사이트에는 영향 없음']].map(([k, l, desc]) => { const on = k === 'visit' ? GS.visit !== false : !!GS[k]; return { label: l, desc, bg: on ? '#34c759' : '#e5e5ea', knob: on ? '21px' : '3px', infoOn: S.gTip === k, infoFg: S.gTip === k ? '#0066cc' : '#8e8e93', info: e => { if (e) { e.stopPropagation(); e.preventDefault(); } this.setState({ gTip: S.gTip === k ? null : k }); }, onClick: e => { if (e && e.target && e.target.closest && e.target.closest('[data-mo=ginfo]')) return; this.setState(ss => ({ guest: Object.assign({}, ss.guest, { [k]: !on }) })); } }; }),
       isOverview: tab === 'overview' || isGuest, isBoard: tab === 'board' || isGB, isOption: tab === 'option' || isGO, isCard: tab === 'card', isLog: tab === 'log', isPrice: (tab === 'price' || isGP) && !D.generic, isPrice2: (tab === 'price' || isGP) && !!D.generic, pt, isCity: !D.generic && (tab === 'city' || isGC), city: D.generic ? {} : this.cityVals(), isSiteIntro: !!D.generic && (tab === 'city' || isGC), si: D.generic && (tab === 'city' || isGC || this.state.siZoom) ? this.siteIntroVals() : {}, /* siZoom: 단지배치 탭 단지 조경 크게 보기도 이 창을 씀 */
       hotspots, groupLegend, groupCards, typeList, spGarden,
-      groupChips, colorModes, togglePrice: () => this.setState({ showPrice: !S.showPrice }), priceChip, filterChips, axis, bldgs, legend, bgridCols, bgridM,
+      groupChips, colorModes, togglePrice: () => { if (D.generic) this.prLoad(); this.setState({ showPrice: !S.showPrice }); }, priceSegOn: !!S.showPrice && D.generic && !guestOnly && !this._gm, priceSeg: this.prSeg(), priceChip, filterChips, axis, bldgs, legend, bgridCols, bgridM,
       noSelText: isGB ? '배치표에서 호실을 누르면 타입 개요 · 공급안내 · 평면이 표시됩니다' : '배치표에서 호실을 누르면 타입 개요 · 분양가 · 확장비 · 옵션 · 프리미엄 · 납부현황이 표시됩니다', boardStaff: !isGB, showGuestNav: guestOnly && vis.length > 1,
       altType: (S.upPlan && S.upPlan.code) || (S.pp && S.pp.code) || (S.sel && D.byId[S.sel] ? D.byId[S.sel].type : '') || '',
       ...(() => { const d = new Date(); const td = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); const on = false && !D.generic && !!GS.notice && (!GS.ntFrom || td >= GS.ntFrom) && (!GS.ntTo || td <= GS.ntTo); let hid = false; try { hid = localStorage.getItem(this.k('cc-nt-hide')) === td; } catch (x) {} const auto = guestOnly && on && !hid && !S.ntClosed; const vk = vis.map(v => v[0]); const setG = o => this.setState(ss => ({ guest: Object.assign({}, ss.guest, o) }));
@@ -6743,7 +6768,7 @@ cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.com
       cpClose: () => { if (S.popPv) return this.setState({ popPv: null, cpI: 0 }); const o = {}; cpL.forEach(p => { o[p.id] = true; }); this.setState(ss => ({ popSeen: Object.assign({}, ss.popSeen, o), cpI: 0 })); },
       cpHide: () => { if (S.popPv) return this.setState({ popPv: null, cpI: 0 }); try { const o = JSON.parse(localStorage.getItem(this.k('cc-pop-hide')) || '{}'); cpL.forEach(p => { o[p.id] = pTd; }); localStorage.setItem(this.k('cc-pop-hide'), JSON.stringify(o)); } catch (x) {} const o2 = {}; cpL.forEach(p => { o2[p.id] = true; }); this.setState(ss => ({ popSeen: Object.assign({}, ss.popSeen, o2), cpI: 0 })); },
       goHome: () => { if (vis.length) this.setState({ tab: vis[0][0], sel: null }); try { window.scrollTo(0, 0); } catch (x) {} },
-      noSel: !p, hasSel: !!p, p: p || {}, presaleOn: !!mods.presale, optionOn: !!mods.option, tradeOn: !!(mods.sale || mods.jeonse || mods.wolse),
+      noSel: !p, hasSel: !!p, p: p || {}, presaleOn: !!mods.presale, optionOn: !!mods.option, tradeOn: !!(mods.sale || mods.jeonse || mods.wolse), tradeOldOn: false /* 호실 상세 '입주 후 거래' 칸 → '분양가' 칸 (시안 r43) */,
       supplyOpts: ['미확인','일반공급','특별공급(신혼부부)','특별공급(생애최초)','특별공급(다자녀)','특별공급(노부모)','특별공급(기관추천)','무순위'],
       o, f, callOpts: ['통화','부재','문자','종료'], ...(W => D.generic ? { wantDongOpts: ['무관'].concat(W.dong), wantTypeOpts: ['무관'].concat(W.type), wantFloorOpts: ['무관'].concat(W.floor) } : { wantDongOpts: ['무관','101~103동','104~106동','107~109동','110~112동'].concat(Object.keys(D.bmap).map(n => n + '동')),
       wantTypeOpts: ['무관','84A','84B','84C','84D','84E','84F','103A1-3','103B1-3','112A1-3','128A1-3','펜트'], wantFloorOpts: ['무관','10층 이하','10~20층','20층 이상','30층 이상','40층 이상'], })(this.wantLists()),
