@@ -1074,7 +1074,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
             <div style="display:flex;flex-direction:column;gap:3px;font-size:11px;color:#6e6e73">계약일<span style="height:34px;line-height:34px;background:#f5f5f7;border-radius:10px;padding:0 10px;font-size:13px;color:#1d1d1f;font-variant-numeric:tabular-nums">{{ p.cdateText }}</span></div>
           </div>
           <div style="display:flex;gap:6px;font-size:12px">
-            <span style="background:{{ p.resaleBg }};color:{{ p.resaleFg }};border-radius:9999px;padding:4px 10px;font-weight:600">{{ p.resaleText }}</span>
+            
             <span style="background:#f5f5f7;border-radius:9999px;padding:4px 10px;font-weight:600">{{ p.holding }}</span>
           </div>
           <div style="display:flex;gap:3px;flex-wrap:wrap;align-items:center">
@@ -1831,7 +1831,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
                 <label style="display:flex;flex-direction:column;gap:3px;font-size:11px;color:#6e6e73">계약일<input type="date" value="{{ f.sb.cdate }}" onChange="{{ f.sb.onCdate }}" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f"></label>
               </div>
               <div style="display:flex;gap:6px;font-size:12px;flex-wrap:wrap">
-                <span style="background:{{ f.sb.resaleBg }};color:{{ f.sb.resaleFg }};border-radius:9999px;padding:4px 10px;font-weight:600">{{ f.sb.resaleText }}</span>
+                
                 <span style="background:#f5f5f7;border-radius:9999px;padding:4px 10px;font-weight:600">{{ f.sb.holding }}</span>
               </div>
               <div style="display:flex;gap:3px;flex-wrap:wrap;align-items:center"><sc-for list="{{ f.sb.stageChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:3px 9px;font-size:11px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for></div>
@@ -6243,7 +6243,7 @@ class Component extends DCLogic {
           return Object.assign(this.chip(on, col), { label: v, onClick: () => this.setUnit(su.id, Object.assign({ trade: on ? (s.trade || []).filter(x => x !== v) : (s.trade || []).concat(v) }, v === '매매' && on ? { saleNew: false } : {})) }); }),
         showNew: mods.sale && (s.trade || []).includes('매매'), newBg: s.saleNew ? '#d2264b' : '#fff', newFg: s.saleNew ? '#fff' : '#d2264b',
         toggleNew: () => this.setUnit(su.id, { saleNew: !s.saleNew }),
-        resaleWarn: dday > 0 && ['가계약','계약','명의변경완료'].includes(s.status),
+        resaleWarn: false /* 전매제한 안내 — 이 사이트(민간임대 분양전환)는 안 씀, 2026-11-17 대표 요청으로 끔 */,
         tagChips: ['상담','부재','광고중','광고중(타부동산)'].map(v => { const on = (s.tags || []).includes(v); return Object.assign(this.chip(on, '#1d1d1f'), { label: v === '광고중' && on && (s.media || []).length ? '광고중 · ' + s.media.join(' · ') : v }); }),
         band: sb.band, price: sb.price,
         expChips: t.ph ? [Object.assign(this.chip(true, '#0066cc'), { label: '기본 포함', onClick: null })] : [['선택', true], ['미선택', false]].map(([l, v]) => Object.assign(this.chip(expand === v, '#0066cc'), { label: l, onClick: () => this.setUnit(su.id, { expand: v }) })),
