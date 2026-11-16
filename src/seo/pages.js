@@ -2,6 +2,7 @@
 //   화면(대시보드)은 자바스크립트로 그려져 검색로봇이 매물을 못 읽음 → 같은 공개 사본(public_listings)으로 서버가 직접 만든다
 //   /listings · /listings/{sale|jeonse|wolse|short} 목록(ItemList)  · /listings/{id} 매물 1건(RealEstateListing)
 //   공개 사본에 없는 매물 번호 = 끝났거나 내린 매물 → 410(영구 삭제). 호수 · 사람 정보는 공개 사본에 원래 없음
+import { leadPop } from './lead-pop.js';
 import SITE from '../../public/daelasoo/data/site.json' with { type: 'json' };
 import { priceText, mgmtText } from '../ads/templates.js';
 import { ASSET, nameX, scaleText, moveInText } from '../core/site-text.js';
@@ -44,7 +45,7 @@ export function page({ base, path, title, desc, img, body, json }) {
     '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"><style>' + CSS + '</style>' +
     (json || []).map(ld).join('') + '</head><body><div class="w">' +
     '<div class="top"><b>' + esc(S.name) + '</b><span style="color:#8e8e93">' + esc(S.alias) + '</span><a href="/">단지 안내 · 동호배치표 →</a></div>' +
-    body + footer() + '</div></body></html>';
+    body + footer() + '</div>' + leadPop() + '</body></html>';
 }
 // 사무소 필수 표시 (부록 A ①) — 모든 페이지 아래
 const footer = () => '<footer><b>' + esc(O.name) + '</b> · 대표 공인중개사 ' + esc(O.ceo) + ' · 중개사무소 등록번호 ' + esc(O.regNo) + '<br>' + esc(O.address) + ' · 대표번호 <a href="tel:' + esc(O.tel) + '">' + esc(O.tel) + '</a>' + (O.blog ? ' · <a href="' + esc(O.blog) + '">블로그</a>' : '') + '</footer>';
