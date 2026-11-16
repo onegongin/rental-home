@@ -6042,9 +6042,12 @@ class Component extends DCLogic {
       dots: Array.from({ length: cpPages }, (_, i) => ({ w: i === cpPg ? '18px' : '7px', bg: i === cpPg ? '#fff' : 'rgba(255,255,255,.55)', go: e => { e.stopPropagation(); this.setState({ cpI: i }); } })),
       prev: e => { e.stopPropagation(); this.setState({ cpI: (cpPg - 1 + cpPages) % cpPages }); }, next: e => { e.stopPropagation(); this.setState({ cpI: (cpPg + 1) % cpPages }); } };
     const F = gx ? null : S.filter;
-    const st0 = id => UU[id] || { status: '미확인' }, condBoard = !gx && !this._gm && !guestOnly; if (condBoard) this.convLoad();
-    const st = id => { const s = st0(id); if (!condBoard) return s; const cv = this.condOf(id, s).v; if (!cv) return s;
-      const eff = (!s.status || s.status === '미확인' || s.status === '보유') ? (cv === '10.16 혜택가' ? '계약' : cv === '전세연장' ? '전세' : '') : '';
+    const st0 = id => UU[id] || { status: '미확인' }, condBoard = !gx && !this._gm && !guestOnly; if (condBoard) { this.convLoad(); if ((!S.lease || S.lease.err) && !this._lsBusy && (!this._lsAt || Date.now() - this._lsAt > 30000)) { this._lsAt = Date.now(); setTimeout(() => this.leaseLoad(), 0); } }
+    const EXP = {}; if (condBoard) ((S.lease || {}).rows || []).forEach(t => { const d = this.ddays(t.end_date); if (d != null && d < 0) EXP[t.dong + '-' + t.ho] = t.end_date; });   /* 임차 만기 지난 호실 */
+    const st = id => { const s = st0(id); if (!condBoard) return s; const cv = this.condOf(id, s).v, free = !s.status || s.status === '미확인' || s.status === '보유';
+      if (free && EXP[id]) return Object.assign({}, s, { status: '매물', _eff: true, _exp: EXP[id] });   /* 만기 지나면 매물 (불 켜짐) */
+      if (!cv) return s;
+      const eff = free ? (cv === '10.16 혜택가' ? '계약' : cv === '전세연장' ? '전세' : '') : '';
       return Object.assign({}, s, { _cond: cv }, eff ? { status: eff, _eff: true } : {}); };   /* 시안 r42 확정 2026-11-17 */
     const match = u => { if (!F) return true; const s = st(u.id); const t = D.types[u.type];
       if (F.k === 'status') return s.status === F.v; if (F.k === 'tag') return (s.tags || []).includes(F.v); if (F.k === 'fam') return t.fam === F.v; if (F.k === 'has') return !!s[F.v]; if (F.k === 'trade') return this.inTrade(s, F.v); return true; };
@@ -6171,7 +6174,7 @@ class Component extends DCLogic {
       const cc = !isGB && !guestOnly ? (S.cmCnt || {})[u.id] : null;   /* 호실 이야기 글 수 (시안 staff-unit-talk A안) */
       if (S.sel === u.id) rings.push(S.flashCell === u.id ? '0 0 0 3px #0066cc' : '0 0 0 2px #1d1d1f');
       const label = S.showPrice && !isGB ? (this.priceOf(u) / 1e8).toFixed(2) : (t.ph && span > 1 ? u.ho + ' · ' + u.type : String(u.ho));
-      return { span, bg, fg, op: !on ? 0.16 : (cm === 'type' && !F && s._cond ? 0.22 : 1), ring: rings.length ? rings.join(',') : 'none', label, title: u.b + '동 ' + u.ho + '호 · ' + u.type + (isGB ? '' : ' · ' + s.status + (urg ? ' · 급매' : '')), cur: 'pointer', fw: S.sel === u.id ? 700 : 500,
+      return { span, bg, fg, op: !on ? 0.16 : (cm === 'type' && !F && s._cond ? 0.22 : 1), ring: rings.length ? rings.join(',') : 'none', label, title: u.b + '동 ' + u.ho + '호 · ' + u.type + (isGB ? '' : ' · ' + s.status + (s._exp ? ' (임차 만기 ' + s._exp + ' 지남)' : '') + (urg ? ' · 급매' : '')), cur: 'pointer', fw: S.sel === u.id ? 700 : 500,
         hasDot: cm === 'type' && !!sc.dot && !s._eff, dot: sc.dot || 'transparent', dotPos: cc ? 'left:2px' : 'right:2px', cmOn: !!cc, cmN: cc ? String(cc.n) : '', cmBg: cc && cc.need ? '#d2264b' : '#0066cc', urg, uid: u.id, onClick: () => this.setState({ sel: u.id, optDraft: null }) }; };
     const blank = (span, bg, label, ring) => ({ span, bg: bg || 'transparent', fg: '#8e8e93', op: 1, ring: ring || 'none', label: label || '', title: '', cur: 'default', fw: 500, hasDot: false, dot: 'transparent', dotPos: 'right:2px', cmOn: false, cmN: '', cmBg: '', urg: false, uid: '', onClick: null });
     const xcell = 'linear-gradient(to top right, transparent calc(50% - 0.6px), #c7c7cc 50%, transparent calc(50% + 0.6px)), linear-gradient(to bottom right, transparent calc(50% - 0.6px), #c7c7cc 50%, transparent calc(50% + 0.6px)) #fff';
