@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { pubRowKind, groupPub, cleanDeal, DEAL_KO } from '../src/core/conv.js';
-import { pubEligible, listVacancy, setPub, setConv } from '../src/repo/conv.js';
+import { pubEligible, listVacancy, setPub, setConv, putPubListing, dropPubListing, cleanupPub } from '../src/repo/conv.js';
 import { listPubGuest } from '../src/repo/public-units.js';
 
 function sqliteD1() {
@@ -18,7 +18,8 @@ function sqliteD1() {
   s.exec(`CREATE TABLE units (id TEXT PRIMARY KEY, data TEXT);
     CREATE TABLE tenancies (id INTEGER PRIMARY KEY, unit_id TEXT, end_date TEXT, is_current INTEGER, deleted_at TEXT);
     CREATE TABLE unit_conv (unit_id TEXT PRIMARY KEY, status TEXT, move_out TEXT, memo TEXT, at INTEGER, by TEXT, done_at INTEGER, done_from TEXT);
-    CREATE TABLE public_units (unit_id TEXT PRIMARY KEY, dong INTEGER, band TEXT, type TEXT, kind TEXT, exclusive REAL, at INTEGER, by TEXT, deal TEXT);`);
+    CREATE TABLE public_units (unit_id TEXT PRIMARY KEY, dong INTEGER, band TEXT, type TEXT, kind TEXT, exclusive REAL, at INTEGER, by TEXT, deal TEXT, pid TEXT);
+    CREATE TABLE public_listings (id TEXT PRIMARY KEY, deal TEXT, dong INTEGER, block TEXT, label TEXT, band TEXT, type TEXT, kind TEXT, exclusive REAL, supply REAL, ask INTEGER, dep INTEGER, rent INTEGER, term TEXT, move TEXT, mgmt INTEGER, mgmt_items TEXT, facing TEXT, basis TEXT, rooms INTEGER, baths INTEGER, approval TEXT, parking TEXT, urgent INTEGER, badge TEXT, contact TEXT, tel TEXT, at INTEGER, updated INTEGER);`);
   return { s, prepare: sql => st(sql) };
 }
 
@@ -60,4 +61,21 @@ test('계약조건이 생기거나 계약 끝나면 손님 화면에서 빠짐 �
   assert.equal((await listPubGuest(db)).length, 1, '계약조건이 생기면 바로 손님 화면에서 빠짐');
   assert.equal(await setConv(db, '104-701', { status: '계약완료', move_out: null, memo: null }, '직원'), true, '계약완료 = 공개 내림');
   assert.equal((await listPubGuest(db)).length, 0);
+});
+
+test('신규분양 공개 → 현재 매물 한 줄 (호수 없는 번호) · 끄면 빠짐 · 계약조건 생기면 정리', async () => {
+  const db = sqliteD1(), q = (sql, ...a) => db.s.prepare(sql).run(...a), L = () => db.s.prepare('SELECT * FROM public_listings').all();
+  q("INSERT INTO tenancies (unit_id, end_date, is_current) VALUES ('103-2002', '2026-09-29', 1), ('104-701', '2026-09-29', 1)");
+  await setPub(db, '103-2002', true, '대표', Date.now(), '매매');
+  const pid = await putPubListing(db, '103-2002', { deal: 'sale', dong: 103, label: '103동 고층', band: '고층', type: '59B', ask: 35300 });
+  assert.match(pid, /^nu[0-9a-f]{12}$/); assert.ok(!pid.includes('2002'), '번호에 호수 없음');
+  assert.equal(L().length, 1); assert.equal(L()[0].ask, 35300); assert.equal(L()[0].label, '103동 고층');
+  assert.equal(await putPubListing(db, '103-2002', { deal: 'sale', dong: 103, label: '103동 고층', ask: 35300 }), pid, '다시 넣어도 같은 번호');
+  assert.equal(L().length, 1);
+  await setPub(db, '103-2002', false, '대표'); assert.equal(L().length, 0, '끄면 현재 매물에서 빠짐');
+  await setPub(db, '104-701', true, '대표', Date.now(), '둘 다'); await putPubListing(db, '104-701', { deal: 'sale', dong: 104, ask: 35500 });
+  assert.equal(await putPubListing(db, '999-1', { deal: 'sale' }), null, '공개 안 한 세대는 안 넣음');
+  q("INSERT INTO units (id, data) VALUES ('104-701', ?)", JSON.stringify({ cond: '전세연장' }));
+  assert.equal(await cleanupPub(db), 1); assert.equal(L().length, 0, '계약조건 생기면 정리'); assert.equal(db.s.prepare('SELECT COUNT(*) n FROM public_units').get().n, 0);
+  await dropPubListing(db, '104-701');
 });

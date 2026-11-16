@@ -6,11 +6,21 @@ import { J, body, ip, device } from '../lib/http.js';
 import { can } from '../core/permissions.js';
 import { CONV, PUB_KIND, KIND_KO, cleanConv } from '../core/conv.js';
 import { UNIT } from '../core/units.js';
-import { listConv, getConv, setConv, setPub, listVacancy } from '../repo/conv.js';
+import { listConv, getConv, setConv, setPub, listVacancy, putPubListing, dropPubListing, pubEligible } from '../repo/conv.js';
+import { band, TOP, areaOf } from '../core/listings.js';
+import SITE from '../../public/daelasoo/data/site.json' with { type: 'json' };
 import { DEALS, DEAL_KO } from '../core/conv.js';
 import { priceOf } from '../core/price.js';
 import { getOne } from '../repo/kv.js';
 import { audit } from '../repo/audit.js';
+
+// 신규분양 공개 매물 한 줄 (공개 칸만): 동 · 층구간 · 타입 · 면적 · 매입보장가(만원) · 입주 시기 · 방/욕실 · 사무소 연락처
+async function saleRow(db, id) {
+  const un = UNIT[id], pr = priceOf(id) || {}, e = (await pubEligible(db, id)) || {}, T = (SITE.types || {})[un.type] || {}, ar = areaOf(un), o = SITE.office || {}, bd = band(un.floor, TOP[un.dong]);
+  return { deal: 'sale', dong: un.dong, block: un.block || '', label: un.dong + '동 ' + bd, band: bd, type: un.type, kind: '아파트', exclusive: ar.exclusive, supply: ar.supply,
+    ask: pr.hedge ? Math.round(pr.hedge / 1e4) : null, move: e.kind === 'vac' ? '즉시 입주' : '입주일 협의', facing: '라인별 상이', basis: '상담 시 안내', rooms: T.rooms || null, baths: T.baths || null,
+    approval: '상담 시 안내', parking: '상담 시 안내', urgent: 0, badge: '신규분양 · 3년 뒤 분양가 매입보장(헷지했지)', contact: o.name || '', tel: o.tel || '' };
+}
 
 export async function staffConv(req, env, url, u) {
   const db = env.DB, p = url.pathname, who = { who: u.name, ip: ip(req), dev: device(req) };
@@ -47,6 +57,9 @@ export async function staffConv(req, env, url, u) {
     const b = (await body(req)) || {}, on = !!b.on;
     const r = await setPub(db, m[1], on, u.name, Date.now(), b.deal);
     if (r === 'status') return J({ ok: false, err: 'status', msg: '신규분양 대상(계약조건 빈칸 · 임대차 있음) 또는 공실 · 퇴거확정(매물동의) 세대만 공개할 수 있습니다' }, 409);
+    // 신규분양(매매 · 둘 다)이면 손님 '현재 매물'에 매입보장가로 (시안 r47 확정 2026-11-17, 대표 결정: 신규분양 공개 세대는 매입보장가 공개 — 혜택가 · 보증금은 비공개)
+    if (on && (b.deal === '매매' || b.deal === '둘 다')) await putPubListing(db, m[1], await saleRow(db, m[1]));
+    else await dropPubListing(db, m[1]);
     await audit(db, Object.assign({ act: on ? '세대 공개' : '세대 공개 내림', target: '세대 ' + m[1], detail: on ? DEAL_KO[b.deal] || '신규분양' : '' }, who));
     return J({ ok: true });
   }

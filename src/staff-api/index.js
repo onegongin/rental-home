@@ -7,6 +7,7 @@ import { audit } from '../repo/audit.js';
 import { staffComments } from './comments.js';
 import { staffUnits } from './units.js';
 import { staffConv } from './conv.js';
+import { cleanupPub } from '../repo/conv.js';
 import { staffConsult } from './consult.js';
 import { staffKpi } from './kpi.js';
 import { staffReport } from './report.js';
@@ -101,6 +102,7 @@ export async function staffApi(req, env, url, u) {
     // 팝업을 지우거나 그림 · 첨부를 바꾸면 안 쓰게 된 파일을 저장소에서 바로 지움 (실제로 저장된 값 기준)
     if (popRow) { const now0 = await getOne(db, 'cfg', 'popups'); const n = await onPopupsSaved(env, popBefore, now0); if (n) logs.push({ act: '팝업 파일 지움', detail: n + '개' }); }
     if (uRows.length) await R.saveUnits(uRows.map(x => ({ id: x.k, v: parse(x.v), at: x.at, by: x.by })));
+    if (uRows.length) await cleanupPub(db);   // 계약조건이 생긴 세대는 손님 공개 · 현재 매물에서 내림 (시안 r47)
     // 세대 옵션(확장 · 유상옵션)이 바뀌면 그 세대 공개 매물 카드의 '옵션' 줄도 새로 (시안 listing-public2)
     const optChanged = uRows.filter(x => { const a = parse(x.v) || {}, b = cur['u|' + x.k] || {}; return JSON.stringify([a.sel || null, a.expand]) !== JSON.stringify([b.sel || null, b.expand]); }).map(x => x.k);
     if (optChanged.length) await refreshUnits(db, optChanged, u.name);

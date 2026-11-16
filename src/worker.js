@@ -11,6 +11,7 @@ import { repo, openDb } from './repo/index.js';
 import { publicApi } from './public-api/index.js';
 import { authApi, currentUser } from './auth/index.js';
 import { staffApi } from './staff-api/index.js';
+import { cleanupPub } from './repo/conv.js';
 import { adminApi } from './staff-api/admin.js';
 import { morning } from './notify/morning.js';
 import { autoBackup } from './backup/index.js';
@@ -52,7 +53,7 @@ export default {
       // 03:30 = 자동 백업 + 팝업 정리 (기간 끝난 팝업 · 안 쓰는 그림/첨부 지움)
       // 예약 1개("30 18,23 * * *")로 두 일을 함 — 무료 계정은 계정 전체 예약 5개까지 (아이파크 · 123공실이 4개 씀). UTC 18시 = 백업, 23시 = 아침 요약
       const nightly = new Date(event.scheduledTime || Date.now()).getUTCHours() === 18;
-      env.ctx.waitUntil(nightly ? autoBackup(env).finally(() => popCleanup(env).catch(() => {})).finally(() => govSync(env).catch(e => console.log('gov', e && e.message))) : morning(env, { by: '자동' }));
+      env.ctx.waitUntil(nightly ? autoBackup(env).finally(() => popCleanup(env).catch(() => {})).finally(() => cleanupPub(env.DB).catch(() => {})).finally(() => govSync(env).catch(e => console.log('gov', e && e.message))) : morning(env, { by: '자동' }));
     } finally { env.ctx.done(); }
   }
 };

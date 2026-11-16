@@ -21,7 +21,7 @@ export async function setConv(db, id, v, by, now = Date.now()) {
   await db.prepare('INSERT INTO unit_conv (unit_id, status, move_out, memo, at, by, done_at, done_from) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (unit_id) DO UPDATE SET status = excluded.status, move_out = excluded.move_out, memo = excluded.memo, at = excluded.at, by = excluded.by, done_at = excluded.done_at, done_from = excluded.done_from')
     .bind(id, v.status, v.move_out, v.memo, now, by, done_at, done_from).run();
   if (!(await isPubUnit(db, id))) return false;
-  if (!canPub(v.status)) { if (DONE.includes(v.status) || !(await pubEligible(db, id))) { await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); return true; } return false; }   // 신규분양 대상(시안 r46) 세대는 다른 상태여도 공개 유지
+  if (!canPub(v.status)) { if (DONE.includes(v.status) || !(await pubEligible(db, id))) { await dropPubListing(db, id); await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); return true; } return false; }   // 신규분양 대상(시안 r46) 세대는 다른 상태여도 공개 유지
   const r = pubRow(id, v.status);   // 공실 ↔ 퇴거확정(매물동의) 사이로 바뀌면 구분만 새로
   await db.prepare('UPDATE public_units SET kind = ? WHERE unit_id = ?').bind(r.kind, id).run();
   return false;
@@ -58,8 +58,30 @@ export async function listVacancy(db) {
     .map(t => ({ id: t.unit_id, end: t.end_date || '', vacant: !!(t.end_date && t.end_date < today), conv: conv[t.unit_id] || '', deal: pub[t.unit_id] || '' }));
 }
 
+// 신규분양 공개 → 손님 '현재 매물' (시안 r47 확정 2026-11-17): 공개용 사본(public_listings)에 매매 · 매입보장가 한 줄. 번호(pid)는 호수와 상관없는 무작위
+//   row = 서버(직원 API)가 만든 공개 칸만 (동 · 층구간 · 타입 · 면적 · 매입보장가 · 입주 시기) — 호수 · 층 · 혜택가 · 보증금 없음
+export async function putPubListing(db, id, row, now = Date.now()) {
+  const p = await db.prepare('SELECT pid FROM public_units WHERE unit_id = ?').bind(id).first();
+  if (!p) return null;
+  let pid = p.pid; if (!pid) { pid = 'nu' + [...crypto.getRandomValues(new Uint8Array(6))].map(b => b.toString(16).padStart(2, '0')).join(''); await db.prepare('UPDATE public_units SET pid = ? WHERE unit_id = ?').bind(pid, id).run(); }
+  const r = Object.assign({}, row, { id: pid, at: now, updated: now }), k = Object.keys(r);
+  await db.prepare('DELETE FROM public_listings WHERE id = ?').bind(pid).run();
+  await db.prepare('INSERT INTO public_listings (' + k.join(', ') + ') VALUES (' + k.map(() => '?').join(', ') + ')').bind(...k.map(x => r[x] ?? null)).run();
+  return pid;
+}
+export async function dropPubListing(db, id) {
+  const p = await db.prepare('SELECT pid FROM public_units WHERE unit_id = ?').bind(id).first();
+  if (p && p.pid) await db.prepare('DELETE FROM public_listings WHERE id = ?').bind(p.pid).run();
+}
+// 계약조건이 생겼거나 계약이 끝난 공개 세대는 손님 화면 · 현재 매물에서 내림 (직원이 세대 · 상태를 저장할 때 · 매일 새벽)
+export async function cleanupPub(db) {
+  const bad = (await db.prepare("SELECT p.unit_id, p.pid FROM public_units p LEFT JOIN units u ON u.id = p.unit_id LEFT JOIN unit_conv c ON c.unit_id = p.unit_id WHERE coalesce(json_extract(u.data, '$.cond'), '') NOT IN ('', '-') OR coalesce(c.status, '') IN ('계약완료', '신규입주')").all()).results || [];
+  for (const b of bad) { if (b.pid) await db.prepare('DELETE FROM public_listings WHERE id = ?').bind(b.pid).run(); await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(b.unit_id).run(); }
+  return bad.length;
+}
+
 export async function setPub(db, id, on, by, now = Date.now(), deal) {
-  if (!on) { await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); return 'ok'; }
+  if (!on) { await dropPubListing(db, id); await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); return 'ok'; }
   const c = await getConv(db, id); let r = c && pubRow(id, c.status);
   if (!r) { const e = await pubEligible(db, id); r = e && pubRowKind(id, e.kind); }
   if (!r) return 'status';

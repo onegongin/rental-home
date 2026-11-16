@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r47 · 신규분양 공개 → 현재 매물</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .w { max-width: 1180px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: #6e6e73; font-size: 14px; line-height: 1.7; margin: 0 0 16px; }
+  .flow { display: grid; grid-template-columns: 1fr 40px 1.4fr; gap: 10px; align-items: center; margin-bottom: 22px; }
+  .box { background: #fff; border-radius: 16px; padding: 14px; }
+  .arrow { font-size: 26px; text-align: center; color: #c8381e; font-weight: 800; }
+  .lbl { font-size: 12px; font-weight: 700; color: #6e6e73; margin-bottom: 8px; }
+  .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+  .seg { display: inline-flex; background: #f2f2f5; border-radius: 9999px; padding: 3px; }
+  .seg span { border-radius: 9999px; padding: 5px 11px; font-size: 12.5px; font-weight: 700; color: #6e6e73; }
+  .seg span.on { background: #157a3f; color: #fff; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tabs span { border: 1px solid #ececf0; background: #fff; border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 700; }
+  .tabs span.on { background: #1d1d1f; color: #fff; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .li { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #ececf0; }
+  .li .pic { aspect-ratio: 5/3; background: #fafafa center/contain no-repeat; }
+  .li .bd { padding: 12px 14px 14px; }
+  .tag { display: inline-block; border-radius: 999px; padding: 2px 9px; font-size: 11.5px; font-weight: 800; margin-right: 4px; }
+  .t-new { background: #fdecea; color: #c8381e; } .t-vac { background: #ecfeff; color: #0e7490; } .t-out { background: #d1fae5; color: #047857; } .t-hg { background: #f3e8fb; color: #7a2fb0; }
+  .li b.n { display: block; font-size: 16px; margin: 6px 0 2px; }
+  .li .pr { font-size: 20px; font-weight: 800; margin: 4px 0; }
+  .li .pr small { font-size: 12px; color: #6e6e73; font-weight: 600; margin-left: 4px; }
+  .li .mt { font-size: 12.5px; color: #6e6e73; line-height: 1.6; }
+  .li .btn { display: block; text-align: center; margin-top: 10px; background: #c8381e; color: #fff; border-radius: 10px; padding: 9px; font-size: 13px; font-weight: 800; }
+  .li.old { opacity: .6; }
+  .note { background: #fff; border-radius: 14px; padding: 14px 18px; font-size: 13px; line-height: 1.8; color: #3a3a3c; margin-top: 18px; }
+  .q { background: #fff8e1; border: 1px solid #f5d77a; border-radius: 14px; padding: 12px 16px; font-size: 13px; line-height: 1.8; margin-top: 14px; }
+  @media (max-width: 860px) { .flow { grid-template-columns: 1fr; } .arrow { transform: rotate(90deg); } .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>시안 r47 · '신규분양' 공개 → 손님 '현재 매물'에 매입보장가로</h1>
+  <p class="sub">직원이 공실 · 신규분양 화면(또는 호실 상세)에서 손님 화면 공개를 <b>신규분양</b>(또는 <b>둘 다</b>)으로 고르면, 손님 단지 화면 <b>'현재 매물'</b> 탭과 검색용 매물 페이지에 <b>매매 · 매입보장가</b>로 자동 등록됩니다. '끄기'를 누르거나 계약조건이 생기면 바로 빠집니다.</p>
+
+  <div class="flow">
+    <div class="box">
+      <div class="lbl">직원 · 공실 · 신규분양</div>
+      <div class="row"><b>103동 2002호</b> <span class="tag" style="background:#f4a6c8">59B</span> <span style="color:#d2264b;font-weight:800">공실 12일째</span></div>
+      <div class="row" style="margin-top:8px">손님 화면 공개 <span class="seg"><span>끄기</span><span class="on">신규분양</span><span>전세</span><span>둘 다</span></span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="box">
+      <div class="lbl">손님 단지 화면 · 현재 매물</div>
+      <div class="tabs"><span class="on">전체 3</span><span>매매 3</span><span>전세 0</span></div>
+      <div class="grid">
+        <div class="li"><div class="pic" style="background-image:url(../daelasoo/assets/dls/plans/main3d_59B.jpg)"></div><div class="bd">
+          <span class="tag t-new">신규분양</span><span class="tag t-vac">즉시 입주</span>
+          <b class="n">103동 고층 · 59B</b>
+          <div class="pr">매매 3억 5,300만<small>매입보장가</small></div>
+          <div class="mt">전용 59.65㎡ · 방 3 · 욕실 2<br>3년 뒤 분양가 매입보장 <span class="tag t-hg">헷지했지</span></div>
+          <span class="btn">관심 등록 · 상담 신청</span></div></div>
+        <div class="li"><div class="pic" style="background-image:url(../daelasoo/assets/dls/plans/main3d_80A.jpg)"></div><div class="bd">
+          <span class="tag t-new">신규분양</span><span class="tag t-out">입주일 협의</span>
+          <b class="n">101동 중층 · 80A</b>
+          <div class="pr">매매 4억 3,700만<small>매입보장가</small></div>
+          <div class="mt">전용 80.38㎡ · 방 3 · 욕실 2<br>3년 뒤 분양가 매입보장 <span class="tag t-hg">헷지했지</span></div>
+          <span class="btn">관심 등록 · 상담 신청</span></div></div>
+        <div class="li old"><div class="pic" style="background-image:url(../daelasoo/assets/dls/plans/main3d_80B.jpg)"></div><div class="bd">
+          <span class="tag" style="background:#f2f2f5;color:#424245">매물보드</span>
+          <b class="n">102동 2102호 · 80B</b>
+          <div class="pr">전세 3억</div>
+          <div class="mt">직원이 매물보드에서 올린 매물 (지금처럼)</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>손님에게 보이는 것 · 안 보이는 것</b><br>
+    · 보임: <b>동 · 층구간(저층 · 중층 · 고층) · 타입 · 전용면적 · 방/욕실 · 매매 매입보장가 · 즉시 입주/입주일 협의 · 헷지했지 매입보장 안내</b><br>
+    · 안 보임: <b>호수 · 정확한 층 · 10.16 혜택가 · 보증금 · 임차인 정보</b> (지금 규칙 그대로)<br>
+    · '전세' 로만 공개한 세대는 지금처럼 '공개 세대' 칸에만 (전세 금액은 아직 정한 값이 없어 '상담 시 안내')<br>
+    · 검색용 매물 페이지(/daelasoo/listings)와 사이트맵에도 나감 → 네이버 · 구글 검색에 '첨단대라수1차 59B 매매 3억 5,300만' 처럼 노출<br>
+    · 끄기 · 계약조건 생김 · 계약완료/신규입주가 되면 바로 사라지고, 검색용 페이지는 '거래가 끝난 매물'(410)로 정리
+  </div>
+
+  <div class="q"><b>정해 주실 것</b><br>
+    1. <b>가격 공개 규칙 변경</b>: 지난번 '손님 화면에 가격 없음'(2026-11-13)을 → <b>'신규분양으로 공개한 세대는 매입보장가 공개'</b>로 바꿔도 될까요? (10.16 혜택가 · 보증금은 계속 비공개)<br>
+    2. 매물 이름에 <b>층구간(저층 · 중층 · 고층)</b>만 쓸까요, <b>정확한 층(예: 20층)</b>까지 쓸까요? (추천: 층구간 — 호실 특정 방지)<br>
+    3. '헷지했지 매입보장' 안내 줄을 매물 카드에 넣을까요?
+  </div>
+</div>
+</body>
+</html>
