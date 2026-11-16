@@ -25,6 +25,14 @@ import { staffNotify } from './notify.js';
 import { serveMedia, onPopupsSaved } from '../popups/index.js';
 
 // 한 줄을 이 직원에게 보여 줄 모양으로. null 이면 안 보냄
+// 같은 손님(연락처)의 가장 최근 신규분양 매수 카드 계약관리 값 (이번에 저장하는 카드는 빼고)
+async function lastClientCt(db, phone, exceptId) {
+  const d = String(phone || '').replace(/\D/g, ''); if (!d) return null;
+  const r = (await db.prepare("SELECT k, v FROM kv WHERE s = 'c' AND json_extract(v, '$.kind') = 'client' AND json_extract(v, '$.ct') IS NOT NULL AND k <> ?").bind(String(exceptId)).all()).results || [];
+  let best = null; for (const x of r) { const v = parse(x.v) || {}; if (String(v.phone || '').replace(/\D/g, '') !== d) continue; if (!best || String(v.at || '') > String(best.at || '')) best = v; }
+  return best ? best.ct : null;
+}
+
 export function view(u, r, perms) {
   if (r.s === 'cfg') return can(u, 'cfg.read', r.k) ? r : null;
   if (r.s !== 'c' && r.s !== 'u') return r;
@@ -90,6 +98,12 @@ export async function staffApi(req, env, url, u) {
         }
       }
       if (!allow) { rejected.push(x.s + '|' + k); continue; }
+      // 계약관리 '계약완료 정리' 잠금 (시안 r48 확정 2026-11-17): 확정 · 확정된 소개 구분 · 이름 · 계약진행 직원 고치기는 대표 · 관리자만 (사유는 화면이 기록)
+      if (x.s === 'c' && !del && v && v.kind === 'client' && v.ct && !['대표', '관리자'].includes(u.role)) {
+        const prev = await lastClientCt(db, v.phone || (stored && stored.phone), k), pf = prev && prev.fixed, nf = v.ct.fixed;
+        const same = (a, b) => ['intro', 'bk', 'side', 'staff'].every(f => String((a || {})[f] || '') === String((b || {})[f] || ''));
+        if ((nf && !(pf && pf.by === nf.by && pf.at === nf.at)) || (pf && (!nf || !same(prev, v.ct)))) { rejected.push(x.s + '|' + k); continue; }
+      }
       // 가린 채로 받은 칸은 원래 값으로
       if (!del && stored != null && ((x.s === 'c' && !can(u, 'card.raw', stored)) || (x.s === 'u' && !can(u, 'unit.raw', stored)))) v = unmask(v, stored);
       if (delAct) logs.push({ act: delAct, target: '상담카드 ' + k + ' · ' + [stored.unit ? unitLabel(stored.unit) : '', stored.name].filter(Boolean).join(' · '), detail: delAct === '상담 삭제' ? '사유: ' + v.deleted.reason : '지웠던 사유: ' + ((stored.deleted || {}).reason || ''), card: k, c: stored, reason: delAct === '상담 삭제' ? v.deleted.reason : '' });

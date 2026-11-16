@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r48 · 계약관리 상담</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .w { max-width: 1220px; margin: 0 auto; padding: 22px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: #6e6e73; font-size: 14px; line-height: 1.7; margin: 0 0 12px; }
+  .bar { position: sticky; top: 0; z-index: 10; background: #1d1d1f; color: #fff; padding: 9px 14px; border-radius: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; margin-bottom: 12px; }
+  .bar button { border: 0; border-radius: 9999px; padding: 6px 12px; font-weight: 700; font-size: 12.5px; cursor: pointer; background: #3a3a3c; color: #fff; font-family: inherit; }
+  .bar button.on { background: #c8381e; }
+  .sec { background: #f0f6ff; border: 1px solid #d6e6fb; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .hd { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #0066cc; }
+  .pill { border: 1px solid #b9d3f3; background: #fff; color: #0066cc; border-radius: 9999px; padding: 3px 11px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .chip { border: 1px solid #d2d2d7; background: #fff; color: #1d1d1f; border-radius: 9999px; padding: 4px 11px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .chip.on { background: #0066cc; border-color: #0066cc; color: #fff; }
+  .box { background: #fff; border-radius: 12px; padding: 10px 12px; }
+  .g { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; align-items: end; }
+  .g4 { grid-template-columns: 1fr 1fr 1fr 1.2fr; }
+  label, .lb { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #0066cc; font-weight: 600; min-width: 0; }
+  input, select, textarea { box-sizing: border-box; width: 100%; min-width: 0; height: 38px; border: 1px solid #d2d2d7; border-radius: 10px; padding: 0 10px; font-size: 14px; background: #fff; color: #1d1d1f; font-family: inherit; }
+  textarea { height: 80px; padding: 8px 10px; resize: vertical; }
+  input:disabled, select:disabled, textarea:disabled { background: #f5f5f7; color: #8e8e93; }
+  .new { outline: 2px dashed #f5b400; outline-offset: 3px; border-radius: 10px; }
+  .seg { display: inline-flex; background: #f2f2f5; border-radius: 9999px; padding: 3px; }
+  .seg button { border: 0; background: transparent; border-radius: 9999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; color: #6e6e73; }
+  .seg button.on { background: #fff; color: #1d1d1f; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  .seg button:disabled { cursor: default; opacity: .7; }
+  .row3 { display: grid; grid-template-columns: 1fr 1.5fr 1.2fr; gap: 10px; align-items: end; }
+  .dis { opacity: .45; pointer-events: none; }
+  .lock { display: inline-flex; align-items: center; gap: 6px; background: #e9f7ee; color: #157a3f; border-radius: 9999px; padding: 4px 10px; font-size: 12px; font-weight: 800; }
+  .btn { border: 0; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .hint { font-size: 11.5px; color: #6e6e73; line-height: 1.6; }
+  .ask { background: #fff8e1; border: 1px solid #f0d68a; border-radius: 12px; padding: 10px 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12.5px; }
+  .hist { font-size: 12px; color: #6e6e73; line-height: 1.7; }
+  .note { background: #fff; border-radius: 14px; padding: 14px 18px; font-size: 13px; line-height: 1.8; color: #3a3a3c; margin-top: 16px; }
+  .side { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .pane { background: #fff; border-radius: 14px; padding: 12px 14px; font-size: 12.5px; }
+  .pane h4 { margin: 0 0 6px; font-size: 13px; }
+  .pane span.t { display: inline-block; border: 1px solid #ececf0; border-radius: 9999px; padding: 3px 9px; margin: 2px; font-size: 12px; }
+  .pane span.t.auto { background: #fff4e8; border-color: #f5d0a8; }
+  @media (max-width: 900px) { .g { grid-template-columns: 1fr 1fr; } .g4, .row3, .side { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>시안 r48 · 상담카드(신규분양 매수) '2. 계약관리 상담'</h1>
+  <p class="sub">노란 점선이 바뀌는 곳입니다. 위 검정 줄에서 <b>보는 사람(직원 / 관리자 · 대표)</b>을 바꾸고, 진행 단추를 <b>계약완료</b>로 눌러 보세요.</p>
+  <div class="bar">보는 사람 <button id="rS" onclick="role='staff';draw()">직원 (김담당)</button><button id="rA" onclick="role='admin';draw()">관리자 · 대표</button><span style="color:#c7c7cc">— 확정 뒤 고치기는 관리자 · 대표 + 사유만</span></div>
+
+  <div class="sec">
+    <div class="hd"><span class="dot"></span><b>2. 계약관리 상담</b><button class="pill">접기 ▲</button><span id="progs"></span><span style="font-size:12px;color:#6e6e73">104동 402호</span></div>
+    <div class="box"><div class="g" style="grid-template-columns:1fr 1fr 1fr 2fr">
+      <label>관심호실에서 선택<select><option>관심호실 없음</option></select></label><label>동<select><option>104동</option></select></label><label>호수<input value="402"></label>
+      <div class="lb">타입 / 적용가<div style="display:flex;gap:8px;align-items:center;min-height:38px"><b>59B</b><span class="seg"><button class="on">매입보장가 3.81억</button><button>10.16 혜택가 3.41억</button></span></div></div>
+    </div></div>
+    <div class="g new" style="padding:4px">
+      <label>적용 분양가 (원)<input value="381,000,000"></label>
+      <label>계약금 (원)<input value="20,000,000"></label>
+      <label>입금예정일 (계약일)<input type="date" value="2026-11-20"></label>
+      <label>자금 조달 방법<select><option>자기자금 + 대출</option></select></label>
+      <label>잔금예정일 <span style="color:#c8381e;font-size:10.5px">새</span><input type="date" value="2027-01-15"></label>
+      <label>입주예정일 <span style="color:#c8381e;font-size:10.5px">새</span><input type="date" value="2027-01-20"></label>
+    </div>
+    <div class="hint">자기자금 · 대출 예정액 칸은 뺐습니다</div>
+
+    <div id="done" class="box new"></div>
+    <div id="etc" class="new" style="border-radius:12px"></div>
+  </div>
+
+  <div class="side">
+    <div class="pane"><h4>설정 › 부동산 목록 (지금 있는 '중개사무소 목록')</h4><div id="bkList"></div><div class="hint" style="margin-top:6px">주황 = 수기기재 3회로 자동 추가된 곳</div></div>
+    <div class="pane"><h4>사이드 이름 목록 (새)</h4><div id="sdList"></div><div class="hint" style="margin-top:6px">사이드 이름을 수기로 3회 쓰면 자동으로 여기 들어가 다음부터 고를 수 있음 · 설정에서 지우기 · 순서 바꾸기</div></div>
+  </div>
+
+  <div class="note">
+    <b>규칙 정리</b><br>
+    · <b>잔금예정일 · 입주예정일</b> 추가, 자기자금 · 대출 예정액 삭제<br>
+    · <b>계약완료</b>가 되면 아래 줄이 켜짐: [MGM | 사이드 | 없음] · (MGM → 부동산명: 목록에서 고르기 또는 직접 쓰기) · (사이드 → 이름 직접 쓰기 또는 목록에서) · 맨 오른쪽 <b>계약진행 직원</b><br>
+    · 직접 쓴 부동산명 · 사이드 이름은 <b>3번 쓰이면 자동으로 목록에 추가</b><br>
+    · <b>관리자 · 대표가 [확정]</b>하면 MGM · 사이드 · 계약진행 직원은 잠김 → 고치기 · 지우기는 <b>관리자 · 대표가 사유를 적을 때만</b> (사유와 바뀐 내용은 아래 기록에 남음) · 직원은 확정 뒤 볼 수만 있음<br>
+    · <b>계약완료 뒤</b> 맨 아래 <b>'계약 기타내역'</b> 칸이 켜져 계약 관련 기타 사항을 적을 수 있음<br>
+    · 확정된 MGM 은 청구서의 MGM 내역서 · 일일업무보고 등과 연결 (다음 단계에서 맞춤)
+  </div>
+</div>
+
+<script>
+var role = 'staff', prog = '', kind = '', bk = '', bkFree = '', sd = '', staff = '', fixed = false, asking = false, reason = '', hist = [], etc = '';
+var BK = ['첨단공인중개사', '쌍암부동산', '하나로공인중개사'], BKAUTO = ['광주첨단부동산'], SD = ['이정민'], SDAUTO = [];
+var STAFF = ['홍길동', '김담당', '박직원', '황후권'];
+function E(id) { return document.getElementById(id); }
+function canEdit() { return !fixed || (role === 'admin' && asking && reason.trim()); }
+function draw() {
+  E('rS').className = role === 'staff' ? 'on' : ''; E('rA').className = role === 'admin' ? 'on' : '';
+  E('progs').innerHTML = ['가계약', '계약중', '계약완료'].map(function (k) { return '<button class="chip' + (prog === k ? ' on' : '') + '" onclick="prog=(prog===\'' + k + '\'?\'\':\'' + k + '\');draw()">' + (prog === k ? '● ' : '○ ') + k + '</button>'; }).join(' ');
+  var on = prog === '계약완료', ed = canEdit();
+  var h = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap"><b style="font-size:13px;color:#0066cc">계약완료 정리</b>' + (on ? '' : '<span class="hint">— 계약완료를 누르면 켜집니다</span>') + (fixed ? '<span class="lock">✓ 확정 · 관리자</span>' : '') + '</div>';
+  h += '<div class="row3' + (on ? '' : ' dis') + '">';
+  h += '<div class="lb">소개 구분<span class="seg">' + [['MGM', 'MGM'], ['사이드', '사이드'], ['없음', '없음']].map(function (x) { return '<button class="' + (kind === x[0] ? 'on' : '') + '"' + (ed ? '' : ' disabled') + ' onclick="kind=\'' + x[0] + '\';draw()">' + x[1] + '</button>'; }).join('') + '</span></div>';
+  if (kind === 'MGM') h += '<label>부동산명<div style="display:flex;gap:6px"><select ' + (ed ? '' : 'disabled') + ' onchange="bk=this.value;draw()"><option value="">목록에서 선택</option>' + BK.concat(BKAUTO).map(function (n) { return '<option' + (bk === n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '<option value="_"' + (bk === '_' ? ' selected' : '') + '>직접 쓰기…</option></select>' + (bk === '_' ? '<input placeholder="부동산명 직접 쓰기" value="' + bkFree + '" ' + (ed ? '' : 'disabled') + ' oninput="bkFree=this.value">' : '') + '</div></label>';
+  else if (kind === '사이드') h += '<label>사이드 이름<div style="display:flex;gap:6px"><select ' + (ed ? '' : 'disabled') + ' onchange="sd=this.value;draw()"><option value="">목록에서 선택</option>' + SD.concat(SDAUTO).map(function (n) { return '<option' + (sd === n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '<option value="_"' + (sd === '_' ? ' selected' : '') + '>직접 쓰기…</option></select>' + (sd === '_' ? '<input placeholder="이름 직접 쓰기" ' + (ed ? '' : 'disabled') + '>' : '') + '</div></label>';
+  else h += '<div class="lb">&nbsp;<span class="hint" style="height:38px;display:flex;align-items:center">' + (kind === '없음' ? '소개 없음' : 'MGM 또는 사이드를 고르면 이름 칸이 나옵니다') + '</span></div>';
+  h += '<label>계약진행 직원<select ' + (ed ? '' : 'disabled') + ' onchange="staff=this.value"><option value="">선택</option>' + STAFF.map(function (n) { return '<option' + (staff === n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select></label>';
+  h += '</div>';
+  if (on) {
+    h += '<div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">';
+    if (!fixed) h += role === 'admin' ? '<button class="btn" style="background:#157a3f;color:#fff" onclick="fixed=true;hist.push(\'11-17 · 황후권 확정 — \' + (kind||\'—\') + \' · \' + (staff||\'직원 미선택\'));draw()">확정 (관리자 · 대표)</button><span class="hint">확정하면 MGM · 사이드 · 계약진행 직원이 잠깁니다</span>' : '<span class="hint">관리자 · 대표가 확정하면 잠깁니다 (지금은 직원도 고칠 수 있음)</span>';
+    else if (role === 'admin' && !asking) h += '<button class="btn" style="background:#fff;border:1px solid #f0d68a;color:#8a6100" onclick="asking=true;draw()">고치기 · 지우기 (사유 필요)</button>';
+    else if (role !== 'admin') h += '<span class="hint">확정됨 — 고치기 · 지우기는 관리자 · 대표만 (사유 필요)</span>';
+    h += '</div>';
+    if (fixed && role === 'admin' && asking) h += '<div class="ask" style="margin-top:8px">사유 <input style="flex:1;min-width:200px;height:34px" placeholder="예: 소개 부동산 정정 · 계약직원 변경" value="' + reason + '" oninput="reason=this.value;draw2()"><button class="btn" style="background:#1d1d1f;color:#fff" onclick="if(!reason.trim())return;hist.push(\'11-17 · 황후권 수정 — 사유: \' + reason);asking=false;reason=\'\';draw()">수정 저장</button><button class="btn" style="background:#fff;border:1px solid #f2c4cc;color:#d2264b" onclick="if(!reason.trim())return;hist.push(\'11-17 · 황후권 삭제 — 사유: \' + reason);kind=\'\';bk=\'\';staff=\'\';fixed=false;asking=false;reason=\'\';draw()">지우기</button><button class="btn" style="background:#f2f2f5" onclick="asking=false;reason=\'\';draw()">취소</button><span class="hint" style="flex-basis:100%">사유를 적어야 위 칸이 풀립니다</span></div>';
+    if (hist.length) h += '<div class="hist" style="margin-top:8px">' + hist.map(function (x) { return '· ' + x; }).join('<br>') + '</div>';
+  }
+  E('done').innerHTML = h;
+  E('etc').innerHTML = '<label class="' + (on ? '' : 'dis') + '" style="padding:4px">계약 기타내역 <span class="hint" style="font-weight:400">— 계약완료 뒤 켜짐 · 특약 · 옵션 · 하자 · 이사 등 계약 관련 기타 사항</span><textarea ' + (on ? '' : 'disabled') + ' placeholder="예: 에어컨 2대 포함 특약 · 1월 20일 입주 확정 · 잔금 일부 대출 실행일 확인 필요">' + etc + '</textarea></label>';
+  E('bkList').innerHTML = BK.map(function (n) { return '<span class="t">' + n + '</span>'; }).join('') + BKAUTO.map(function (n) { return '<span class="t auto">' + n + ' · 자동</span>'; }).join('');
+  E('sdList').innerHTML = SD.map(function (n) { return '<span class="t auto">' + n + ' · 자동</span>'; }).join('') || '<span class="hint">아직 없음</span>';
+}
+function draw2() { var ok = !!reason.trim(); Array.prototype.forEach.call(document.querySelectorAll('#done .row3 select, #done .row3 input, #done .row3 .seg button'), function (b) { b.disabled = !ok; }); }
+draw();
+</script>
+</body>
+</html>
