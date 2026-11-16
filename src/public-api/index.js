@@ -13,6 +13,7 @@ import { publicTrades } from '../gov/index.js';
 import { listPubGuest } from '../repo/public-units.js';
 import { groupPub } from '../core/conv.js';
 import { notify, DEAL_KO, unitLabel } from '../notify/index.js';
+import { readComplexes } from '../repo/complexes.js';
 
 const KINDS = ['buyer', 'seller', 'client', 'owner'];
 const str = (v, n) => typeof v === 'string' ? v.trim().slice(0, n) : '';
@@ -28,7 +29,7 @@ export function cleanLead(c) {
   const visit = str(c.visit, 40);
   const card = {
     id: /^g\d{10,16}$/.test(String(c.id || '')) ? c.id : 'g' + Date.now(),
-    kind: c.kind, at: str(c.at, 30), unit: str(c.unit, 20), interest: str(c.interest, 200),
+    kind: c.kind, at: str(c.at, 30), unit: str(c.unit, 20), interest: str(c.interest, 200), complex: str(c.complex, 40) || undefined,
     name, phone, birth: str(c.birth, 20), ask: str(c.ask, 40) || undefined, adj: str(c.adj, 40) || undefined,
     trades: plain(c.trades, 3000), wants: Array.isArray(c.wants) ? c.wants.slice(0, 6).map(x => str(x, 10)) : undefined,
     text: str(c.text, 2000), visit: visit || undefined,
@@ -49,7 +50,7 @@ export function leadNote(c) {
   const lines = [head + ' ' + (KIND_KO[c.kind] || c.kind) + ' · ' + c.name + ' · ' + c.phone];
   if (c.unit) lines.push(unitLabel(c.unit) + (sell ? ' · ' + deals.join(' · ') + ' 내놓기' : ''));
   if (c.visit) lines.push('방문 희망: ' + c.visit);
-  if (c.interest) lines.push('관심: ' + c.interest.slice(0, 80));
+  if (c.interest || c.complex) lines.push('관심: ' + (c.complex ? '[' + c.complex + '] ' : '') + String(c.interest || '').slice(0, 80));
   if (c.text) lines.push('문의: ' + c.text.slice(0, 120));
   return { kind: sell ? 'sell' : 'lead', text: lines.join('\n'), path: '?go=c:' + c.id };
 }
@@ -58,6 +59,9 @@ export async function publicApi(req, env, url) {
   const db = env.DB, p = url.pathname;
 
   if (p === '/api/public/ping') return J({ ok: true });
+
+  // 관심단지 목록 (손님 방문예약 · 관심등록 창 고르기, 시안 r37)
+  if (p === '/api/public/complexes' && req.method === 'GET') return J(Object.assign({ ok: true }, await readComplexes(db)));
 
   if (p === '/api/public/lead' && req.method === 'POST') {
     const b = await body(req);

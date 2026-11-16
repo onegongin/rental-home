@@ -3,6 +3,7 @@
 // 보내는 곳은 단지 화면 창과 같은 /api/public/lead (서버 cleanLead · 로봇 막기 · 텔레그램 알림 그대로). 손님 구분은 신규고객(client) → 직원 화면 '관심등록 대기'
 // 스크립트가 안 돌면 링크가 원래대로 단지 화면 창을 연다. ⚠ 이 글 안에 href="/ · src="/ 를 쓰지 말 것 (withBase 가 주소를 바꿈)
 import SITE from '../../public/daelasoo/data/site.json' with { type: 'json' };
+import { DEFAULT_COMPLEX } from '../core/complexes.js';
 
 const O = SITE.office || {};
 const e = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -32,12 +33,14 @@ const CSS = '.lp-dim{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.4
   '.lp-go{width:100%;height:48px;border:0;border-radius:12px;background:#0066cc;color:#fff;font:inherit;font-weight:800;font-size:15px;margin-top:12px;cursor:pointer}.lp-go:disabled{opacity:.6;cursor:default}' +
   '.lp-ok{text-align:center;padding:30px 18px 22px}.lp-ok i{display:inline-block;width:44px;height:44px;border-radius:50%;background:#e8f5ec;color:#157a3f;font-style:normal;font-size:22px;font-weight:800;line-height:44px}' +
   '.lp-ok b{display:block;font-size:17px;margin:10px 0 4px}' +
-  '@media(max-width:560px){.lp-dim{padding:0;align-items:flex-end}.lp{max-width:none;border-radius:18px 18px 0 0;max-height:92vh}}';
+  '@media(max-width:380px){.lp-r2{grid-template-columns:1fr}}@media(max-width:560px){.lp-dim{padding:0;align-items:flex-end}.lp{max-width:none;border-radius:18px 18px 0 0;max-height:92vh}}';
 
 const HTML = '<div class="lp-dim" id="lp" hidden><div class="lp" role="dialog" aria-modal="true" aria-labelledby="lp-t">' +
   '<div class="lp-h"><b id="lp-t">관심등록</b><button type="button" class="lp-x" data-lp-x aria-label="닫기">✕</button></div>' +
   '<form class="lp-b" id="lp-f" novalidate>' +
-  '<label class="f">관심 호실 · 타입 (자유기재)<input class="i" name="interest" maxlength="80" placeholder="예: 104동 고층, 80B 고층"></label>' +
+  // 관심단지 | 관심 호실 (시안 r37) — 목록은 /api/public/complexes 에서 받아 바꿈 (못 받으면 단지 이름 하나)
+  '<div class="lp-r2"><label class="f">관심단지<select class="i" name="complex"><option selected>' + e(DEFAULT_COMPLEX) + '</option></select></label>' +
+  '<label class="f">관심 호실 (자유기재)<input class="i" name="interest" maxlength="80" placeholder="예: 104동 고층, 80B 고층"></label></div>' +
   '<div class="lp-r2"><label class="f">성명 <em>*</em><input class="i" name="name" maxlength="30" autocomplete="name"></label>' +
   '<label class="f">연락처 <em>*</em><input class="i" name="phone" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000"></label></div>' +
   '<div class="lp-v" id="lp-v"><div class="lp-r2"><label class="f">방문일 <em>*</em><input class="i" type="date" name="vDate"></label>' +
@@ -59,6 +62,7 @@ var dim=document.getElementById('lp'),f=document.getElementById('lp-f'),ok=docum
 var p2=function(n){return String(n).padStart(2,'0')},ymd=function(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())};
 var sel=f.vTime;sel.add(new Option('시간 선택',''));for(var m=600;m<=1020;m+=30)sel.add(new Option(p2(Math.floor(m/60))+':'+p2(m%60)));
 f.vDate.min=ymd(new Date());
+fetch('/api/public/complexes').then(function(r){return r.json()}).then(function(j){if(!j||!j.ok||!j.list||!j.list.length)return;var c=f.complex;c.innerHTML='';j.list.forEach(function(n){var o=new Option(n,n,n===j.def,n===j.def);c.add(o)})}).catch(function(){});
 function tel(v){var d=v.replace(/\\D/g,'').slice(0,11);return d.length<4?d:d.length<8?d.slice(0,3)+'-'+d.slice(3):d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4)}
 f.phone.addEventListener('input',function(){f.phone.value=tel(f.phone.value)});
 var boxes=[f.req,f.mkt,f.third],all=f.querySelector('[data-all]');
@@ -79,8 +83,8 @@ f.addEventListener('submit',function(ev){ev.preventDefault();er.hidden=true;
  if(visit&&(!f.vDate.value||!f.vTime.value))return bad('방문일과 방문 시간을 골라 주세요');
  if(!f.req.checked)return bad('[필수] 개인정보 수집 및 이용에 동의해 주세요');
  var n=new Date(),at=ymd(n)+' '+p2(n.getHours())+':'+p2(n.getMinutes()),v=visit?f.vDate.value+' '+f.vTime.value:'',t=f.text.value.trim();
- var card={id:'g'+Date.now(),kind:'client',at:at,interest:f.interest.value.trim(),name:name,phone:ph,birth:'',text:(visit?'[방문상담 예약] '+v+(t?'\\n':''):'')+t,visit:v||undefined,
-  consent:{req:true,mkt:f.mkt.checked,third:f.third.checked,at:at},from:location.pathname};
+ var card={id:'g'+Date.now(),kind:'client',at:at,interest:f.interest.value.trim(),complex:f.complex.value,name:name,phone:ph,birth:'',text:(visit?'[방문상담 예약] '+v+(t?'\\n':''):'')+t,visit:v||undefined,
+  consent:{req:true,mkt:f.mkt.checked,third:f.third.checked,at:at}};
  go.disabled=true;go.textContent='보내는 중…';
  (window.hwipTs?window.hwipTs():Promise.resolve('')).then(function(ts){return fetch('/api/public/lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({card:card,ts:ts})})})
  .then(function(r){return r.json()}).then(function(j){if(!j.ok)return bad(j.err==='rate'?'접수가 너무 많습니다. 잠시 후 다시 시도하시거나 ${TEL}으로 전화 주세요':j.err==='robot'?'자동 등록 방지 확인에 실패했습니다. 새로고침 후 다시 시도해 주세요':'입력 내용을 확인해 주세요');
