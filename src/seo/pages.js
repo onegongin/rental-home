@@ -36,6 +36,7 @@ footer{font-size:12px;color:#6e6e73;line-height:1.8;border-top:1px solid #e5e5ea
 export function page({ base, path, title, desc, img, body, json }) {
   const url = base + path;
   return '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">' +
     '<title>' + esc(title) + '</title><meta name="description" content="' + esc(desc) + '"><link rel="canonical" href="' + esc(url) + '">' +
     '<meta property="og:type" content="website"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="' + esc(S.name) + '">' +
     '<meta property="og:title" content="' + esc(title) + '"><meta property="og:description" content="' + esc(desc) + '"><meta property="og:url" content="' + esc(url) + '"><meta property="og:image" content="' + esc(base + (img || ASSET + ((SITE.seo || {}).ogImage || '').split('/').pop())) + '">' +
