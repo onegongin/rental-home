@@ -50,7 +50,7 @@
 <div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><span data-grpnav></span></div></div>
 <div class="wrap">
   <h1>공실 · 신규분양</h1>
-  <p class="lead">계약자DB <b>계약조건이 빈칸</b>인 세대(만기 퇴거 후 신규분양전환 대상)입니다. 공실 일수가 긴 순서 · 만기 전(퇴거 예정) 세대도 함께. <b>손님 화면 공개</b>를 여기서 고르면 손님 단지 화면 '공개 세대' 칸에 동 · 층구간 · 타입 · 구분만 나갑니다 (호수 · 가격 없음).</p>
+  <p class="lead">계약자DB <b>계약조건이 빈칸</b>인 세대(만기 퇴거 후 신규분양전환 대상)입니다. 동 · 호 순서 · 만기 전(퇴거 예정) 세대도 함께. <b>손님 화면 공개</b>를 여기서 고르면 손님 단지 화면 '공개 세대' 칸에 동 · 층구간 · 타입 · 구분만 나갑니다 (호수 · 가격 없음).</p>
   <div id="app"><div class="card gate">불러오는 중…</div></div>
   <p class="note">· 공실 일수: 2026-11-18 과 임차 만기 다음 날 중 늦은 날 = 1일째 · 손님 화면 구분: 만기 지남 = '즉시 입주', 만기 전 = '입주일 협의'<br>· 계약자DB 에 계약조건(10.16 혜택가 · 전세연장)이 생기거나 전환상태가 계약완료 · 신규입주가 되면 손님 화면에서 자동으로 빠집니다<br>· 공개 고르기는 대표 · 관리자 · 권한자만</p>
 </div>
@@ -59,6 +59,11 @@
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const $ = id => document.getElementById(id);
 const TC = { '80A': '#ffd34d', '80B': '#f39c4a', '59A': '#8cc63f', '59B': '#f4a6c8', '59C': '#9fd4f0' };
+// 대시보드 '공실 · 신규분양' 탭 안에 넣어 쓸 때 (?embed=1): 위 줄 · 제목 줄여 보이기, 높이를 대시보드에 알림, 호실 누르면 대시보드 동호배치표로
+const EMBED = new URLSearchParams(location.search).get('embed') === '1';
+if (EMBED) { document.documentElement.classList.add('embed'); const st = document.createElement('style'); st.textContent = '.embed .top{display:none}.embed body{background:transparent}.embed .wrap{padding:0 0 20px;max-width:none}.embed h1{display:none}'; document.head.appendChild(st); }
+const tell = () => { if (EMBED && parent !== window) parent.postMessage({ vacH: document.documentElement.scrollHeight }, location.origin); };
+new ResizeObserver(tell).observe(document.documentElement);
 let R = null, F = '', Q = '';
 function toast(t) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => { e.style.display = 'none'; }, 2200); }
 async function api(path, b) {
@@ -85,7 +90,7 @@ function draw() {
   const all = R.rows, vac = all.filter(x => x.vacant), out = all.filter(x => !x.vacant), pub = all.filter(x => x.deal);
   const S = [['', '신규분양 대상', all.length], ['vac', '공실', vac.length], ['out', '퇴거 예정 (만기 전)', out.length], ['pub', '손님 화면 공개 중', pub.length]];
   let L = all.filter(x => !F || (F === 'vac' ? x.vacant : F === 'out' ? !x.vacant : !!x.deal)).filter(x => !Q || (x.name + ' ' + x.type).includes(Q));
-  L = L.sort((a, b) => (b.vacant - a.vacant) || (b.vd - a.vd) || String(a.end || '9').localeCompare(String(b.end || '9')) || a.id.localeCompare(b.id));
+  L = L.sort((a, b) => a.dong - b.dong || (a.floor * 100 + a.line) - (b.floor * 100 + b.line));   // 동 · 호 순서 (2026-11-17 대표 요청)
   const seg = x => '<span class="seg">' + [['', '끄기'], ['매매', '신규분양'], ['전세', '전세'], ['둘 다', '둘 다']].map(([k, l]) => '<button class="' + (k ? '' : 'off') + ((x.deal || '') === k ? ' on' : '') + '"' + (R.canPub ? '' : ' disabled') + ' data-id="' + esc(x.id) + '" data-d="' + esc(k) + '">' + l + '</button>').join('') + '</span>';
   $('app').innerHTML = '<div class="sum">' + S.map(s => '<button class="' + (F === s[0] ? 'on' : '') + '" data-f="' + s[0] + '"><small>' + s[1] + '</small><b>' + s[2] + '</b></button>').join('') + '</div>' +
     '<div class="bar"><input id="q" placeholder="동 · 호 · 타입 찾기" value="' + esc(Q) + '"><span style="margin-left:auto;font-size:12.5px;color:#6e6e73">' + L.length + '세대</span></div>' +
@@ -94,9 +99,11 @@ function draw() {
       '<span>' + (x.vacant ? '<span class="vd">' + (x.vd ? '공실 ' + x.vd + '일째' : '공실') + '</span><br><small style="color:#8e8e93">만기 ' + esc(x.end) + '</small>' : '<span class="out">퇴거 예정</span><br><small style="color:#8e8e93">만기 ' + esc(x.end || '미입력') + '</small>') + (x.conv ? '<br><small style="color:#6e6e73">전환상태 ' + esc(x.conv) + '</small>' : '') + '</span>' +
       '<span>' + eok(x.hedge) + '<br><small style="color:#8e8e93">혜택가 ' + eok(x.benefit) + '</small></span>' +
       '<span>' + seg(x) + '</span>' +
-      '<span><a class="go" href="./?unit=' + encodeURIComponent(x.id) + '">동호배치표에서 보기</a></span></div>').join('') : '<div class="gate" style="color:#6e6e73">해당하는 세대가 없습니다</div>') + '</div>';
+      '<span><a class="go" data-go="' + esc(x.id) + '" href="./?unit=' + encodeURIComponent(x.id) + '">동호배치표에서 보기</a></span></div>').join('') : '<div class="gate" style="color:#6e6e73">해당하는 세대가 없습니다</div>') + '</div>';
   document.querySelectorAll('.sum button').forEach(b => { b.onclick = () => { F = b.getAttribute('data-f'); draw(); }; });
   document.querySelectorAll('.seg button').forEach(b => { b.onclick = () => setPub(b.getAttribute('data-id'), b.getAttribute('data-d')); });
+  if (EMBED) document.querySelectorAll('a[data-go]').forEach(a => { a.onclick = e => { e.preventDefault(); parent.postMessage({ vacGo: a.getAttribute('data-go') }, location.origin); }; });
+  tell();
   const q = $('q'); q.oninput = () => { Q = q.value.trim(); const p = q.selectionStart; draw(); const n = $('q'); n.focus(); n.setSelectionRange(p, p); };
 }
 load();
