@@ -1090,12 +1090,14 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#6e6e73">분양가</span>
             <span style="display:inline-flex;background:#f2f2f5;border-radius:9999px;padding:3px"><sc-for list="{{ p.pr.seg }}" as="b"><button onClick="{{ b.onClick }}" style="border:none;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;background:{{ b.bg }};color:{{ b.fg }};box-shadow:{{ b.sh }}">{{ b.label }}</button></sc-for></span></div>
           <div style="font-size:24px;font-weight:800;font-variant-numeric:tabular-nums">{{ p.pr.amt }}</div>
-          <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#6e6e73;font-variant-numeric:tabular-nums"><span>{{ p.pr.oLbl }}</span><span>{{ p.pr.oAmt }}</span></div>
+          <button onClick="{{ p.pr.oTog }}" style="align-self:flex-start;border:none;background:none;padding:0;font-size:12.5px;font-weight:600;color:#0066cc;cursor:pointer">{{ p.pr.oBtn }}</button>
+          <sc-if value="{{ p.pr.oOpen }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:12.5px;color:#6e6e73;font-variant-numeric:tabular-nums"><span>{{ p.pr.oLbl }}</span><b style="color:#1d1d1f">{{ p.pr.oAmt }}</b></div></sc-if>
           <sc-if value="{{ p.pr.depOn }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#424245;font-variant-numeric:tabular-nums"><span>임대보증금 (고객DB)</span><b style="color:#1d1d1f">{{ p.pr.dep }}</b></div>
             <div style="background:#1d1d1f;color:#fff;border-radius:12px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font-size:12px">{{ p.pr.needLbl }}</span><b style="font-size:17px;font-variant-numeric:tabular-nums">{{ p.pr.need }}</b></div>
           </sc-if>
-          <sc-if value="{{ p.pr.expOn }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;font-weight:600;color:#d2264b">{{ p.pr.exp }}</div></sc-if>
+          <sc-if value="{{ p.pr.vacOn }}" hint-placeholder-val="{{ false }}"><div style="background:#fdecea;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px"><span style="font-size:22px;font-weight:800;color:#d2264b;font-variant-numeric:tabular-nums;white-space:nowrap">{{ p.pr.vacDay }}</span><span style="font-size:12px;color:#6e6e73;line-height:1.5">{{ p.pr.vacSub }}</span></div></sc-if>
+          <sc-if value="{{ p.pr.vacWait }}" hint-placeholder-val="{{ false }}"><div style="background:#f5f5f7;border-radius:12px;padding:9px 12px;font-size:12px;color:#424245;font-weight:600">{{ p.pr.vacWaitText }}</div></sc-if>
           <div style="font-size:11px;color:#8e8e93">분양가표와 같은 금액 · 고른 쪽은 이 기기에 기억 · 직원 화면 전용</div>
         </div>
         </sc-if>
@@ -5058,7 +5060,12 @@ class Component extends DCLogic {
   leaseExpOf(id) { const r = ((this.state.lease || {}).rows || []).find(t => t.dong + '-' + t.ho === id); if (!r) return ''; const d = this.ddays(r.end_date); return d != null && d < 0 ? r.end_date : ''; }
   prVals(id) { if (this._gm || this.props.guestOnly || !this.D.generic) return { on: false }; this.prLoad(); const r = (this.state.prRows || {})[id]; if (!r) return { on: false };
     const m = this.prMode(), v = m === 'hedge' ? r.hedge : r.benefit, ov = m === 'hedge' ? r.benefit : r.hedge, ex = this.leaseExpOf(id), w = n => Math.round(n).toLocaleString() + '원', nm = m === 'hedge' ? '매입보장가' : '10.16 혜택가';
-    return { on: true, seg: this.prSeg(), amt: w(v), oLbl: m === 'hedge' ? '10.16 혜택가' : '매입보장가', oAmt: w(ov), depOn: !ex && r.dep > 0, dep: w(r.dep), needLbl: '필요금액 (' + nm + ' − 보증금)', need: w(Math.max(v - r.dep, 0)), expOn: !!ex, exp: '임차 만기 ' + ex + ' 지남 — 임대보증금 · 필요금액은 표시하지 않습니다' }; }
+    const vc = ex ? this.vacOf(ex) : null, oOpen = !!this.state.prOther;
+    return { on: true, seg: this.prSeg(), amt: w(v), oLbl: m === 'hedge' ? '10.16 혜택가' : '매입보장가', oAmt: w(ov), oOpen, oBtn: (oOpen ? '▾ ' : '▸ ') + (m === 'hedge' ? '10.16 혜택가' : '매입보장가') + (oOpen ? ' 접기' : ' 보기'), oTog: () => this.setState({ prOther: !oOpen }),
+      depOn: !ex && r.dep > 0, dep: w(r.dep), needLbl: '필요금액 (' + nm + ' − 보증금)', need: w(Math.max(v - r.dep, 0)),
+      vacOn: !!(vc && vc.day >= 1), vacWait: !!(vc && vc.day < 1), vacDay: vc ? '공실 ' + vc.day + '일째' : '', vacSub: vc ? '기산 ' + vc.start + ' · 임차 만기 ' + ex : '', vacWaitText: vc ? '임차 만기 ' + ex + ' 지남 · ' + vc.start.slice(5).replace('-', '.') + '부터 공실 일수 셈' : '' }; }
+  // 공실 일수: 기산일 = 2026-11-18 과 만기 다음 날 중 늦은 날 = 1일째, 하루마다 +1 (시안 r44)
+  vacOf(end) { const nx = new Date(Date.parse(end + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10), start = nx > '2026-11-18' ? nx : '2026-11-18'; return { start, day: 1 - this.ddays(start) }; }
   convLoad() { if (this._convOk || (this._convAt && Date.now() - this._convAt < 30000)) return; this._convAt = Date.now(); fetch('/api/staff/conv', { credentials: 'same-origin' }).then(r => r.json()).then(j => { if (j && j.ok) { this._convOk = true; const m = {}; (j.conv || []).forEach(x => { m[x.unit_id] = x.status; }); this.setState({ convSt: m }); } }).catch(() => {}); }   /* 로그인 전이면 30초 뒤 다시 */
   condOf(id, s) { s = s || {}; if (s.cond === '-') return { v: '', auto: false }; if (s.cond && this.COND[s.cond]) return { v: s.cond, auto: false }; return (this.state.convSt || {})[id] === '전세연장' ? { v: '전세연장', auto: true } : { v: '', auto: false }; }
   dbVals(role, can) {

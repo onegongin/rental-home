@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r44 · 공실 일수</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .w { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: #6e6e73; font-size: 14px; line-height: 1.6; margin: 0 0 14px; }
+  .ctl { background: #fff; border-radius: 14px; padding: 12px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; font-size: 13px; }
+  .ctl input[type=date] { height: 34px; border: 1px solid #d2d2d7; border-radius: 10px; padding: 0 10px; font-family: inherit; }
+  .ctl button { border: 1px solid #d2d2d7; background: #fff; border-radius: 9999px; padding: 5px 12px; font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .cols { display: grid; grid-template-columns: 260px 1fr; gap: 18px; align-items: start; }
+  .list { background: #fff; border-radius: 16px; padding: 10px; }
+  .it { display: flex; justify-content: space-between; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 13px; }
+  .it.on { background: #f0f6ff; font-weight: 700; }
+  .it small { color: #8e8e93; font-weight: 400; }
+  .panel { background: #fff; border-radius: 16px; padding: 16px 18px; max-width: 440px; }
+  .ph { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .ph b { font-size: 20px; }
+  .chip { border-radius: 9999px; padding: 2px 9px; font-size: 12px; font-weight: 700; }
+  .lb { font-size: 12px; font-weight: 700; color: #6e6e73; }
+  .seg { display: inline-flex; background: #f2f2f5; border-radius: 9999px; padding: 3px; }
+  .seg button { border: 0; background: transparent; border-radius: 9999px; padding: 4px 11px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; color: #6e6e73; }
+  .seg button.on { background: #fff; color: #1d1d1f; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  .big { font-size: 24px; font-weight: 800; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
+  details { margin-top: 2px; font-size: 12.5px; color: #6e6e73; }
+  details summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: #0066cc; }
+  details summary::-webkit-details-marker { display: none; }
+  details[open] summary .ar { transform: rotate(90deg); }
+  .ar { display: inline-block; transition: transform .15s; }
+  .row { display: flex; justify-content: space-between; padding: 4px 0; font-variant-numeric: tabular-nums; }
+  .need { background: #1d1d1f; color: #fff; border-radius: 12px; padding: 9px 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .vac { margin-top: 10px; border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+  .vac .n { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .vac .t { font-size: 12px; line-height: 1.5; }
+  .new { outline: 2px dashed #f5b400; outline-offset: 3px; }
+  .note { margin-top: 18px; background: #fff; border-radius: 14px; padding: 14px 18px; font-size: 13px; line-height: 1.8; color: #3a3a3c; }
+  @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>시안 r44 · 호실 상세 분양가 — 다른 금액 접기 + 공실 일수</h1>
+  <p class="sub">노란 점선이 바뀌는 곳입니다. 왼쪽에서 호실을 고르고, 위 '오늘 날짜' 를 바꿔 공실 일수가 어떻게 늘어나는지 보세요.</p>
+  <div class="ctl">오늘 날짜 (시안용) <input type="date" id="td" onchange="today=this.value;draw()">
+    <button onclick="today='2026-11-17';draw()">11-17 (오늘)</button><button onclick="today='2026-11-18';draw()">11-18</button><button onclick="today='2026-11-30';draw()">11-30</button><button onclick="today='2027-01-10';draw()">2027-01-10</button></div>
+  <div class="cols">
+    <div class="list" id="list"></div>
+    <div>
+      <div class="panel">
+        <div class="ph"><b id="tt"></b><span class="chip" id="tc"></span></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="lb">분양가</span><span class="seg" id="seg"></span></div>
+        <div class="big" id="amt"></div>
+        <details class="new" style="border-radius:8px;padding:2px 4px"><summary><span class="ar">▸</span> <span id="oLbl"></span> 보기</summary>
+          <div class="row"><span id="oLbl2"></span><b style="color:#1d1d1f" id="oAmt"></b></div></details>
+        <div id="depBox"><div class="row" style="font-size:12.5px;color:#424245"><span>임대보증금 (고객DB)</span><b id="dep" style="color:#1d1d1f"></b></div>
+          <div class="need"><span style="font-size:12px" id="nLbl"></span><b style="font-size:17px" id="need"></b></div></div>
+        <div class="vac new" id="vac"></div>
+        <div style="font-size:11px;color:#8e8e93;margin-top:8px">분양가표와 같은 금액 · 직원 화면 전용</div>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <b>바뀌는 점</b><br>
+    · 고르지 않은 쪽 금액(예: 매입보장가를 볼 때의 10.16 혜택가)은 <b>'▸ 10.16 혜택가 보기' 로 접혀 있음</b> — 누르면 펼침<br>
+    · 임차 만기가 지난 호실: 빨간 안내문 대신 <b>공실 일수</b>를 큰 숫자로 — <b>공실 ○일째</b><br>
+    · 세는 법: 임차 만기가 2026-11-18 이전인 호실은 모두 <b>2026-11-18 = 1일째</b>, 하루 지날 때마다 +1 · 만기가 그 뒤인 호실은 <b>만기 다음 날 = 1일째</b><br>
+    · 아직 공실 날이 안 된 호실(오늘이 11-17 이고 기산일이 11-18 등)은 <b>'11-18부터 공실 일수 셈'</b> 한 줄만 · 만기가 남은 호실은 공실 칸 없음<br>
+    · 임대보증금 · 필요금액 줄은 공실(만기 지난) 호실에서는 지금처럼 숨김
+  </div>
+</div>
+
+<script>
+var BASE = '2026-11-18';
+var U = [
+  ['103동 2002호', '59B', 313, 186.2, '2026-09-29'],
+  ['101동 901호', '80B', 395, 223.3, '2026-09-03'],
+  ['104동 701호', '59A', 315, 186.2, '2026-11-10'],
+  ['102동 1701호', '80A', 397, 223.3, '2026-12-05'],
+  ['101동 401호', '80B', 421, 223.3, '2028-01-31']
+];
+var TC = { '80A': '#ffd34d', '80B': '#f39c4a', '59A': '#8cc63f', '59B': '#f4a6c8', '59C': '#9fd4f0' };
+var today = '2026-11-17', cur = 0, mode = 'hedge';
+function d2n(s) { return Date.parse(s + 'T00:00:00Z') / 864e5; }
+function n2d(n) { return new Date(n * 864e5).toISOString().slice(0, 10); }
+function won(m) { return Math.round(m * 1e6).toLocaleString() + '원'; }
+function vac(end) {   // 공실 기산일 = max(2026-11-18, 만기 다음 날) · 오늘 기준 몇 일째
+  if (!end) return null;
+  var start = Math.max(d2n(BASE), d2n(end) + 1), t = d2n(today);
+  if (d2n(end) >= t) return { left: d2n(end) - t };   // 만기 안 지남
+  return { start: n2d(start), day: t - start + 1 };
+}
+function draw() {
+  document.getElementById('td').value = today;
+  document.getElementById('list').innerHTML = U.map(function (u, i) { var v = vac(u[4]);
+    return '<div class="it' + (i === cur ? ' on' : '') + '" onclick="cur=' + i + ';draw()"><span>' + u[0] + ' <small>' + u[1] + '</small></span><small>만기 ' + u[4] + '</small></div>'; }).join('');
+  var u = U[cur], b = u[2], g = b + 40, v = mode === 'hedge' ? g : b, o = mode === 'hedge' ? b : g, ol = mode === 'hedge' ? '10.16 혜택가' : '매입보장가';
+  document.getElementById('tt').textContent = u[0]; var c = document.getElementById('tc'); c.textContent = u[1]; c.style.background = TC[u[1]];
+  document.getElementById('seg').innerHTML = '<button class="' + (mode === 'hedge' ? 'on' : '') + '" onclick="mode=\'hedge\';draw()">매입보장가</button><button class="' + (mode === 'benefit' ? 'on' : '') + '" onclick="mode=\'benefit\';draw()">10.16 혜택가</button>';
+  document.getElementById('amt').textContent = won(v);
+  document.getElementById('oLbl').textContent = ol; document.getElementById('oLbl2').textContent = ol; document.getElementById('oAmt').textContent = won(o);
+  var vc = vac(u[4]), exp = vc && vc.left == null;
+  document.getElementById('depBox').style.display = exp ? 'none' : '';
+  document.getElementById('dep').textContent = won(u[3]);
+  document.getElementById('nLbl').textContent = '필요금액 (' + (mode === 'hedge' ? '매입보장가' : '10.16 혜택가') + ' − 보증금)';
+  document.getElementById('need').textContent = won(v - u[3]);
+  var box = document.getElementById('vac');
+  if (!exp) { box.style.display = 'none'; }
+  else if (vc.day < 1) { box.style.display = 'flex'; box.style.background = '#f5f5f7'; box.innerHTML = '<span class="t" style="color:#424245">임차 만기 ' + u[4] + ' 지남 · <b>' + vc.start.slice(5).replace('-', '.') + '부터 공실 일수 셈</b></span>'; }
+  else { box.style.display = 'flex'; box.style.background = '#fdecea'; box.innerHTML = '<span class="n" style="color:#d2264b">공실 ' + vc.day + '일째</span><span class="t" style="color:#6e6e73">기산 ' + vc.start + '<br>임차 만기 ' + u[4] + '</span>'; }
+}
+draw();
+</script>
+</body>
+</html>
