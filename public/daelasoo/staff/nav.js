@@ -1,12 +1,12 @@
 // [대라수 업무 ▾] 펼침 메뉴 — 따로 열리는 직원 화면(KPI · 소통 · 청구서 …) 위쪽 줄에 붙임 (시안 r40 A안 확정 2026-11-16)
-// 목록 · 권한은 대시보드 grpMenu() 와 같게: 일일업무보고 = 대표 · 관리자 · 권한자, 청구서 · 자료 옮기기 = 대표 · 관리자
+// 목록 · 권한은 대시보드 grpMenu() 와 같게 (상담카드는 2026-11-16 대시보드 탭으로 다시 뺌): 일일업무보고 = 대표 · 관리자 · 권한자, 청구서 · 자료 옮기기 = 대표 · 관리자
 // 쓰는 법: <div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><span data-grpnav></span></div></div> + <script src="nav.js"></script>
 (function () {
   var host = document.querySelector('[data-grpnav]');
   if (!host) return;
   var page = (location.pathname.split('/').pop() || '').toLowerCase();
   var G = [
-    ['상담', [['./?tab=card', '📝 상담카드', '매수 · 신규고객 상담 기록'], ['consults.html', '🗂️ 분양전환상담', '임차인 · 신규고객 카드'], ['board.html', '💬 소통', '상담참고 · 요청함 · 불편사항']]],
+    ['상담', [['consults.html', '🗂️ 분양전환상담', '임차인 · 신규고객 카드'], ['board.html', '💬 소통', '상담참고 · 요청함 · 불편사항']]],
     ['세대 · 가격', [['units.html', '🏠 전환상태', '세대 상태 · 손님 공개 세대'], ['prices.html', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금']]],
     ['관리', [['kpi.html', '📊 KPI', '담당별 실적 · 미상담 세대'], ['report.html', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', 'top'], ['claims.html', '📑 청구서', '수수료 청구 · MGM', 'boss'], ['migrate.html', '📥 자료 옮기기', '고객DB 엑셀 옮기기', 'boss']]]
   ];

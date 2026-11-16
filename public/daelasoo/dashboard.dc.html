@@ -5368,10 +5368,10 @@ class Component extends DCLogic {
     const page = f => () => { location.href = 'staff/' + f; };
     const it = (k, label, sub, go) => ({ k, label, sub, go: e => { if (e) e.stopPropagation(); this.setState({ grpOpen: false }); go(); }, bg: tab === k ? '#fdecea' : 'transparent' });
     const groups = [
-      { h: '상담', items: [(menus || {}).card !== false ? it('card', '📝 상담카드', '매수 · 신규고객 상담 기록', () => this.setState({ tab: 'card' })) : null, it('consult', '🗂️ 분양전환상담', '임차인 · 신규고객 카드', page('consults.html')), it('talk', '💬 소통', '상담참고 · 요청함 · 불편사항', page('board.html'))].filter(Boolean) },
+      { h: '상담', items: [it('consult', '🗂️ 분양전환상담', '임차인 · 신규고객 카드', page('consults.html')), it('talk', '💬 소통', '상담참고 · 요청함 · 불편사항', page('board.html'))].filter(Boolean) },
       { h: '세대 · 가격', items: [it('conv', '🏠 전환상태', '세대 상태 · 손님 공개 세대', page('units.html')), it('prices', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금', page('prices.html'))] },
       { h: '관리', items: [it('kpi', '📊 KPI', '담당별 실적 · 미상담 세대', page('kpi.html')), top ? it('report', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', page('report.html')) : null, boss ? it('claim', '📑 청구서', '수수료 청구 · MGM', page('claims.html')) : null, boss ? it('migrate', '📥 자료 옮기기', '고객DB 엑셀 옮기기', page('migrate.html')) : null].filter(Boolean) }];
-    return { groups, cur: tab === 'card' ? '상담카드' : '' }; }
+    return { groups, cur: '' }; }
   has3d(code) { return !!(this.D.generic && ((this.D.S.types || {})[code] || {}).pop); }
   plan3dSrc(code) { return 'assets/' + this.D.S.site.code + '/plans/main3d_' + code + '.jpg?v=' + (this.D.S.assetVer || 1); }
   planAr(code, blk) { return this.planOf(code, blk).planAr || 1.365; }
@@ -5976,7 +5976,7 @@ class Component extends DCLogic {
   renderVals() {
     const S = this.state, D = this.D, mods = S.modules, menus = S.menus;
     const STATUS = { '미확인': { bg: '#ffffff', fg: '#8e8e93', dot: '' }, '보유': { bg: '#e8e8ed', fg: '#1d1d1f', dot: '' }, '매물': { bg: '#157a3f', fg: '#fff', dot: '#157a3f' }, '가계약': { bg: '#b25000', fg: '#fff', dot: '#b25000' }, '계약': { bg: '#0066cc', fg: '#fff', dot: '#0066cc' }, '명의변경완료': { bg: '#6e6e73', fg: '#fff', dot: '#6e6e73' } };
-    const TABS = [['overview','단지배치'],['board','동호배치표'],['option','옵션계산기'],['log','상담이력대장'],['price','분양가표']];   /* 상담카드는 [대라수 업무] 안으로 (시안 r40) */
+    const TABS = [['overview','단지배치'],['board','동호배치표'],['option','옵션계산기'],['card','상담카드'],['log','상담이력대장'],['price','분양가표']];   /* 상담카드는 상담이력대장 앞 (게스트 등록 · 상담 기록, 2026-11-16 대표 요청으로 [대라수 업무]에서 다시 뺌) */
     const guestOnly = !!this.props.guestOnly; const GS = S.guest;
     const role = this.rl(S.me); const can = k => !!(S.perms[k] || {})[role];
     const SETTAB = role === '관리자'; /* 설정 · 모듈을 창 대신 탭으로, 세대DB 옆 · 관리자만 (시안 ?m6=1 확정 2026-10-31) */
