@@ -30,5 +30,5 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 /daelasoo/staff/*
-  X-Frame-Options: DENY
+  X-Frame-Options: SAMEORIGIN
   X-Robots-Tag: noindex, nofollow
