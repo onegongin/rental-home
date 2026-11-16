@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r38 · 호실 상세 3D 평면</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .w { max-width: 1200px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: #6e6e73; font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tabs button { border: 1px solid #d2d2d7; background: #fff; border-radius: 9999px; padding: 7px 14px; font-weight: 700; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .tabs button.on { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+  .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  .col h2 { font-size: 15px; margin: 0 0 8px; }
+  .col h2 span { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 9999px; margin-left: 6px; }
+  .col.old h2 span { background: #f2f2f5; color: #6e6e73; }
+  .col.new h2 span { background: #e8f0fb; color: #0066cc; }
+  .panel { background: #fff; border-radius: 16px; padding: 14px; max-width: 420px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+  .hd { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .hd b { font-size: 18px; }
+  .chip { border-radius: 9999px; padding: 2px 9px; font-size: 12px; font-weight: 700; }
+  .areas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+  .areas div { background: #f5f5f7; border-radius: 10px; padding: 6px 4px; text-align: center; font-size: 11px; color: #6e6e73; }
+  .areas b { display: block; font-size: 13px; color: #1d1d1f; }
+  .pl { position: relative; display: block; width: 100%; border: 1px solid #e5e5ea; border-radius: 12px; overflow: hidden; background: #fff; cursor: zoom-in; }
+  .pl span.i { display: block; width: 100%; background: #fff center / contain no-repeat; }
+  .pl em { position: absolute; right: 8px; bottom: 8px; background: rgba(29,29,31,.8); color: #fff; border-radius: 9999px; padding: 3px 9px; font-size: 11px; font-weight: 600; font-style: normal; }
+  .rest { margin-top: 10px; height: 64px; border-radius: 10px; background: #f5f5f7; }
+  .all { margin-top: 28px; }
+  .all h2 { font-size: 15px; margin: 0 0 4px; }
+  .all p { font-size: 13px; color: #6e6e73; margin: 0 0 10px; }
+  .strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+  .strip .c { background: #fff; border-radius: 12px; padding: 8px; }
+  .strip .c b { display: block; font-size: 13px; margin-bottom: 6px; }
+  .strip .row { margin-bottom: 8px; }
+  .lbl { font-size: 12px; font-weight: 700; color: #6e6e73; margin: 14px 0 6px; }
+  .note { margin-top: 18px; background: #fff; border-radius: 14px; padding: 14px 18px; font-size: 13px; line-height: 1.75; color: #3a3a3c; }
+  @media (max-width: 860px) { .cmp { grid-template-columns: 1fr; } .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>시안 r38 · 동호배치표 › 호실 상세의 평면도를 3D 평면으로</h1>
+  <p class="sub">동호배치표에서 호실을 누르면 오른쪽에 나오는 <b>호실 상세</b>의 평면도 칸입니다. 타입을 바꿔 가며 왼쪽(지금)과 오른쪽(바꾼 뒤)을 비교해 보세요.</p>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="cmp">
+    <div class="col old"><h2>지금<span>평면 그림 · 1.365:1 상자</span></h2><div class="panel" id="pOld"></div></div>
+    <div class="col new"><h2>바꾼 뒤<span>3D 평면 · 5:3 상자</span></h2><div class="panel" id="pNew"></div></div>
+  </div>
+
+  <div class="all">
+    <h2>다섯 타입을 나란히 — 박스 높이</h2>
+    <p>3D 평면 5장은 모두 같은 비율(5:3, 흰 여백 포함)이라 상자 높이가 다섯 타입 모두 똑같습니다.</p>
+    <div class="lbl">지금 (그림마다 생김새가 달라 위아래 · 좌우 빈 곳이 제각각)</div>
+    <div class="strip" id="sOld"></div>
+    <div class="lbl">바꾼 뒤 (3D 평면, 같은 높이)</div>
+    <div class="strip" id="sNew"></div>
+  </div>
+
+  <div class="note">
+    <b>바뀌는 점</b><br>
+    · 호실 상세 평면도 칸: 평면 그림(<code>plans/80A.jpg</code> 등) → <b>3D 평면</b>(<code>plans/main3d_80A.jpg</code> 등, 평면도 창 · 단지배치에서 쓰는 것과 같은 그림)<br>
+    · 상자 비율을 3D 그림 비율(5:3)로 고정 → 어느 호실을 눌러도 <b>평면도 칸 높이가 같음</b> (아래 정보 칸이 위아래로 들썩이지 않음)<br>
+    · [확대 ⤢] 를 누르면: 지금처럼 그 그림을 크게 보기 (3D 평면 크게). 원하시면 '평면도 · 실내 사진' 창이 열리게 바꿀 수도 있습니다
+  </div>
+</div>
+
+<script>
+var T = {
+  '80A': { c: '#ffd34d', ar: 2.519, ex: '80.38', sup: '106.81', py: '32.3', n: 50 },
+  '80B': { c: '#f39c4a', ar: 1.896, ex: '80.88', sup: '108.38', py: '32.8', n: 100 },
+  '59A': { c: '#8cc63f', ar: 2.01, ex: '59.96', sup: '81.12', py: '24.5', n: 50 },
+  '59B': { c: '#f4a6c8', ar: 2.096, ex: '59.65', sup: '80.61', py: '24.4', n: 50 },
+  '59C': { c: '#9fd4f0', ar: 2.271, ex: '59.65', sup: '80.78', py: '24.4', n: 50 }
+};
+var UNIT = { '80A': '101동 1503호', '80B': '102동 2102호', '59A': '104동 1201호', '59B': '103동 902호', '59C': '104동 2303호' };
+var A = '../daelasoo/assets/dls/plans/';
+var cur = '59A';
+function box(src, ratio) { return '<div class="pl"><span class="i" style="aspect-ratio:' + ratio + ';background-image:url(' + src + ')"></span><em>확대 ⤢</em></div>'; }
+function panel(k, isNew) {
+  var t = T[k];
+  return '<div class="hd"><b>' + UNIT[k] + '</b><span class="chip" style="background:' + t.c + '">' + k + '</span></div>' +
+    '<div class="areas"><div>전용<b>' + t.ex + '㎡</b></div><div>공급<b>' + t.sup + '㎡</b></div><div>평형<b>' + t.py + '평</b></div><div>세대수<b>' + t.n + '세대</b></div></div>' +
+    (isNew ? box(A + 'main3d_' + k + '.jpg', '1.6667') : box(A + k + '.jpg', '1.365')) +
+    '<div class="rest"></div>';
+}
+function draw() {
+  document.getElementById('tabs').innerHTML = Object.keys(T).map(function (k) { return '<button class="' + (k === cur ? 'on' : '') + '" onclick="cur=\'' + k + '\';draw()">' + k + '</button>'; }).join('');
+  document.getElementById('pOld').innerHTML = panel(cur, false);
+  document.getElementById('pNew').innerHTML = panel(cur, true);
+}
+document.getElementById('sOld').innerHTML = Object.keys(T).map(function (k) { return '<div class="c"><b>' + k + '</b>' + box(A + k + '.jpg', '1.365') + '</div>'; }).join('');
+document.getElementById('sNew').innerHTML = Object.keys(T).map(function (k) { return '<div class="c"><b>' + k + '</b>' + box(A + 'main3d_' + k + '.jpg', '1.6667') + '</div>'; }).join('');
+draw();
+</script>
+</body>
+</html>
