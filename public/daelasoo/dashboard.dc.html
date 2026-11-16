@@ -903,6 +903,21 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:700;background:{{ p.pg.bg }};color:{{ p.pg.fg }}">{{ p.pg.k }}</span><sc-if value="{{ p.pg.own }}" hint-placeholder-val="{{ false }}"><span style="border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:700;background:#f3e8fb;color:#8e2c6e">개인 소유</span></sc-if><button onClick="{{ p.writeCard }}" style="margin-left:auto;border:none;background:#f0f6ff;color:#0066cc;border-radius:9999px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer">이 호실로 상담카드 →</button></div>
           <div style="display:grid;grid-template-columns:76px minmax(0,1fr);gap:5px 10px;font-size:13px">
             <span style="color:#6e6e73">계약조건</span><span>{{ p.pg.cond }}</span>
+          </div>
+          <sc-if value="{{ p.pr.on }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:5px;background:#fafafa;border-radius:12px;padding:10px 12px">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#6e6e73">분양가</span>
+              <span style="display:inline-flex;background:#f2f2f5;border-radius:9999px;padding:3px"><sc-for list="{{ p.pr.seg }}" as="b"><button onClick="{{ b.onClick }}" style="border:none;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;background:{{ b.bg }};color:{{ b.fg }};box-shadow:{{ b.sh }}">{{ b.label }}</button></sc-for></span></div>
+            <div style="font-size:24px;font-weight:800;font-variant-numeric:tabular-nums">{{ p.pr.amt }}</div>
+            <button onClick="{{ p.pr.oTog }}" style="align-self:flex-start;border:none;background:none;padding:0;font-size:12.5px;font-weight:600;color:#0066cc;cursor:pointer">{{ p.pr.oBtn }}</button>
+            <sc-if value="{{ p.pr.oOpen }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:12.5px;color:#6e6e73;font-variant-numeric:tabular-nums"><span>{{ p.pr.oLbl }}</span><b style="color:#1d1d1f">{{ p.pr.oAmt }}</b></div></sc-if>
+            <sc-if value="{{ p.pr.depOn }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#424245;font-variant-numeric:tabular-nums"><span>임대보증금 (고객DB)</span><b style="color:#1d1d1f">{{ p.pr.dep }}</b></div>
+              <div style="background:#1d1d1f;color:#fff;border-radius:12px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font-size:12px">{{ p.pr.needLbl }}</span><b style="font-size:17px;font-variant-numeric:tabular-nums">{{ p.pr.need }}</b></div>
+            </sc-if>
+            <sc-if value="{{ p.pr.vacOn }}" hint-placeholder-val="{{ false }}"><div style="background:#fdecea;border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:10px"><span style="font-size:20px;font-weight:800;color:#d2264b;font-variant-numeric:tabular-nums;white-space:nowrap">{{ p.pr.vacDay }}</span><span style="font-size:12px;color:#6e6e73;line-height:1.5">{{ p.pr.vacSub }}</span></div></sc-if>
+            <sc-if value="{{ p.pr.vacWait }}" hint-placeholder-val="{{ false }}"><div style="background:#f5f5f7;border-radius:12px;padding:8px 12px;font-size:12px;color:#424245;font-weight:600">{{ p.pr.vacWaitText }}</div></sc-if>
+          </div></sc-if>
+          <div style="display:grid;grid-template-columns:76px minmax(0,1fr);gap:5px 10px;font-size:13px">
             <span style="color:#6e6e73">계약자</span><span>{{ p.pg.owner }}</span>
             <span style="color:#6e6e73">임차인</span><span>{{ p.pg.tenant }}</span>
             <span style="color:#6e6e73">임차 만기</span><span>{{ p.pg.end }}</span>
@@ -1101,7 +1116,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         </div>
         </sc-if>
 
-        <sc-if value="{{ p.pr.on }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ p.prLow }}" hint-placeholder-val="{{ false }}">
         <div style="padding:14px 18px;border-bottom:1px solid #f0f0f2;display:flex;flex-direction:column;gap:6px">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#6e6e73">분양가</span>
             <span style="display:inline-flex;background:#f2f2f5;border-radius:9999px;padding:3px"><sc-for list="{{ p.pr.seg }}" as="b"><button onClick="{{ b.onClick }}" style="border:none;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;background:{{ b.bg }};color:{{ b.fg }};box-shadow:{{ b.sh }}">{{ b.label }}</button></sc-for></span></div>
@@ -6318,7 +6333,7 @@ class Component extends DCLogic {
           if (logs.length) hist.push({ t: '상담 ' + logs.length + '회', d: '상담이력대장', c: '#c7c7cc' });
           if (lt && (lt.contract_date || lt.move_in)) hist.push({ t: '전세 계약', d: (lt.contract_date || lt.move_in) + (lt.deposit ? ' · 보증금 ' + Number(lt.deposit).toLocaleString() + '만' : ''), c: '#e8e8ed' });
           return { pg: { on: true, k: x.status + (x._vd ? ' ' + x._vd + '일째' : ''), bg: c.bg || '#f2f2f5', fg: c.fg || '#1d1d1f', own: ds === '10.16 혜택가', cond: ds || '— (신규분양 대상)', owner: ow || '—', tenant: lt ? (lt.name || '—') + (lt.kind ? ' · ' + lt.kind : '') : '—', end: x._end || '—', hist: hist.length ? hist : [{ t: '기록 없음', d: '', c: '#e8e8ed' }] }, oldOwner: false, oldStatus: false }; })(),
-        pr: this.prVals(su.id), tradeFields: tradeFields.map(f => ({ label: f.label, type: f.type, ph: f.ph, value: s[f.key] || '', onChange: setF(f.key), shown: s[f.key] || '—', fg: s[f.key] ? '#1d1d1f' : '#aeaeb2' })), tradeRO: true, tradeRW: false,
+        pr: this.prVals(su.id), prLow: !condBoard && this.prVals(su.id).on, tradeFields: tradeFields.map(f => ({ label: f.label, type: f.type, ph: f.ph, value: s[f.key] || '', onChange: setF(f.key), shown: s[f.key] || '—', fg: s[f.key] ? '#1d1d1f' : '#aeaeb2' })), tradeRO: true, tradeRW: false,
         logCount: logs.length + '건', logs: logs.map(c => ({ kind: this.kindName(c.kind), kindFg: this.kindColor(c.kind), at: c.at, writer: c.writer, text: c.text })),
         writeCard: () => { const kd = mods.presale ? 'seller' : 'owner'; const pc = S.cards.find(c => c.unit === su.id && c.mgr); this.setState({ tab: 'card', form: Object.assign(this.blankForm(), this.unitPrefill(su.id), kd === 'owner' ? this.ownPre(su.id) : {}, pc ? { mgr: pc.mgr, mgrOk: pc.mgrOk || null, mgrBase: pc.mgr, mgrBaseOk: pc.mgrOk || null } : {}, { kind: kd, unit: su.b + '동 ' + su.ho + '호', unitLock: true, unitUnlock: false, unitBaseId: su.id, unitAsk: false, unitAskText: '', unitReason: '' }) }); }
       };
