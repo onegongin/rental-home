@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 · 단지 전경 슬라이드</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  .wrap { max-width: 1720px; margin: 0 auto; padding: 24px 20px 40px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .lead { color: var(--sub); margin: 0 0 16px; font-size: 14px; }
+  /* 사업개요 줄: 큰 사진 + 작은 사진 3장 + 표 (지금 단지 화면과 같은 배치) */
+  .row { display: grid; grid-template-columns: 2.3fr 1fr 1.7fr; gap: 10px; align-items: stretch; }
+  .main { position: relative; border-radius: 18px; overflow: hidden; background: #1d1d1f; aspect-ratio: 16 / 9; min-height: 180px; touch-action: pan-y; }
+  .track { display: flex; height: 100%; transition: transform .45s ease; }
+  .track img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
+  .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgba(255,255,255,.85); font-size: 22px; cursor: pointer; color: #1d1d1f; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .prev { left: 12px; } .next { right: 12px; }
+  .tag { position: absolute; left: 12px; bottom: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 8px; }
+  .zoom { position: absolute; right: 12px; bottom: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 8px; cursor: zoom-in; border: 0; }
+  .dots { position: absolute; left: 0; right: 0; bottom: 16px; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
+  .dots i { width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,.55); pointer-events: auto; cursor: pointer; transition: .2s; }
+  .dots i.on { width: 22px; background: #fff; }
+  .side { display: grid; grid-template-rows: repeat(3, 1fr); gap: 8px; min-width: 0; }
+  .side div { position: relative; border-radius: 14px; overflow: hidden; background: #ddd; min-height: 0; }
+  .side img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .side span { position: absolute; left: 10px; bottom: 10px; background: rgba(0,0,0,.55); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 6px; }
+  .biz { background: #fff; border-radius: 18px; padding: 22px; font-size: 14px; color: var(--sub); }
+  .biz b { color: var(--fg); font-size: 18px; } .biz b em { font-style: normal; color: var(--link); }
+  .memo { margin-top: 20px; font-size: 13px; line-height: 1.7; }
+  .memo .card { padding: 14px 18px; }
+  @media (max-width: 900px) { .row { grid-template-columns: 1fr; } .side { grid-template-rows: none; grid-template-columns: repeat(3, 1fr); } .side div { aspect-ratio: 4 / 3; } }
+  @media (max-width: 560px) { .wrap { padding: 12px 16px 32px; } .nav { width: 36px; height: 36px; font-size: 18px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>시안 r31 · 단지 전경 슬라이드</h1>
+  <p class="lead">사업개요 줄 왼쪽 큰 사진을 3장 넘겨 보기로. ‹ › 단추 · 아래 점 · 손가락으로 밀기(휴대폰) · 키보드 ← →.</p>
+  <div class="row">
+    <div class="main" id="main">
+      <div class="track" id="track">
+        <img src="../daelasoo/assets/dls/sky1.jpg" alt="단지 전경 1">
+        <img src="../daelasoo/assets/dls/hero.jpg" alt="단지 전경 2">
+        <img src="../daelasoo/assets/dls/sky2.jpg" alt="단지 전경 3">
+      </div>
+      <button class="nav prev" aria-label="이전 사진">‹</button>
+      <button class="nav next" aria-label="다음 사진">›</button>
+      <span class="tag" id="tag">단지 전경 1 / 3</span>
+      <button class="zoom">크게 보기 ↗</button>
+      <div class="dots" id="dots"></div>
+    </div>
+    <div class="side">
+      <div><img src="../daelasoo/assets/dls/interior/80A_06.jpg" alt=""><span>80A 주방</span></div>
+      <div><img src="../daelasoo/assets/dls/interior/59A_05.jpg" alt=""><span>59A 거실</span></div>
+      <div><img src="../daelasoo/assets/dls/interior/59B_02.jpg" alt=""><span>59B 거실</span></div>
+    </div>
+    <div class="biz"><b>사업개요 <em>첨단대라수1차</em></b><p>(표는 지금 그대로)</p></div>
+  </div>
+  <div class="memo"><div class="card">
+    <b>순서</b>: ① sky001(하늘 사진) → ② 지금 사진(정사각형 투시도) → ③ sky002(하늘 사진). 자동으로 넘어가지 않고 누를 때만 넘어감(위 메인 슬라이드와 겹치지 않게).<br>
+    <b>사진 틀</b>: 하늘 사진(16:9)에 맞춰 큰 칸 비율을 16:9 로 — 정사각형 투시도는 위아래가 조금 잘림. [크게 보기]는 지금처럼 확대 창에서 전체 사진(지금 사진의 큰 창과 같이 6장 넘겨 보기).<br>
+    <span style="color:var(--sub)">확정하면 site.json 사업개요 사진 목록에 넣고 단지 화면에 연결합니다.</span>
+  </div></div>
+</div>
+<script>
+const track = document.getElementById('track'), N = track.children.length, dots = document.getElementById('dots'), tag = document.getElementById('tag');
+let i = 0;
+dots.innerHTML = Array.from({ length: N }, (_, k) => `<i data-k="${k}"></i>`).join('');
+function go(k) { i = (k + N) % N; track.style.transform = `translateX(${-100 * i}%)`; tag.textContent = `단지 전경 ${i + 1} / ${N}`; dots.querySelectorAll('i').forEach((d, n) => d.classList.toggle('on', n === i)); }
+document.querySelector('.prev').onclick = () => go(i - 1);
+document.querySelector('.next').onclick = () => go(i + 1);
+dots.onclick = e => { if (e.target.dataset.k) go(+e.target.dataset.k); };
+document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') go(i - 1); if (e.key === 'ArrowRight') go(i + 1); });
+let x0 = null; const m = document.getElementById('main');
+m.addEventListener('pointerdown', e => { if (!e.target.closest('button')) x0 = e.clientX; });
+m.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(i + (dx < 0 ? 1 : -1)); });
+document.querySelector('.zoom').onclick = () => alert('크게 보기 창이 열립니다 (지금과 같음)');
+go(0);
+</script>
+</body>
+</html>
