@@ -5975,7 +5975,7 @@ class Component extends DCLogic {
   }
   renderVals() {
     const S = this.state, D = this.D, mods = S.modules, menus = S.menus;
-    const STATUS = { '미확인': { bg: '#ffffff', fg: '#8e8e93', dot: '' }, '보유': { bg: '#e8e8ed', fg: '#1d1d1f', dot: '' }, '매물': { bg: '#157a3f', fg: '#fff', dot: '#157a3f' }, '가계약': { bg: '#b25000', fg: '#fff', dot: '#b25000' }, '계약': { bg: '#0066cc', fg: '#fff', dot: '#0066cc' }, '전세': { bg: '#0f8a8a', fg: '#fff', dot: '#0f8a8a' }, '명의변경완료': { bg: '#6e6e73', fg: '#fff', dot: '#6e6e73' } };
+    const STATUS = { '미확인': { bg: '#ffffff', fg: '#8e8e93', dot: '' }, '보유': { bg: '#e8e8ed', fg: '#1d1d1f', dot: '' }, '매물': { bg: '#d2264b', fg: '#fff', dot: '#d2264b' }, '가계약': { bg: '#b25000', fg: '#fff', dot: '#b25000' }, '계약': { bg: '#0066cc', fg: '#fff', dot: '#0066cc' }, '전세': { bg: '#cdeeed', fg: '#0b5e5e', dot: '#0f8a8a' }, '명의변경완료': { bg: '#6e6e73', fg: '#fff', dot: '#6e6e73' } };
     const TABS = [['overview','단지배치'],['board','동호배치표'],['option','옵션계산기'],['card','상담카드'],['log','상담이력대장'],['price','분양가표']];   /* 상담카드는 상담이력대장 앞 (게스트 등록 · 상담 기록, 2026-11-16 대표 요청으로 [대라수 업무]에서 다시 뺌) */
     const guestOnly = !!this.props.guestOnly; const GS = S.guest;
     const role = this.rl(S.me); const can = k => !!(S.perms[k] || {})[role];
@@ -6057,7 +6057,7 @@ class Component extends DCLogic {
     const isF = (k, v) => !!F && F.k === k && F.v === v;
     const kp = (label, value, sub, dot, f, go) => ({ w: '108px', ai: 'flex-start', label, value: Number(value).toLocaleString(), sub, dot, bg: '#fff', fg: '#1d1d1f', labelColor: '#6e6e73', ring: f && isF(f.k, f.v) ? '0 0 0 2px #0066cc' : 'none', onClick: go || (() => this.setFilter(f)) });
     const kpis = [Object.assign(kp('총세대', D.units.length, '확인 ' + known.toLocaleString() + ' · 미확인 ' + (D.units.length - known).toLocaleString(), '#1d1d1f', null, () => this.setState({ filter: null, tab: 'board' })), { w: '138px', ai: 'center' })];
-    if (mods.presale) kpis.push(kp('분양권 매물', cnt['매물'] || 0, '급매 ' + urgent, '#157a3f', { k: 'status', v: '매물' }), kp('가계약', cnt['가계약'] || 0, '분양권매매', '#b25000', { k: 'status', v: '가계약' }), kp('계약', cnt['계약'] || 0, '실거래신고 대기', '#0066cc', { k: 'status', v: '계약' }), kp('전세', cnt['전세'] || 0, '계약조건 전세연장', '#0f8a8a', { k: 'status', v: '전세' }), kp('명의변경완료', cnt['명의변경완료'] || 0, '거래완료', '#6e6e73', { k: 'status', v: '명의변경완료' }), kp('보유', cnt['보유'] || 0, '매물없음', '#c7c7cc', { k: 'status', v: '보유' }));
+    if (mods.presale) kpis.push(kp('분양권 매물', cnt['매물'] || 0, '급매 ' + urgent, '#d2264b', { k: 'status', v: '매물' }), kp('가계약', cnt['가계약'] || 0, '분양권매매', '#b25000', { k: 'status', v: '가계약' }), kp('계약', cnt['계약'] || 0, '실거래신고 대기', '#0066cc', { k: 'status', v: '계약' }), kp('전세', cnt['전세'] || 0, '계약조건 전세연장', '#0f8a8a', { k: 'status', v: '전세' }), kp('명의변경완료', cnt['명의변경완료'] || 0, '거래완료', '#6e6e73', { k: 'status', v: '명의변경완료' }), kp('보유', cnt['보유'] || 0, '매물없음', '#c7c7cc', { k: 'status', v: '보유' }));
     if (mods.sale) kpis.push(kp('매매', hasSale, '신규 ' + hasNew, '#8e2c6e', { k: 'trade', v: '매매' }));
     if (mods.jeonse) kpis.push(kp('전세', hasJ, '전세 매물', '#3a5aa0', { k: 'trade', v: '전세' }));
     if (mods.wolse) kpis.push(kp('월세', hasW, '월세·단기', '#b25000', { k: 'trade', v: '월세' }));
