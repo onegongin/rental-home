@@ -63,7 +63,7 @@
 </style>
 </head>
 <body>
-<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><a href="kpi.html">KPI</a><a href="units.html">세대 전환 상태</a><a href="consults.html">상담카드</a></div></div>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><span data-grpnav></span></div></div>
 <div class="wrap" id="app"><div class="gate">불러오는 중…</div></div>
 <div class="msg" id="msg"></div>
 
@@ -214,5 +214,6 @@ window.addEventListener('beforeprint', () => document.querySelectorAll('textarea
 window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 load();
 </script>
+<script src="nav.js"></script>
 </body>
 </html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r40 · 직원 탭 묶기</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .bar { position: sticky; top: 0; z-index: 30; background: #1d1d1f; color: #fff; padding: 10px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+  .bar b { margin-right: 6px; }
+  .bar button { border: 0; border-radius: 9999px; padding: 7px 14px; font-weight: 700; font-size: 13px; cursor: pointer; background: #3a3a3c; color: #fff; font-family: inherit; }
+  .bar button.on { background: #c8381e; }
+  .bar span { color: #c7c7cc; }
+  .w { max-width: 1200px; margin: 0 auto; padding: 18px 16px 60px; }
+  .lbl { font-size: 12px; font-weight: 700; color: #6e6e73; margin: 18px 0 6px; }
+  /* 직원 화면 머리 흉내 */
+  .head { background: #fff; border-radius: 16px; padding: 10px 14px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; position: relative; }
+  .head .logo { font-weight: 800; margin-right: 10px; }
+  .tab { border: 0; background: transparent; border-radius: 9999px; padding: 7px 12px; font-size: 13.5px; font-weight: 600; color: #1d1d1f; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .tab.on { background: #c8381e; color: #fff; }
+  .tab.grp { border: 1.5px solid #c8381e; color: #c8381e; }
+  .tab.grp.on { color: #fff; }
+  .tab.old { background: #fff4f1; }
+  .me { margin-left: auto; font-size: 12px; color: #6e6e73; }
+  /* A안 펼침 메뉴 */
+  .menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; background: #fff; border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,.16); padding: 14px; width: min(640px, calc(100vw - 32px)); display: none; }
+  .menu.on { display: block; }
+  .mg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .mg h4 { margin: 0 0 6px; font-size: 11.5px; color: #8e8e93; font-weight: 700; }
+  .it { display: flex; flex-direction: column; gap: 1px; padding: 8px 10px; border-radius: 10px; cursor: pointer; text-decoration: none; color: #1d1d1f; }
+  .it:hover { background: #f5f5f7; }
+  .it b { font-size: 14px; display: flex; align-items: center; gap: 6px; }
+  .it small { font-size: 11.5px; color: #6e6e73; }
+  .it i { font-style: normal; font-size: 10.5px; font-weight: 700; color: #a3183a; background: #fff0f2; border-radius: 9999px; padding: 1px 6px; }
+  .it.cur { background: #fdecea; }
+  /* B안 모아보기 페이지 */
+  .hub { background: #fff; border-radius: 16px; padding: 18px; margin-top: 12px; }
+  .hub h2 { margin: 0 0 4px; font-size: 18px; }
+  .hub p { margin: 0 0 14px; font-size: 13px; color: #6e6e73; }
+  .hg h3 { font-size: 13px; color: #6e6e73; margin: 16px 0 8px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+  .tile { border: 1px solid #ececf0; border-radius: 14px; padding: 14px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; background: #fff; transition: .15s; }
+  .tile:hover { border-color: #c8381e; transform: translateY(-2px); }
+  .tile .ic { font-size: 22px; }
+  .tile b { font-size: 15px; display: flex; gap: 6px; align-items: center; }
+  .tile small { font-size: 12px; color: #6e6e73; line-height: 1.5; }
+  .tile .n { margin-top: 4px; font-size: 12px; font-weight: 700; color: #0066cc; }
+  .tile i { font-style: normal; font-size: 10.5px; font-weight: 700; color: #a3183a; background: #fff0f2; border-radius: 9999px; padding: 1px 6px; }
+  .body { margin-top: 12px; background: #fff; border-radius: 16px; height: 220px; display: grid; place-items: center; color: #8e8e93; font-size: 14px; }
+  .note { margin-top: 18px; background: #fff; border-radius: 14px; padding: 14px 18px; font-size: 13px; line-height: 1.8; color: #3a3a3c; }
+  @media (max-width: 640px) { .mg { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>시안 r40</b>
+  <button id="bA" class="on" onclick="setM('A')">A안 · 펼침 메뉴 (추천)</button>
+  <button id="bB" onclick="setM('B')">B안 · 모아보기 화면</button>
+  <span id="desc"></span>
+</div>
+<div class="w">
+  <div class="lbl">지금 — 탭이 한 줄에 너무 많음 (분홍 = 묶을 9개)</div>
+  <div class="head">
+    <span class="logo">첨단대라수1차</span>
+    <button class="tab on">단지배치</button><button class="tab">동호배치표</button><button class="tab">옵션계산기</button><button class="tab old">상담카드</button><button class="tab">상담이력대장</button><button class="tab">분양가표</button><button class="tab">계약자DB</button><button class="tab">임차만기</button><button class="tab old">KPI</button><button class="tab old">소통</button><button class="tab old">일일업무보고</button><button class="tab old">청구서</button><button class="tab old">자료 옮기기</button><button class="tab old">전환상태</button><button class="tab old">분양가표</button><button class="tab old">분양전환상담</button><button class="tab">게스트</button>
+  </div>
+
+  <div class="lbl">바꾼 뒤 — 9개를 탭 하나 <b style="color:#c8381e">[대라수 업무 ▾]</b> 로 (눌러 보세요)</div>
+  <div class="head" id="newHead">
+    <span class="logo">첨단대라수1차</span>
+    <button class="tab">단지배치</button><button class="tab">동호배치표</button><button class="tab">옵션계산기</button><button class="tab">상담이력대장</button><button class="tab">분양가표</button><button class="tab">계약자DB</button><button class="tab">임차만기</button>
+    <button class="tab grp" id="grp" onclick="grpClick(event)">대라수 업무 ▾</button>
+    <button class="tab">게스트</button>
+    <span class="me">대표 · 홍길동</span>
+    <div class="menu" id="menu"></div>
+  </div>
+  <div id="hubWrap"></div>
+  <div class="body" id="body">← 위 [대라수 업무] 를 눌러 보세요</div>
+
+  <div class="note">
+    <b>공통</b><br>
+    · 묶는 9개: <b>상담카드 · 분양전환상담 · 소통 · 전환상태 · 분양가표(대라수) · KPI · 일일업무보고 · 청구서 · 자료 옮기기</b> — 탭 줄이 반으로 줄어 휴대폰에서도 한 줄 정도<br>
+    · 권한 그대로: 일일업무보고(대표 · 관리자 · 권한자), 청구서 · 자료 옮기기(대표 · 관리자)는 권한 없는 직원에게는 메뉴에 안 보임<br>
+    · 따로 열리는 화면(KPI · 소통 · 청구서 …) 위쪽에도 같은 [대라수 업무 ▾] 를 두어 화면끼리 바로 이동<br>
+    · 지금 탭 이름이 겹치는 '분양가표' 2개 → 묶음 안 것은 <b>'분양가표 · 전세연장'</b> 으로 이름을 구분<br>
+    · 고치는 김에: 지금 '동호배치표' 탭과 '소통' 탭이 같은 내부 이름을 써서 동호배치표를 누르면 소통 화면으로 갈 수 있는 문제도 함께 바로잡음
+  </div>
+</div>
+
+<script>
+var G = [
+  ['상담', [['card', '상담카드', '매수 · 신규고객 상담 기록', ''], ['consult', '분양전환상담', '임차인 · 신규고객 카드', ''], ['talk', '소통', '상담참고 · 요청함 · 불편사항', '']]],
+  ['세대 · 가격', [['conv', '전환상태', '세대 상태 · 손님 공개 세대', ''], ['prices', '분양가표 · 전세연장', '호실별 분양가 · 보증금', '']]],
+  ['관리', [['kpi', 'KPI', '담당별 실적 · 미상담 세대', ''], ['report', '일일업무보고', '오늘 실적 · 인쇄 · 엑셀', '관리자급'], ['claim', '청구서', '수수료 청구 · MGM', '대표 · 관리자'], ['migrate', '자료 옮기기', '고객DB 엑셀 옮기기', '대표 · 관리자']]]
+];
+var ICON = { card: '📝', consult: '🗂️', talk: '💬', conv: '🏠', prices: '💰', kpi: '📊', report: '🧾', claim: '📑', migrate: '📥' };
+var mode = 'A', cur = null;
+function setM(m) {
+  mode = m; cur = null;
+  document.getElementById('bA').className = m === 'A' ? 'on' : ''; document.getElementById('bB').className = m === 'B' ? 'on' : '';
+  document.getElementById('desc').textContent = m === 'A' ? '탭을 누르면 아래로 메뉴가 펼쳐짐 — 한 번 더 누르면 바로 이동' : '탭을 누르면 9개 화면을 설명과 함께 모아 보여 주는 화면';
+  document.getElementById('menu').className = 'menu'; document.getElementById('hubWrap').innerHTML = '';
+  document.getElementById('grp').className = 'tab grp'; document.getElementById('grp').textContent = '대라수 업무 ' + (m === 'A' ? '▾' : '');
+  document.getElementById('body').textContent = '← 위 [대라수 업무] 를 눌러 보세요';
+}
+function go(k, name) {
+  cur = k; document.getElementById('menu').className = 'menu';
+  document.getElementById('grp').className = 'tab grp on';
+  document.getElementById('grp').textContent = (mode === 'A' ? '대라수 업무 · ' + name + ' ▾' : '대라수 업무');
+  document.getElementById('hubWrap').innerHTML = '';
+  document.getElementById('body').textContent = '[' + name + '] 화면이 여기 열립니다 (시안)';
+}
+function grpClick(e) {
+  e.stopPropagation();
+  if (mode === 'A') {
+    var m = document.getElementById('menu');
+    m.innerHTML = '<div class="mg">' + G.map(function (g) { return '<div><h4>' + g[0] + '</h4>' + g[1].map(function (x) { return '<a class="it' + (cur === x[0] ? ' cur' : '') + '" onclick="go(\'' + x[0] + '\',\'' + x[1] + '\')"><b>' + ICON[x[0]] + ' ' + x[1] + (x[3] ? ' <i>' + x[3] + '</i>' : '') + '</b><small>' + x[2] + '</small></a>'; }).join('') + '</div>'; }).join('') + '</div>';
+    m.className = m.className.includes('on') ? 'menu' : 'menu on';
+  } else {
+    document.getElementById('grp').className = 'tab grp on';
+    document.getElementById('body').textContent = '';
+    document.getElementById('hubWrap').innerHTML = '<div class="hub"><h2>대라수 업무</h2><p>필요한 화면을 누르세요. 권한이 없는 화면은 보이지 않습니다.</p>' +
+      G.map(function (g) { return '<div class="hg"><h3>' + g[0] + '</h3><div class="tiles">' + g[1].map(function (x) { return '<div class="tile" onclick="go(\'' + x[0] + '\',\'' + x[1] + '\')"><span class="ic">' + ICON[x[0]] + '</span><b>' + x[1] + (x[3] ? ' <i>' + x[3] + '</i>' : '') + '</b><small>' + x[2] + '</small><span class="n">열기 →</span></div>'; }).join('') + '</div></div>'; }).join('') + '</div>';
+  }
+}
+document.addEventListener('click', function () { document.getElementById('menu').className = 'menu'; });
+setM('A');
+</script>
+</body>
+</html>
