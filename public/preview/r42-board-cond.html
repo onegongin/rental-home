@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r42 · 동호배치표 계약 · 전세</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .w { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: #6e6e73; font-size: 14px; line-height: 1.6; margin: 0 0 14px; }
+  .top { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .seg { display: flex; background: #fff; border-radius: 9999px; padding: 3px; }
+  .seg button { border: 0; background: transparent; border-radius: 9999px; padding: 6px 14px; font-weight: 700; font-size: 13px; cursor: pointer; font-family: inherit; color: #1d1d1f; }
+  .seg button.on { background: #1d1d1f; color: #fff; }
+  .kpi { display: flex; gap: 8px; flex-wrap: wrap; }
+  .kp { background: #fff; border-radius: 12px; padding: 8px 14px; font-size: 12px; color: #6e6e73; min-width: 92px; border: 2px solid transparent; cursor: pointer; }
+  .kp b { display: block; font-size: 20px; color: #1d1d1f; }
+  .kp.new { border-color: #f5b400; }
+  .kp.on { border-color: #1d1d1f; }
+  .board { background: #fff; border-radius: 16px; padding: 14px; overflow-x: auto; }
+  .dongs { display: grid; grid-template-columns: repeat(4, minmax(230px, 1fr)); gap: 14px; min-width: 980px; }
+  .dh { background: #1d1d1f; color: #fff; border-radius: 8px 8px 0 0; padding: 4px 8px; font-size: 13px; font-weight: 700; display: flex; justify-content: space-between; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 2px; }
+  .c { font-size: 11px; text-align: center; padding: 3px 0; border-radius: 3px; font-variant-numeric: tabular-nums; cursor: pointer; position: relative; }
+  .c.dim { opacity: .18; }
+  .c.off { opacity: .22; filter: grayscale(.35); }
+  .c .tg { position: absolute; right: 1px; top: 1px; font-size: 8px; font-weight: 800; line-height: 1; padding: 1px 2px; border-radius: 3px; background: rgba(255,255,255,.85); color: #1d1d1f; }
+  .lg { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: #424245; }
+  .lg span { display: inline-flex; align-items: center; gap: 4px; }
+  .lg i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+  .lg .new { outline: 2px dashed #f5b400; outline-offset: 2px; border-radius: 6px; padding: 0 4px; }
+  .side { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-top: 16px; align-items: start; }
+  .pane { background: #fff; border-radius: 16px; padding: 16px; font-size: 13px; line-height: 1.75; color: #3a3a3c; }
+  .pane h3 { margin: 0 0 8px; font-size: 15px; color: #1d1d1f; }
+  .chip { display: inline-block; border-radius: 9999px; padding: 2px 9px; font-size: 12px; font-weight: 700; }
+  .det { display: grid; grid-template-columns: 90px 1fr; gap: 6px 10px; font-size: 13px; }
+  .det span:nth-child(odd) { color: #6e6e73; }
+  @media (max-width: 860px) { .side { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>시안 r42 · 동호배치표 — 계약조건대로 '계약' · '전세' 표시</h1>
+  <p class="sub"><b style="color:#c8381e">추가: '타입 색' 에서 위 <u>계약</u> (또는 전세 · 매물 …) 숫자 칸을 누르면 그 호실만 불 켜짐 · 한 번 더 누르거나 '전체' 를 누르면 다시 계약조건 없는 호실만 불 켜짐.</b><br><b style="color:#c8381e">고친 점: '타입 색' 에서는 계약조건이 있는 호실(계약 · 전세)은 흐리게(불 꺼짐), 계약조건이 없는 호실만 밝게(불 켜짐) · 오른쪽 위 작은 글자는 없앰.</b><br>계약자DB 의 계약조건이 <b>10.16 혜택가</b> 인 호실은 <b style="color:#0066cc">계약</b>, <b>전세연장</b> 인 호실은 새 칩 <b style="color:#0f8a8a">전세</b> 로 동호배치표에 나옵니다. 위 '상태 색' / '타입 색' 을 바꿔 보고, 아래 숫자 칸을 눌러 그 상태만 골라 보세요. (호실 배정은 시안용 예시)</p>
+  <div class="top">
+    <div class="seg"><button id="mS" class="on" onclick="mode='s';draw()">상태 색</button><button id="mT" onclick="mode='t';draw()">타입 색</button></div>
+    <div class="kpi" id="kpi"></div>
+  </div>
+  <div class="board"><div class="dongs" id="dongs"></div>
+    <div class="lg" id="lg"></div>
+  </div>
+  <div class="side">
+    <div class="pane">
+      <h3>정하는 규칙</h3>
+      · 계약조건 <span class="chip" style="background:#e8f5ec;color:#157a3f">10.16 혜택가</span> → 매물상태 <span class="chip" style="background:#0066cc;color:#fff">계약</span><br>
+      · 계약조건 <span class="chip" style="background:#e8f0fb;color:#0066cc">전세연장</span> → 매물상태 <span class="chip" style="background:#0f8a8a;color:#fff">전세</span> <b>(새 칩)</b><br>
+      · 직원이 매물상태를 직접 고른 호실(매물 · 가계약 · 명의변경완료 등)은 <b>직접 고른 값이 먼저</b> — 계약조건은 '미확인 · 보유' 일 때만 자동으로 바꿈<br>
+      · 계약조건을 바꾸면 동호배치표도 바로 따라 바뀜 (따로 입력할 필요 없음)<br>
+      · <b>타입 색</b> 보기: 계약조건 있는 호실은 흐리게, 없는 호실만 밝게 (작은 글자 표시 없음)<br>
+      · <b>타입 색</b> 에서 숫자 칸 <b>계약</b> 을 누르면 계약 호실만 불 켜짐 (전세 · 매물 · 가계약 · 미확인도 같음) · 한 번 더 누르거나 '전체' = 처음 모양<br>
+      · 위 숫자 칸(KPI)에 <b>전세</b> 가 추가되고, 누르면 전세 호실만 보임 · 아래 색 설명에도 '전세' 추가<br>
+      · 손님 화면 동호배치표는 지금처럼 타입 색만 (계약 · 전세 표시는 직원 화면만)
+    </div>
+    <div class="pane">
+      <h3 id="dT">호실을 누르면</h3>
+      <div class="det" id="det"><span>매물상태</span><span>—</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var TC = { '80A': '#ffd34d', '80B': '#f39c4a', '59A': '#8cc63f', '59B': '#f4a6c8', '59C': '#9fd4f0' };
+var LINES = { 101: ['80B', '80B', '80A'], 102: ['80A', '80B', '80B'], 103: ['59C', '59B', '59A'], 104: ['59A', '59B', '59C'] };
+var ST = { '미확인': ['#ffffff', '#8e8e93'], '보유': ['#e8e8ed', '#1d1d1f'], '매물': ['#157a3f', '#fff'], '가계약': ['#b25000', '#fff'], '계약': ['#0066cc', '#fff'], '전세': ['#0f8a8a', '#fff'], '명의변경완료': ['#6e6e73', '#fff'] };
+var mode = 's', only = '', sel = null, U = [];
+// 예시 배정: 계약조건 10.16 혜택가 111 · 전세연장 93 · 나머지 비어 있음 (실제와 같은 수)
+var seed = 7; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+[101, 102, 103, 104].forEach(function (d) { for (var f = 28; f >= 4; f--) for (var l = 1; l <= 3; l++) U.push({ d: d, f: f, l: l, ho: f * 100 + l, type: LINES[d][l - 1] }); });
+var idx = U.map(function (_, i) { return i; }).sort(function () { return rnd() - .5; });
+idx.forEach(function (i, k) { U[i].cond = k < 111 ? '10.16 혜택가' : k < 204 ? '전세연장' : ''; U[i].manual = k === 3 ? '매물' : k === 5 ? '가계약' : ''; });
+function stOf(u) { if (u.manual) return u.manual; return u.cond === '10.16 혜택가' ? '계약' : u.cond === '전세연장' ? '전세' : '미확인'; }
+function draw() {
+  document.getElementById('mS').className = mode === 's' ? 'on' : ''; document.getElementById('mT').className = mode === 't' ? 'on' : '';
+  var cnt = {}; U.forEach(function (u) { var s = stOf(u); cnt[s] = (cnt[s] || 0) + 1; });
+  document.getElementById('kpi').innerHTML = [['', '전체', 300], ['계약', '계약', cnt['계약'] || 0], ['전세', '전세', cnt['전세'] || 0], ['매물', '매물', cnt['매물'] || 0], ['가계약', '가계약', cnt['가계약'] || 0], ['미확인', '미확인', cnt['미확인'] || 0]].map(function (k) {
+    return '<div class="kp' + (k[0] === '전세' ? ' new' : '') + (only === k[0] ? ' on' : '') + '" onclick="only=(only===\'' + k[0] + '\'?\'\':\'' + k[0] + '\');draw()">' + k[1] + '<b>' + k[2] + '</b></div>'; }).join('');
+  document.getElementById('dongs').innerHTML = [101, 102, 103, 104].map(function (d) {
+    var us = U.filter(function (u) { return u.d === d; });
+    return '<div><div class="dh"><span>' + d + '동</span><span>75세대</span></div><div class="grid">' + us.map(function (u) {
+      var s = stOf(u), c = mode === 's' ? ST[s] : [TC[u.type], '#1d1d1f'], dim = mode === 's' && only && s !== only, off = mode === 't' && (only ? s !== only : !!u.cond);   // 타입 색: 숫자 칸을 고르면 그 상태만 불 켜짐, 안 고르면 계약조건 없는 호실만 불 켜짐
+      var ring = (mode === 's' && s === '미확인' ? 'box-shadow:inset 0 0 0 1px #e5e5ea;' : '') + (sel === u ? 'box-shadow:0 0 0 2px #1d1d1f;' : '');
+      return '<div class="c' + (dim ? ' dim' : off ? ' off' : '') + '" style="background:' + c[0] + ';color:' + c[1] + ';' + ring + '" onclick="pick(' + U.indexOf(u) + ')">' + u.ho + '</div>'; }).join('') + '</div></div>'; }).join('');
+  document.getElementById('lg').innerHTML = mode === 's'
+    ? Object.keys(ST).map(function (k) { return '<span' + (k === '전세' ? ' class="new"' : '') + '><i style="background:' + ST[k][0] + ';box-shadow:inset 0 0 0 1px #d2d2d7"></i>' + k + '</span>'; }).join('')
+    : Object.keys(TC).map(function (k) { return '<span><i style="background:' + TC[k] + '"></i>' + k + '</span>'; }).join('') + '<span class="new"><i style="background:#ffd34d;opacity:.22"></i>흐린 칸 = 계약조건 있음 (계약 · 전세) · <b>밝은 칸 = 계약조건 없음</b></span>';
+}
+function pick(i) {
+  sel = U[i]; var s = stOf(sel), c = ST[s];
+  document.getElementById('dT').textContent = sel.d + '동 ' + sel.ho + '호 · ' + sel.type;
+  document.getElementById('det').innerHTML = '<span>계약조건</span><span>' + (sel.cond || '—') + '</span><span>매물상태</span><span><span class="chip" style="background:' + c[0] + ';color:' + c[1] + ';box-shadow:inset 0 0 0 1px #e5e5ea">' + s + '</span> ' + (sel.manual ? '(직원이 직접 고름)' : sel.cond ? '(계약조건에서 자동)' : '') + '</span>';
+  draw();
+}
+draw();
+</script>
+</body>
+</html>

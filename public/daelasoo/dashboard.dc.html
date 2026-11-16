@@ -5034,7 +5034,7 @@ class Component extends DCLogic {
   }
   // 계약조건 (시안 r41 확정 2026-11-16): 10.16 혜택가 · 헷지했지 · 전세연장 중 하나. S.u[id].cond ('-' = 일부러 비움). 비어 있으면 전환상태(staff/units.html)가 '전세연장'인 세대는 자동 '전세연장'
   COND = { '10.16 혜택가': ['#e8f5ec', '#157a3f'], '헷지했지': ['#f3e8fb', '#7a2fb0'], '전세연장': ['#e8f0fb', '#0066cc'] };
-  convLoad() { if (this._convL) return; this._convL = 1; fetch('/api/staff/conv', { credentials: 'same-origin' }).then(r => r.json()).then(j => { if (j && j.ok) { const m = {}; (j.conv || []).forEach(x => { m[x.unit_id] = x.status; }); this.setState({ convSt: m }); } }).catch(() => { this._convL = 0; }); }
+  convLoad() { if (this._convOk || (this._convAt && Date.now() - this._convAt < 30000)) return; this._convAt = Date.now(); fetch('/api/staff/conv', { credentials: 'same-origin' }).then(r => r.json()).then(j => { if (j && j.ok) { this._convOk = true; const m = {}; (j.conv || []).forEach(x => { m[x.unit_id] = x.status; }); this.setState({ convSt: m }); } }).catch(() => {}); }   /* 로그인 전이면 30초 뒤 다시 */
   condOf(id, s) { s = s || {}; if (s.cond === '-') return { v: '', auto: false }; if (s.cond && this.COND[s.cond]) return { v: s.cond, auto: false }; return (this.state.convSt || {})[id] === '전세연장' ? { v: '전세연장', auto: true } : { v: '', auto: false }; }
   dbVals(role, can) {
     const S = this.state, D = this.D; this.convLoad(); const canPhone = can('phone'), canEdit = can('edit'), canCreate = can('create'), canXl = can('excel');
@@ -5975,7 +5975,7 @@ class Component extends DCLogic {
   }
   renderVals() {
     const S = this.state, D = this.D, mods = S.modules, menus = S.menus;
-    const STATUS = { '미확인': { bg: '#ffffff', fg: '#8e8e93', dot: '' }, '보유': { bg: '#e8e8ed', fg: '#1d1d1f', dot: '' }, '매물': { bg: '#157a3f', fg: '#fff', dot: '#157a3f' }, '가계약': { bg: '#b25000', fg: '#fff', dot: '#b25000' }, '계약': { bg: '#0066cc', fg: '#fff', dot: '#0066cc' }, '명의변경완료': { bg: '#6e6e73', fg: '#fff', dot: '#6e6e73' } };
+    const STATUS = { '미확인': { bg: '#ffffff', fg: '#8e8e93', dot: '' }, '보유': { bg: '#e8e8ed', fg: '#1d1d1f', dot: '' }, '매물': { bg: '#157a3f', fg: '#fff', dot: '#157a3f' }, '가계약': { bg: '#b25000', fg: '#fff', dot: '#b25000' }, '계약': { bg: '#0066cc', fg: '#fff', dot: '#0066cc' }, '전세': { bg: '#0f8a8a', fg: '#fff', dot: '#0f8a8a' }, '명의변경완료': { bg: '#6e6e73', fg: '#fff', dot: '#6e6e73' } };
     const TABS = [['overview','단지배치'],['board','동호배치표'],['option','옵션계산기'],['card','상담카드'],['log','상담이력대장'],['price','분양가표']];   /* 상담카드는 상담이력대장 앞 (게스트 등록 · 상담 기록, 2026-11-16 대표 요청으로 [대라수 업무]에서 다시 뺌) */
     const guestOnly = !!this.props.guestOnly; const GS = S.guest;
     const role = this.rl(S.me); const can = k => !!(S.perms[k] || {})[role];
@@ -6042,7 +6042,10 @@ class Component extends DCLogic {
       dots: Array.from({ length: cpPages }, (_, i) => ({ w: i === cpPg ? '18px' : '7px', bg: i === cpPg ? '#fff' : 'rgba(255,255,255,.55)', go: e => { e.stopPropagation(); this.setState({ cpI: i }); } })),
       prev: e => { e.stopPropagation(); this.setState({ cpI: (cpPg - 1 + cpPages) % cpPages }); }, next: e => { e.stopPropagation(); this.setState({ cpI: (cpPg + 1) % cpPages }); } };
     const F = gx ? null : S.filter;
-    const st = id => UU[id] || { status: '미확인' };
+    const st0 = id => UU[id] || { status: '미확인' }, condBoard = !gx && !this._gm && !guestOnly; if (condBoard) this.convLoad();
+    const st = id => { const s = st0(id); if (!condBoard) return s; const cv = this.condOf(id, s).v; if (!cv) return s;
+      const eff = (!s.status || s.status === '미확인' || s.status === '보유') ? (cv === '10.16 혜택가' ? '계약' : cv === '전세연장' ? '전세' : '') : '';
+      return Object.assign({}, s, { _cond: cv }, eff ? { status: eff, _eff: true } : {}); };   /* 시안 r42 확정 2026-11-17 */
     const match = u => { if (!F) return true; const s = st(u.id); const t = D.types[u.type];
       if (F.k === 'status') return s.status === F.v; if (F.k === 'tag') return (s.tags || []).includes(F.v); if (F.k === 'fam') return t.fam === F.v; if (F.k === 'has') return !!s[F.v]; if (F.k === 'trade') return this.inTrade(s, F.v); return true; };
     const cnt = {}, famCnt = {}, bMatch = {}, bSale = {}; let urgent = 0, known = 0, hasSale = 0, hasJ = 0, hasW = 0, hasNew = 0;
@@ -6054,7 +6057,7 @@ class Component extends DCLogic {
     const isF = (k, v) => !!F && F.k === k && F.v === v;
     const kp = (label, value, sub, dot, f, go) => ({ w: '108px', ai: 'flex-start', label, value: Number(value).toLocaleString(), sub, dot, bg: '#fff', fg: '#1d1d1f', labelColor: '#6e6e73', ring: f && isF(f.k, f.v) ? '0 0 0 2px #0066cc' : 'none', onClick: go || (() => this.setFilter(f)) });
     const kpis = [Object.assign(kp('총세대', D.units.length, '확인 ' + known.toLocaleString() + ' · 미확인 ' + (D.units.length - known).toLocaleString(), '#1d1d1f', null, () => this.setState({ filter: null, tab: 'board' })), { w: '138px', ai: 'center' })];
-    if (mods.presale) kpis.push(kp('분양권 매물', cnt['매물'] || 0, '급매 ' + urgent, '#157a3f', { k: 'status', v: '매물' }), kp('가계약', cnt['가계약'] || 0, '분양권매매', '#b25000', { k: 'status', v: '가계약' }), kp('계약', cnt['계약'] || 0, '실거래신고 대기', '#0066cc', { k: 'status', v: '계약' }), kp('명의변경완료', cnt['명의변경완료'] || 0, '거래완료', '#6e6e73', { k: 'status', v: '명의변경완료' }), kp('보유', cnt['보유'] || 0, '매물없음', '#c7c7cc', { k: 'status', v: '보유' }));
+    if (mods.presale) kpis.push(kp('분양권 매물', cnt['매물'] || 0, '급매 ' + urgent, '#157a3f', { k: 'status', v: '매물' }), kp('가계약', cnt['가계약'] || 0, '분양권매매', '#b25000', { k: 'status', v: '가계약' }), kp('계약', cnt['계약'] || 0, '실거래신고 대기', '#0066cc', { k: 'status', v: '계약' }), kp('전세', cnt['전세'] || 0, '계약조건 전세연장', '#0f8a8a', { k: 'status', v: '전세' }), kp('명의변경완료', cnt['명의변경완료'] || 0, '거래완료', '#6e6e73', { k: 'status', v: '명의변경완료' }), kp('보유', cnt['보유'] || 0, '매물없음', '#c7c7cc', { k: 'status', v: '보유' }));
     if (mods.sale) kpis.push(kp('매매', hasSale, '신규 ' + hasNew, '#8e2c6e', { k: 'trade', v: '매매' }));
     if (mods.jeonse) kpis.push(kp('전세', hasJ, '전세 매물', '#3a5aa0', { k: 'trade', v: '전세' }));
     if (mods.wolse) kpis.push(kp('월세', hasW, '월세·단기', '#b25000', { k: 'trade', v: '월세' }));
@@ -6168,8 +6171,8 @@ class Component extends DCLogic {
       const cc = !isGB && !guestOnly ? (S.cmCnt || {})[u.id] : null;   /* 호실 이야기 글 수 (시안 staff-unit-talk A안) */
       if (S.sel === u.id) rings.push(S.flashCell === u.id ? '0 0 0 3px #0066cc' : '0 0 0 2px #1d1d1f');
       const label = S.showPrice && !isGB ? (this.priceOf(u) / 1e8).toFixed(2) : (t.ph && span > 1 ? u.ho + ' · ' + u.type : String(u.ho));
-      return { span, bg, fg, op: on ? 1 : 0.16, ring: rings.length ? rings.join(',') : 'none', label, title: u.b + '동 ' + u.ho + '호 · ' + u.type + (isGB ? '' : ' · ' + s.status + (urg ? ' · 급매' : '')), cur: 'pointer', fw: S.sel === u.id ? 700 : 500,
-        hasDot: cm === 'type' && !!sc.dot, dot: sc.dot || 'transparent', dotPos: cc ? 'left:2px' : 'right:2px', cmOn: !!cc, cmN: cc ? String(cc.n) : '', cmBg: cc && cc.need ? '#d2264b' : '#0066cc', urg, uid: u.id, onClick: () => this.setState({ sel: u.id, optDraft: null }) }; };
+      return { span, bg, fg, op: !on ? 0.16 : (cm === 'type' && !F && s._cond ? 0.22 : 1), ring: rings.length ? rings.join(',') : 'none', label, title: u.b + '동 ' + u.ho + '호 · ' + u.type + (isGB ? '' : ' · ' + s.status + (urg ? ' · 급매' : '')), cur: 'pointer', fw: S.sel === u.id ? 700 : 500,
+        hasDot: cm === 'type' && !!sc.dot && !s._eff, dot: sc.dot || 'transparent', dotPos: cc ? 'left:2px' : 'right:2px', cmOn: !!cc, cmN: cc ? String(cc.n) : '', cmBg: cc && cc.need ? '#d2264b' : '#0066cc', urg, uid: u.id, onClick: () => this.setState({ sel: u.id, optDraft: null }) }; };
     const blank = (span, bg, label, ring) => ({ span, bg: bg || 'transparent', fg: '#8e8e93', op: 1, ring: ring || 'none', label: label || '', title: '', cur: 'default', fw: 500, hasDot: false, dot: 'transparent', dotPos: 'right:2px', cmOn: false, cmN: '', cmBg: '', urg: false, uid: '', onClick: null });
     const xcell = 'linear-gradient(to top right, transparent calc(50% - 0.6px), #c7c7cc 50%, transparent calc(50% + 0.6px)), linear-gradient(to bottom right, transparent calc(50% - 0.6px), #c7c7cc 50%, transparent calc(50% + 0.6px)) #fff';
     const xs = () => blank(1, xcell, '', 'inset 0 0 0 1px #d2d2d7');
