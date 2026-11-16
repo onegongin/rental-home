@@ -38,8 +38,8 @@ function head(D, U) {
     '<meta property="og:type" content="website">',
     '<meta property="og:locale" content="ko_KR">',
     '<meta property="og:site_name" content="' + esc(S.name) + '">',
-    '<meta property="og:title" content="' + esc(E.title) + '">',
-    '<meta property="og:description" content="' + esc(E.description) + '">',
+    '<meta property="og:title" content="' + esc(E.ogTitle || E.title) + '">',   // 링크 미리보기 제목 · 설명 = seo.ogTitle · ogDesc (없으면 title · description)
+    '<meta property="og:description" content="' + esc(E.ogDesc || E.description) + '">',
     '<link rel="canonical" href="' + esc(U) + '/">',
     '<meta property="og:url" content="' + esc(U) + '/">',
     '<meta property="og:image" content="' + esc(U + '/' + E.ogImage) + '">',
