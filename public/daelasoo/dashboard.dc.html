@@ -5094,7 +5094,7 @@ class Component extends DCLogic {
     const vc = ex ? this.vacOf(ex) : null, oOpen = !!this.state.prOther;
     return { on: true, seg: this.prSeg(), amt: w(v), oLbl: m === 'hedge' ? '10.16 혜택가' : '매입보장가', oAmt: w(ov), oOpen, oBtn: (oOpen ? '▾ ' : '▸ ') + (m === 'hedge' ? '10.16 혜택가' : '매입보장가') + (oOpen ? ' 접기' : ' 보기'), oTog: () => this.setState({ prOther: !oOpen }),
       depOn: !ex && r.dep > 0, dep: w(r.dep), needLbl: '필요금액 (' + nm + ' − 보증금)', need: w(Math.max(v - r.dep, 0)),
-      vacOn: !!(vc && vc.day >= 1), vacWait: !!(vc && vc.day < 1), vacDay: vc ? '공실 ' + vc.day + '일째' : '', vacSub: vc ? '기산 ' + vc.start + ' · 임차 만기 ' + ex : '', vacWaitText: vc ? '임차 만기 ' + ex + ' 지남 · ' + vc.start.slice(5).replace('-', '.') + '부터 공실 일수 셈' : '' }; }
+      vacOn: !!(vc && vc.day >= 1), vacWait: false /* '○○부터 공실 일수 셈' 줄은 세대 이력에 있어 뺌 (2026-11-17 대표) */, vacDay: vc ? '공실 ' + vc.day + '일째' : '', vacSub: vc ? '기산 ' + vc.start + ' · 임차 만기 ' + ex : '', vacWaitText: vc ? '임차 만기 ' + ex + ' 지남 · ' + vc.start.slice(5).replace('-', '.') + '부터 공실 일수 셈' : '' }; }
   // 공실 일수: 기산일 = 2026-11-18 과 만기 다음 날 중 늦은 날 = 1일째, 하루마다 +1 (시안 r44)
   vacOf(end) { const nx = new Date(Date.parse(end + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10), start = nx > '2026-11-18' ? nx : '2026-11-18'; return { start, day: 1 - this.ddays(start) }; }
   convLoad() { if (this._convOk || (this._convAt && Date.now() - this._convAt < 30000)) return; this._convAt = Date.now(); fetch('/api/staff/conv', { credentials: 'same-origin' }).then(r => r.json()).then(j => { if (j && j.ok) { this._convOk = true; const m = {}; (j.conv || []).forEach(x => { m[x.unit_id] = x.status; }); this.setState({ convSt: m }); } }).catch(() => {}); }   /* 로그인 전이면 30초 뒤 다시 */
