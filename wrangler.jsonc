@@ -16,7 +16,7 @@
   "vars": { "SITE_URL": "https://rental-home.onegongin.workers.dev/daelasoo", "DB_DRIVER": "d1" },
   "compatibility_flags": ["nodejs_compat"],
   // 아침 요약 매일 08:30 (UTC 23:30) · 자동 백업 매일 03:00 (UTC 18:00)
-  "triggers": { "crons": ["30 23 * * *", "0 18 * * *"] },
+  "triggers": { "crons": ["30 18,23 * * *"] },  // 예약 1개 = 03:30 백업 · 08:30 아침 요약 (계정 예약 칸 5개 중 1개만 씀)
   // R2 저장소 — 2026-11-16 만듦. 로컬 wrangler dev 는 자동으로 흉내
   "r2_buckets": [{ "binding": "BACKUP", "bucket_name": "rental-home-backup" }, { "binding": "MEDIA", "bucket_name": "rental-home-media" }],
   "d1_databases": [

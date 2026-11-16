@@ -41,7 +41,7 @@ export default {
     finally { env.ctx.done(); }
   },
 
-  // 정해진 시간 자동 실행 (wrangler.jsonc triggers) — 매일 08:30 아침 요약 (UTC 23:30) · 03:00 자동 백업 + 국토부 실거래가 · 건축물대장 받기 (UTC 18:00)
+  // 정해진 시간 자동 실행 (wrangler.jsonc triggers) — 매일 08:30 아침 요약 (UTC 23:30) · 03:30 자동 백업 + 국토부 실거래가 · 건축물대장 받기 (UTC 18:00)
   async scheduled(event, env0, ctx) {
     const conn = openDb(env0);
     if (!conn) return;
@@ -49,8 +49,10 @@ export default {
     try {
       await init(env.DB);
       await repo(env).ready();
-      // 03:00 = 자동 백업 + 팝업 정리 (기간 끝난 팝업 · 안 쓰는 그림/첨부 지움)
-      env.ctx.waitUntil(event.cron === '0 18 * * *' ? autoBackup(env).finally(() => popCleanup(env).catch(() => {})).finally(() => govSync(env).catch(e => console.log('gov', e && e.message))) : morning(env, { by: '자동' }));
+      // 03:30 = 자동 백업 + 팝업 정리 (기간 끝난 팝업 · 안 쓰는 그림/첨부 지움)
+      // 예약 1개("30 18,23 * * *")로 두 일을 함 — 무료 계정은 계정 전체 예약 5개까지 (아이파크 · 123공실이 4개 씀). UTC 18시 = 백업, 23시 = 아침 요약
+      const nightly = new Date(event.scheduledTime || Date.now()).getUTCHours() === 18;
+      env.ctx.waitUntil(nightly ? autoBackup(env).finally(() => popCleanup(env).catch(() => {})).finally(() => govSync(env).catch(e => console.log('gov', e && e.message))) : morning(env, { by: '자동' }));
     } finally { env.ctx.done(); }
   }
 };

@@ -4,4 +4,4 @@ window.CC_SYNC_URL = '';
 
 // 로봇 확인(Cloudflare Turnstile) 사이트 키. 아이파크 위젯과 나눔 — 배포(R5) 때 rental-home 위젯을 새로 만들어 진짜 키를 넣는다
 // 그 전에는 Cloudflare 시험용 키(항상 통과)
-window.HWIP_TS_KEY = '1x00000000000000000000AA';
+window.HWIP_TS_KEY = '0x4AAAAAAGC-i_g1Eh_tFw6l';

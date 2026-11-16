@@ -46,7 +46,7 @@ export async function prune(env, now = Date.now()) {
   return old.length;
 }
 
-// 매일 03:00 (wrangler.jsonc crons "0 18 * * *" = 한국 03:00) — 실패하면 대표에게 바로 알림
+// 매일 03:30 (wrangler.jsonc crons "30 18,23 * * *" 중 UTC 18시 = 한국 03:30) — 실패하면 대표에게 바로 알림
 export async function autoBackup(env) {
   try {
     const r = await saveBackup(env, 'auto', '자동');
