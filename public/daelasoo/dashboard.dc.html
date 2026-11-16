@@ -922,6 +922,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
             <span style="color:#6e6e73">임차인</span><span>{{ p.pg.tenant }}</span>
             <span style="color:#6e6e73">임차 만기</span><span>{{ p.pg.end }}</span>
           </div>
+          <sc-if value="{{ p.pg.own }}" hint-placeholder-val="{{ false }}"><div style="background:#f8f1fc;border:1px solid #ead7f5;border-radius:12px;padding:9px 12px;font-size:12px;color:#5e2a7e;line-height:1.6">개인 소유 세대 — 매매 · 전세 · 월세 의뢰는 <b>[이 호실로 상담카드 →]</b>(개인 소유자)에서 '입주 후 거래'를 고르면 <b>매물보드</b>에 등록됩니다</div></sc-if>
           <sc-if value="{{ p.pg.pubOn }}" hint-placeholder-val="{{ false }}"><div style="background:#f0f9f3;border:1px solid #cfe9d8;border-radius:12px;padding:9px 12px;display:flex;flex-direction:column;gap:6px">
             <span style="font-size:12px;font-weight:700;color:#157a3f">손님 화면 공개</span>
             <span style="display:inline-flex;flex-wrap:wrap;background:#fff;border-radius:9999px;padding:3px;align-self:flex-start"><sc-for list="{{ p.pg.pubSeg }}" as="b"><button onClick="{{ b.onClick }}" style="border:none;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;background:{{ b.bg }};color:{{ b.fg }}">{{ b.label }}</button></sc-for></span>
@@ -2319,12 +2320,14 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     <sc-if value="{{ lb.hasReqs }}"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#e8f0fb;border-radius:12px;padding:8px 12px;font-size:13px;font-weight:700;color:#0066cc">{{ lb.reqText }}<sc-for list="{{ lb.reqs }}" as="r"><button onClick="{{ r.go }}" style="height:28px;border:1px solid #d2d2d7;border-radius:9999px;background:#fff;padding:0 12px;font-size:12px;font-weight:700;cursor:pointer;color:#1d1d1f">{{ r.label }}</button></sc-for></div></sc-if>
     <div style="background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:17px;font-weight:700;white-space:nowrap">매물보드</span><span style="font-size:12px;color:#6e6e73">{{ lb.count }} · 카드를 끌어 다른 줄에 놓으면 상태가 바뀝니다 · 잔금완료는 상담카드에서</span>
+        <sc-if value="{{ lb.ownOn }}" hint-placeholder-val="{{ false }}"><span style="flex-basis:100%;font-size:12px;color:#5e2a7e;background:#f8f1fc;border-radius:10px;padding:6px 10px">개인 소유(분양전환 계약) 세대의 매매 · 전세 · 월세 매물판입니다 — 개인 소유자 상담카드에서 '입주 후 거래'를 고르면 여기에 생깁니다 · 신규분양 공개 매물은 '공실 · 신규분양' 탭에서</span></sc-if>
         <span style="margin-left:auto;display:flex;gap:6px"><sc-if value="{{ lb.canCfg }}"><button onClick="{{ lb.openCfg }}" style="height:30px;border:1px solid #d2d2d7;border-radius:9999px;background:#fff;padding:0 12px;font-size:12px;font-weight:600;cursor:pointer">공개 설정</button></sc-if><button onClick="{{ lb.reload }}" style="height:30px;border:1px solid #d2d2d7;border-radius:9999px;background:#fff;padding:0 12px;font-size:12px;font-weight:600;cursor:pointer">↻ 새로 고침</button></span></div>
       <sc-if value="{{ lb.err }}"><div style="font-size:12px;color:#d2264b">목록을 불러오지 못했습니다 (서버 연결 확인)</div></sc-if>
       <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
         <sc-for list="{{ lb.deals }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for>
         <span style="width:6px"></span>
         <sc-if value="{{ lb.canMine }}"><button onClick="{{ lb.mine.onClick }}" style="border:1px solid {{ lb.mine.bd }};background:{{ lb.mine.bg }};color:{{ lb.mine.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ lb.mine.label }}</button></sc-if>
+        <sc-if value="{{ lb.ownOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ lb.own.onClick }}" style="border:1px solid {{ lb.own.bd }};background:{{ lb.own.bg }};color:{{ lb.own.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ lb.own.label }}</button></sc-if>
         <button onClick="{{ lb.fold.onClick }}" style="border:1px dashed #c7c7cc;background:{{ lb.fold.bg }};color:{{ lb.fold.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ lb.fold.label }}</button>
       </div>
       <div class="hwlb-kan">
@@ -4549,7 +4552,8 @@ class Component extends DCLogic {
   lbVals() {
     const S = this.state; if (!S.lb) { setTimeout(() => this.lbLoad(), 0); return { loading: true, ready: false }; }
     const all = S.lb.rows || [], me = S.me, roles = S.roles || {}, top = ['대표', '관리자', '권한자'].includes(roles[me]);
-    const rows = all.filter(l => (!S.lbDeal || l.deal === S.lbDeal) && (!S.lbMine || l.writer === me || l.mgr === me));
+    const ownOf = l => this.D.generic && this.condOf(l.dong + '-' + l.ho, (S.u || {})[l.dong + '-' + l.ho] || {}).v === '10.16 혜택가';
+    const rows = all.filter(l => (!S.lbDeal || l.deal === S.lbDeal) && (!S.lbMine || l.writer === me || l.mgr === me) && (!S.lbOwn || ownOf(l)));
     const chip = (on, label, onClick) => Object.assign(this.chip(on, '#1d1d1f'), { label, onClick });
     const tag = (t, bg, fg) => ({ t, bg, fg });
     const card = l => { const d = this.LB_DEAL[l.deal] || ['', '#1d1d1f'], off = ['계약', '잔금완료', '보류', '철회'].includes(l.status), tags = [];
@@ -4558,6 +4562,7 @@ class Component extends DCLogic {
       else if (l.pub === 'req') tags.push(tag('공개 요청', '#e8f0fb', '#0066cc'));
       else if (!off && l.missing.length) tags.push(tag('필수 ' + l.missing.length + '개 부족', '#fff4d6', '#8a5a00'));
       if (l.source === 'guest') tags.push(tag('관심등록', '#fff4e8', '#b25000'));
+      if (this.D.generic && this.condOf(l.dong + '-' + l.ho, (S.u || {})[l.dong + '-' + l.ho] || {}).v === '10.16 혜택가') tags.unshift(tag('개인 소유', '#f3e8fb', '#8e2c6e'));   /* 3단계 */
       return { unit: l.dong + '-' + l.ho, type: l.type, deal: d[0], dealBg: d[1], price: this.lbPrice(l), tags, hasTags: tags.length > 0,
         meta: (l.owner.name || '소유자 미입력') + ' · 담당 ' + (l.mgr || '미배정'), drag: l.can.edit ? 'true' : 'false', cur: l.can.edit ? 'grab' : 'pointer',
         onDragStart: () => { this._lbDrag = l; }, open: () => this.ldOpen(l.id) }; };
@@ -4569,7 +4574,7 @@ class Component extends DCLogic {
     const folded = rows.filter(l => this.LB_FOLD.includes(l.status)).length, reqs = all.filter(l => l.pub === 'req');
     return { loading: false, ready: true, err: !!S.lb.err, reload: () => this.setState({ lb: null }), count: (rows.length - folded) + '건',
       deals: [['', '전체']].concat(Object.entries(this.LB_DEAL).map(([k, v]) => [k, v[0]])).map(([k, t]) => chip(S.lbDeal === k, t + (k ? ' ' + all.filter(l => l.deal === k && !this.LB_FOLD.includes(l.status)).length : ''), () => this.setState({ lbDeal: k }))),
-      canMine: roles[me] !== '열람', mine: chip(!!S.lbMine, '내 매물', () => this.setState({ lbMine: !S.lbMine })),
+      canMine: roles[me] !== '열람', mine: chip(!!S.lbMine, '내 매물', () => this.setState({ lbMine: !S.lbMine })), ownOn: !!this.D.generic, own: chip(!!S.lbOwn, '개인 소유 ' + all.filter(ownOf).length, () => this.setState({ lbOwn: !S.lbOwn })),
       fold: chip(!!S.lbFold, '보류 · 철회 ' + folded, () => this.setState({ lbFold: !S.lbFold })),
       cols: this.LB_ST.concat(S.lbFold ? this.LB_FOLD : []).map(col),
       hasReqs: top && reqs.length > 0, reqText: '공개 요청 ' + reqs.length + '건 — 승인하면 공개사이트에 바로 보입니다',
@@ -6356,7 +6361,7 @@ class Component extends DCLogic {
           return { pg: { pubOn: tg && !!x._lease, pubSeg, pubWho: canP ? '대표 · 관리자 · 권한자가 고름' : '보기만 (대표 · 관리자 · 권한자가 고름)', on: true, k: x.status + (x._vd ? ' ' + x._vd + '일째' : ''), bg: c.bg || '#f2f2f5', fg: c.fg || '#1d1d1f', own: ds === '10.16 혜택가', cond: ds || '— (신규분양 대상)', owner: ow || '—', tenant: lt ? (lt.name || '—') + (lt.kind ? ' · ' + lt.kind : '') : '—', end: x._end || '—', hist: hist.length ? hist : [{ t: '기록 없음', d: '', c: '#e8e8ed' }] }, oldOwner: false, oldStatus: false }; })(),
         pr: this.prVals(su.id), prLow: !condBoard && this.prVals(su.id).on, tradeFields: tradeFields.map(f => ({ label: f.label, type: f.type, ph: f.ph, value: s[f.key] || '', onChange: setF(f.key), shown: s[f.key] || '—', fg: s[f.key] ? '#1d1d1f' : '#aeaeb2' })), tradeRO: true, tradeRW: false,
         logCount: logs.length + '건', logs: logs.map(c => ({ kind: this.kindName(c.kind), kindFg: this.kindColor(c.kind), at: c.at, writer: c.writer, text: c.text })),
-        writeCard: () => { const kd = mods.presale ? 'seller' : 'owner'; const pc = S.cards.find(c => c.unit === su.id && c.mgr); this.setState({ tab: 'card', form: Object.assign(this.blankForm(), this.unitPrefill(su.id), kd === 'owner' ? this.ownPre(su.id) : {}, pc ? { mgr: pc.mgr, mgrOk: pc.mgrOk || null, mgrBase: pc.mgr, mgrBaseOk: pc.mgrOk || null } : {}, { kind: kd, unit: su.b + '동 ' + su.ho + '호', unitLock: true, unitUnlock: false, unitBaseId: su.id, unitAsk: false, unitAskText: '', unitReason: '' }) }); }
+        writeCard: () => { const pk = D.generic && condBoard ? st(su.id).status : '', kd = pk === '분양전환 계약' ? 'owner' : pk === '공실' ? 'client' : pk ? 'seller' : mods.presale ? 'seller' : 'owner';   /* 3단계: 진행상태에 맞는 카드 */ const pc = S.cards.find(c => c.unit === su.id && c.mgr); this.setState({ tab: 'card', form: Object.assign(this.blankForm(), this.unitPrefill(su.id), kd === 'owner' ? this.ownPre(su.id) : {}, pc ? { mgr: pc.mgr, mgrOk: pc.mgrOk || null, mgrBase: pc.mgr, mgrBaseOk: pc.mgrOk || null } : {}, { kind: kd, unit: su.b + '동 ' + su.ho + '호', unitLock: true, unitUnlock: false, unitBaseId: su.id, unitAsk: false, unitAskText: '', unitReason: '' }) }); }
       };
     }
 
