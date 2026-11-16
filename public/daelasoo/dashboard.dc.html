@@ -4925,11 +4925,11 @@ class Component extends DCLogic {
         // 늘 보이는 줄: 전용면적 · 향 · 입주 가능 · 옵션 · 기타 / 접는 줄: 방·욕실 · 관리비 · 사용승인 · 주차 — 요약 한 줄은 항상 보임 (명시사항, 시안 listing-public2 A안 확정 2026-11-04)
         let op = null; try { op = x.opts ? JSON.parse(x.opts) : null; } catch (e) { op = null; }
         const optT = !op ? '' : !op.exp ? '기본 (확장 없음)' : '확장' + (op.items && op.items.length ? ' + ' + op.items.slice(0, 2).join(' · ') + (op.items.length > 2 ? ' 외 ' + (op.items.length - 2) : '') : '');
-        const dl = [['전용면적', x.exclusive ? x.exclusive + '㎡' : ''], ['향', x.facing + '향 (' + x.basis + ' 기준)'], ['입주 가능', x.move]].concat(x.term ? [['단기 기간', x.term]] : []).concat(optT ? [['옵션', optT]] : []);
-        const mg = x.mgmt_na ? '확인 불가 (미등기건물 · 신축건물 등 관리비 내역 확인 불가)' : '월 ' + x.mgmt + '만원' + (x.mgmt_items.length ? ' (' + x.mgmt_items.join(' · ') + ')' : '');
+        const dl = [['전용면적', x.exclusive ? x.exclusive + '㎡' : ''], ['향', String(x.id).startsWith('nu') ? '라인별 상이 · 상담 시 안내' : x.facing + '향 (' + x.basis + ' 기준)'], ['입주 가능', x.move]].concat(x.term ? [['단기 기간', x.term]] : []).concat(optT ? [['옵션', optT]] : []);
+        const mi = Array.isArray(x.mgmt_items) ? x.mgmt_items : [], mg = x.mgmt_na ? '확인 불가 (미등기건물 · 신축건물 등 관리비 내역 확인 불가)' : x.mgmt == null ? '상담 시 안내' : '월 ' + x.mgmt + '만원' + (mi.length ? ' (' + mi.join(' · ') + ')' : '');   /* 신규분양 매물(시안 r47)은 관리비 칸 없음 */
         const dl2 = [['방 · 욕실', '방 ' + x.rooms + ' · 욕실 ' + x.baths], ['관리비', mg], ['사용승인', x.approval], ['주차', x.parking]];
         const pk = String(x.parking || '').match(/세대당\s*약?\s*([\d.]+)대/), fo = (S.glFold || {})[x.id] !== undefined ? !!S.glFold[x.id] : !!(S.glAuto || {})[x.id];
-        const sum = ['방 ' + x.rooms + ' · 욕실 ' + x.baths, x.mgmt_na ? '관리비 확인 불가' : '관리비 월 ' + x.mgmt + '만원', '사용승인 ' + String(x.approval || '').replace(/\s*\(.*\)$/, ''), pk ? '주차 세대당 ' + pk[1] + '대' : '주차 ' + (x.parking || '-')].join(' · ');
+        const sum = ['방 ' + x.rooms + ' · 욕실 ' + x.baths, x.mgmt_na ? '관리비 확인 불가' : (x.mgmt == null ? '관리비 상담 시 안내' : '관리비 월 ' + x.mgmt + '만원'), '사용승인 ' + String(x.approval || '').replace(/\s*\(.*\)$/, ''), pk ? '주차 세대당 ' + pk[1] + '대' : '주차 ' + (x.parking || '-')].join(' · ');
         return { deal: d[0], dealBg: d[1], urgent: !!x.urgent, badge: x.badge, hasBadge: !!x.badge, where: x.label + ' ' + x.type, block: x.block + (x.kind === '오피스텔' ? ' 오피스텔' : ''), price: price(x),
           dl: dl.map(([k, v]) => ({ k, v: v || '-' })), dl2: dl2.map(([k, v]) => ({ k, v: v || '-' })), memo: x.memo || '', hasMemo: !!x.memo, sum, fold: fo, foldLabel: fo ? '접기 ▴' : '자세히 ▾',
           toggleFold: () => this.setState(ss => ({ glFold: Object.assign({}, ss.glFold, { [x.id]: !fo }) })), contact: x.contact, tel: x.tel, telHref: 'tel:' + String(x.tel || '').replace(/\D/g, ''),

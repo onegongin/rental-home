@@ -18,7 +18,7 @@ import { audit } from '../repo/audit.js';
 async function saleRow(db, id) {
   const un = UNIT[id], pr = priceOf(id) || {}, e = (await pubEligible(db, id)) || {}, T = (SITE.types || {})[un.type] || {}, ar = areaOf(un), o = SITE.office || {}, bd = band(un.floor, TOP[un.dong]);
   return { deal: 'sale', dong: un.dong, block: un.block || '', label: un.dong + '동 ' + bd, band: bd, type: un.type, kind: '아파트', exclusive: ar.exclusive, supply: ar.supply,
-    ask: pr.hedge ? Math.round(pr.hedge / 1e4) : null, move: e.kind === 'vac' ? '즉시 입주' : '입주일 협의', facing: '라인별 상이', basis: '상담 시 안내', rooms: T.rooms || null, baths: T.baths || null,
+    ask: pr.hedge ? Math.round(pr.hedge / 1e4) : null, mgmt_items: '[]', move: e.kind === 'vac' ? '즉시 입주' : '입주일 협의', facing: '라인별 상이', basis: '상담 시 안내', rooms: T.rooms || null, baths: T.baths || null,
     approval: '상담 시 안내', parking: '상담 시 안내', urgent: 0, badge: '신규분양 · 3년 뒤 분양가 매입보장(헷지했지)', contact: o.name || '', tel: o.tel || '' };
 }
 
