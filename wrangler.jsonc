@@ -17,14 +17,14 @@
   "compatibility_flags": ["nodejs_compat"],
   // 아침 요약 매일 08:30 (UTC 23:30) · 자동 백업 매일 03:00 (UTC 18:00)
   "triggers": { "crons": ["30 23 * * *", "0 18 * * *"] },
-  // R2 저장소 — 배포(R5) 전에 Cloudflare 에서 만든다. 로컬 wrangler dev 는 자동으로 흉내
+  // R2 저장소 — 2026-11-16 만듦. 로컬 wrangler dev 는 자동으로 흉내
   "r2_buckets": [{ "binding": "BACKUP", "bucket_name": "rental-home-backup" }, { "binding": "MEDIA", "bucket_name": "rental-home-media" }],
   "d1_databases": [
     {
       "binding": "DB",
-      // 새 DB — 아이파크 hwip-db 와 연결 없음. 배포(R5) 때 `npx.cmd wrangler d1 create rental-home-db --location apac` 로 받은 id 로 바꾼다
+      // 새 DB — 아이파크 hwip-db 와 연결 없음. 2026-11-16 만듦 (APAC)
       "database_name": "rental-home-db",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "85d44132-d0e3-412a-a033-63d83c511c90",
       "preview_database_id": "DB"
     }
   ]
