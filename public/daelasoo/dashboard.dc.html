@@ -2509,7 +2509,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <div style="border-top:1px dashed #e5e5ea;padding-top:7px"><button onClick="{{ x.toggleFold }}" style="width:100%;display:flex;align-items:center;gap:6px;border:none;background:none;padding:0;cursor:pointer;text-align:left;font-family:inherit"><span style="flex:1;min-width:0;font-size:12px;color:#6e6e73;line-height:1.5">{{ x.sum }}</span><span style="font-size:11.5px;font-weight:700;color:#0066cc;white-space:nowrap">{{ x.foldLabel }}</span></button>
           <sc-if value="{{ x.fold }}" hint-placeholder-val="{{ false }}"><div data-gld="1" style="display:grid;grid-template-columns:76px 1fr;gap:3px 10px;font-size:12.5px;margin-top:7px"><sc-for list="{{ x.dl2 }}" as="d"><span style="color:#6e6e73">{{ d.k }}</span><span style="overflow-wrap:anywhere">{{ d.v }}</span></sc-for></div></sc-if></div>
         <button onClick="{{ x.open }}" style="margin-top:auto;border:none;background:none;padding:0;text-align:left;font-size:12px;font-weight:700;color:#0066cc;cursor:pointer">댓글 · 문의 남기기</button>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #f0f0f2;padding-top:10px;font-size:12.5px"><span style="flex:1;min-width:0">{{ x.contact }}</span><button onClick="{{ x.bk }}" style="border:none;background:#b25000;color:#fff;border-radius:9999px;padding:7px 14px;font-size:12.5px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:inherit">중개요청</button><a href="{{ x.telHref }}" style="background:#1d1d1f;color:#fff;text-decoration:none;border-radius:9999px;padding:7px 14px;font-weight:700;white-space:nowrap">☎ {{ x.tel }}</a></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #f0f0f2;padding-top:10px;font-size:12.5px"><span style="flex:1;min-width:0">{{ x.contact }}</span><button onClick="{{ x.bk }}" style="border:none;background:#b25000;color:#fff;border-radius:9999px;padding:7px 14px;font-size:12.5px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:inherit">{{ x.bkLabel }}</button><a href="{{ x.telHref }}" style="background:#1d1d1f;color:#fff;text-decoration:none;border-radius:9999px;padding:7px 14px;font-weight:700;white-space:nowrap">☎ {{ x.tel }}</a></div>
       </div></sc-for>
     </div>
     <sc-if value="{{ gl.hasDone }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:8px"><span style="font-size:16px;font-weight:800">최근 거래완료</span><span style="font-size:12px;color:#6e6e73">최근 30일 · 가격 · 동 · 층은 표시하지 않습니다</span></div>
@@ -2527,7 +2527,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
 <sc-if value="{{ bkOpen }}" hint-placeholder-val="{{ false }}">
 <div onClick="{{ bq.close }}" style="position:fixed;inset:0;z-index:85;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px">
   <div onClick="{{ stop }}" style="width:100%;max-width:420px;max-height:calc(100vh - 32px);overflow-y:auto;background:#fff;border-radius:18px;display:flex;flex-direction:column">
-    <div style="padding:14px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f0f0f2"><b style="font-size:15px">중개요청</b><span style="font-size:11px;color:#8e8e93">관심등록 없이 가능</span><button onClick="{{ bq.close }}" style="margin-left:auto;width:32px;height:32px;border-radius:50%;border:none;background:#f2f2f5;cursor:pointer">✕</button></div>
+    <div style="padding:14px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f0f0f2"><b style="font-size:15px">{{ bq.title }}</b><span style="font-size:11px;color:#8e8e93">관심등록 없이 가능</span><button onClick="{{ bq.close }}" style="margin-left:auto;width:32px;height:32px;border-radius:50%;border:none;background:#f2f2f5;cursor:pointer">✕</button></div>
     <div style="padding:14px 18px 18px;display:flex;flex-direction:column;gap:10px">
       <div style="background:#fbf3f1;border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:700">{{ bq.sum }}</div>
       <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:6px">
@@ -4935,7 +4935,8 @@ class Component extends DCLogic {
           toggleFold: () => this.setState(ss => ({ glFold: Object.assign({}, ss.glFold, { [x.id]: !fo }) })), contact: x.contact, tel: x.tel, telHref: 'tel:' + String(x.tel || '').replace(/\D/g, ''),
           open: () => { this.setState({ glSel: x.id, lcOpen: true }); this.cmLoad('l:' + x.id); },
           hasSite: !!(this.D.HOT || {})[x.dong], site: () => this.spGoDong(+x.dong),
-          bk: () => this.setState({ bkReq: { lid: x.id, label: [d[0], x.label, x.type, price(x)].filter(Boolean).join(' · '), name: (this.cmMe() || {}).name || '', phone: '', msg: '', agree: false, err: '' } }) }; }),
+          bkLabel: String(x.id).startsWith('nu') ? '분양전환요청' : '중개요청',   /* 신규분양 공개 매물 (2026-11-17 대표) */
+          bk: () => this.setState({ bkReq: { nu: String(x.id).startsWith('nu'), lid: x.id, label: [d[0], x.label, x.type, price(x)].filter(Boolean).join(' · '), name: (this.cmMe() || {}).name || '', phone: '', msg: '', agree: false, err: '' } }) }; }),
       office: (o.name || '') + ' · 대표 ' + (o.ceo || '') + ' · 등록번호 ' + (o.regNo || ''), office2: (o.address || '') + ' · 대표번호 ' + (o.tel || ''),
       /* 최근 거래완료 (계약 · 잔금완료 30일, 타입 · 단지 · 면적만 · 날짜 없음, 시안 listing-done B안 확정 2026-11-05) */ hasDone: !!(S.gl.done || []).length, done: (S.gl.done || []).map(x => { const d = this.LB_DEAL[x.deal] || ['', '#1d1d1f']; return { deal: d[0], dealBg: d[1], title: x.type + ' · ' + x.block + (x.kind === '오피스텔' ? ' 오피스텔' : ''), area: x.exclusive ? '전용 ' + x.exclusive + '㎡' : '' }; }) };
   }
@@ -4946,10 +4947,10 @@ class Component extends DCLogic {
       if (miss.length) return set({ err: '필수 항목을 확인해 주세요 · ' + miss.join(', ') });
       set({ busy: true, err: '' });
       (window.hwipTs ? window.hwipTs() : Promise.resolve('')).then(ts => fetch('/api/public/broker', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ lid: r.lid, name: r.name.trim(), phone: r.phone, msg: String(r.msg || '').trim(), consent: { req: true, at: new Date().toISOString() }, ts }) })).then(x => x.json()).then(j => {
-        if (!j.ok) return set({ busy: false, err: j.err === 'dup' ? '이 매물은 이미 중개요청하셨습니다 · 담당자가 곧 연락드립니다' : j.err === 'rate' ? '요청이 너무 많습니다. 잠시 후 다시 시도하시거나 1800-7240으로 전화 주세요' : j.err === 'robot' ? '자동 등록 방지 확인에 실패했습니다. 잠시 후 다시 눌러 주세요' : '입력 내용을 확인해 주세요 (공개가 끝난 매물일 수 있습니다)' });
+        if (!j.ok) return set({ busy: false, err: j.err === 'dup' ? '이 매물은 이미 ' + (r.nu ? '분양전환요청' : '중개요청') + '하셨습니다 · 담당자가 곧 연락드립니다' : j.err === 'rate' ? '요청이 너무 많습니다. 잠시 후 다시 시도하시거나 1800-7240으로 전화 주세요' : j.err === 'robot' ? '자동 등록 방지 확인에 실패했습니다. 잠시 후 다시 눌러 주세요' : '입력 내용을 확인해 주세요 (공개가 끝난 매물일 수 있습니다)' });
         this.setState({ bkReq: null, glSel: r.lid, lcOpen: true }); this.cmLoad('l:' + r.lid); this.flash('중개요청이 접수되었습니다 · 담당 공인중개사가 연락드립니다'); })
         .catch(() => set({ busy: false, err: '접수하지 못했습니다. 잠시 후 다시 시도하시거나 1800-7240으로 전화 주세요' })); };
-    return { sum: r.label, name: r.name, phone: r.phone, msg: r.msg, shown, onName: e => set({ name: e.target.value }), onPhone: e => set({ phone: this.fmtPhone(e.target.value) }), onMsg: e => set({ msg: e.target.value }),
+    return { title: r.nu ? '분양전환요청' : '중개요청', sum: r.label, name: r.name, phone: r.phone, msg: r.msg, shown, onName: e => set({ name: e.target.value }), onPhone: e => set({ phone: this.fmtPhone(e.target.value) }), onMsg: e => set({ msg: e.target.value }),
       agree: r.agree ? 'true' : 'false', agMark: r.agree ? '✓' : '', agBg: r.agree ? '#0066cc' : '#fff', agBd: r.agree ? '#0066cc' : '#c7c7cc', onAgree: () => set({ agree: !r.agree, err: '' }), openPriv: () => this.setState({ gPriv: true }),
       hasErr: !!r.err, err: r.err || '', send, sendLabel: r.busy ? '보내는 중…' : '요청 보내기', close: () => this.setState({ bkReq: null }) }; }
   // 직원 알림 종: 공개 매물 중개요청 (30초마다) — 새 요청이면 알림 · 소리
