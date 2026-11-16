@@ -54,7 +54,7 @@ const apt = () => ({ '@type': 'ApartmentComplex', name: NAME, alternateName: ALI
 // /plan — 타입 목록
 export function planIndex(base) {
   const title = NAME + ' 평면 안내 (타입별)', desc = NAMEX + ' ' + TYLIST + ' 타입별 평면 · 면적 · 세대수';
-  const body = '<nav class="bc"><a href="/">홈</a> › 평면</nav><h1>' + esc(NAME) + ' 평면 안내</h1><p class="sub">' + SCALE + ', ' + TYPES.length + '개 타입입니다. 타입을 누르면 평면도 · 면적 · 분양가 범위 · 지금 나와 있는 매물을 볼 수 있습니다.</p>' +
+  const body = '<nav class="bc"><a href="/">홈</a> › 평면</nav><h1>' + esc(NAME) + ' 평면 안내</h1><p class="sub">' + SCALE + ', ' + TYPES.length + '개 타입입니다. 타입을 누르면 평면도 · 면적' + (Object.keys(PR).length ? ' · 분양가 범위' : '') + ' · 지금 나와 있는 매물을 볼 수 있습니다.</p>' +
     '<div class="cards">' + TYPES.map(t => '<a href="/plan/' + slugOf(t) + '"><img src="' + IMG('plans/plan_' + esc(t) + '.jpg') + '" alt="' + esc(NAME + ' ' + t + '타입 평면도') + '" loading="lazy"><b>' + esc(t) + '</b><span>' + esc(kindOf(t) + ' · 전용 ' + exOf(t) + '㎡ · ' + hhOf(t) + '세대') + '</span></a>').join('') + '</div>' + cta('타입별 매매 · 전세 · 월세 상담');
   return shell(base, '/plan', title, desc, body, [{ '@context': 'https://schema.org', '@type': 'ItemList', name: title, itemListElement: TYPES.map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: base + '/plan/' + slugOf(t), name: NAME + ' ' + t + '타입' })) }, crumbs(base, [['홈', '/'], ['평면', '/plan']])]);
 }
@@ -63,7 +63,8 @@ export function planIndex(base) {
 export function planPage(base, slug, rows) {
   const t = typeOfSlug(slug); if (!t) return null;
   const T = TY[t], bl = blocks(t), pr = PR[t], ex = exOf(t), path = '/plan/' + slugOf(t);
-  const title = NAME + ' ' + t + ' 평면 · 분양가', desc = NAMEX + ' ' + t + '타입 전용 ' + ex + '㎡ 방' + T.rooms + '·욕실' + T.baths + ', ' + hhOf(t) + '세대. 평면 · 분양가 · 매물';
+  const pw = pr ? '평면 · 분양가' : '평면 · 면적';   // 분양가 자료가 없으면(공개 안 함) 제목에 '분양가'를 쓰지 않음
+  const title = NAME + ' ' + t + ' ' + pw, desc = NAMEX + ' ' + t + '타입 전용 ' + ex + '㎡ 방' + T.rooms + '·욕실' + T.baths + ', ' + hhOf(t) + '세대. ' + pw + ' · 매물';
   const mine = rows.filter(r => r.type === t);
   const tr = [['구분', kindOf(t)]].concat(bl.map(x => [x.b, '전용 ' + x.ex + '㎡ · 공급 ' + x.sup + '㎡ · ' + x.hh + '세대']),
     [['방 · 욕실', '방 ' + T.rooms + ' · 욕실 ' + T.baths], ['있는 동', dongsOf(t).join(' · ')], ['향', '라인 · 호실마다 다름 (매물에 표시)']], pr ? [['분양가', won(pr.min) + ' ~ ' + won(pr.max) + ' (층 · 동별, 발코니 확장 · 옵션 별도)']] : []);
