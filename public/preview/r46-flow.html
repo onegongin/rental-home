@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 r46 · 대라수 업무 흐름 정리</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; font-family: Pretendard, -apple-system, 'Malgun Gothic', sans-serif; }
+  .top { position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid #ececf0; }
+  .top .in { max-width: 1280px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .logo { font-weight: 800; font-size: 17px; margin-right: 8px; }
+  .tab { border: 0; background: transparent; border-radius: 9999px; padding: 7px 12px; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; color: #1d1d1f; }
+  .tab.on { background: #c8381e; color: #fff; }
+  .tab.grp { border: 1.5px solid #c8381e; color: #c8381e; }
+  .tab .nw { font-size: 10px; background: #f5b400; color: #1d1d1f; border-radius: 9999px; padding: 0 5px; margin-left: 3px; }
+  .w { max-width: 1280px; margin: 0 auto; padding: 14px 16px 60px; }
+  .intro { background: #fff8e1; border: 1px solid #f5d77a; border-radius: 14px; padding: 12px 16px; font-size: 13px; line-height: 1.75; margin-bottom: 12px; }
+  .kpis { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .kp { background: #fff; border-radius: 12px; padding: 8px 12px; min-width: 112px; font-size: 12px; color: #6e6e73; cursor: pointer; border: 2px solid transparent; }
+  .kp b { display: block; font-size: 21px; color: #1d1d1f; }
+  .kp small { display: block; font-size: 10.5px; color: #8e8e93; }
+  .kp .d { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+  .kp.on { border-color: #1d1d1f; }
+  .main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+  .card { background: #fff; border-radius: 16px; padding: 14px; }
+  .bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; font-size: 12px; color: #6e6e73; }
+  .pill { border: 1px solid #d2d2d7; background: #fff; border-radius: 9999px; padding: 5px 11px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .pill.on { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+  .bd { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 10px; overflow-x: auto; }
+  .dh { background: #1d1d1f; color: #fff; border-radius: 8px 8px 0 0; padding: 3px 8px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; }
+  .gr { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 2px; }
+  .c { font-size: 10.5px; text-align: center; padding: 2px 0; border-radius: 3px; font-variant-numeric: tabular-nums; cursor: pointer; position: relative; }
+  .c.dim { opacity: .15; }
+  .c.sel { box-shadow: 0 0 0 2px #1d1d1f; font-weight: 800; }
+  .c .pd { position: absolute; left: 2px; top: 2px; width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px #157a3f; }
+  .lg { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11.5px; margin-top: 10px; color: #424245; }
+  .lg span { display: inline-flex; align-items: center; gap: 4px; }
+  .lg i { width: 13px; height: 13px; border-radius: 3px; display: inline-block; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+  .side { background: #fff; border-radius: 16px; padding: 16px; font-size: 13px; position: sticky; top: 64px; }
+  .ph { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .ph b { font-size: 19px; }
+  .chip { border-radius: 9999px; padding: 2px 9px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .sec { border-top: 1px solid #f0f0f2; margin-top: 12px; padding-top: 10px; }
+  .sec h4 { margin: 0 0 6px; font-size: 12px; color: #6e6e73; }
+  .kv { display: grid; grid-template-columns: 82px 1fr; gap: 5px 10px; }
+  .kv span:nth-child(odd) { color: #6e6e73; }
+  .big { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .seg { display: inline-flex; background: #f2f2f5; border-radius: 9999px; padding: 3px; }
+  .seg button { border: 0; background: transparent; border-radius: 9999px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; color: #6e6e73; }
+  .seg button.on { background: #fff; color: #1d1d1f; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  .vac { background: #fdecea; border-radius: 12px; padding: 9px 12px; display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+  .vac b { font-size: 20px; color: #d2264b; }
+  .pub { background: #f0f9f3; border: 1px solid #cfe9d8; border-radius: 12px; padding: 10px 12px; margin-top: 8px; }
+  .pub .seg button.on { background: #157a3f; color: #fff; }
+  .tl .st { display: flex; gap: 8px; padding: 3px 0; }
+  .tl .o { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex: none; }
+  .tl small { color: #8e8e93; }
+  .btn { border: 0; border-radius: 10px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .gone { margin-top: 10px; font-size: 11.5px; color: #8e8e93; background: #f5f5f7; border-radius: 10px; padding: 8px 10px; line-height: 1.6; }
+  .gone s { color: #aeaeb2; }
+  .vlist .vr { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr 1.6fr; gap: 6px; padding: 8px 6px; border-bottom: 1px solid #f0f0f2; font-size: 12.5px; align-items: center; }
+  .vlist .vr.h { font-size: 11.5px; color: #6e6e73; font-weight: 700; }
+  .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .kc { background: #fff; border-radius: 14px; padding: 12px; font-size: 12.5px; line-height: 1.6; border: 2px solid transparent; }
+  .kc b { font-size: 14px; display: block; }
+  .kc s { color: #aeaeb2; font-size: 11.5px; }
+  .note { background: #fff; border-radius: 14px; padding: 14px 18px; font-size: 13px; line-height: 1.8; color: #3a3a3c; margin-top: 14px; }
+  .q { background: #fff8e1; border: 1px solid #f5d77a; border-radius: 14px; padding: 12px 16px; font-size: 13px; line-height: 1.8; margin-top: 14px; }
+  .hide { display: none; }
+  @media (max-width: 1000px) { .main { grid-template-columns: 1fr; } .side { position: static; } .cards { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+  <span class="logo">첨단대라수1차</span>
+  <button class="tab on" data-v="board" onclick="view('board')">동호배치표</button>
+  <button class="tab" onclick="">단지배치</button>
+  <button class="tab" data-v="card" onclick="view('card')">상담카드<span class="nw">구분 정리</span></button>
+  <button class="tab">상담이력대장</button>
+  <button class="tab">계약자DB</button>
+  <button class="tab">임차만기</button>
+  <button class="tab" data-v="vac" onclick="view('vac')">공실 · 신규분양<span class="nw">새</span></button>
+  <button class="tab grp">대라수 업무 ▾</button>
+  <button class="tab" data-v="mk" onclick="view('mk')">매물보드<span class="nw">개인 소유</span></button>
+  <button class="tab">설정</button>
+</div></div>
+
+<div class="w">
+  <div class="intro"><b>시안 r46 — 1~3순위 반영 모습.</b> 계약자DB 는 지금 그대로 (계약조건 <b>10.16 혜택가</b> = 분양전환 계약 · <b>전세연장</b> = 계약자 대라수 · <b>빈칸</b> = 만기 퇴거 후 신규분양전환). 아래 화면은 모두 이 구분을 읽어서 보여 줄 뿐, 따로 입력하지 않습니다. 위 탭에서 <b>동호배치표 · 상담카드 · 공실 · 신규분양 · 매물보드</b> 를 눌러 보세요. (호실 배정 · 숫자는 실제와 같은 수의 예시)</div>
+
+  <!-- 동호배치표 -->
+  <div id="v-board">
+    <div class="kpis" id="kpis"></div>
+    <div class="main">
+      <div class="card">
+        <div class="bar">색상 <button class="pill" id="cmT" onclick="cm='t';draw()">타입</button><button class="pill on" id="cmS" onclick="cm='s';draw()">진행상태</button><button class="pill">분양가 보기(억)</button>
+          <span style="margin-left:auto;color:#8e8e93">#급매 · #광고중(타부동산) · 매매 0 칩 → 숨김</span></div>
+        <div class="bd" id="bd"></div>
+        <div class="lg" id="lg"></div>
+      </div>
+      <div class="side" id="side"></div>
+    </div>
+  </div>
+
+  <!-- 공실 · 신규분양 -->
+  <div id="v-vac" class="hide">
+    <div class="card vlist">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><b style="font-size:16px">공실 · 신규분양전환 대상</b><span style="font-size:12px;color:#6e6e73">계약조건 빈칸 세대 — 공실 일수 긴 순 · 만기 전(퇴거 예정)도 함께</span>
+        <span class="seg" style="margin-left:auto" id="vf"></span></div>
+      <div class="vr h"><span>호실</span><span>상태</span><span>분양가 (매입보장가)</span><span>손님 화면</span><span>할 일</span></div>
+      <div id="vrows"></div>
+    </div>
+    <div class="note">· 손님 화면 공개는 <b>여기 · 호실 상세 두 곳에서</b> 직원이 고름 (대표 · 관리자 · 권한자) — 끄기 / <b>신규분양(매매)</b> / <b>전세</b> / 둘 다 · 공개하면 손님 단지 화면 '공개 세대' 칸에 동 · 층구간 · 타입 · 구분만 (호수 · 가격 없음, 지금 규칙 그대로)<br>· 퇴거 예정(만기 전) 세대는 '입주일 협의' 로 공개 가능 · 전세 희망 / 신규분양 문의 손님 수가 옆에 나오고 누르면 그 손님들 상담카드</div>
+  </div>
+
+  <!-- 상담카드 -->
+  <div id="v-card" class="hide">
+    <div class="cards">
+      <div class="kc" style="border-color:#0066cc"><b>임차인</b>지금 사는 전세 세입자<br>분양전환 · 전세연장 · 퇴거 상담<br><s>예전: 수분양자</s></div>
+      <div class="kc" style="border-color:#157a3f"><b>신규분양 매수</b>공실 · 퇴거 세대를 분양전환가로 사려는 손님<br><s>예전: 매수대기 · 신규고객</s></div>
+      <div class="kc" style="border-color:#0f8a8a"><b>전세 희망</b>공실 세대에 전세로 들어오려는 손님 <span class="chip" style="background:#f5b400">새</span></div>
+      <div class="kc" style="border-color:#8e2c6e"><b>개인 소유자</b>분양전환으로 집주인이 된 분 — 이후 전월세 · 매매 의뢰<br><s>예전: 소유자 · 계약자</s></div>
+    </div>
+    <div class="note">· 상담카드 · 분양전환상담 · 손님 관심등록이 <b>같은 4가지 이름</b>을 씀 (손님 창 '거래 구분 매수 · 전세' 도 → 신규분양 매수 · 전세 희망 카드로)<br>· 상담카드 탭 위치는 지금처럼 상담이력대장 앞 · 예전 카드는 그대로 두고 이름만 새 이름으로 보임</div>
+  </div>
+
+  <!-- 매물보드 -->
+  <div id="v-mk" class="hide">
+    <div class="card">
+      <b style="font-size:16px">매물보드 — 개인 소유 세대 일반 중개</b>
+      <p style="font-size:13px;color:#6e6e73;line-height:1.7;margin:6px 0 10px">분양전환 계약(계약조건 10.16 혜택가) 세대는 <span class="chip" style="background:#f3e8fb;color:#8e2c6e">개인 소유</span> 표시 → 소유자(계약자DB 계약자)가 내놓는 <b>매매 · 전세 · 월세</b> 매물을 여기서 관리. 분양권 문구(수분양자 · 전매 · 프리미엄)는 모두 숨김.</p>
+      <div class="chips" style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip" style="background:#1d1d1f;color:#fff">전체 3</span><span class="chip" style="border:1px solid #d2d2d7">매매 1</span><span class="chip" style="border:1px solid #d2d2d7">전세 2</span><span class="chip" style="border:1px solid #d2d2d7">월세 0</span></div>
+      <div style="margin-top:10px;font-size:13px;line-height:2">101동 1503호 80A · <span class="chip" style="background:#f3e8fb;color:#8e2c6e">개인 소유</span> 전세 3억 · 2027-03 입주<br>104동 1201호 59A · <span class="chip" style="background:#f3e8fb;color:#8e2c6e">개인 소유</span> 매매 4.1억</div>
+    </div>
+  </div>
+
+  <div class="q"><b>정해 주실 것</b><br>
+    1. 공실 세대 손님 화면 공개 구분: <b>끄기 / 신규분양(매매) / 전세 / 둘 다</b> 4가지로 괜찮을까요?<br>
+    2. 새 탭 이름 <b>'공실 · 신규분양'</b> 괜찮을까요? (탭 대신 [대라수 업무 ▾] 안에 넣을 수도 있음)<br>
+    3. 분양권용 매물상태(가계약 · 명의변경완료 등)는 <b>숨기기</b>로 하겠습니다 (지우지 않음)
+  </div>
+</div>
+
+<script>
+var BASE = '2026-11-18', TODAY = '2026-11-30';
+var ST = { '분양전환 계약': ['#0066cc', '#fff'], '전세연장': ['#cdeeed', '#0b5e5e'], '퇴거 예정': ['#fff4e8', '#b25000'], '공실': ['#d2264b', '#fff'], '신규분양 계약': ['#157a3f', '#fff'], '전세 신규': ['#0f8a8a', '#fff'] };
+var TC = { '80A': '#ffd34d', '80B': '#f39c4a', '59A': '#8cc63f', '59B': '#f4a6c8', '59C': '#9fd4f0' };
+var LINES = { 101: ['80B', '80B', '80A'], 102: ['80A', '80B', '80B'], 103: ['59C', '59B', '59A'], 104: ['59A', '59B', '59C'] };
+var seed = 11; function r() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+var U = []; [101, 102, 103, 104].forEach(function (d) { for (var f = 28; f >= 4; f--) for (var l = 1; l <= 3; l++) U.push({ d: d, f: f, l: l, ho: f * 100 + l, type: LINES[d][l - 1] }); });
+var idx = U.map(function (_, i) { return i; }).sort(function () { return r() - .5; });
+idx.forEach(function (i, k) { var u = U[i];
+  if (k < 111) { u.cond = '10.16 혜택가'; u.owner = '김*수'; }
+  else if (k < 204) { u.cond = '전세연장'; u.owner = '대라수(회사)'; u.end = '2028-0' + (1 + Math.floor(r() * 9)) + '-15'; }
+  else { u.cond = ''; u.owner = ''; if (k < 228) { u.end = '2026-' + (9 + Math.floor(r() * 2)) + '-0' + (1 + Math.floor(r() * 9)); } else { u.end = '2027-0' + (1 + Math.floor(r() * 8)) + '-20'; } }
+  u.pub = ''; });
+U.filter(function (u) { return !u.cond; }).slice(0, 6).forEach(function (u, i) { u.pub = ['매매', '전세', '둘 다', '매매', '', '전세'][i]; });
+U.filter(function (u) { return !u.cond && u.end < BASE; }).slice(0, 2).forEach(function (u) { u.newc = true; });
+function dn(s) { return Date.parse(s + 'T00:00:00Z') / 864e5; }
+function stOf(u) { if (u.cond === '10.16 혜택가') return '분양전환 계약'; if (u.cond === '전세연장') return '전세연장'; if (u.newc) return '신규분양 계약'; return u.end < TODAY ? '공실' : '퇴거 예정'; }
+function vday(u) { if (stOf(u) !== '공실') return 0; var s = Math.max(dn(BASE), dn(u.end) + 1); return dn(TODAY) - s + 1; }
+var cm = 's', only = '', sel = null, vf = '';
+function view(v) { ['board', 'vac', 'card', 'mk'].forEach(function (k) { document.getElementById('v-' + k).className = k === v ? '' : 'hide'; });
+  Array.prototype.forEach.call(document.querySelectorAll('.tab[data-v]'), function (b) { b.className = 'tab' + (b.getAttribute('data-v') === v ? ' on' : ''); }); }
+function setPub(i, v) { U[i].pub = v; draw(); }
+function pubSeg(i) { var u = U[i]; return '<span class="seg">' + [['', '끄기'], ['매매', '신규분양'], ['전세', '전세'], ['둘 다', '둘 다']].map(function (x) { return '<button class="' + ((u.pub || '') === x[0] ? 'on' : '') + '" onclick="event.stopPropagation();setPub(' + i + ',\'' + x[0] + '\')">' + x[1] + '</button>'; }).join('') + '</span>'; }
+function draw() {
+  document.getElementById('cmT').className = 'pill' + (cm === 't' ? ' on' : ''); document.getElementById('cmS').className = 'pill' + (cm === 's' ? ' on' : '');
+  var cnt = {}; U.forEach(function (u) { var s = stOf(u); cnt[s] = (cnt[s] || 0) + 1; });
+  var tgt = U.filter(function (u) { return !u.cond; }).length, mon = U.filter(function (u) { return u.end && u.end.slice(0, 7) === TODAY.slice(0, 7); }).length;
+  document.getElementById('kpis').innerHTML = [['', '총세대', 300, '#1d1d1f', ''], ['분양전환 계약', '분양전환 계약', cnt['분양전환 계약'], '#0066cc', '계약조건 10.16 혜택가'], ['전세연장', '전세연장', cnt['전세연장'], '#0f8a8a', '계약자 대라수'], ['_t', '신규분양 대상', tgt, '#1d1d1f', '계약조건 빈칸'], ['퇴거 예정', '퇴거 예정', cnt['퇴거 예정'] || 0, '#b25000', '만기 전'], ['공실', '공실', cnt['공실'] || 0, '#d2264b', '만기 지남'], ['신규분양 계약', '신규분양 계약', cnt['신규분양 계약'] || 0, '#157a3f', ''], ['_p', '손님 화면 공개', U.filter(function (u) { return u.pub; }).length, '#157a3f', '공실 · 퇴거 예정']].map(function (x) {
+    return '<div class="kp' + (only === x[0] ? ' on' : '') + '" onclick="only=(only===\'' + x[0] + '\'?\'\':\'' + x[0] + '\');draw()"><span class="d" style="background:' + x[3] + '"></span>' + x[1] + '<b>' + x[2] + '</b><small>' + x[4] + '</small></div>'; }).join('');
+  function lit(u) { if (!only) return cm === 't' ? !u.cond : true; if (only === '_t') return !u.cond; if (only === '_p') return !!u.pub; return stOf(u) === only; }
+  document.getElementById('bd').innerHTML = [101, 102, 103, 104].map(function (d) {
+    return '<div><div class="dh"><span>' + d + '동</span><span>75</span></div><div class="gr">' + U.map(function (u, i) { return [u, i]; }).filter(function (x) { return x[0].d === d; }).map(function (x) { var u = x[0], i = x[1], s = stOf(u), c = cm === 's' ? ST[s] : [TC[u.type], '#1d1d1f'], vd = vday(u);
+      return '<div class="c' + (lit(u) ? '' : ' dim') + (sel === i ? ' sel' : '') + '" title="' + s + (vd ? ' ' + vd + '일째' : '') + '" style="background:' + c[0] + ';color:' + c[1] + '" onclick="sel=' + i + ';draw()">' + (u.pub ? '<span class="pd"></span>' : '') + (cm === 's' && vd ? vd + '일' : u.ho) + '</div>'; }).join('') + '</div></div>'; }).join('');
+  document.getElementById('lg').innerHTML = (cm === 's' ? Object.keys(ST).filter(function (k) { return k !== '전세 신규'; }).map(function (s) { return '<span><i style="background:' + ST[s][0] + '"></i>' + s + '</span>'; }).join('') + '<span>· 공실 칸 숫자 = 공실 일수</span>' : '<span>타입 색 · 흐린 칸 = 계약조건 있음 · 밝은 칸 = 신규분양 대상</span>') + '<span><i style="background:#fff;box-shadow:0 0 0 1px #157a3f;border-radius:50%;width:8px;height:8px"></i>손님 화면 공개 중</span>';
+  // 호실 상세
+  var u = sel == null ? U.filter(function (x) { return stOf(x) === '공실'; })[0] : U[sel], si = U.indexOf(u), s = stOf(u), vd = vday(u), ben = u.type[0] === '8' ? 395 : 313, g = ben + 40;
+  var h = '<div class="ph"><b>' + u.d + '동 ' + u.ho + '호</b><span class="chip" style="background:' + TC[u.type] + '">' + u.type + '</span><span class="chip" style="background:' + ST[s][0] + ';color:' + ST[s][1] + '">' + s + '</span>' + (u.cond === '10.16 혜택가' ? '<span class="chip" style="background:#f3e8fb;color:#8e2c6e">개인 소유</span>' : '') + '</div>';
+  h += '<div class="sec"><h4>계약자DB</h4><div class="kv"><span>계약조건</span><span>' + (u.cond || '— (신규분양 대상)') + '</span><span>계약자</span><span>' + (u.owner || '—') + '</span>' + (u.end ? '<span>임차 만기</span><span>' + u.end + '</span>' : '') + '</div></div>';
+  h += '<div class="sec"><h4>분양가 <span class="seg" style="margin-left:6px"><button class="on">매입보장가</button><button>10.16 혜택가</button></span></h4><div class="big">' + (g * 1e6).toLocaleString() + '원</div><div style="font-size:12px;color:#0066cc;font-weight:600">▸ 10.16 혜택가 보기</div>' + (vd ? '<div class="vac"><b>공실 ' + vd + '일째</b><span style="font-size:11.5px;color:#6e6e73">기산 ' + (u.end < BASE ? BASE : '만기 다음 날') + '</span></div>' : '') + '</div>';
+  if (!u.cond && !u.newc) h += '<div class="pub"><div style="font-size:12px;font-weight:700;color:#157a3f;margin-bottom:6px">손님 화면 공개</div>' + pubSeg(si) + '<div style="font-size:11px;color:#6e6e73;margin-top:6px">동 · 층구간 · 타입 · 구분만 (호수 · 가격 없음)</div></div>';
+  h += '<div class="sec"><h4>세대 이력</h4><div class="tl">' + (s === '공실' ? '<div class="st"><span class="o" style="background:#d2264b"></span><div>공실 ' + vd + '일째 <small>· ' + BASE + '부터</small></div></div><div class="st"><span class="o" style="background:#b25000"></span><div>임차 만기 · 퇴거 <small>' + u.end + '</small></div></div>' : '') + (u.cond === '전세연장' ? '<div class="st"><span class="o" style="background:#0f8a8a"></span><div>전세연장 <small>~ ' + u.end + '</small></div></div>' : '') + (u.cond === '10.16 혜택가' ? '<div class="st"><span class="o" style="background:#0066cc"></span><div>분양전환 계약 <small>· 10.16 혜택가</small></div></div>' : '') + '<div class="st"><span class="o" style="background:#e8e8ed"></span><div>상담 2회 <small>· 상담이력대장</small></div></div><div class="st"><span class="o" style="background:#e8e8ed"></span><div>전세 계약 <small>2024-09-30</small></div></div></div></div>';
+  h += '<div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap"><button class="btn" style="background:#0066cc;color:#fff">이 호실로 상담카드</button>' + (!u.cond ? '<button class="btn" style="background:#f2f2f5">문의 손님 2명</button>' : '') + '</div>';
+  h += '<div class="gone">빠지는 칸: <s>수분양자 미입력 · 연락처 미입력</s> <s>계약자 · 연락처는 상담카드(분양권 · 수분양자 매도)에서만</s> <s>진행표시 #광고중(타부동산)</s> <s>매물상태 미확인 · 보유 · 가계약 · 명의변경완료</s></div>';
+  document.getElementById('side').innerHTML = h;
+  // 공실 목록
+  var F = [['', '전체'], ['공실', '공실'], ['퇴거 예정', '퇴거 예정'], ['pub', '공개 중']];
+  document.getElementById('vf').innerHTML = F.map(function (x) { return '<button class="' + (vf === x[0] ? 'on' : '') + '" onclick="vf=\'' + x[0] + '\';draw()">' + x[1] + '</button>'; }).join('');
+  var V = U.map(function (u, i) { return [u, i]; }).filter(function (x) { var u = x[0], s = stOf(u); return !u.cond && !u.newc && (!vf || (vf === 'pub' ? u.pub : s === vf)); }).sort(function (a, b) { return vday(b[0]) - vday(a[0]) || (a[0].end < b[0].end ? -1 : 1); }).slice(0, 14);
+  document.getElementById('vrows').innerHTML = V.map(function (x) { var u = x[0], i = x[1], s = stOf(u), vd = vday(u), ben = u.type[0] === '8' ? 395 : 313;
+    return '<div class="vr"><span><b>' + u.d + '동 ' + u.ho + '호</b> <span class="chip" style="background:' + TC[u.type] + '">' + u.type + '</span></span><span style="font-weight:700;color:' + (vd ? '#d2264b' : '#b25000') + '">' + (vd ? '공실 ' + vd + '일째' : '퇴거 예정 · ' + u.end) + '</span><span>' + ((ben + 40) / 100).toFixed(2) + '억</span><span>' + pubSeg(i) + '</span><span><button class="btn" style="background:#0066cc;color:#fff;padding:5px 9px">상담카드</button> <button class="btn" style="background:#f2f2f5;padding:5px 9px">문의 ' + (i % 4) + '명</button></span></div>'; }).join('');
+}
+draw();
+</script>
+</body>
+</html>
