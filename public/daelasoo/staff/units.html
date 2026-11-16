@@ -172,7 +172,7 @@ function open(id) {
     <label>메모 (직원만 보임)</label>
     <textarea id="f-memo" maxlength="300" ${ro}>${esc(c.memo || '')}</textarea>
     ${D.canEdit ? '<div class="acts"><button class="btn k" onclick="saveConv()">상태 저장</button></div>' : ''}
-    <div class="acts"><a class="btn s" style="text-decoration:none;color:var(--ink)" href="consults.html#unit=${cur.id}">이 세대 상담카드 열기 →</a></div>
+    <div class="acts"><a class="btn s" style="text-decoration:none;color:var(--ink)" href="./?unit=${cur.id}">동호배치표에서 이 세대 열기 →</a></div>
     <div class="pubbox" id="pubbox"></div>
     <div class="note">공개 · 내리기 · 상태 변경은 감사기록에 남습니다. 상태가 공실 · 퇴거확정(매물동의)이 아니게 되면 손님 화면에서 자동으로 내려갑니다.</div>`;
   drawPub();

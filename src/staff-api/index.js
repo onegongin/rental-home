@@ -101,7 +101,7 @@ export async function staffApi(req, env, url, u) {
       // 계약관리 '계약완료 정리' 잠금 (시안 r48 확정 2026-11-17): 확정 · 확정된 소개 구분 · 이름 · 계약진행 직원 고치기는 대표 · 관리자만 (사유는 화면이 기록)
       if (x.s === 'c' && !del && v && v.kind === 'client' && v.ct && !['대표', '관리자'].includes(u.role)) {
         const prev = await lastClientCt(db, v.phone || (stored && stored.phone), k), pf = prev && prev.fixed, nf = v.ct.fixed;
-        const same = (a, b) => ['intro', 'bk', 'side', 'staff'].every(f => String((a || {})[f] || '') === String((b || {})[f] || ''));
+        const same = (a, b) => ['intro', 'bk', 'side', 'staff', 'mgmFee'].every(f => String((a || {})[f] || '') === String((b || {})[f] || ''));
         if ((nf && !(pf && pf.by === nf.by && pf.at === nf.at)) || (pf && (!nf || !same(prev, v.ct)))) { rejected.push(x.s + '|' + k); continue; }
       }
       // 가린 채로 받은 칸은 원래 값으로

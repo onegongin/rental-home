@@ -1,6 +1,6 @@
 // 수수료 청구서 · MGM 저장 (R3-3) — 대표 · 관리자 전용 API 에서만 부름
 import { ulid } from '../lib/id.js';
-import { parse } from './kv.js';
+import { dashCards, asConsults } from './dash-cards.js';
 
 const all = async (db, sql, ...b) => (await db.prepare(sql).bind(...b).all()).results || [];
 
@@ -10,10 +10,10 @@ export async function claimRows(db) {
     all(db, 'SELECT * FROM claims ORDER BY at'),
     all(db, 'SELECT * FROM claim_locks'),
     all(db, 'SELECT name, fee, tax FROM claim_staff'),
-    all(db, 'SELECT id, kind, unit_id, name, mgr, progress, data FROM consults WHERE deleted_at IS NULL')
+    dashCards(db)
   ]);
-  cards.forEach(c => { const d = parse(c.data) || {}; ['contractUnit', 'mgmAgency', 'mgmBroker', 'mgmFee', 'mgmFixed'].forEach(k => { c[k] = d[k] || null; }); delete c.data; });
-  return { conv, claims, locks, staff, cards };
+  // 계약자 · 계약담당 · MGM = 상담카드(대시보드) 계약관리 (2026-11-17 대표: 분양전환상담 카드 삭제) — MGM 은 상담카드에서 대표 · 관리자가 확정한 것
+  return { conv, claims, locks, staff, cards: asConsults(cards).consults };
 }
 
 export const getClaim = (db, id) => db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();

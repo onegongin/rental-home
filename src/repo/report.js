@@ -1,14 +1,13 @@
 // 일일업무보고 읽기 · 저장 (R3-2) — 대표 · 관리자 · 권한자 전용 API 에서만 부름
 import { parse } from './kv.js';
+import { dashCards, asConsults } from './dash-cards.js';
 
 export async function reportRows(db) {
   const all = async sql => (await db.prepare(sql).all()).results || [];
-  const [conv, logs, cards] = await Promise.all([
-    all('SELECT unit_id, status, done_at FROM unit_conv'),
-    all('SELECT l.consult_id, l.date, l.at, l.channel, l.memo, c.kind FROM consult_logs l JOIN consults c ON c.id = l.consult_id WHERE c.deleted_at IS NULL'),
-    all('SELECT id, kind, name, progress, data FROM consults WHERE deleted_at IS NULL')
-  ]);
-  cards.forEach(c => { const d = parse(c.data) || {}; c.book = d.book || null; c.intUnits = Array.isArray(d.intUnits) ? d.intUnits : []; c.ctype = d.ctype || ''; delete c.data; });
+  const [conv, dc] = await Promise.all([all('SELECT unit_id, status, done_at FROM unit_conv'), dashCards(db)]);
+  // 상담카드(대시보드)로 하나로 (2026-11-17 대표: 분양전환상담 카드 삭제)
+  const { consults, logs } = asConsults(dc);
+  const cards = consults.map(c => ({ id: c.id, kind: c.kind, name: c.name, progress: c.progress, book: c.book, intUnits: c.intUnits, ctype: c.ctype }));
   return { conv, logs, cards };
 }
 

@@ -90,7 +90,7 @@ function draw() {
     <div class="kv"><span>10.16 혜택가</span><b>${won(u.benefit)}</b><span>매입보장가</span><b>${won(u.hedge)}</b><span>임대보증금 (고객DB)</span><b>${u.dep ? won(u.dep) : '—'}</b></div>
     <div class="need"><span>필요금액 (혜택가 − 보증금)</span><b>${won(u.need)}</b></div>
     ${u.rent ? `<div class="rent"><h4>전세연장 시 변경 임대보증금</h4><div class="kv"><span>현 임대보증금</span><b>${won(u.rent.cur)}</b><span>변경 임대보증금</span><b>${won(u.rent.next)}</b><span>인상금액</span><b style="color:#6d28d9">+${won(u.rent.up)}</b></div></div>` : '<div class="note">전세연장 해당 자료 없음</div>'}
-    <a class="btn" href="consults.html#unit=${u.id}">이 세대 상담카드 열기 →</a>
+    <a class="btn" href="./?unit=${u.id}">동호배치표에서 이 세대 열기 →</a>
     <div class="note">상담카드를 새로 만들면 '적용 분양가'(10.16 혜택가)와 '기납입 임대보증금'이 이 값으로 들어갑니다 — 고칠 수 있음. 신규고객 카드는 '계약할 호실'을 적으면 그 호실 혜택가가 들어갑니다.</div>`;
   document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { mode = b.dataset.m; draw(); });
   document.querySelectorAll('[data-u]').forEach(b => b.onclick = () => { cur = U.find(x => x.id === b.dataset.u); history.replaceState(null, '', '#' + cur.id); draw(); });

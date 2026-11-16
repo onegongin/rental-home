@@ -113,8 +113,8 @@ function draw() {
     ${tile('방문상담 (오늘)', A.visitToday, '누계 ' + A.visitAll)}
     ${tile('유선 · 문자 상담 (오늘)', A.otherToday, '누계 ' + A.otherAll)}
     ${tile('오늘 예약방문', B.filter(b => b.day === '오늘').length, '내일 ' + B.filter(b => b.day === '내일').length)}
-    ${tile('신규고객 카드', K.newCards.total, '상담중 ' + (P['상담중'] || 0) + ' · 계약완료 ' + (P['계약완료'] || 0) + ' · 종료 ' + (P['종료'] || 0), 'consults.html#list=new')}
-    ${tile('관심등록 대기', K.leads, '손님 화면에서 들어옴', 'consults.html#list=new')}
+    ${tile('신규고객 카드', K.newCards.total, '상담중 ' + (P['상담중'] || 0) + ' · 계약완료 ' + (P['계약완료'] || 0) + ' · 종료 ' + (P['종료'] || 0), './?tab=log')}
+    ${tile('관심등록 대기', K.leads, '손님 화면에서 들어옴', './?tab=log')}
     ${tile('손님 화면 공개', K.pub.total, '공실 ' + K.pub.vac + ' · 매물동의 ' + K.pub.out, 'units.html')}
   </div>
   <div class="card dist"><h2>${mgr ? esc(mgr) + ' 담당 ' + V.length + '세대' : '300세대'} 전환 상태</h2><div class="bar">${stTot.map(([s, v]) => `<i title="${esc(s)} ${v}" style="width:${v / tot * 100}%;background:${COL[s]}"></i>`).join('')}</div><div class="lg">${stTot.map(([s, v]) => `<span><i style="background:${COL[s]}"></i>${esc(s)}<b>${v}</b></span>`).join('')}</div></div>
@@ -135,8 +135,8 @@ function draw() {
   </div></div>`;
   document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { mgr = b.dataset.m === mgr && b.tagName === 'TR' ? '' : b.dataset.m; draw(); scrollTo(0, 0); });
   document.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { days = Number(b.dataset.d); load(); });
-  document.querySelectorAll('tr[data-u]').forEach(t => t.onclick = () => { location.href = 'consults.html#unit=' + t.dataset.u; });
-  document.querySelectorAll('tr[data-c]').forEach(t => t.onclick = () => { location.href = 'consults.html#id=' + t.dataset.c; });
+  document.querySelectorAll('tr[data-u]').forEach(t => t.onclick = () => { location.href = './?unit=' + t.dataset.u; });
+  document.querySelectorAll('tr[data-c]').forEach(t => t.onclick = () => { location.href = './?tab=card'; });
   if ($('csv')) $('csv').onclick = () => csv(U);
 }
 function map() {

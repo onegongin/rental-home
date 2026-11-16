@@ -153,11 +153,11 @@ function mgmView() {
   const by = p => all.filter(r => r.proof === p).reduce((s, r) => s + r.amt, 0);
   return `<div class="ptitle">첨단 대라수 1차 MGM 청구 내역서</div>
     <h2>MGM 청구 내역서</h2>
-    <p class="note">신규고객 상담카드 › 계약관리 상담 › <b>최종 MGM 지급 부동산</b>을 적고 [확정]한 호실만 부동산별로 모입니다. 확정 뒤 부동산 · 금액 · 계약할 호실을 바꾸면 확정이 풀립니다.</p>
-    ${V.mgmWait.length ? `<div class="warn"><b>확정 대기 ${V.mgmWait.length}건</b> — ${V.mgmWait.map(w => `${esc(w.agency)} · ${esc(w.name)}${w.unit ? ' (' + uName(w.unit) + ')' : ''} · ${esc(w.fee || '금액 없음')} <button class="x" data-fix="${w.id}">확정</button> <a href="consults.html#id=${w.id}">카드</a>`).join(' / ')}</div>` : ''}
+    <p class="note">상담카드(신규분양 매수) › 2. 계약관리 상담 › 계약완료 정리에서 <b>MGM · 부동산명 · MGM 수수료</b>를 고르고 <b>대표 · 관리자가 [확정]</b>한 호실만 부동산별로 모입니다. 고치기 · 확정 풀기는 상담카드에서 사유를 적어야 합니다.</p>
+    ${V.mgmWait.length ? `<div class="warn"><b>확정 대기 ${V.mgmWait.length}건</b> — ${V.mgmWait.map(w => `${esc(w.agency)} · ${esc(w.name)}${w.unit ? ' (' + uName(w.unit) + ')' : ''} · ${esc(w.fee || '금액 없음')} — 상담카드에서 확정`).join(' / ')}</div>` : ''}
     <div class="sum"><div><small>부동산</small><b>${V.mgm.length}곳</b></div><div><small>현금영수증</small><b>${won(by('현금영수증'))}</b></div><div><small>세금계산서</small><b>${won(by('세금계산서'))}</b></div><div class="fin"><small>MGM 총액 · ${all.length}호실</small><b>${won(tot)}</b></div></div>
     ${V.mgm.length ? V.mgm.map(a => `<div class="agency"><div class="hd"><div><b>${esc(a.agency)}</b> <span>${a.brokers.length ? '중개사 ' + esc(a.brokers.join(', ')) : ''}</span></div><span>${a.rows.length}호실 · <b style="color:var(--ink);font-size:14px">${won(a.total)}</b></span></div>
-      <div class="tbl"><table><tr><th>동·호</th><th>계약자</th><th>MGM 금액</th><th>증빙</th><th>확정</th><th class="noprint"></th></tr>${a.rows.map(r => `<tr><td>${r.unit ? uName(r.unit) : '—'}</td><td>${esc(r.name)}</td><td class="r">${won(r.amt)}</td><td>${esc(r.proof)}</td><td>${esc(r.fixed.by || '')} ${r.fixed.at ? new Date(r.fixed.at).toLocaleDateString('ko-KR') : ''}</td><td class="noprint"><button class="x" data-unfix="${r.id}">확정 취소</button></td></tr>`).join('')}</table></div></div>`).join('')
+      <div class="tbl"><table><tr><th>동·호</th><th>계약자</th><th>MGM 금액</th><th>증빙</th><th>확정</th><th class="noprint"></th></tr>${a.rows.map(r => `<tr><td>${r.unit ? uName(r.unit) : '—'}</td><td>${esc(r.name)}</td><td class="r">${won(r.amt)}</td><td>${esc(r.proof)}</td><td>${esc(r.fixed.by || '')} ${r.fixed.at ? new Date(r.fixed.at).toLocaleDateString('ko-KR') : ''}</td><td class="noprint"></td></tr>`).join('')}</table></div></div>`).join('')
       : '<p class="note">확정된 MGM 지급 부동산이 없습니다.</p>'}
     <div class="acts"><span style="flex:1"></span><button class="btn k" id="print">A4 인쇄 · PDF</button><button class="btn s" id="xlsx">엑셀 받기</button></div>`;
 }

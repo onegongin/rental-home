@@ -68,8 +68,9 @@ test('API: 로그인 필요 · 신규고객 예약 이름은 권한 없으면 �
   const v = agent('3.3.3.3');
   await v('/api/auth/device', { body: { code: KEY } }); await v('/api/auth/login', { body: { name: '열람이', pin: '0000' } }); await v('/api/auth/pin', { body: { pin: '4321' } });
   const kst = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
-  await boss('/api/staff/consults', { body: { kind: 'new', name: '박신규', phone: '010-9876-5432', mgr: '대표', data: { book: kst + 'T15:00' } } });
-  await boss('/api/staff/consults', { body: { kind: 'tenant', unit: '101-401', name: '김임차', phone: '010-1111-2222', mgr: '대표', log: { date: kst, channel: '방문상담', memo: '상담' } } });
+  const card = (id, v) => ({ s: 'c', k: id, v: JSON.stringify(Object.assign({ id, at: kst + ' 09:00' }, v)), at: Date.now() });   // 상담카드(kv) — 2026-11-17 분양전환상담 카드 삭제
+  await boss('/api/staff/push', { body: { rows: [card('kN1', { kind: 'client', name: '박신규', phone: '010-9876-5432', mgr: '대표', vis: { on: true, date: kst, time: '15:00', units: [] } }),
+    card('kT1', { kind: 'seller', unit: '101-401', name: '김임차', phone: '010-1111-2222', mgr: '대표', inflow: ['방문'] })] } });
   const a = (await boss('/api/staff/kpi')).json, b = (await v('/api/staff/kpi?days=14')).json;
   assert.equal(a.ok, true); assert.equal(b.days, 14);
   assert.equal(a.books[0].name, '박신규'); assert.equal(b.books[0].name, '박*규');

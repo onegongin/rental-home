@@ -47,9 +47,13 @@ test('API: 대상 · 기본값 · 청구 · 잠금 · 추가 호실 · MGM 확�
 
   // 대상: 전세연장 → 임차인 카드 계약완료(담당 홍) · 공실 → 신규고객 계약완료(담당 김) · 상담중이던 세대 직접 계약완료
   await boss('/api/staff/conv/101-401', { body: { status: '전세연장' } });
-  await boss('/api/staff/consults', { body: { kind: 'tenant', unit: '101-401', name: '김임차', mgr: '홍', progress: '계약완료' } });
+  const card = (id, at, v) => ({ s: 'c', k: id, v: JSON.stringify(Object.assign({ id, at }, v)), at: Date.now() });
+  const push = rows => boss('/api/staff/push', { body: { rows } });
+  const CT = { prog: '계약완료', unit: '102-1902', intro: 'MGM', bk: '행복부동산', mgmFee: '220만 · 세금계산서', staff: '김' };
+  await push([card('cT1', '2026-11-10 10:00', { kind: 'seller', unit: '101-401', name: '김임차', phone: '010-1000-0001', mgr: '홍' })]);
+  await boss('/api/staff/conv/101-401', { body: { status: '계약완료' } });
   await boss('/api/staff/conv/102-1902', { body: { status: '공실' } });
-  const nw = (await boss('/api/staff/consults', { body: { kind: 'new', name: '박신규', mgr: '김', progress: '계약완료', data: { contractUnit: '102-1902', inflow: '부동산', mgmAgency: '행복부동산', mgmBroker: '이중개', mgmFee: '220만 · 세금계산서' } } })).json;
+  await push([card('cN1', '2026-11-11 10:00', { kind: 'client', name: '박신규', phone: '010-2000-0002', mgr: '김', inflow: ['부동산'], ct: CT })]);   // 계약완료 → 102-1902 신규입주 (상담카드 계약관리)
   await boss('/api/staff/conv/103-501', { body: { status: '상담중' } });
   await boss('/api/staff/conv/103-501', { body: { status: '계약완료' } });
   await boss('/api/staff/claims/staff', { body: { name: '김', fee: 110, tax: '부가세' } });
@@ -91,12 +95,12 @@ test('API: 대상 · 기본값 · 청구 · 잠금 · 추가 호실 · MGM 확�
   // MGM: 대기 → 확정 → 내역서 · 카드에서 부동산 바꾸면 확정 풀림
   V = (await adm('/api/staff/claims')).json;
   assert.equal(V.mgmWait.length, 1); assert.equal(V.mgm.length, 0);
-  assert.equal((await adm('/api/staff/claims/mgm', { body: { id: nw.id, fixed: true } })).status, 200);
+  await push([card('cN2', '2026-11-12 10:00', { kind: 'client', name: '박신규', phone: '010-2000-0002', mgr: '김', ct: Object.assign({}, CT, { fixed: { by: '대표', at: '2026-11-12 10:00' } }) })]);   // 상담카드에서 대표 확정
   V = (await adm('/api/staff/claims')).json;
-  assert.equal(V.mgm[0].agency, '행복부동산'); assert.equal(V.mgm[0].total, 2200000); assert.equal(V.mgm[0].rows[0].unit, '102-1902');
-  await boss('/api/staff/consults/' + nw.id, { body: { data: { mgmAgency: '다른부동산' } } });
+  assert.equal(V.mgmWait.length, 0); assert.equal(V.mgm[0].agency, '행복부동산'); assert.equal(V.mgm[0].total, 2200000); assert.equal(V.mgm[0].rows[0].unit, '102-1902');
+  await push([card('cN3', '2026-11-13 10:00', { kind: 'client', name: '박신규', phone: '010-2000-0002', mgr: '김', ct: Object.assign({}, CT, { bk: '다른부동산', fixed: { by: '대표', at: '2026-11-12 10:00' }, hist: ['사유: 정정'] }) })]);   // 대표가 사유 적고 고침
   V = (await adm('/api/staff/claims')).json;
-  assert.equal(V.mgm.length, 0); assert.equal(V.mgmWait[0].agency, '다른부동산');
+  assert.equal(V.mgm[0].agency, '다른부동산', '가장 최근 상담카드 기준');
   const acts = (await boss('/api/admin/audit')).json.rows.map(x => x.act);
-  for (const a of ['수수료 청구', '청구서 잠금', '청구서 잠금 해제', 'MGM 확정', '청구 호실 추가', '청구 되돌림']) assert.ok(acts.includes(a), a);
+  for (const a of ['수수료 청구', '청구서 잠금', '청구서 잠금 해제', '청구 호실 추가', '청구 되돌림']) assert.ok(acts.includes(a), a);
 });
