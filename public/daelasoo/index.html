@@ -61,7 +61,7 @@ a{color:#0066cc;text-decoration:none}a:hover{text-decoration:underline}
 <dc-import name="dashboard" guest-only="{{ true }}" is-public="{{ isPublic }}" sync-url="{{ syncUrl }}" hint-size="100%,100vh"></dc-import>
 </x-dc>
 <!-- R2 공개 세대 (시안 preview/r2-public-pick 확정 2026-11-13) — 관리자가 고른 공실 · 퇴거확정(매물동의) 세대. 동 · 층구간 · 타입만, 공개 세대가 없으면 칸 자체를 숨김 -->
-<section id="pub-units" hidden style="max-width:1720px;margin:0 auto;padding:28px 20px 0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#1d1d1f">
+<section id="pub-units" hidden style="max-width:1760px;margin:0 auto;padding:28px 20px 0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#1d1d1f">
   <style>
     #pub-units h2{font-size:20px;font-weight:800;margin:0 0 4px}
     #pub-units .pu-lead{color:#6e6e73;font-size:14px;margin:0 0 14px;line-height:1.5}
@@ -106,7 +106,7 @@ a{color:#0066cc;text-decoration:none}a:hover{text-decoration:underline}
   }).catch(function () {});
 })();
 </script>
-<footer id="site-info" style="max-width:1720px;margin:0 auto;padding:28px 20px 40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#3a3a3c;font-size:13px;line-height:1.6">
+<footer id="site-info" style="max-width:1760px;margin:0 auto;padding:28px 20px 40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#3a3a3c;font-size:13px;line-height:1.6">
   <div style="background:#fff;border-radius:18px;padding:20px 22px;display:flex;flex-wrap:wrap;gap:20px 40px">
 <!-- 아래 정보 칸은 site.json 에서 만듦 (node tools/apply_site.mjs) -->
 <!-- site:info -->
@@ -136,7 +136,7 @@ a{color:#0066cc;text-decoration:none}a:hover{text-decoration:underline}
         <div class="hq-ans" id="hqa0" hidden>청약 당첨자, 분양권을 가진 분은 물론 <b>이미 아파트를 가지고 계신 분도 모두</b> 이용할 수 있어요. 대라수 1차는 <b>신규분양 계약자에게 가입비를 사업자가 대신 내 드립니다.</b></div>
         <div class="hq-ans" id="hqa1" hidden>신청하시면 매입가를 정하는 데 필요한 서류를 안내해 드려요. 서류를 내고 매입가가 정해지면, 헷지했지와 손잡은 <b>지역 법무사가 직접 찾아가 매매계약</b>을 진행합니다. <b>중개수수료는 따로 들지 않아요.</b></div>
         <div class="hq-ans" id="hqa2" hidden><b>없습니다.</b> 처음 한 번 내는 약정 수수료 말고는 청구하는 돈이 없고, 나중에 “사 주세요”를 신청해 매매계약을 맺을 때도 한국자산매입 담당자를 통해 <b>중개수수료 없이</b> 계약할 수 있어요.</div>
-        <script>(function(){var r=document.currentScript.parentNode,w=r.querySelector('.hq-row'),o=-1;function at(b,a){if(matchMedia('(max-width:767px)').matches){b.after(a);a.style.marginLeft='';return}w.after(a);var R=w.getBoundingClientRect(),B=b.getBoundingClientRect(),W=R.width,m=B.left+B.width/2-R.left,l=Math.max(0,Math.min(m-W/2,R.width-W));a.style.marginLeft=l+'px';a.style.setProperty('--tip',(m-l-6)+'px')}w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var k=+b.getAttribute('data-k');r.querySelectorAll('.hq-ans').forEach(function(a){a.hidden=true});w.querySelectorAll('button').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-expanded','false')});if(o===k){o=-1;return}o=k;var a=r.querySelector('#hqa'+k);b.classList.add('on');b.setAttribute('aria-expanded','true');at(b,a);a.hidden=false});addEventListener('resize',function(){if(o>=0)at(w.querySelector('[data-k="'+o+'"]'),r.querySelector('#hqa'+o))})})();</script>
+        <script>(function(){var r=document.currentScript.parentNode,w=r.querySelector('.hq-row'),o=-1;function at(b,a){if(matchMedia('(max-width:767px)').matches){b.after(a);a.style.marginLeft='';return}w.after(a);var R=r.getBoundingClientRect(),B=b.getBoundingClientRect();a.style.marginLeft='0';a.style.setProperty('--tip',(B.left+B.width/2-R.left-6)+'px')}w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var k=+b.getAttribute('data-k');r.querySelectorAll('.hq-ans').forEach(function(a){a.hidden=true});w.querySelectorAll('button').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-expanded','false')});if(o===k){o=-1;return}o=k;var a=r.querySelector('#hqa'+k);b.classList.add('on');b.setAttribute('aria-expanded','true');at(b,a);a.hidden=false});addEventListener('resize',function(){if(o>=0)at(w.querySelector('[data-k="'+o+'"]'),r.querySelector('#hqa'+o))})})();</script>
       </div>
     </section>
     </div>
