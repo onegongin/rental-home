@@ -2109,7 +2109,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <input data-m="logq" value="{{ logQ }}" onChange="{{ onLogQ }}" placeholder="호실 · 이름 · 연락처 · 내용 검색" style="height:34px;width:260px;max-width:100%;border:1px solid #d2d2d7;border-radius:9999px;padding:0 14px;font-size:13px">
     </div>
     <sc-if value="{{ logNoEdit }}"><div style="font-size:11px;color:#8e8e93;margin-top:-4px">{{ me }} · 상담이력 수정 권한 없음 (관리자가 설정에서 부여)</div></sc-if>
-    <div data-m="loghd" style="display:grid;grid-template-columns:96px 82px 110px 90px 120px minmax(0,1fr) 70px 112px;gap:0;font-size:12px">
+    <div data-m="loghd" style="display:grid;grid-template-columns:96px 100px 110px 90px 120px minmax(0,1fr) 112px 112px;gap:0;font-size:12px">
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">일시</div>
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">구분</div>
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">호실 / 희망</div>
@@ -2120,14 +2120,14 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">수정</div>
     </div>
     <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="8">
-      <div data-m="logrow" style="display:grid;grid-template-columns:96px 82px 110px 90px 120px minmax(0,1fr) 70px 112px;font-size:13px;border-bottom:1px solid #f0f0f2;margin-top:-12px;background:{{ l.rowBg }}">
+      <div data-m="logrow" style="display:grid;grid-template-columns:96px 100px 110px 90px 120px minmax(0,1fr) 112px 112px;font-size:13px;border-bottom:1px solid #f0f0f2;margin-top:-12px;background:{{ l.rowBg }}">
         <div style="padding:9px 8px;color:#6e6e73;font-variant-numeric:tabular-nums">{{ l.at }}</div>
-        <div style="padding:9px 8px;font-weight:700;color:{{ l.kindFg }}">{{ l.kind }}</div>
+        <div style="padding:9px 8px;font-weight:700;color:{{ l.kindFg }};white-space:nowrap">{{ l.kind }}</div>
         <div style="padding:9px 8px"><button onClick="{{ l.go }}" style="border:none;background:transparent;padding:0;color:#0066cc;font-size:13px;font-weight:600;cursor:pointer;text-align:left">{{ l.unit }}</button></div>
         <div style="padding:9px 8px;display:flex;flex-direction:column;align-items:flex-start;gap:3px"><sc-if value="{{ l.isG }}" hint-placeholder-val="{{ false }}"><button onClick="{{ l.gGo }}" title="눌러서 상담카드 열기 (손님이 쓴 내용이 함께 보입니다)" style="border:none;background:transparent;padding:0;color:#0066cc;font-size:13px;font-weight:700;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:3px">{{ l.name }}</button><span title="{{ l.gTip }}" style="font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px;background:{{ l.gTagBg }};color:{{ l.gTagFg }};white-space:nowrap">{{ l.gTag }}</span></sc-if><sc-if value="{{ l.notG }}"><span>{{ l.name }}</span><sc-if value="{{ l.fromG }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;color:#157a3f;font-weight:400">↳ 손님 등록에서 만든 카드</span></sc-if></sc-if></div>
         <div style="padding:9px 8px;font-variant-numeric:tabular-nums">{{ l.phone }}</div>
         <div style="padding:9px 8px;line-height:1.5;text-wrap:pretty">{{ l.text }}</div>
-        <div style="padding:9px 8px;color:#6e6e73;display:flex;flex-direction:column;gap:2px">{{ l.writer }}<sc-if value="{{ l.hasConsent }}"><span title="개인정보 동의 (필수 · 마케팅 · 제3자)" style="font-size:10.5px;color:#157a3f;white-space:nowrap">{{ l.consentText }}</span></sc-if></div>
+        <div style="padding:9px 8px;color:#6e6e73;display:flex;flex-direction:column;gap:2px;white-space:nowrap">{{ l.writer }}<sc-if value="{{ l.hasConsent }}"><span title="개인정보 동의 (필수 · 마케팅 · 제3자)" style="font-size:10.5px;color:#157a3f;white-space:nowrap">{{ l.consentText }}</span></sc-if></div>
         <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px;align-items:flex-start">
           <div style="display:flex;gap:4px;flex-wrap:nowrap;white-space:nowrap">
             <sc-if value="{{ l.canEdit }}"><button onClick="{{ l.edit }}" style="border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer">수정</button></sc-if>
