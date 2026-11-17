@@ -17,7 +17,7 @@ const nu = r => !!r.nu || String(r.id || '').startsWith('nu');   // 신규분양
 const top = r => (String(r.label || '').match(/\/(\d+)층/) || [])[1] || '';
 export const titleOf = r => S.name + ' ' + where(r) + ' ' + r.type + ' ' + DEAL[r.deal] + ' ' + priceText(r).replace(/^\S+ /, '');
 export const urlOf = (base, r) => base + '/listings/' + r.id;
-const planOf = r => { const t = (SITE.types || {})[r.type] || {}, b = (t.byBlock || {})[r.block] || {}; return ASSET + (b.plan || t.plan || 'hero.jpg'); };
+const planOf = r => { const t = (SITE.types || {})[r.type] || {}, b = (t.byBlock || {})[r.block] || {}; return ASSET + (t.pop && t.pop.main ? 'plans/' + t.pop.main : b.plan || t.plan || 'hero.jpg'); };   // 3D 평면 (타입_3D, 2026-11-17 대표)
 const descOf = r => [where(r) + ' ' + r.type + '타입', priceText(r), '전용 ' + r.exclusive + '㎡', '방 ' + r.rooms + ' · 욕실 ' + r.baths, r.facing + '향', '입주 ' + r.move].join(' · ') + '. ' + O.name + ' ' + (r.tel || O.tel);
 
 const CSS = `*{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo',sans-serif;line-height:1.6}
@@ -30,7 +30,7 @@ nav.bc{font-size:12px;color:#6e6e73;margin-bottom:8px}nav.bc a{color:#6e6e73;tex
 table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;width:120px;color:#6e6e73;font-weight:600;padding:8px 0;border-bottom:1px solid #f2f2f5;vertical-align:top}td{padding:8px 0;border-bottom:1px solid #f2f2f5}
 .go{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{display:inline-flex;align-items:center;height:42px;padding:0 18px;border-radius:9999px;font-weight:800;font-size:14px;text-decoration:none}.p{background:#c8381e;color:#fff}.s{background:#f2f2f5;color:#1d1d1f}
 h2{font-size:16px;font-weight:800;margin:0 0 8px}ul{margin:0;padding-left:18px;font-size:14px}.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.li{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:#1d1d1f}.li img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fafafa;border-radius:10px}.li b{font-size:15px}.li span{font-size:13px;color:#6e6e73}
+.li{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:#1d1d1f}.li img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fafafa;border-radius:10px}.li b{font-size:15px}.li span{font-size:13px;color:#6e6e73}.li span.deal{font-size:12px;color:#fff}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs a{font-size:13px;font-weight:700;border:1px solid #d2d2d7;border-radius:9999px;padding:5px 13px;text-decoration:none;color:#1d1d1f;background:#fff}.tabs a.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
 footer{font-size:12px;color:#6e6e73;line-height:1.8;border-top:1px solid #e5e5ea;margin-top:18px;padding-top:12px}.upd{font-size:12px;color:#8e8e93}
 @media(max-width:560px){h1{font-size:19px}.price{font-size:21px}.list{grid-template-columns:1fr}th{width:96px}.card{padding:14px}}`;
