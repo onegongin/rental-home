@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r59 · 사업개요 높이 맞춤</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ body{background:#f5f5f7;color:#1d1d1f;margin:0;font-family:Pretendard,system-ui,sans-serif}
+ .wrap{max-width:1740px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:#6e6e73;font-size:13px;margin:0 0 18px;line-height:1.6}
+ h2{font-size:16px;margin:28px 0 10px}
+ .row{display:flex;flex-wrap:wrap;gap:20px;align-items:stretch}
+ .bzg{flex:1.7 1 680px;min-width:0;display:grid;gap:8px;grid-template-columns:2.3fr 1fr;grid-template-rows:repeat(3,minmax(0,1fr))}
+ .old .bzg{height:420px}
+ .new .bzg{height:auto;min-height:420px}
+ .ph{position:relative;border-radius:14px;overflow:hidden;background:#1d1d1f;min-height:0}
+ .ph img{display:block;width:100%;height:100%;object-fit:cover}
+ .new .ph img{position:absolute;inset:0}
+ .main{grid-row:1/4}
+ .cap{position:absolute;left:10px;bottom:10px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.45);border-radius:9999px;padding:3px 10px}
+ .biz{flex:1 1 300px;min-width:0;background:#fff;border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+ .bh{display:flex;gap:8px;padding-bottom:12px;border-bottom:2px solid #1d1d1f;font-size:17px;font-weight:700}.bh b{color:#0066cc;font-weight:800}
+ .bzc{flex:1 1 auto;display:grid;grid-auto-rows:1fr;font-size:14px;line-height:1.4}
+ .bzc div{display:flex;align-items:center;gap:12px;padding:7px 0;border-top:1px solid #f0f0f2}.bzc div:first-child{border-top:none}
+ .bzc span:first-child{flex:0 0 92px;font-size:12.5px;font-weight:700;color:#6e6e73}
+ .tag{display:inline-block;font-size:12px;font-weight:800;border-radius:9999px;padding:2px 10px;margin-left:6px;vertical-align:2px}
+ .t1{background:#f0f0f2;color:#6e6e73}.t2{background:#e9f7ee;color:#157a3f}
+ .note{font-size:12.5px;color:#6e6e73;line-height:1.7;margin:10px 2px 0}
+ @media(max-width:760px){.bzg{height:auto!important;min-height:0!important;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto}.main{grid-column:1/4;grid-row:auto;aspect-ratio:5/3}.ph:not(.main){aspect-ratio:4/3}}
+</style></head><body><div class="wrap">
+<h1>시안 r59 · 사업개요 높이에 사진 맞추기</h1>
+<p class="sub">단지 전경 큰 사진 = 사업개요 칸과 같은 높이 · 오른쪽 사진 3장 = 그 높이를 똑같이 3등분. 사업개요 줄이 늘거나 줄어도 자동으로 맞춥니다.</p>
+
+<h2>지금 <span class="tag t1">사진 420px 고정 · 사업개요가 더 김</span></h2>
+<div class="row old" id="o"></div>
+
+<h2>바뀜 <span class="tag t2">사업개요 높이에 맞춤 · 3장 균등</span></h2>
+<div class="row new" id="n"></div>
+
+<p class="note">· 큰 사진은 잘리는 부분이 위아래 → 좌우로 조금 바뀝니다 (가운데 기준) · 화면이 좁아 사업개요가 아래로 내려가면 지금처럼 420px · 휴대폰(760px 이하)은 지금과 같음<br>· 사진 이름표: 지금 '80A 주방 · 59A 거실 · 59B 거실' 그대로 (80A 사진이 주방이라). '80A 거실'로 바꾸려면 말씀해 주세요.</p>
+</div>
+<script>
+const A='/daelasoo/assets/dls/';
+const items=[['사업위치','전남광주시 광산구 앰코로 21'],['사용승인일','2018. 11. 1. (9년차)'],['규모','4개동 (101 ~ 104동)'],['세대 층','4층 ~ 28층'],['총세대','아파트 300세대'],['전용면적','59㎡ (59A · 59B · 59C) · 80㎡ (80A · 80B)'],['테라스','101 · 104동 4층 광폭테라스'],['난방','개별난방 / 도시가스'],['주차','366대 (세대당 1.22대)'],['용적률/건폐율','498% / 79%'],['건설사','대라종합건설(주)'],['공급','민간임대 → 분양전환']];
+const html=`<div class="bzg"><div class="ph main"><img src="${A}sky1.jpg" alt=""><span class="cap">단지 전경 1 / 4</span></div>
+<div class="ph"><img src="${A}interior/80A_06.jpg" alt=""><span class="cap">80A 주방</span></div>
+<div class="ph"><img src="${A}interior/59A_05.jpg" alt=""><span class="cap">59A 거실</span></div>
+<div class="ph"><img src="${A}interior/59B_02.jpg" alt=""><span class="cap">59B 거실</span></div></div>
+<div class="biz"><div class="bh">사업개요 <b>첨단대라수1차</b></div><div class="bzc">${items.map(([k,v])=>`<div><span>${k}</span><span>${v}</span></div>`).join('')}</div></div>`;
+document.getElementById('o').innerHTML=html;document.getElementById('n').innerHTML=html;
+</script>
+</body></html>
