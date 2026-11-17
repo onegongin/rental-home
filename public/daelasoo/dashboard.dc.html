@@ -4516,7 +4516,7 @@ class Component extends DCLogic {
   gPriceOf(id) { const M = this.state.gPrice || {}, r = M[id];
     if (r === undefined) { if (!(this._gpGet = this._gpGet || {})[id]) { this._gpGet[id] = 1; fetch('/api/public/unit-price/' + id).then(x => x.json()).then(j => this.setState(ss => ({ gPrice: Object.assign({}, ss.gPrice, { [id]: j && j.ok ? j : null }) }))).catch(() => this.setState(ss => ({ gPrice: Object.assign({}, ss.gPrice, { [id]: null }) }))); }
       return { open: false, band: '', price: '불러오는 중…', total: '…', big: '', sub: '' }; }
-    if (!r || !r.open) return { open: false, band: '분양전환 완료 세대', price: '금액 비공개', total: '-', big: '', sub: '' };
+    if (!r || !r.open) return { open: false, band: '', price: '분양전환 완료', total: '-', big: '', sub: '' };
     const w = n => n.toLocaleString() + '원';
     return { open: true, band: '매입보장가', price: w(r.hedge), total: w(r.hedge), big: this.eok(r.hedge) + '원', sub: w(r.hedge) + ' · 3년 뒤 분양가에 다시 사드립니다 (헷지했지 매입보장)' }; }
   eok(n) { if (!n) return '0'; const neg = n < 0; n = Math.abs(Math.round(n)); const e = Math.floor(n / 1e8), m = Math.round((n % 1e8) / 1e4); return (neg ? '-' : '') + ((e ? e + '억 ' : '') + (m ? m.toLocaleString() + '만' : '')).trim(); }
