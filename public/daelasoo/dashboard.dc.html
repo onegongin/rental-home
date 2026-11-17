@@ -160,6 +160,7 @@ html:root [data-m=hd2]:has([data-m=kpis]>button:nth-child(2))>[data-m=tb2]{grid-
 html:root [data-m=hd1]:has([data-m=setbtn]){position:relative}html:root [data-m=setbtn]{position:absolute;top:12px;right:10px}
 /* 휴대폰(시안 ?m4=1 확정 2026-10-31): 상담카드 희망 동 · 층수대 · 희망 타입 세 칸을 한 줄로 (이름 · 무관 글씨와 선택칸을 조금 줄임) */
 html:root [data-m=bcond3],html:root [data-m=ccond]{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}html:root [data-m=bcond3]>*,html:root [data-m=ccond]>*{grid-column:auto!important}html:root [data-m=bcond3]>div>div:first-child,html:root [data-m=ccond]>div>div:first-child{font-size:11px!important;gap:3px!important;letter-spacing:-.03em}html:root [data-m=bcond3]>div>div:first-child span,html:root [data-m=ccond]>div>div:first-child span{font-size:11px!important;margin-right:0!important}html:root [data-m=bcond3] select,html:root [data-m=ccond] select{font-size:12px!important;padding:0 4px!important;height:36px!important}
+html:root [data-m=ccond]{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}   /* 신규분양 매수: 희망거래 · 희망 동 · 층수대 · 희망 타입 = 휴대폰 2×2 (2026-11-17 대표) */
 [data-m=tb2]{flex:1 1 100%!important;padding:10px!important;display:flex!important;flex-direction:column;gap:8px}
 [data-m=tb2line]{display:flex!important}
 [data-m=tb2items]{display:flex!important;align-items:center;flex-wrap:wrap;row-gap:6px;min-width:0}
@@ -1745,7 +1746,13 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       </div>
     </sc-if>
     <sc-if value="{{ f.isClient }}" hint-placeholder-val="{{ false }}">
-      <div data-m="ccond" style="background:#f5f5f7;border-radius:14px;padding:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px 12px">
+      <div data-m="ccond" style="background:#f5f5f7;border-radius:14px;padding:12px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 12px">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:#6e6e73;min-height:22px"><span style="margin-right:2px">{{ f.wantTitle }}</span>
+            <sc-for list="{{ f.wantChips }}" as="c"><button onClick="{{ c.onClick }}" title="해제" style="border:none;background:{{ c.color }};color:#fff;border-radius:9999px;padding:2px 9px;font-size:12px;font-weight:600;cursor:pointer;line-height:18px">{{ c.label }}</button></sc-for>
+          </div>
+          <select value="" onChange="{{ f.onWant }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ f.wantOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+        </div>
         <sc-for list="{{ f.multiFields }}" as="mf">
           <div style="display:flex;flex-direction:column;gap:4px;min-width:0;grid-column:{{ mf.span }}">
             <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:#6e6e73;min-height:22px"><span style="margin-right:2px">{{ mf.label }}</span>
@@ -1839,7 +1846,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     </sc-if>
     <sc-if value="{{ f.isTrade }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;flex-direction:column;gap:10px">
-        <div style="background:#f5f5f7;border-radius:14px;padding:12px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+        <sc-if value="{{ f.wantRowOn }}" hint-placeholder-val="{{ true }}"><div style="background:#f5f5f7;border-radius:14px;padding:12px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
           <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73;width:200px">{{ f.wantTitle }}
             <select value="" onChange="{{ f.onWant }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ f.wantOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
           </label>
@@ -1848,7 +1855,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
             <sc-for list="{{ f.wantChips }}" as="c"><button onClick="{{ c.onClick }}" title="해제" style="border:none;background:{{ c.color }};color:#fff;border-radius:9999px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer">{{ c.label }}</button></sc-for>
           </div>
           <sc-if value="{{ f.ocTotalOn }}" hint-placeholder-val="{{ false }}"><div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-height:38px;justify-content:center"><span style="font-size:11px;color:#6e6e73">총분양금액</span><span style="font-size:16px;font-weight:800;color:#1d1d1f;font-variant-numeric:tabular-nums;white-space:nowrap">{{ f.ocTotal }}<span style="font-size:11px;font-weight:600;color:#b25000">{{ f.ocTotalNote }}</span></span></div></sc-if>
-        </div>
+        </div></sc-if>
         <div style="container-type:inline-size;min-width:0"><div data-m="trgrid" style="display:grid;grid-template-columns:{{ f.trCols }};gap:10px;align-items:stretch"><sc-for list="{{ f.tradeBlocks }}" as="blk">
           <div style="border:1px solid {{ blk.bd }};border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;background:#fff">
             <div style="display:flex;align-items:center;gap:8px">
@@ -6683,7 +6690,7 @@ class Component extends DCLogic {
       onWant: e => { const v = e.target.value; if (!v) return; if (v[0] === '#') { const cc = v.slice(1), b = cc === '10.16 혜택가' ? 'benefit' : 'hedge', r = fm.ct && fm.ct.unit && (S.prRows || {})[fm.ct.unit];   /* 계약관리 적용가도 같이 맞춤 */
           return setFm(Object.assign({ kind, ccond: cc }, fm.ct ? { ct: Object.assign({}, fm.ct, { basis: b }, r ? { price: String(b === 'benefit' ? r.benefit : r.hedge) } : {}) } : {})); } if (wants.includes(v)) return; setFm({ kind, wants: wants.concat(v) }); },   /* '#…' = 계약조건 (신규분양 매수, 하나만 — 시안 r51 뒤 대표 요청) */
       wantChips: wants.map(m => ({ label: wantLabel(m) + ' ✕', color: TR[m].color, onClick: () => { const nt = Object.assign({}, tr); delete nt[m]; setFm({ kind, wants: wants.filter(x => x !== m), tr: nt }); } })).concat(ccV ? [{ label: ccV + ' ✕', color: (this.COND[ccV] || [])[1] || '#157a3f', onClick: () => setFm({ kind, ccond: '' }) }] : []),
-      noWants: !wants.length && !ccV, wantTitle: kind === 'client' ? '희망거래 (중복선택)' : '거래유형 (중복선택)',
+      noWants: !wants.length && !ccV, wantRowOn: kind !== 'client',   /* 신규분양 매수는 희망거래를 희망 동 줄 맨 앞 칸으로 */ wantTitle: kind === 'client' ? '희망거래 (중복선택)' : '거래유형 (중복선택)',
       ...(() => { if (!(D.generic && kind === 'client')) return { ctOn: false };
         if (D.generic) this.prLoad(); const ph = String(fm.phone || '').replace(/\D/g, ''), prev = ph ? S.cards.filter(c => c.kind === 'client' && c.ct && String(c.phone || '').replace(/\D/g, '') === ph).sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0] : null;
         const ct = Object.assign({ prog: '', unit: '', basis: 'hedge', price: '', dep: '', date: '', fund: '미정', own: '', loan: '' }, prev ? prev.ct : {}, fm.ct || {}), setCt = p => setFm({ ct: Object.assign({}, ct, p) });   /* basis: hedge 매입보장가(기본) · benefit 10.16 혜택가 */
