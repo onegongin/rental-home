@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r61 · 단지배치 오른쪽 보드 2</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ body{background:#f5f5f7;color:#1d1d1f;margin:0;font-family:Pretendard,system-ui,sans-serif}
+ .wrap{max-width:1740px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:#6e6e73;font-size:13px;margin:0 0 18px;line-height:1.6}
+ .row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;align-items:stretch}
+ .card{background:#fff;border-radius:18px;padding:16px}
+ .sp h3{margin:0;font-size:16px;font-weight:800;display:flex;align-items:baseline;gap:8px}
+ .sp h3 small{font-size:12px;color:#6e6e73;font-weight:500}
+ .sp .img{margin-top:12px;border-radius:12px;overflow:hidden;aspect-ratio:1.71/1;background:#2a3a2a}
+ .sp img{width:100%;height:100%;object-fit:cover;display:block}
+ .side{display:flex;flex-direction:column;gap:8px;min-height:0}
+ .bd{background:#fff;border-radius:16px;padding:9px 14px}
+ .hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}.hd b{font-size:15px}.hd small{font-size:12px;color:#6e6e73}
+ /* 1. 타입별 세대수 — 지금 모양 그대로, 순서만: 80A 80B / 59A 59B 59C */
+ .tg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+ .tg div{display:flex;align-items:center;gap:4px;font-size:11px;padding:3px 5px;border-radius:6px;background:#fafafa;min-width:0}
+ .tg i{flex-shrink:0;width:10px;height:10px;border-radius:3px}.tg b{font-weight:600}.tg span{margin-left:auto;color:#6e6e73}
+ .tg .gap{background:transparent}
+ /* 2. 동 보드 — 한 줄로 낮게 */
+ .dg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+ .dg div{border:1px solid #e5e5ea;border-radius:9px;padding:3px 4px;text-align:center;font-size:11px;color:#6e6e73}
+ .dg b{font-size:13px;color:#1d1d1f;margin-right:3px}
+ .gh{display:flex;align-items:center;gap:8px;margin-bottom:6px}.gh i{width:10px;height:10px;border-radius:3px;background:#0066cc}.gh b{font-size:15px}.gh small{font-size:12px;color:#6e6e73}
+ /* 3. 타입 실내사진 — 남는 높이 전부 */
+ .ip{flex:1 1 0;display:flex;flex-direction:column;gap:7px;min-height:0;padding:10px 14px 12px}
+ .chips{display:flex;gap:5px;flex-wrap:wrap}
+ .chip{border:1px solid #d2d2d7;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:700;background:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:inherit}
+ .chip i{width:9px;height:9px;border-radius:3px}
+ .chip.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+ .chip.off{color:#aeaeb2;border-style:dashed;cursor:default}
+ .big{position:relative;flex:1 1 0;min-height:150px;border-radius:12px;overflow:hidden;background:#1d1d1f}
+ .big img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+ .cap,.zm{position:absolute;bottom:10px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);border-radius:9999px;padding:3px 10px}.cap{left:10px}.zm{right:10px}
+ .nv{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.9);font-size:18px;cursor:pointer}
+ .bot{display:flex;gap:8px;align-items:center}
+ .th{display:flex;gap:5px;overflow-x:auto;flex:1;min-width:0}
+ .th img{width:52px;height:36px;object-fit:cover;border-radius:7px;cursor:pointer;opacity:.55;flex:none;border:2px solid transparent}
+ .th img.on{opacity:1;border-color:#c8381e}
+ .btn{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:0 12px;height:32px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
+ .btn.p{background:#0066cc;color:#fff;border-color:#0066cc}
+ .note{font-size:12.5px;color:#6e6e73;line-height:1.75;margin:14px 2px 0}
+ .cmp{display:inline-block;background:#e9f7ee;color:#157a3f;border-radius:9999px;padding:1px 9px;font-weight:800;font-size:12px}
+ @media(max-width:900px){.row{grid-template-columns:1fr}.big{aspect-ratio:4/3;flex:none}}
+</style></head><body><div class="wrap">
+<h1>시안 r61 · 타입별 세대수 순서 · 실내사진 더 크게</h1>
+<p class="sub">① 타입별 세대수 = <b>지금 모양 그대로</b>, 순서만 80A · 80B / 59A · 59B · 59C · ② 동 보드 = 한 줄로 낮게 · ③ 타입 실내사진 = 그만큼 더 커짐 (작은 사진 · 버튼을 한 줄로 합쳐 큰 사진 높이 <span class="cmp">약 +90px</span>)</p>
+
+<div class="row">
+ <div class="card sp"><h3>단지배치 <small>동을 누르면 유니트 배치가 확대됩니다</small></h3>
+  <div class="img"><img src="/daelasoo/assets/dls/siteplan.jpg" alt=""></div></div>
+
+ <div class="side">
+  <div class="bd"><div class="hd"><b>타입별 세대수</b><small>5개 타입 · 합계 300</small></div>
+   <div class="tg">
+    <div><i style="background:#f7d94c"></i><b>80A</b><span>50</span></div>
+    <div><i style="background:#f0913f"></i><b>80B</b><span>100</span></div>
+    <div class="gap"></div>
+    <div><i style="background:#8bc53f"></i><b>59A</b><span>50</span></div>
+    <div><i style="background:#f4a7c8"></i><b>59B</b><span>50</span></div>
+    <div><i style="background:#8fd3ef"></i><b>59C</b><span>50</span></div>
+   </div></div>
+
+  <div class="bd"><div class="gh"><i></i><b>1차 · 101~104동</b><small>300세대 · 4~28층</small></div>
+   <div class="dg"><div><b>101동</b>75세대</div><div><b>102동</b>75세대</div><div><b>103동</b>75세대</div><div><b>104동</b>75세대</div></div></div>
+
+  <div class="bd ip"><div class="hd" style="margin:0"><b>타입 실내사진</b><small id="wh"></small></div>
+   <div class="chips" id="chips"></div>
+   <div class="big"><img id="big" src="" alt=""><button class="nv" style="left:8px" onclick="mv(-1)">‹</button><button class="nv" style="right:8px" onclick="mv(1)">›</button><span class="cap" id="cap"></span><span class="zm">크게 보기 ↗</span></div>
+   <div class="bot"><div class="th" id="th"></div><button class="btn">평면도</button><button class="btn p">관심 등록</button></div>
+  </div>
+ </div>
+</div>
+
+<p class="note">· ① 글자 · 색 · 크기는 지금과 같고 칸 수만 4 → 3 (80 줄 셋째 칸은 비움)<br>
+· ② 동 칸의 '4~28층'은 제목 옆으로 옮겨 칸을 한 줄로 · 누르면 지금처럼 그 동 유니트 배치<br>
+· ③ 작은 사진 줄과 [평면도] · [관심 등록]을 한 줄로 합쳐 큰 사진이 더 커짐 · 휴대폰은 지금과 같음</p>
+</div>
+<script>
+const A='/daelasoo/assets/dls/interior/', T=[['80A','#f7d94c',8,'102동 중층'],['80B','#f0913f',0],['59A','#8bc53f',8,'104동 중층'],['59B','#f4a7c8',6,'103동 중층'],['59C','#8fd3ef',0]];
+let ty='80A', i=0;
+const p2=n=>String(n).padStart(2,'0');
+function draw(){const t=T.find(x=>x[0]===ty);
+ document.getElementById('chips').innerHTML=T.map(x=>`<button class="chip ${x[0]===ty?'on':''} ${x[2]?'':'off'}" onclick="${x[2]?`ty='${x[0]}';i=0;draw()`:''}"><i style="background:${x[1]}"></i>${x[0]}${x[2]?'':' · 준비 중'}</button>`).join('');
+ document.getElementById('big').src=A+ty+'_'+p2(i+1)+'.jpg';
+ document.getElementById('cap').textContent=ty+' 실내 '+(i+1)+' / '+t[2];
+ document.getElementById('wh').textContent=t[3]+' 촬영';
+ document.getElementById('th').innerHTML=Array.from({length:t[2]},(_, k)=>`<img class="${k===i?'on':''}" src="${A}t/${ty}_${p2(k+1)}.jpg" onclick="i=${k};draw()">`).join('');}
+function mv(d){const n=T.find(x=>x[0]===ty)[2];i=(i+d+n)%n;draw();}
+draw();
+</script>
+</body></html>
