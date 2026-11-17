@@ -6670,12 +6670,13 @@ class Component extends DCLogic {
           ...(() => { /* 계약완료 정리 (시안 r48 확정 2026-11-17): 소개 구분 MGM · 사이드 · 없음 / 이름 / 계약진행 직원 — 관리자 · 대표 확정 뒤 잠김, 사유 적어야 고침 · 지움 */
             const done = ct.prog === '계약완료', R0 = (S.roles || {})[S.me], boss = R0 === '대표' || R0 === '관리자', fx = ct.fixed || null, asking = !!S.ctAsk, rs = String(S.ctReason || '').trim();
             const ro = !done || (!!fx && !(boss && asking && rs)), tally = key => { const c = {}; S.cards.forEach(x => { const v = x.ct && x.ct[key]; if (v) c[v] = (c[v] || 0) + 1; }); return c; };
-            const bkT = tally('bk'), sdT = tally('side'), bkL = (S.brokers || []).concat(Object.keys(bkT).filter(n => bkT[n] >= 3 && !(S.brokers || []).includes(n))), sdL = (S.sides || []).concat(Object.keys(sdT).filter(n => sdT[n] >= 3 && !(S.sides || []).includes(n)));
+            const bkN = (S.brokers || []).map(b => typeof b === 'string' ? b : (b && b.name) || '').filter(Boolean);   /* 유입경로 부동산과 같은 목록 — 부동산명만 (2026-11-17 대표) */
+            const bkT = tally('bk'), sdT = tally('side'), bkL = bkN.concat(Object.keys(bkT).filter(n => bkT[n] >= 3 && !bkN.includes(n))), sdL = (S.sides || []).concat(Object.keys(sdT).filter(n => sdT[n] >= 3 && !(S.sides || []).includes(n)));
             const isM = ct.intro === 'MGM', isS = ct.intro === '사이드', L = isM ? bkL : sdL, key = isM ? 'bk' : 'side', cur = ct[key] || '', inL = !cur || L.includes(cur), freeOn = !!ct._free || !inL;
             const roleOk = !ro, set2 = p => roleOk ? setCt(p) : this.flash(done ? '확정된 내용은 관리자 · 대표가 사유를 적어야 고칠 수 있습니다' : '계약완료를 누르면 켜집니다');
             return { ctDoneOp: done ? '1' : '.45', ctDoneBg: done ? '#fff' : '#f5f5f7', ctDoneHint: done ? '' : '— 계약완료를 누르면 켜집니다', ctRo: ro, ctEtcRo: !done,
               ctIntros: ['MGM', '사이드', '없음'].map(k => ({ label: k, bg: ct.intro === k ? '#fff' : 'transparent', fg: ct.intro === k ? '#1d1d1f' : '#6e6e73', sh: ct.intro === k ? '0 1px 3px rgba(0,0,0,.12)' : 'none', onClick: () => set2({ intro: k, _free: false }) })),
-              ctNameOn: isM || isS, ctNameLabel: isM ? '부동산명' : '사이드 이름', ctNameSel: freeOn ? '_' : cur, ctNameOpts: [{ v: '', l: '목록에서 선택' }].concat(L.map(n => ({ v: n, l: n })), [{ v: '_', l: '직접 쓰기…' }]),
+              ctNameOn: isM || isS, ctNameLabel: isM ? '부동산명' : '사이드 이름', ctNameSel: freeOn ? '_' : cur, ctNameOpts: [{ v: '', l: isM ? '부동산 선택' : '목록에서 선택' }].concat(L.map(n => ({ v: n, l: n })), [{ v: '_', l: isM ? '직접 입력…' : '직접 쓰기…' }]),
               onCtNameSel: e => { const v = e.target.value; v === '_' ? set2({ _free: true, [key]: '' }) : set2({ _free: false, [key]: v }); }, ctFreeOn: freeOn, ctFree: freeOn ? cur : '', onCtFree: e => set2({ [key]: e.target.value.trim().slice(0, 40), _free: true }),
               ctFeeOn: isM, ctFee: ct.mgmFee || '', ctFeeOpts: [{ v: '', l: '선택' }].concat(['100만 · 현금영수증', '110만 · 세금계산서', '200만 · 현금영수증', '220만 · 세금계산서'].map(v => ({ v, l: v }))), onCtFee: e => set2({ mgmFee: e.target.value }),   /* 청구서 MGM 내역서 금액 */
               ctStaff: ct.staff || '', ctStaffOpts: [{ v: '', l: '선택' }].concat(Object.keys(S.roles || {}).map(n => ({ v: n, l: n }))), onCtStaff: e => set2({ staff: e.target.value }),
