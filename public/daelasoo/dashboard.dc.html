@@ -868,7 +868,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
             <sc-for list="{{ b.rows }}" as="r">
               <div data-m="brow" style="display:grid;grid-template-columns:repeat({{ b.n }},minmax(0,1fr));gap:1px;margin-top:1px;height:18px">
                 <sc-for list="{{ r.cells }}" as="c">
-                  <div onClick="{{ c.onClick }}" title="{{ c.title }}" data-uid="{{ c.uid }}" style="grid-column:span {{ c.span }};background:{{ c.bg }};color:{{ c.fg }};opacity:{{ c.op }};box-shadow:{{ c.ring }};border-radius:3px;font-size:11px;line-height:18px;text-align:center;position:relative;cursor:{{ c.cur }};overflow:hidden;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:{{ c.fw }}"><sc-if value="{{ c.urg }}"><span style="position:absolute;left:0;top:0;bottom:0;width:12px;background:#d2264b;color:#fff;font-size:9px;font-weight:800;line-height:18px;text-align:center">급</span></sc-if>{{ c.label }}<sc-if value="{{ c.hasDot }}"><span style="position:absolute;top:2px;{{ c.dotPos }};width:6px;height:6px;border-radius:50%;background:{{ c.dot }};box-shadow:0 0 0 1px #fff"></span></sc-if><sc-if value="{{ c.cmOn }}"><span title="호실 이야기 {{ c.cmN }}개" style="position:absolute;top:2px;right:2px;min-width:14px;height:14px;box-sizing:border-box;border-radius:9999px;background:{{ c.cmBg }};color:#fff;font-size:9px;font-weight:800;line-height:14px;padding:0 3px;text-align:center">{{ c.cmN }}</span></sc-if></div>
+                  <div onClick="{{ c.onClick }}" title="{{ c.title }}" data-uid="{{ c.uid }}" style="grid-column:span {{ c.span }};background:{{ c.bg }};color:{{ c.fg }};opacity:{{ c.op }};box-shadow:{{ c.ring }};border-radius:3px;font-size:11px;line-height:18px;text-align:center;position:relative;cursor:{{ c.cur }};overflow:hidden;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:{{ c.fw }}"><sc-if value="{{ c.urg }}"><span style="position:absolute;left:0;top:0;bottom:0;width:12px;background:#d2264b;color:#fff;font-size:9px;font-weight:800;line-height:18px;text-align:center">급</span></sc-if><sc-if value="{{ c.ctOn }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:2px;left:2px;min-width:14px;height:14px;box-sizing:border-box;border-radius:9999px;background:{{ c.ctBg }};color:#fff;font-size:9px;font-weight:900;line-height:14px;padding:0 2px;text-align:center;box-shadow:0 0 0 1px #fff">{{ c.ctT }}</span></sc-if>{{ c.label }}<sc-if value="{{ c.hasDot }}"><span style="position:absolute;top:2px;{{ c.dotPos }};width:6px;height:6px;border-radius:50%;background:{{ c.dot }};box-shadow:0 0 0 1px #fff"></span></sc-if><sc-if value="{{ c.cmOn }}"><span title="호실 이야기 {{ c.cmN }}개" style="position:absolute;top:2px;right:2px;min-width:14px;height:14px;box-sizing:border-box;border-radius:9999px;background:{{ c.cmBg }};color:#fff;font-size:9px;font-weight:800;line-height:14px;padding:0 3px;text-align:center">{{ c.cmN }}</span></sc-if></div>
                 </sc-for>
               </div>
             </sc-for>
@@ -1030,6 +1030,18 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <sc-if value="{{ p.pg.on }}" hint-placeholder-val="{{ false }}">
         <div style="padding:14px 18px;border-bottom:1px solid #f0f0f2;display:flex;flex-direction:column;gap:6px">
           <div style="font-size:12px;font-weight:700;color:#6e6e73">세대 이력</div>
+          <sc-if value="{{ p.pg.ctOn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px">
+            <div style="display:flex;gap:4px"><sc-for list="{{ p.pg.ctSteps }}" as="s"><span style="flex:1;text-align:center;padding:4px 0;border-radius:9999px;font-size:11.5px;font-weight:700;background:{{ s.bg }};color:{{ s.fg }}">{{ s.label }}</span></sc-for></div>
+            <div style="border:2px solid {{ p.pg.ctNowC }};border-radius:14px;padding:12px 14px;background:{{ p.pg.ctNowBg }};display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px"><b style="font-size:18px;color:{{ p.pg.ctNowC }}">{{ p.pg.ctNowT }}</b><span style="margin-left:auto;font-size:12px;color:#6e6e73">{{ p.pg.ctNowD }}</span></div>
+              <div style="display:grid;grid-template-columns:72px minmax(0,1fr);gap:3px 8px;font-size:13px"><sc-for list="{{ p.pg.ctNowKv }}" as="r"><span style="color:#6e6e73">{{ r.k }}</span><span style="font-weight:600;min-width:0;overflow-wrap:anywhere">{{ r.v }}</span></sc-for></div>
+              <button onClick="{{ p.pg.ctOpen }}" style="align-self:flex-start;border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">상담카드 열기 →</button>
+            </div>
+            <sc-for list="{{ p.pg.ctPast }}" as="q"><div style="border:1px solid #e5e5ea;border-radius:12px;background:#fff">
+              <button onClick="{{ q.tog }}" style="width:100%;display:flex;align-items:center;gap:8px;border:none;background:none;padding:8px 12px;font-size:13px;cursor:pointer;text-align:left"><span style="color:#8e8e93;width:12px">{{ q.ar }}</span><span style="width:9px;height:9px;border-radius:50%;flex:none;background:{{ q.c }}"></span><b>{{ q.k }}</b><span style="color:#8e8e93;font-size:12px">{{ q.d }}</span></button>
+              <sc-if value="{{ q.open }}"><div style="display:grid;grid-template-columns:72px minmax(0,1fr);gap:3px 8px;font-size:13px;padding:0 12px 10px 32px"><sc-for list="{{ q.kv }}" as="r"><span style="color:#6e6e73">{{ r.k }}</span><span style="font-weight:600;min-width:0;overflow-wrap:anywhere">{{ r.v }}</span></sc-for></div></sc-if>
+            </div></sc-for>
+          </div></sc-if>
           <sc-for list="{{ p.pg.hist }}" as="h"><div style="display:flex;gap:8px;align-items:flex-start;font-size:13px"><span style="width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none;background:{{ h.c }}"></span><span><b>{{ h.t }}</b> <span style="color:#8e8e93;font-size:12px">{{ h.d }}</span></span></div></sc-for>
           <div style="font-size:11px;color:#8e8e93">진행상태는 계약자DB 계약조건 · 전환상태 · 임차만기에서 자동 — 따로 입력하지 않습니다</div>
         </div>
@@ -5216,6 +5228,7 @@ class Component extends DCLogic {
   }
   // 계약조건 (시안 r41 확정 2026-11-16): 10.16 혜택가 · 헷지했지 · 전세연장 중 하나. S.u[id].cond ('-' = 일부러 비움). 비어 있으면 전환상태(staff/units.html)가 '전세연장'인 세대는 자동 '전세연장'
   COND = { '10.16 혜택가': ['#e8f5ec', '#157a3f'], '헷지했지': ['#f3e8fb', '#7a2fb0'], '전세연장': ['#e8f0fb', '#0066cc'] };
+  CTK = ['가계약', '계약중', '계약완료'];   // 계약관리 단계 (시안 r52)
   CCOND = ['10.16 혜택가', '헷지했지'];   // 신규분양 매수 상담카드 희망거래에서 고르는 계약조건
   ccBasis(v) { return v === '10.16 혜택가' ? 'benefit' : v === '헷지했지' ? 'hedge' : ''; }
   // 계약관리 적용가를 계약조건에 맞춤 (2026-11-17 대표): 금액이 비었거나 이전 적용가 금액 그대로면 새 적용가 금액으로
@@ -6063,6 +6076,17 @@ class Component extends DCLogic {
     return r; }
   // 관심단지 목록 (시안 r37 확정 2026-11-16) — cfg 'complexes'(이름 목록) · 'complexDef'(기본). 없으면 단지 이름 하나. 손님 화면은 /api/public/complexes
   cplx() { const S = this.state, nm = ((this.D.S || {}).site || {}).name || '첨단대라수1차', L = (Array.isArray(S.complexes) ? S.complexes : []).map(x => String(x || '').trim()).filter(Boolean), list = L.length ? L : [nm]; return { list, def: list.includes(S.complexDef) ? S.complexDef : list[0] }; }
+  // ── 계약관리 진행 → 동호배치표 (시안 r52 A안 확정 2026-11-17) ──
+  //   손님별 가장 최근 계약관리 카드의 계약할 호실 · 단계(가계약 · 계약중 · 계약완료). 다른 호실로 바꾸거나 단계를 지우면 빠짐
+  ctMap() { const S = this.state, last = {}, m = {};
+    (S.cards || []).forEach(c => { if (c.kind !== 'client' || c.deleted || !c.ct) return; const k = this.gDig(c.phone) || c.id; if (!last[k] || this.gTs(c.id) > this.gTs(last[k].id)) last[k] = c; });
+    Object.values(last).forEach(c => { const ct = c.ct; if (ct.unit && this.CTK.includes(ct.prog) && (!m[ct.unit] || this.gTs(c.id) > this.gTs(m[ct.unit].c.id))) m[ct.unit] = { k: ct.prog, c }; }); return m; }
+  ctTrail(id, M) { const m = (M || this.ctMap())[id]; if (!m) return null; const S = this.state, ph = this.gDig(m.c.phone);
+    const L = (S.cards || []).filter(c => c.kind === 'client' && !c.deleted && c.ct && c.ct.unit === id && c.ct.prog && (c.id === m.c.id || (ph && this.gDig(c.phone) === ph))).sort((a, b) => this.gTs(a.id) - this.gTs(b.id));
+    const ci = this.CTK.indexOf(m.k); return { cur: m.k, ci, last: m.c, steps: this.CTK.slice(0, ci + 1).map(k => { const cs = L.filter(c => c.ct.prog === k); return { k, first: cs[0] || null, c: cs[cs.length - 1] || null }; }) }; }
+  ctKv(c) { if (!c) return []; const ct = c.ct || {}, sv = this.seeCust(c), w = v => Number(v) ? (Number(v) / 1e4).toLocaleString() + '만' : '', md = v => v ? String(v).slice(5).replace('-', '.') : '';
+    return [['계약자', [sv ? c.name : this.maskN(c.name), sv ? c.phone : this.maskP(c.phone)].filter(Boolean).join(' · ')], ['적용가', (ct.basis === 'benefit' ? '10.16 혜택가' : '매입보장가') + (Number(ct.price) ? ' ' + (Number(ct.price) / 1e8).toFixed(2) + '억' : '')], ['계약금', w(ct.dep)], ['입금예정', md(ct.date)], ['자금', ct.fund && ct.fund !== '미정' ? ct.fund : ''],
+      ['잔금예정', md(ct.bal)], ['입주예정', md(ct.move)], ['소개', ct.intro && ct.intro !== '없음' ? ct.intro + (ct.bk || ct.side ? ' · ' + (ct.bk || ct.side) : '') : ''], ['계약진행', ct.staff || ''], ['담당', c.mgr || c.writer || '']].filter(r => r[1]).map(([k, v]) => ({ k, v })); }
   // 상담이력대장 이름 클릭 → 그 카드 내용으로 상담카드 열기 (상담내용만 빈칸, 2026-11-17 대표 요청)
   cardForm(c) { const S = this.state, u = c.unit && this.D.byId[c.unit], isCu = c.kind === 'buyer' || c.kind === 'client', cl = v => v ? JSON.parse(JSON.stringify(v)) : v;
     let f = this.blankForm(); try { if (u) f = Object.assign(f, this.unitPrefill(c.unit), c.kind === 'owner' ? this.ownPre(c.unit) : {}, { unitLock: true, unitUnlock: false, unitBaseId: c.unit, unitAsk: false, unitAskText: '', unitReason: '' }); } catch (e) {}
@@ -6350,7 +6374,7 @@ class Component extends DCLogic {
     if (condBoard) { const mo = new Date().toISOString().slice(0, 7); let tgt = 0, mon = 0; D.units.forEach(u => { const x = st(u.id); if (!x._cond) tgt++; if (x._end && x._end.slice(0, 7) === mo) mon++; });
       kpis.splice(1, kpis.length, kp('분양전환 계약', cnt['분양전환 계약'] || 0, '계약조건 10.16 혜택가', '#0066cc', { k: 'status', v: '분양전환 계약' }), kp('전세연장', cnt['전세연장'] || 0, '계약자 대라수', '#0f8a8a', { k: 'status', v: '전세연장' }),
         kp('신규분양 대상', tgt, '계약조건 빈칸', '#1d1d1f', { k: 'tgt', v: 1 }), kp('퇴거 예정', cnt['퇴거 예정'] || 0, '만기 전', '#b25000', { k: 'status', v: '퇴거 예정' }), kp('공실', cnt['공실'] || 0, '만기 지남', '#d2264b', { k: 'status', v: '공실' }),
-        kp('신규분양 계약', cnt['신규분양 계약'] || 0, '전환상태 신규입주 · 계약완료', '#157a3f', { k: 'status', v: '신규분양 계약' }), kp('이번 달 만기', mon, '임차 만기', '#8e8e93', { k: 'mon', v: 1 })); }   /* 시안 r46 */
+        kp('신규분양 계약', cnt['신규분양 계약'] || 0, (M => { const n = k => Object.values(M).filter(x => x.k === k).length, a = n('가계약'), b = n('계약중'); return a || b ? '진행 중 · 가계약 ' + a + ' · 계약중 ' + b : '전환상태 신규입주 · 계약완료'; })(this.ctMap()), '#157a3f', { k: 'status', v: '신규분양 계약' }), kp('이번 달 만기', mon, '임차 만기', '#8e8e93', { k: 'mon', v: 1 })); }   /* 시안 r46 */
     const famChips = (D.generic ? [...new Set(Object.keys(D.types).map(k => D.types[k].fam))].sort((x, y) => parseFloat(x) - parseFloat(y)).map(f => [f, f + '㎡']) : [['84','84㎡'],['103','103㎡'],['112','112㎡'],['128','128㎡'],['PH','펜트']]).map(([k, l]) => { const c = this.chip(isF('fam', k)); return Object.assign(c, { label: l + ' : ' + (famCnt[k] || 0).toLocaleString(), onClick: () => this.setFilter({ k: 'fam', v: k }) }); });
 
     // overview
@@ -6453,16 +6477,19 @@ class Component extends DCLogic {
     bgridCols = D.generic ? '30px ' + bl.map(b => b.cols.length + 'fr').join(' ') : '30px repeat(3,minmax(0,1fr))';
     bgridM = D.generic ? '30px ' + bl.map(b => 'calc((100vw - 92px) * ' + b.cols.length / 4 + ')').join(' ') : '30px repeat(3,calc(100vw - 92px))';
     const cm = isGB ? 'type' : S.colorMode;
+    const CTM = D.generic && !guestOnly && !isGB ? this.ctMap() : {};   /* 계약관리 단계 (시안 r52): 가계약 '가' · 계약중 '중' · 계약완료 = 초록 칸 */
     const cellOf = (u, span) => { const s = st(u.id); const t = D.types[u.type]; const on = match(u); const sc = STATUS[s.status] || STATUS['미확인'];
       let bg, fg = '#1d1d1f', rings = [];
       if (cm === 'type') { bg = t.ph ? '#fff' : t.color; if (t.ph) rings.push('inset 0 0 0 2px ' + t.color); } else { bg = sc.bg; fg = sc.fg; if (s.status === '미확인') rings.push('inset 0 0 0 1px #e5e5ea'); }
+      const ctp = CTM[u.id] ? CTM[u.id].k : '', ctOn = ctp === '가계약' || ctp === '계약중'; if (ctp === '계약완료') { bg = '#157a3f'; fg = '#fff'; }
       const urg = (s.tags || []).includes('급매');
       const cc = !isGB && !guestOnly ? (S.cmCnt || {})[u.id] : null;   /* 호실 이야기 글 수 (시안 staff-unit-talk A안) */
       if (S.sel === u.id) rings.push(S.flashCell === u.id ? '0 0 0 3px #0066cc' : '0 0 0 2px #1d1d1f');
       const label = cm === 'status' && s._vd && !S.showPrice ? s._vd + '일' : S.showPrice && !isGB ? (D.generic ? (this.prAmt(u.id) != null ? (this.prAmt(u.id) / 1e8).toFixed(2) : '—') : (this.priceOf(u) / 1e8).toFixed(2)) : (t.ph && span > 1 ? u.ho + ' · ' + u.type : String(u.ho));
-      return { span, bg, fg, op: !on ? 0.16 : (cm === 'type' && !F && s._cond ? 0.22 : 1), ring: rings.length ? rings.join(',') : 'none', label, title: u.b + '동 ' + u.ho + '호 · ' + u.type + (isGB ? '' : ' · ' + s.status + (s._vd ? ' ' + s._vd + '일째' : '') + (s._end ? ' · 임차 만기 ' + s._end : '') + (urg ? ' · 급매' : '')), cur: 'pointer', fw: S.sel === u.id ? 700 : 500,
-        hasDot: cm === 'type' && !!sc.dot && !s._eff, dot: sc.dot || 'transparent', dotPos: cc ? 'left:2px' : 'right:2px', cmOn: !!cc, cmN: cc ? String(cc.n) : '', cmBg: cc && cc.need ? '#d2264b' : '#0066cc', urg, uid: u.id, onClick: () => this.setState({ sel: u.id, optDraft: null }) }; };
-    const blank = (span, bg, label, ring) => ({ span, bg: bg || 'transparent', fg: '#8e8e93', op: 1, ring: ring || 'none', label: label || '', title: '', cur: 'default', fw: 500, hasDot: false, dot: 'transparent', dotPos: 'right:2px', cmOn: false, cmN: '', cmBg: '', urg: false, uid: '', onClick: null });
+      return { span, bg, fg, op: !on ? 0.16 : (cm === 'type' && !F && s._cond && ctp !== '계약완료' ? 0.22 : 1), ring: rings.length ? rings.join(',') : 'none', label, title: u.b + '동 ' + u.ho + '호 · ' + u.type + (isGB ? '' : ' · ' + s.status + (s._vd ? ' ' + s._vd + '일째' : '') + (s._end ? ' · 임차 만기 ' + s._end : '') + (urg ? ' · 급매' : '') + (ctp ? ' · ' + ctp : '')), cur: 'pointer', fw: S.sel === u.id ? 700 : 500,
+        ctOn, ctT: ctp === '가계약' ? '가' : '중', ctBg: ctp === '가계약' ? '#b25000' : '#0066cc',
+        hasDot: cm === 'type' && !!sc.dot && !s._eff && !ctOn, dot: sc.dot || 'transparent', dotPos: cc ? 'left:2px' : 'right:2px', cmOn: !!cc, cmN: cc ? String(cc.n) : '', cmBg: cc && cc.need ? '#d2264b' : '#0066cc', urg, uid: u.id, onClick: () => this.setState({ sel: u.id, optDraft: null }) }; };
+    const blank = (span, bg, label, ring) => ({ span, bg: bg || 'transparent', fg: '#8e8e93', op: 1, ring: ring || 'none', label: label || '', title: '', cur: 'default', fw: 500, hasDot: false, dot: 'transparent', dotPos: 'right:2px', cmOn: false, cmN: '', cmBg: '', urg: false, ctOn: false, ctT: '', ctBg: '', uid: '', onClick: null });
     const xcell = 'linear-gradient(to top right, transparent calc(50% - 0.6px), #c7c7cc 50%, transparent calc(50% + 0.6px)), linear-gradient(to bottom right, transparent calc(50% - 0.6px), #c7c7cc 50%, transparent calc(50% + 0.6px)) #fff';
     const xs = () => blank(1, xcell, '', 'inset 0 0 0 1px #d2d2d7');
     bldgs = bl.map(b => {
@@ -6550,9 +6577,15 @@ class Component extends DCLogic {
           if (x._end && ds !== '전세연장') hist.push({ t: this.ddays(x._end) < 0 ? '임차 만기 · 퇴거' : '임차 만기 예정', d: x._end, c: '#b25000' });
           if (logs.length) hist.push({ t: '상담 ' + logs.length + '회', d: '상담이력대장', c: '#c7c7cc' });
           if (lt && (lt.contract_date || lt.move_in)) hist.push({ t: '전세 계약', d: (lt.contract_date || lt.move_in) + (lt.deposit ? ' · 보증금 ' + Number(lt.deposit).toLocaleString() + '만' : ''), c: '#e8e8ed' });
+          const tr = this.ctTrail(su.id), CC = { 가계약: '#b25000', 계약중: '#0066cc', 계약완료: '#157a3f' }, md = v => v ? String(v).slice(5).replace('-', '.') : '', PO = S.ctPastOpen || {};   /* 계약관리 진행 (시안 r52): 지금 단계 크게 · 지난 단계 접힘 */
+          const ctV = !tr ? { ctOn: false } : { ctOn: true,
+            ctSteps: this.CTK.map((k, i) => ({ label: (i < tr.ci ? '✓ ' : '') + k, bg: i < tr.ci ? '#e3eefc' : i === tr.ci ? CC[k] : '#f0f0f2', fg: i < tr.ci ? '#0066cc' : i === tr.ci ? '#fff' : '#aeaeb2' })),
+            ctNowT: (tr.cur === '계약완료' ? '✓ ' : '● ') + tr.cur, ctNowC: CC[tr.cur], ctNowBg: tr.cur === '계약완료' ? '#f2fbf5' : tr.cur === '계약중' ? '#f5f9ff' : '#fff8f0',
+            ctNowD: md((tr.steps[tr.ci].first || tr.last).at) + ' · 지금 단계', ctNowKv: this.ctKv(tr.last), ctOpen: () => this.setState({ tab: 'card', form: this.cardForm(tr.last) }),
+            ctPast: tr.steps.slice(0, tr.ci).reverse().map(s => { const key = su.id + ':' + s.k, op = !!PO[key]; return { k: s.k, c: CC[s.k], d: s.first ? md(s.first.at) + ' · 지난 단계' : '기록 없음 (건너뜀)', open: op, ar: op ? '▾' : '▸', kv: this.ctKv(s.c), tog: () => this.setState(ss => ({ ctPastOpen: Object.assign({}, ss.ctPastOpen, { [key]: !op }) })) }; }) };
           const pd = (S.convPub || {})[su.id] || '', canP = !!S.convCanPub, tg = x.status === '공실' || x.status === '퇴거 예정';
           const pubSeg = [['', '끄기'], ['매매', '신규분양'], ['전세', '전세'], ['둘 다', '둘 다']].map(([k, l]) => ({ label: l, bg: pd === k ? (k ? '#157a3f' : '#f2f2f5') : 'transparent', fg: pd === k ? (k ? '#fff' : '#1d1d1f') : '#6e6e73', onClick: () => this.pubSet(su.id, k) }));
-          return { pg: { pubOn: tg && !!x._lease, pubSeg, pubWho: canP ? '대표 · 관리자 · 권한자가 고름' : '보기만 (대표 · 관리자 · 권한자가 고름)', on: true, k: x.status + (x._vd ? ' ' + x._vd + '일째' : ''), bg: c.bg || '#f2f2f5', fg: c.fg || '#1d1d1f', own: ds === '10.16 혜택가', cond: ds || '— (신규분양 대상)', owner: ow || '—', tenant: lt ? (lt.name || '—') + (lt.kind ? ' · ' + lt.kind : '') : '—', end: x._end || '—', hist: hist.length ? hist : [{ t: '기록 없음', d: '', c: '#e8e8ed' }] }, oldOwner: false, oldStatus: false }; })(),
+          return { pg: { pubOn: tg && !!x._lease, pubSeg, pubWho: canP ? '대표 · 관리자 · 권한자가 고름' : '보기만 (대표 · 관리자 · 권한자가 고름)', on: true, k: x.status + (x._vd ? ' ' + x._vd + '일째' : ''), bg: c.bg || '#f2f2f5', fg: c.fg || '#1d1d1f', own: ds === '10.16 혜택가', cond: ds || '— (신규분양 대상)', owner: ow || '—', tenant: lt ? (lt.name || '—') + (lt.kind ? ' · ' + lt.kind : '') : '—', end: x._end || '—', hist: hist.length ? hist : [{ t: '기록 없음', d: '', c: '#e8e8ed' }], ...ctV }, oldOwner: false, oldStatus: false }; })(),
         pr: this.prVals(su.id), prLow: !condBoard && this.prVals(su.id).on, tradeFields: tradeFields.map(f => ({ label: f.label, type: f.type, ph: f.ph, value: s[f.key] || '', onChange: setF(f.key), shown: s[f.key] || '—', fg: s[f.key] ? '#1d1d1f' : '#aeaeb2' })), tradeRO: true, tradeRW: false,
         logCount: logs.length + '건', logs: logs.map(c => ({ kind: this.kindName(c.kind), kindFg: this.kindColor(c.kind), at: c.at, writer: c.writer, text: c.text })),
         writeCard: () => { const pk = D.generic && condBoard ? st(su.id).status : '', kd = pk === '분양전환 계약' ? 'owner' : pk === '공실' ? 'client' : pk ? 'seller' : mods.presale ? 'seller' : 'owner';   /* 3단계: 진행상태에 맞는 카드 */ const pc = S.cards.find(c => c.unit === su.id && c.mgr); this.setState({ tab: 'card', form: Object.assign(this.blankForm(), this.unitPrefill(su.id), kd === 'owner' ? this.ownPre(su.id) : {}, pc ? { mgr: pc.mgr, mgrOk: pc.mgrOk || null, mgrBase: pc.mgr, mgrBaseOk: pc.mgrOk || null } : {}, { kind: kd, unit: su.b + '동 ' + su.ho + '호', unitLock: true, unitUnlock: false, unitBaseId: su.id, unitAsk: false, unitAskText: '', unitReason: '' }) }); }

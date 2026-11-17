@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r52 · 계약 진행 → 동호배치표</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:var(--sub);font-size:13px;margin:0 0 18px;line-height:1.6}
+ h2{font-size:16px;margin:26px 0 10px;display:flex;align-items:center;gap:8px}
+ .no{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--tab);color:#fff;font-size:13px;align-items:center;justify-content:center}
+ .note{font-size:12.5px;color:var(--sub);line-height:1.65;margin:8px 2px 0}
+ .lay{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+ /* 배치표 */
+ .bd{padding:14px}
+ .bh{background:#1d1d1f;color:#fff;border-radius:8px 8px 0 0;padding:5px 10px;font-size:13px;font-weight:800;display:flex}
+ .bh small{margin-left:auto;font-weight:600;opacity:.7}
+ .grid{display:grid;grid-template-columns:34px repeat(3,minmax(0,1fr));gap:3px;margin-top:3px}
+ .fl{font-size:10.5px;color:#8e8e93;display:flex;align-items:center;justify-content:flex-end;padding-right:4px}
+ .c{position:relative;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;cursor:pointer;border:1px solid rgba(0,0,0,.06)}
+ .t59B{background:#f6b8d0;color:#5c1838} .t59A{background:#a8d672;color:#2c4a0c} .t59C{background:#9fd5ef;color:#0b4560}
+ .c.sel{outline:2.5px solid #1d1d1f;outline-offset:1px}
+ .c.done{background:#157a3f!important;color:#fff!important}
+ .bdg{position:absolute;top:-6px;right:-5px;min-width:17px;height:17px;border-radius:9999px;font-size:10.5px;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 0 2px #fff}
+ .bdg.ga{background:#b25000} .bdg.jung{background:#0066cc}
+ .lg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#3a3a3c;margin-top:10px;align-items:center}
+ .lg i{display:inline-flex;width:17px;height:17px;border-radius:9999px;color:#fff;font-style:normal;font-size:10.5px;font-weight:900;align-items:center;justify-content:center;margin-right:4px}
+ .sq{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:4px}
+ .cnt{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+ .cnt span{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:12px;color:#6e6e73} .cnt b{font-size:15px;color:#1d1d1f;margin-left:4px}
+ /* 상세 */
+ .pn{overflow:hidden}
+ .pn .hd{padding:14px 18px;border-bottom:1px solid #f0f0f2;display:flex;align-items:baseline;gap:8px}
+ .pn .hd b{font-size:20px}
+ .sec{padding:14px 18px;display:flex;flex-direction:column;gap:8px}
+ .lab{font-size:12px;font-weight:700;color:#6e6e73}
+ .steps{display:flex;gap:4px;align-items:center;font-size:11.5px;font-weight:700}
+ .steps span{flex:1;text-align:center;padding:5px 0;border-radius:9999px;background:#f0f0f2;color:#aeaeb2}
+ .steps span.past{background:#e3eefc;color:#0066cc} .steps span.now{background:#0066cc;color:#fff}
+ .now-card{border:2px solid #0066cc;border-radius:14px;padding:12px 14px;background:#f5f9ff;display:flex;flex-direction:column;gap:6px}
+ .now-card .t{display:flex;align-items:center;gap:8px} .now-card .t b{font-size:18px;color:#0066cc}
+ .now-card .t span{margin-left:auto;font-size:12px;color:#6e6e73}
+ .kv{display:grid;grid-template-columns:78px 1fr;gap:3px 8px;font-size:13px} .kv dt{color:#6e6e73} .kv dd{margin:0;font-weight:600}
+ .past-row{border:1px solid #e5e5ea;border-radius:12px;background:#fff}
+ .past-row button{width:100%;display:flex;align-items:center;gap:8px;border:none;background:none;padding:9px 12px;font-family:inherit;font-size:13px;cursor:pointer;text-align:left}
+ .past-row button .ar{color:#8e8e93;width:12px} .past-row .body{padding:0 12px 10px 32px;display:none}
+ .past-row.open .body{display:block}
+ .dot{width:9px;height:9px;border-radius:50%;flex:none}
+ .lnk{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;align-self:flex-start}
+ .other{display:flex;gap:8px;align-items:flex-start;font-size:13px} .other .dot{margin-top:5px}
+ .seg{display:inline-flex;gap:4px;margin-bottom:10px} .seg button{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit} .seg button.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+ .opt{display:grid;grid-template-columns:1fr 1fr;gap:14px} .optc{padding:14px;font-size:13px;line-height:1.6} .optc b{font-size:14px}
+ .rec{display:inline-block;background:#c8381e;color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:6px}
+ @media (max-width:860px){ .lay{grid-template-columns:1fr} .opt{grid-template-columns:1fr} }
+</style></head><body><div class="wrap">
+<h1>시안 r52 · 계약관리 진행(가계약 · 계약중 · 계약완료) → 동호배치표</h1>
+<p class="sub">신규분양 매수 상담카드 '2. 계약관리 상담'에서 고른 단계가 <b>동호배치표 칸</b>과 <b>호실 상세 · 세대 이력</b>에 바로 보이게 합니다. 아래 호실 칸을 눌러 보세요 (시안 자료는 가상).</p>
+
+<div class="lay">
+ <div class="card bd">
+  <div class="cnt"><span>가계약<b>1</b></span><span>계약중<b>1</b></span><span>신규분양 계약(완료)<b>1</b></span></div>
+  <div class="bh">104동<small>75세대</small></div>
+  <div class="grid" id="g"></div>
+  <div class="lg"><span><i style="background:#b25000">가</i>가계약</span><span><i style="background:#0066cc">중</i>계약중</span><span><span class="sq" style="background:#157a3f"></span>계약완료 = 칸 색이 초록으로 바뀌며 마무리</span></div>
+  <p class="note">• 칸 오른쪽 위 작은 동그라미: <b>가</b> = 가계약, <b>중</b> = 계약중 (타입 색 · 진행상태 색은 그대로 두고 표시만 얹음).<br>• <b>계약완료</b>가 되면 표시를 없애고 칸 전체가 '신규분양 계약' 초록으로 바뀝니다.<br>• 위쪽 숫자 칸에 가계약 · 계약중 수를 함께 보여 주고, 누르면 그 호실만 표시합니다.</p>
+ </div>
+
+ <div class="card pn" id="pn"></div>
+</div>
+
+<h2>고르실 것 — 배치표 칸 표시 모양</h2>
+<div class="opt">
+ <div class="card optc"><b>A안 · 칸 모서리 동그라미 '가' · '중'</b><span class="rec">추천</span><br>위 시안 그대로. 타입 색이 그대로 보여서 다른 표시(전세 · 공실 등)와 겹쳐도 읽기 쉽고, 작은 화면에서도 눈에 띕니다.</div>
+ <div class="card optc"><b>B안 · 호수 옆 글자 '402 가' + 테두리</b><br>칸 안 호수 옆에 '가' · '중' 글자를 붙이고 칸 테두리를 주황 · 파랑으로. 동그라미보다 조용하지만 휴대폰에서는 글자가 작아질 수 있습니다.</div>
+</div>
+</div>
+<script>
+ const D = {
+  '104-402': { type: '59B', st: 'done', name: '정*화', steps: [
+    { k: '가계약', d: '11.12', kv: [['계약금', '1,000만 (가계약금)'], ['담당', '황후권']] },
+    { k: '계약중', d: '11.15', kv: [['적용가', '10.16 혜택가 3.41억'], ['계약금', '3,410만'], ['입금예정', '11.19']] },
+    { k: '계약완료', d: '11.17', kv: [['계약자', '정*화 · 010-****-6639'], ['적용가', '10.16 혜택가 3.41억'], ['잔금예정', '12.16'], ['입주예정', '12.20'], ['소개', 'MGM · 첨단대라수'], ['계약진행', '황후권']] } ] },
+  '104-702': { type: '59B', st: 'jung', name: '김*수', steps: [
+    { k: '가계약', d: '11.14', kv: [['계약금', '500만 (가계약금)'], ['담당', '황후권']] },
+    { k: '계약중', d: '11.17', kv: [['계약자', '김*수 · 010-****-1234'], ['적용가', '매입보장가 3.81억'], ['계약금', '3,810만'], ['입금예정', '11.21'], ['담당', '황후권']] } ] },
+  '104-1103': { type: '59C', st: 'ga', name: '이*영', steps: [
+    { k: '가계약', d: '11.17', kv: [['계약자', '이*영 · 010-****-8890'], ['적용가', '매입보장가'], ['가계약금', '300만'], ['담당', '황후권']] } ] }
+ };
+ const g = document.getElementById('g'), T = ['59B', '59B', '59C'];
+ let sel = '104-702';
+ function draw() {
+  g.innerHTML = '';
+  for (let f = 14; f >= 4; f--) { const fl = document.createElement('div'); fl.className = 'fl'; fl.textContent = f + 'F'; g.appendChild(fl);
+   for (let l = 1; l <= 3; l++) { const id = '104-' + f + '0' + l, x = D[id], c = document.createElement('div');
+    c.className = 'c t' + (l === 3 ? '59C' : '59B') + (x && x.st === 'done' ? ' done' : '') + (id === sel ? ' sel' : ''); c.textContent = f + '0' + l;
+    if (x && x.st !== 'done') { const b = document.createElement('span'); b.className = 'bdg ' + x.st; b.textContent = x.st === 'ga' ? '가' : '중'; c.appendChild(b); }
+    c.onclick = () => { sel = id; draw(); }; g.appendChild(c); } }
+  panel(); }
+ function panel() {
+  const x = D[sel], p = document.getElementById('pn'), ho = sel.split('-');
+  if (!x) { p.innerHTML = '<div class="hd"><b>' + ho[0] + '동 ' + ho[1] + '호</b></div><div class="sec"><div class="lab">세대 이력</div><div style="font-size:13px;color:#8e8e93">계약관리 진행 없음 — 가 · 중 표시가 있는 칸을 눌러 보세요</div></div>'; return; }
+  const ks = ['가계약', '계약중', '계약완료'], cur = x.steps.length - 1, now = x.steps[cur];
+  let h = '<div class="hd"><b>' + ho[0] + '동 ' + ho[1] + '호</b><span style="color:#6e6e73;font-size:13px">' + x.type + '</span></div><div class="sec"><div class="lab">세대 이력 · 계약 진행</div>';
+  h += '<div class="steps">' + ks.map((k, i) => '<span class="' + (i < cur ? 'past' : i === cur ? 'now' : '') + '">' + (i < cur ? '✓ ' : '') + k + '</span>').join('') + '</div>';
+  h += '<div class="now-card"><div class="t"><b>' + (now.k === '계약완료' ? '✓ ' : '● ') + now.k + '</b><span>' + now.d + ' · 지금 단계</span></div><dl class="kv">' + now.kv.map(r => '<dt>' + r[0] + '</dt><dd>' + r[1] + '</dd>').join('') + '</dl><button class="lnk">상담카드 열기 →</button></div>';
+  x.steps.slice(0, cur).reverse().forEach(s => { h += '<div class="past-row"><button onclick="this.parentNode.classList.toggle(\'open\');this.querySelector(\'.ar\').textContent=this.parentNode.classList.contains(\'open\')?\'▾\':\'▸\'"><span class="ar">▸</span><span class="dot" style="background:' + (s.k === '가계약' ? '#b25000' : '#0066cc') + '"></span><b>' + s.k + '</b><span style="color:#8e8e93;font-size:12px">' + s.d + ' · 지난 단계</span></button><div class="body"><dl class="kv">' + s.kv.map(r => '<dt>' + r[0] + '</dt><dd>' + r[1] + '</dd>').join('') + '</dl></div></div>'; });
+  h += '<div class="other"><span class="dot" style="background:#b25000"></span><span><b>임차 만기 예정</b> <span style="color:#8e8e93;font-size:12px">2026-12-17</span></span></div>';
+  h += '<div style="font-size:11px;color:#8e8e93">계약 진행은 상담카드 \'2. 계약관리 상담\'에서 자동 — 지금 단계는 크게, 지난 단계는 ▸ 눌러 펼침</div></div>';
+  p.innerHTML = h; }
+ draw();
+</script>
+</body></html>
