@@ -1,5 +1,6 @@
 // 세대 전환 상태 · 공개 세대 저장 (R2) — 직원용. 손님용 읽기는 repo/public-units.js
 import { pubRow, canPub, pubRowKind, cleanDeal } from '../core/conv.js';
+import { syncUnitBoard } from './unit-pub-board.js';
 
 export async function listConv(db) {
   const conv = (await db.prepare('SELECT unit_id, status, move_out, memo, at, by FROM unit_conv').all()).results || [];
@@ -21,7 +22,7 @@ export async function setConv(db, id, v, by, now = Date.now()) {
   await db.prepare('INSERT INTO unit_conv (unit_id, status, move_out, memo, at, by, done_at, done_from) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (unit_id) DO UPDATE SET status = excluded.status, move_out = excluded.move_out, memo = excluded.memo, at = excluded.at, by = excluded.by, done_at = excluded.done_at, done_from = excluded.done_from')
     .bind(id, v.status, v.move_out, v.memo, now, by, done_at, done_from).run();
   if (!(await isPubUnit(db, id))) return false;
-  if (!canPub(v.status)) { if (DONE.includes(v.status) || !(await pubEligible(db, id))) { await dropPubListing(db, id); await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); return true; } return false; }   // 신규분양 대상(시안 r46) 세대는 다른 상태여도 공개 유지
+  if (!canPub(v.status)) { if (DONE.includes(v.status) || !(await pubEligible(db, id))) { await dropPubListing(db, id); await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(id).run(); await syncUnitBoard(db, id, by); return true; } return false; }   // 신규분양 대상(시안 r46) 세대는 다른 상태여도 공개 유지
   const r = pubRow(id, v.status);   // 공실 ↔ 퇴거확정(매물동의) 사이로 바뀌면 구분만 새로
   await db.prepare('UPDATE public_units SET kind = ? WHERE unit_id = ?').bind(r.kind, id).run();
   return false;
@@ -76,7 +77,7 @@ export async function dropPubListing(db, id) {
 // 계약조건이 생겼거나 계약이 끝난 공개 세대는 손님 화면 · 현재 매물에서 내림 (직원이 세대 · 상태를 저장할 때 · 매일 새벽)
 export async function cleanupPub(db) {
   const bad = (await db.prepare("SELECT p.unit_id, p.pid FROM public_units p LEFT JOIN units u ON u.id = p.unit_id LEFT JOIN unit_conv c ON c.unit_id = p.unit_id WHERE coalesce(json_extract(u.data, '$.cond'), '') NOT IN ('', '-') OR coalesce(c.status, '') IN ('계약완료', '신규입주')").all()).results || [];
-  for (const b of bad) { if (b.pid) await db.prepare('DELETE FROM public_listings WHERE id = ?').bind(b.pid).run(); await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(b.unit_id).run(); }
+  for (const b of bad) { if (b.pid) await db.prepare('DELETE FROM public_listings WHERE id = ?').bind(b.pid).run(); await db.prepare('DELETE FROM public_units WHERE unit_id = ?').bind(b.unit_id).run(); await syncUnitBoard(db, b.unit_id, '자동'); }   // 매물보드 카드 → 계약 (시안 r56)
   return bad.length;
 }
 

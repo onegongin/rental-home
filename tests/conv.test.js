@@ -95,3 +95,33 @@ test('상태 고치기 · 공개 · 손님 화면 · 자동 내림', async () =>
   const audit = (await boss('/api/admin/audit')).json.rows.map(x => x.act);
   assert.ok(audit.includes('세대 공개') && audit.includes('세대 공개 내림') && audit.includes('전환 상태'));
 });
+
+test('손님 화면 공개 → 매물보드 광고중 카드 (시안 r56 A안)', async () => {
+  const set = (a, id, b) => a('/api/staff/conv/' + id, { body: b });
+  const pub = (a, id, deal) => a('/api/staff/conv/' + id + '/pub', { body: deal ? { on: true, deal } : { on: false } });
+  const cards = async () => (await boss('/api/staff/listings')).json.rows.filter(l => l.unit_id === '103-1502' && l.source === 'unitpub');
+  const one = async d => (await cards()).find(l => l.deal === d);
+  const pubDeal = async () => ((await boss('/api/staff/conv')).json.pub.find(x => x.unit_id === '103-1502') || {}).deal || '';
+  const move = (a, l, status) => a('/api/staff/listings/' + l.id + '/status', { body: { ver: l.ver, status } });
+
+  await set(boss, '103-1502', { status: '공실' });
+  assert.equal((await pub(boss, '103-1502', '둘 다')).status, 200);
+  let s = await one('sale'), j = await one('jeonse');
+  assert.equal(s.status, '광고중'); assert.equal(j.status, '광고중'); assert.equal((await cards()).length, 2, '둘 다 = 카드 2장');
+  assert.ok(s.ask > 0, '매매 = 매입보장가'); assert.equal(s.pub, 'off', '공개 사본은 이 줄이 아님');
+  assert.equal((await move(staff, s, '협의중')).status, 403, '직원은 분양팀 카드 못 옮김');
+
+  // 매매 카드 철회 → 손님 화면은 전세만 / 전세 카드 계약 → 공개 끔
+  assert.equal((await move(boss, s, '철회')).status, 200); assert.equal(await pubDeal(), '전세');
+  j = await one('jeonse'); assert.equal((await move(boss, j, '계약')).status, 200); assert.equal(await pubDeal(), '', '계약 = 공개 끔');
+  assert.equal((await one('sale')).status, '철회');
+
+  // 다시 신규분양 공개 → 철회 카드가 광고중으로 / 공개 끄기 → 철회
+  await pub(boss, '103-1502', '매매'); assert.equal((await one('sale')).status, '광고중');
+  s = await one('sale'); assert.equal((await move(boss, s, '가계약')).status, 200); assert.equal(await pubDeal(), '매매', '가계약까지는 공개 유지');
+  await pub(boss, '103-1502', null); assert.equal((await one('sale')).status, '철회');
+
+  // 공개 중 계약완료 → 카드 '계약'
+  await pub(boss, '103-1502', '매매'); await set(boss, '103-1502', { status: '계약완료' });
+  assert.equal((await one('sale')).status, '계약'); assert.equal(await pubDeal(), '');
+});

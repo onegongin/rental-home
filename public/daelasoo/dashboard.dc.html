@@ -2479,7 +2479,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <sc-for list="{{ lb.cols }}" as="k"><div onDragOver="{{ k.onDragOver }}" onDragLeave="{{ k.onDragLeave }}" onDrop="{{ k.onDrop }}" style="background:{{ k.bg }};border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px;min-height:180px;min-width:0">
           <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:800;padding:2px 4px"><span>{{ k.st }}</span><span style="color:#6e6e73">{{ k.n }}</span></div>
           <sc-if value="{{ k.isEmpty }}"><div style="font-size:11.5px;color:#8e8e93;padding:6px 4px">없음</div></sc-if>
-          <sc-for list="{{ k.cards }}" as="c"><div draggable="{{ c.drag }}" onDragStart="{{ c.onDragStart }}" onClick="{{ c.open }}" style="background:#fff;border-radius:10px;padding:8px 9px;display:flex;flex-direction:column;gap:4px;cursor:{{ c.cur }};font-size:12px;min-width:0">
+          <sc-for list="{{ k.cards }}" as="c"><div draggable="{{ c.drag }}" onDragStart="{{ c.onDragStart }}" onClick="{{ c.open }}" style="background:#fff;border:{{ c.bd }};border-radius:10px;padding:8px 9px;display:flex;flex-direction:column;gap:4px;cursor:{{ c.cur }};font-size:12px;min-width:0">
             <div style="display:flex;gap:5px;align-items:baseline;font-weight:800;font-size:13px">{{ c.unit }}<span style="color:#6e6e73;font-weight:600;font-size:11px">{{ c.type }}</span></div>
             <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;border-radius:4px;padding:1px 6px;color:#fff;background:{{ c.dealBg }}">{{ c.deal }}</span><b style="font-variant-numeric:tabular-nums">{{ c.price }}</b></div>
             <sc-if value="{{ c.hasTags }}"><div style="display:flex;gap:3px;flex-wrap:wrap"><sc-for list="{{ c.tags }}" as="t"><span style="font-size:10.5px;font-weight:800;border-radius:9999px;padding:1px 7px;background:{{ t.bg }};color:{{ t.fg }};white-space:nowrap">{{ t.t }}</span></sc-for></div></sc-if>
@@ -4684,6 +4684,12 @@ class Component extends DCLogic {
   lbSetSt(l, st) {
     if (st === l.status) return;
     if (st === '잔금완료') return this.flash(this.LB_ERR.card);
+    if (l.source === 'unitpub') {   /* 분양팀 카드 (시안 r56 A안): 손님 화면 공개도 같이 */
+      const live = ['접수', '확인중', '광고중', '협의중', '가계약'], dn = l.deal === 'sale' ? '신규분양' : '전세';
+      const q = st === '계약' ? '계약으로 옮기면 이 세대의 손님 화면 공개가 꺼집니다.' : this.LB_FOLD.includes(st) ? st + '(으)로 옮기면 손님 화면 공개에서 ' + dn + '이 빠집니다.' : !live.includes(l.status) ? '다시 광고 단계로 옮기면 손님 화면 공개에 ' + dn + '을 다시 넣습니다.' : '';
+      if (q && !window.confirm(q + ' 옮길까요?')) return;
+      const rs = this.LB_FOLD.includes(st) ? window.prompt('사유 (이력에 남습니다)', '') : ''; if (rs === null) return;
+      return this.lbAct(l.id, 'status', { ver: l.ver, status: st, reason: rs }, st + '(으)로 바꿨습니다').then(j => { if (j && j.ok && j.unitPub) { this._convOk = false; this._convAt = 0; this.convLoad(); if (j.unitPub === 'status') this.flash('이 세대는 지금 공개 대상이 아니라 손님 화면에는 안 나갑니다'); } }); }
     if (l.pub === 'on' && !['광고중', '협의중', '가계약'].includes(st) && !window.confirm(st + '(으)로 바꾸면 공개사이트에서 바로 내려갑니다. 바꿀까요?')) return;
     const reason = this.LB_FOLD.includes(st) ? window.prompt('사유 (이력에 남습니다)', '') : '';
     if (reason === null) return;
@@ -4702,13 +4708,19 @@ class Component extends DCLogic {
     const chip = (on, label, onClick) => Object.assign(this.chip(on, '#1d1d1f'), { label, onClick });
     const tag = (t, bg, fg) => ({ t, bg, fg });
     const card = l => { const d = this.LB_DEAL[l.deal] || ['', '#1d1d1f'], off = ['계약', '잔금완료', '보류', '철회'].includes(l.status), tags = [];
+      if (l.source === 'unitpub') { const live = ['접수', '확인중', '광고중', '협의중', '가계약'].includes(l.status);   /* 손님 화면 공개에서 생긴 카드 (시안 r56 A안) */
+        if (live) tags.push(tag(l.status === '가계약' ? '공개 · 계약 진행중' : '공개중', '#e9f7ee', '#157a3f'));
+        tags.push(tag('분양팀 · ' + (l.deal === 'sale' ? '매입보장가' : '임대보증금'), '#eef2ff', '#3949ab'));
+        return { unit: l.dong + '-' + l.ho, type: l.type, deal: d[0], dealBg: d[1], price: this.lbPrice(l), tags, hasTags: true, auto: live, bd: live ? '1.5px solid #157a3f' : '1px solid transparent',
+          meta: '첨단대라수 분양팀 · 담당 ' + (l.mgr || '-'), drag: top ? 'true' : 'false', cur: top ? 'grab' : 'pointer',
+          onDragStart: () => { this._lbDrag = l; }, open: () => this.goUnitBoard(l.dong + '-' + l.ho) }; }
       if (l.urgent) tags.push(tag('급매', '#fde8ec', '#c8381e'));
       if (l.pub === 'on') tags.push(tag(l.status === '가계약' ? '공개 · 계약 진행중' : '공개중', '#e9f7ee', '#157a3f'));
       else if (l.pub === 'req') tags.push(tag('공개 요청', '#e8f0fb', '#0066cc'));
       else if (!off && l.missing.length) tags.push(tag('필수 ' + l.missing.length + '개 부족', '#fff4d6', '#8a5a00'));
       if (l.source === 'guest') tags.push(tag('관심등록', '#fff4e8', '#b25000'));
       if (this.D.generic && this.condOf(l.dong + '-' + l.ho, (S.u || {})[l.dong + '-' + l.ho] || {}).v === '10.16 혜택가') tags.unshift(tag('개인 소유', '#f3e8fb', '#8e2c6e'));   /* 3단계 */
-      return { unit: l.dong + '-' + l.ho, type: l.type, deal: d[0], dealBg: d[1], price: this.lbPrice(l), tags, hasTags: tags.length > 0,
+      return { unit: l.dong + '-' + l.ho, type: l.type, deal: d[0], dealBg: d[1], price: this.lbPrice(l), tags, hasTags: tags.length > 0, bd: '1px solid transparent',
         meta: (l.owner.name || '소유자 미입력') + ' · 담당 ' + (l.mgr || '미배정'), drag: l.can.edit ? 'true' : 'false', cur: l.can.edit ? 'grab' : 'pointer',
         onDragStart: () => { this._lbDrag = l; }, open: () => this.ldOpen(l.id) }; };
     const col = st => { const items = rows.filter(l => l.status === st);
@@ -5273,7 +5285,7 @@ class Component extends DCLogic {
   // 손님 화면 공개 (시안 r46): 끄기 / 신규분양(매매) / 전세 / 둘 다 — 서버 /api/staff/conv/:id/pub { on, deal }
   pubSet(id, deal) { if (!this.state.convCanPub) return this.flash('손님 화면 공개는 대표 · 관리자 · 권한자만 고를 수 있습니다');
     fetch('/api/staff/conv/' + id + '/pub', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify(deal ? { on: true, deal } : { on: false }) }).then(r => r.json()).then(j => {
-      if (!j || !j.ok) return this.flash((j && j.msg) || '바꾸지 못했습니다'); const pb = Object.assign({}, this.state.convPub || {}); if (deal) pb[id] = deal; else delete pb[id]; this.setState({ convPub: pb }); this.flash(deal ? '손님 화면 공개 · ' + ({ 매매: '신규분양', 전세: '전세', '둘 다': '신규분양 · 전세' })[deal] : '손님 화면 공개 내림'); }).catch(() => this.flash('바꾸지 못했습니다')); }
+      if (!j || !j.ok) return this.flash((j && j.msg) || '바꾸지 못했습니다'); const pb = Object.assign({}, this.state.convPub || {}); if (deal) pb[id] = deal; else delete pb[id]; this.setState({ convPub: pb, lb: null });   /* 매물보드 카드도 새로 (시안 r56) */ this.flash(deal ? '손님 화면 공개 · ' + ({ 매매: '신규분양', 전세: '전세', '둘 다': '신규분양 · 전세' })[deal] : '손님 화면 공개 내림'); }).catch(() => this.flash('바꾸지 못했습니다')); }
   condOf(id, s) { s = s || {}; if (s.cond === '-') return { v: '', auto: false }; if (s.cond && this.COND[s.cond]) return { v: s.cond, auto: false }; return (this.state.convSt || {})[id] === '전세연장' ? { v: '전세연장', auto: true } : { v: '', auto: false }; }
   dbVals(role, can) {
     const S = this.state, D = this.D; this.convLoad(); const canPhone = can('phone'), canEdit = can('edit'), canCreate = can('create'), canXl = can('excel');

@@ -16,6 +16,8 @@ import { audit } from '../repo/audit.js';
 import { notify, listingLine } from '../notify/index.js';
 import { matchNote, adsDown } from './ads.js';
 import { seoPing } from '../seo/index.js';
+import { boardMoved } from './conv.js';
+import { fillUnitBoard } from '../repo/unit-pub-board.js';
 
 const EDIT = ['ask', 'adj', 'dep', 'rent', 'term', 'move', 'mgmt', 'mgmt_na', 'mgmt_items', 'facing', 'basis', 'facing_auto', 'urgent', 'memo', 'memo_pub', 'opt_show', 'done_hide'];
 const items = v => { try { return JSON.parse(v || '[]'); } catch (e) { return []; } };
@@ -41,6 +43,7 @@ export async function staffListings(req, env, url, u) {
   const db = env.DB, p = url.pathname, log = (act, target, detail) => audit(db, { who: u.name, act, target, detail, ip: ip(req), dev: device(req) });
 
   if (p === '/api/staff/listings' && req.method === 'GET') {
+    await fillUnitBoard(db);   // 손님 화면 공개 세대 → 광고중 카드 (시안 r56)
     const [rows, cfg, grants] = await Promise.all([LR.boardRows(db), LR.loadCfg(db), LR.myGrants(db, u.name)]);
     const owners = await LR.ownersOf(db, rows.map(r => r.unit_id));
     return J({ ok: true, st: ST, deals: DEALS, rows: rows.map(l => shape(u, l, owners[l.unit_id], grants[l.id], cfg)) });
@@ -107,6 +110,16 @@ export async function staffListings(req, env, url, u) {
     if (!ST.includes(st)) return J({ ok: false, err: 'input' }, 400);
     if (st === cur.status) return J({ ok: true, ver: cur.ver, same: true });
     if (st === '잔금완료') return J({ ok: false, err: 'card', msg: '잔금완료는 상담카드에서 처리합니다 (소유자 · 임대차가 같이 바뀜).' }, 409);
+    // 손님 화면 공개에서 생긴 카드 (시안 r56 A안): 상태만 바꾸고 → 손님 화면 공개도 맞춤
+    if (cur.source === 'unitpub') {
+      if (!can(u, 'unit.publish')) return J({ ok: false, err: 'perm', msg: '분양팀 카드는 대표 · 관리자 · 권한자만 옮길 수 있습니다.' }, 403);
+      const reason = String(b.reason || '').trim().slice(0, 200);
+      const r = await LR.commit(db, cur, { status: st }, { ver: b.ver, who: u.name, cfg, events: [['상태', cur.status + ' → ' + st + (reason ? ' · 사유: ' + reason : '')]] });
+      if (!r.ok) return send(r);
+      const pv = await boardMoved(db, cur, st, u.name);
+      if (pv) await log('세대 공개', '세대 ' + cur.unit_id, '매물보드 ' + st + ' → 손님 화면 ' + (pv === 'status' ? '공개 불가 (대상 아님)' : pv));
+      return send(r, { unitPub: pv });
+    }
     let pub = pubAfter(st, cur.pub);
     const reason = String(b.reason || '').trim().slice(0, 200);
     const ev = [['상태', cur.status + ' → ' + st + (reason ? ' · 사유: ' + reason : '')]];
