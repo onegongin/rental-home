@@ -29,7 +29,7 @@ nav.bc{font-size:12px;color:#6e6e73;margin-bottom:8px}nav.bc a{color:#6e6e73;tex
 .price{font-size:24px;font-weight:800;margin:4px 0 2px}.pic{width:100%;max-height:420px;object-fit:contain;background:#fafafa;border-radius:12px;display:block}
 table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;width:120px;color:#6e6e73;font-weight:600;padding:8px 0;border-bottom:1px solid #f2f2f5;vertical-align:top}td{padding:8px 0;border-bottom:1px solid #f2f2f5}
 .go{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{display:inline-flex;align-items:center;height:42px;padding:0 18px;border-radius:9999px;font-weight:800;font-size:14px;text-decoration:none}.p{background:#c8381e;color:#fff}.s{background:#f2f2f5;color:#1d1d1f}
-h2{font-size:16px;font-weight:800;margin:0 0 8px}ul{margin:0;padding-left:18px;font-size:14px}.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+h2{font-size:16px;font-weight:800;margin:0 0 8px}ul{margin:0;padding-left:18px;font-size:14px}.list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}@media(max-width:760px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .li{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:#1d1d1f}.li img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fafafa;border-radius:10px}.li b{font-size:15px}.li span{font-size:13px;color:#6e6e73}.li span.deal{font-size:12px;color:#fff}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs a{font-size:13px;font-weight:700;border:1px solid #d2d2d7;border-radius:9999px;padding:5px 13px;text-decoration:none;color:#1d1d1f;background:#fff}.tabs a.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
 footer{font-size:12px;color:#6e6e73;line-height:1.8;border-top:1px solid #e5e5ea;margin-top:18px;padding-top:12px}.upd{font-size:12px;color:#8e8e93}
@@ -73,7 +73,7 @@ export function listingPage(base, r) {
     '<h1><span class="deal ' + r.deal + '">' + DEAL[r.deal] + '</span>' + esc(S.name + ' ' + where(r) + ' ' + r.type) + (r.badge ? '<span class="badge">' + esc(r.badge) + '</span>' : '') + '</h1>' +
     '<p class="sub">' + esc(S.address) + ' · 갱신 ' + ymd(r.updated) + '</p>' +
     '<div class="card"><div class="price">' + esc(priceText(r)) + '</div><img class="pic" src="' + esc(img) + '" alt="' + esc(S.name + ' ' + r.type + '타입 평면도') + '" loading="lazy">' +
-    '<div class="go"><a class="btn p" href="tel:' + esc(r.tel || O.tel) + '">전화 ' + esc(r.tel || O.tel) + '</a><a class="btn s" href="/?tab=list">사이트에서 중개요청 · 다른 매물</a></div></div>' +
+    '<div class="go"><a class="btn p" href="tel:' + esc(r.tel || O.tel) + '">전화 ' + esc(r.tel || O.tel) + '</a><a class="btn s" href="/?tab=list">' + (nu(r) ? '신규분양전환요청' : '사이트에서 중개요청') + ' · 다른 매물</a></div></div>' +
     '<div class="card"><h2>중개대상물 표시</h2><table>' + rows.map(([k, v]) => '<tr><th>' + k + '</th><td>' + esc(v) + '</td></tr>').join('') + '</table></div>' +
     '<div class="card"><h2>단지 안내</h2><ul><li>' + esc(nameX() + ' · ' + scaleText()) + '</li>' + (moveInText() ? '<li>' + esc(moveInText()) + '</li>' : '') + '<li><a href="/?type=' + esc(encodeURIComponent(r.type)) + '">' + esc(r.type) + '타입 평면 · 실내 사진 보기</a></li></ul></div>';
   const offer = { '@type': 'Offer', price: (r.deal === 'sale' ? r.ask : r.dep) * 10000, priceCurrency: 'KRW', availability: 'https://schema.org/InStock', seller: { '@type': 'RealEstateAgent', name: O.name, telephone: O.tel } };
