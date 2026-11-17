@@ -76,6 +76,17 @@ function info(D) {
     ...HQ.map(([, a], k) => '        <div class="hq-ans" id="hqa' + k + '" hidden>' + seg(a) + '</div>'),
     '        <script>' + hfqJs + '</script>', '      </div>'] : [];
   const links = (I.links || []).map(([h, t]) => '<a href="' + esc(h) + '">' + esc(t) + '</a>').join('');
+  // 단지 소개 · 사업개요 · 입지 (시안 r63 확정 2026-11-18) — 검색 로봇이 읽는 글. 손님에게도 똑같이 보임. {연차:2018} = 만들 때 기준 n년차
+  const yr = t => String(t).replace(/\{연차:(\d{4})\}/g, (x, y) => (new Date().getFullYear() - Number(y) + 1) + '년차');
+  const OV = ((D.content || {}).overview || {}).items || [], PM = ((((D.content || {}).siteMap || {}).board || {}).premium || {}).items || [];
+  const H2 = '<h2 style="margin:0 0 6px;font-size:14px;font-weight:800;color:#1d1d1f">';
+  const intro = I.intro || OV.length || PM.length ? [
+    '    <div class="hwin" style="flex:1 1 100%;border-top:1px solid #ececf0;padding-top:14px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:18px 32px">',
+    '      <style>.hwin dl{margin:0;display:grid;grid-template-columns:92px 1fr;gap:2px 10px;font-size:12.5px}.hwin dt{color:#6e6e73;font-weight:700}.hwin dd{margin:0}.hwin ul{margin:0;padding-left:16px;font-size:12.5px;line-height:1.8}@media (max-width:900px){.hwin{grid-template-columns:1fr!important}}</style>',
+    I.intro ? '      <section>' + H2 + esc(S.name) + ' 단지 소개</h2><p style="margin:0;line-height:1.75">' + esc(I.intro) + '</p></section>' : null,
+    OV.length ? '      <section>' + H2 + '사업개요</h2><dl>' + OV.map(([k, v]) => '<dt>' + esc(k) + '</dt><dd>' + esc(yr(v)).replace(/\n/g, ' ') + '</dd>').join('') + '</dl></section>' : null,
+    PM.length ? '      <section>' + H2 + '입지 · 개발 계획</h2><ul>' + PM.map(x => '<li>' + esc(x.title) + '</li>').join('') + '</ul><p style="margin:4px 0 0;font-size:11.5px;color:#8e8e93">예정 사항은 관계기관 사정에 따라 바뀔 수 있습니다</p></section>' : null,
+    '    </div>'].filter(Boolean) : [];
   return [
     '    <section style="flex:1 1 auto;min-width:0">',
     '      <h1 style="margin:0 0 6px;font-size:18px;font-weight:800;color:#1d1d1f">' + esc(S.name) + (I.nameSub ? ' <span style="font-size:13px;font-weight:600;color:#6e6e73">' + esc(I.nameSub) + '</span>' : '') + '</h1>',
@@ -91,6 +102,7 @@ function info(D) {
     '      </dl>',
     ...(hfq.length ? ['      <style>.hfq{margin-top:10px;padding-top:8px;border-top:1px dashed #e5e5ea}.hfq>b{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:#6b5ce7;margin-bottom:4px}.hfq>b:before{content:"";width:7px;height:7px;border-radius:50%;background:#6b5ce7}.hfq>b span{font-weight:500;color:#8e8e93}.hq-row{display:flex;flex-wrap:wrap;align-items:center}.hq-row button{border:0;background:none;padding:4px 0;font:inherit;font-weight:700;color:#1d1d1f;cursor:pointer;white-space:nowrap}.hq-row button::after{content:"+";color:#6b5ce7;font-weight:500;margin-left:5px}.hq-row button.on{color:#6b5ce7}.hq-row button.on::after{content:"−"}.hq-row i{font-style:normal;color:#c7c7cc;margin:0 12px}.hq-ans{position:relative;margin-top:6px;background:#f6f4ff;border-radius:10px;padding:10px 14px;color:#3a3a3c;max-width:520px;box-sizing:border-box}.hq-ans[hidden]{display:none}.hq-ans b{color:#1d1d1f}.hq-ans:before{content:"";position:absolute;top:-6px;left:var(--tip,24px);width:12px;height:12px;background:#f6f4ff;transform:rotate(45deg)}@media (max-width:767px){.hq-row{flex-direction:column;align-items:flex-start}.hq-row i{display:none}.hq-row button{white-space:normal;text-align:left}.hq-ans{margin:2px 0 6px;max-width:none}.hq-ans:before{display:none}}</style>', ...hfq] : []),
     '    </section>',
+    ...intro,
     '    <!-- 안내 페이지 링크 한 줄 (시안 preview/home-links A안, 2026-11-05) — 손님 이동 + 검색 로봇이 안내 페이지를 따라 들어오게 -->',
     '    <nav class="hwln" aria-label="단지 안내" style="flex:1 1 100%;font-size:12.5px;line-height:1.9">',
     '      <style>.hwln b{color:#1d1d1f;margin-right:8px}.hwln a+a::before{content:"·";color:#c7c7cc;margin:0 7px;display:inline-block}</style>',
