@@ -133,6 +133,7 @@ input,select,textarea,button{font-family:inherit;color:inherit}
 br[data-mbr]{display:none}
 @container (max-width:560px){[data-m=ocrow1],[data-m=ocrow2]{grid-template-columns:repeat(2,minmax(0,1fr))!important}[data-m=ocrow1]>*,[data-m=ocrow2]>*{grid-column:auto!important}[data-m=ocrow1]>[data-full]{grid-column:1 / -1!important}}
 @container (max-width:720px){[data-m=adbox]{grid-template-columns:minmax(0,1fr)!important}}
+[data-m=own2] [data-m=bkgrid]{grid-template-columns:minmax(0,1fr)!important}
 @container (max-width:720px){[data-m=trgrid]{grid-template-columns:minmax(0,1fr)!important}}
 @container (max-width:440px){[data-m=trf]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 [data-sec][data-open="0"]>:not(:first-child){display:none!important}
@@ -362,6 +363,7 @@ html:root [data-m=bcond3],html:root [data-m=ccond]{grid-template-columns:repeat(
 [data-m=gchips]>[data-m=cmodes]{grid-column:1 / -1;margin-top:4px}
 [data-m=loghd],[data-m=dbhd]{display:none!important}
 [data-m=gbox]{grid-template-columns:72px minmax(0,1fr)!important}
+[data-m=own2]{grid-template-columns:minmax(0,1fr)!important}
 [data-m=logq]{width:100%!important;order:9}
 [data-m=logrow]{grid-template-columns:auto minmax(0,1fr) auto!important;grid-template-areas:"at kind ed" "unit name ed" "ph ph ph" "tx tx tx" "wr wr wr";margin:0 0 8px!important;border:1px solid #e5e5ea!important;border-radius:12px;padding:6px 4px;background:#fff}
 [data-m=logrow]>div{padding:3px 8px!important}
@@ -1558,8 +1560,40 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         </sc-if>
       </div>
     </sc-if>
-    <sc-if value="{{ f.isInflow }}" hint-placeholder-val="{{ false }}">
-      <div style="background:#f5f5f7;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px">
+    <sc-if value="{{ f.isInflow }}" hint-placeholder-val="{{ false }}"><div data-m="own2" style="display:grid;grid-template-columns:{{ f.inCols }};gap:12px;align-items:start">
+      <sc-if value="{{ f.isOwnerAd }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#f5f5f7;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0">
+          <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:12px;font-weight:700;color:#6e6e73">진행표시</span><span style="font-size:11px;color:#8e8e93">중복 선택</span></div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:-4px"><sc-for list="{{ f.tagChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">{{ c.label }}</button></sc-for></div>
+          <sc-if value="{{ f.hasAdBox }}" hint-placeholder-val="{{ false }}"><div style="container-type:inline-size;min-width:0"><div data-m="adbox" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start">
+          <sc-if value="{{ f.hasBrokers }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;order:2;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;white-space:nowrap"><span style="font-size:12px;font-weight:700;color:#1d1d1f"><span data-pcl="1">광고중(타부동산) · 부동산</span><span data-mol="1">부동산</span></span><span style="font-size:11px;color:#8e8e93"><span data-pcl="1">목록에서 고르면 연락처 자동 입력</span><span data-mol="1">목록선택 연락처 자동 입력</span></span></div>
+              <div data-m="bkgrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px 14px">
+              <sc-for list="{{ f.brokerRows }}" as="b">
+                <div style="position:relative;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;padding-right:22px;border-left:2px solid #f0f0f2;padding-left:8px">
+                  <sc-if value="{{ b.isCustom }}"><input value="{{ b.name }}" onChange="{{ b.onName }}" placeholder="부동산명 직접 입력" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f"></sc-if>
+                  <sc-if value="{{ b.isList }}"><select value="{{ b.sel }}" onChange="{{ b.onSel }}" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f"><sc-for list="{{ f.brokerOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></sc-if>
+                  <input value="{{ b.phone }}" onChange="{{ b.onPhone }}" inputmode="numeric" placeholder="연락처" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f">
+                  <input value="{{ b.agent }}" onChange="{{ b.onAgent }}" placeholder="기타(중개사명)" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f">
+                  <button onClick="{{ b.del }}" title="삭제" style="position:absolute;right:0;top:50%;transform:translateY(-50%);border:none;background:#f0f0f2;border-radius:9999px;width:18px;height:18px;font-size:9px;line-height:18px;padding:0;cursor:pointer">✕</button>
+                </div>
+              </sc-for>
+              </div>
+              <button onClick="{{ f.addBroker }}" style="align-self:flex-start;border:1px dashed #c7c7cc;background:#fff;border-radius:9999px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;color:#0066cc">+ 부동산 추가</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ f.hasMedia }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;order:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:12px;font-weight:700;color:#1d1d1f">광고중 · 광고매체</span><span style="font-size:11px;color:#8e8e93">중복 선택</span><sc-if value="{{ f.hasListAt }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;font-size:11.5px;font-weight:600;color:#3a3a3c;font-variant-numeric:tabular-nums;white-space:nowrap">매물 등록 {{ f.listAtShort }}</span></sc-if></div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap"><sc-for list="{{ f.mediaChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for></div>
+              <div style="display:flex;gap:6px"><input value="{{ f.mediaNew }}" onChange="{{ f.onMediaNew }}" placeholder="+ 직접입력 (예: 네이버부동산)" style="box-sizing:border-box;flex:1;min-width:0;height:34px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:13px;background:#fff;color:#1d1d1f"><button onClick="{{ f.addMediaNew }}" style="height:34px;border:1px dashed #c7c7cc;background:#fff;border-radius:10px;padding:0 12px;font-size:12px;font-weight:600;color:#0066cc;cursor:pointer;flex-shrink:0">추가</button></div>
+            </div>
+          </sc-if>
+          </div></div></sc-if>
+        </div>
+      </sc-if>
+      <div style="background:#f5f5f7;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#6e6e73">유입경로</span><div style="display:flex;gap:4px;flex-wrap:wrap"><sc-for list="{{ f.inChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">{{ c.label }}</button></sc-for></div><sc-if value="{{ f.inNone }}"><span style="font-size:11px;color:#8e8e93">선택하세요 · 중복 선택</span></sc-if></div>
         <sc-if value="{{ f.inSiteOn }}"><div style="background:#eef6f1;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;font-size:12px">
           <sc-if value="{{ f.siteHas }}"><div><b>사이트 · 매물 중개요청</b> — {{ f.siteLabel }}</div>
@@ -1604,7 +1638,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
           <div style="background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px"><span style="font-size:12px;font-weight:700;color:#1d1d1f;white-space:nowrap">지인</span><input value="{{ f.inFriend }}" onChange="{{ f.onInFriend }}" placeholder="기타 (상세 관계 등)" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f;flex:1"></div>
         </sc-if>
       </div>
-    </sc-if>
+    </div></sc-if>
     <sc-if value="{{ f.isSeller }}">
       <div data-m="scond" style="background:#f5f5f7;border-radius:14px;padding:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px 16px;align-items:start">
       <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
@@ -1753,38 +1787,6 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     </sc-if>
     <sc-if value="{{ f.hasMkt }}" hint-placeholder-val="{{ false }}">
       <div style="background:#f5f5f7;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap"><button onClick="{{ f.mktChip.onClick }}" style="border:1px solid {{ f.mktChip.bd }};background:{{ f.mktChip.bg }};color:{{ f.mktChip.fg }};border-radius:9999px;padding:5px 12px;font-size:12.5px;font-weight:700;cursor:pointer">{{ f.mktChip.label }}</button><span style="font-size:11.5px;color:#8e8e93;flex:1;min-width:180px">{{ f.mktNote }}</span></div>
-    </sc-if>
-    <sc-if value="{{ f.isOwnerAd }}" hint-placeholder-val="{{ false }}">
-      <div style="background:#f5f5f7;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px">
-        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:12px;font-weight:700;color:#6e6e73">진행표시</span><span style="font-size:11px;color:#8e8e93">중복 선택</span></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:-4px"><sc-for list="{{ f.tagChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">{{ c.label }}</button></sc-for></div>
-        <sc-if value="{{ f.hasAdBox }}" hint-placeholder-val="{{ false }}"><div style="container-type:inline-size;min-width:0"><div data-m="adbox" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start">
-        <sc-if value="{{ f.hasBrokers }}" hint-placeholder-val="{{ false }}">
-          <div style="background:#fff;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;order:2;min-width:0">
-            <div style="display:flex;align-items:baseline;gap:8px;white-space:nowrap"><span style="font-size:12px;font-weight:700;color:#1d1d1f"><span data-pcl="1">광고중(타부동산) · 부동산</span><span data-mol="1">부동산</span></span><span style="font-size:11px;color:#8e8e93"><span data-pcl="1">목록에서 고르면 연락처 자동 입력</span><span data-mol="1">목록선택 연락처 자동 입력</span></span></div>
-            <div data-m="bkgrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px 14px">
-            <sc-for list="{{ f.brokerRows }}" as="b">
-              <div style="position:relative;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;padding-right:22px;border-left:2px solid #f0f0f2;padding-left:8px">
-                <sc-if value="{{ b.isCustom }}"><input value="{{ b.name }}" onChange="{{ b.onName }}" placeholder="부동산명 직접 입력" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f"></sc-if>
-                <sc-if value="{{ b.isList }}"><select value="{{ b.sel }}" onChange="{{ b.onSel }}" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f"><sc-for list="{{ f.brokerOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></sc-if>
-                <input value="{{ b.phone }}" onChange="{{ b.onPhone }}" inputmode="numeric" placeholder="연락처" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f">
-                <input value="{{ b.agent }}" onChange="{{ b.onAgent }}" placeholder="기타(중개사명)" style="box-sizing:border-box;width:100%;min-width:0;height:36px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:13px;background:#fff;color:#1d1d1f">
-                <button onClick="{{ b.del }}" title="삭제" style="position:absolute;right:0;top:50%;transform:translateY(-50%);border:none;background:#f0f0f2;border-radius:9999px;width:18px;height:18px;font-size:9px;line-height:18px;padding:0;cursor:pointer">✕</button>
-              </div>
-            </sc-for>
-            </div>
-            <button onClick="{{ f.addBroker }}" style="align-self:flex-start;border:1px dashed #c7c7cc;background:#fff;border-radius:9999px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;color:#0066cc">+ 부동산 추가</button>
-          </div>
-        </sc-if>
-        <sc-if value="{{ f.hasMedia }}" hint-placeholder-val="{{ false }}">
-          <div style="background:#fff;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;order:1;min-width:0">
-            <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:12px;font-weight:700;color:#1d1d1f">광고중 · 광고매체</span><span style="font-size:11px;color:#8e8e93">중복 선택</span><sc-if value="{{ f.hasListAt }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;font-size:11.5px;font-weight:600;color:#3a3a3c;font-variant-numeric:tabular-nums;white-space:nowrap">매물 등록 {{ f.listAtShort }}</span></sc-if></div>
-            <div style="display:flex;gap:4px;flex-wrap:wrap"><sc-for list="{{ f.mediaChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for></div>
-            <div style="display:flex;gap:6px"><input value="{{ f.mediaNew }}" onChange="{{ f.onMediaNew }}" placeholder="+ 직접입력 (예: 네이버부동산)" style="box-sizing:border-box;flex:1;min-width:0;height:34px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:13px;background:#fff;color:#1d1d1f"><button onClick="{{ f.addMediaNew }}" style="height:34px;border:1px dashed #c7c7cc;background:#fff;border-radius:10px;padding:0 12px;font-size:12px;font-weight:600;color:#0066cc;cursor:pointer;flex-shrink:0">추가</button></div>
-          </div>
-        </sc-if>
-        </div></div></sc-if>
-      </div>
     </sc-if>
     <sc-if value="{{ f.ctOn }}" hint-placeholder-val="{{ false }}">
     <div style="background:#f0f6ff;border:1px solid #d6e6fb;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px">
@@ -5130,7 +5132,10 @@ class Component extends DCLogic {
     return Object.assign(o, over || {});
   }
   linkPre(id) { const g = (this.state.u[id] || {}).link; if (!g || !g.units) return []; return g.units.filter(x => x !== id).map(x => Object.assign({ unit: x, name: '', phone: '', rel: '', relEtc: '', memo: '' }, (g.rel || {})[x] || {}, { unit: x })); }
-  unitPrefill(id) { const S = this.state; const b0 = this.unitSnap(id); const cr0 = (S.u[id] || {}).carrier || ''; return { linkC: Object.assign({}, ((S.u[id] || {}).link || {}).contact || {}), links: this.linkPre(id), linksBase: this.linkPre(id).map(x => x.unit).join(', '), idLock: !!(b0.owner || b0.phone || cr0), idBase: { name: b0.owner || '', phone: b0.phone || '', carrier: cr0 }, idUnlock: false, idAsk: false, idAskText: '', idBy: S.me, idReason: '', baseId: id, base: b0, hasPrior: S.cards.some(c => c.unit === id), name: b0.owner, phone: b0.phone, ask: b0.ask, adj: b0.adj, status: b0.status, tags: ((S.u[id] || {}).tags || []).slice(), brokers: ((S.u[id] || {}).brokers || []).map(x => Object.assign({}, x)), media: ((S.u[id] || {}).media || []).slice(), carrier: (S.u[id] || {}).carrier || '', listAt: (S.u[id] || {}).listAt || '', preAt: (S.u[id] || {}).preAt || '', preExp: (S.u[id] || {}).preExp || '', preMemo: (S.u[id] || {}).preMemo || '', conAt: (S.u[id] || {}).conAt || '', balAt: (S.u[id] || {}).balAt || '', conMemo: (S.u[id] || {}).conMemo || '', taxBy: ((S.u[id] || {}).taxBy || '').split(' / ').filter(x => !/^기타:/.test(x))[0] || '', taxEtc: (((S.u[id] || {}).taxBy || '').split(' / ').find(x => /^기타:/.test(x)) || '').replace(/^기타:\s*/, ''), sellWhen: (S.u[id] || {}).sellWhen || '', sellWhy: ((S.u[id] || {}).sellWhy || []).slice(), sellWhyEtc: (S.u[id] || {}).sellWhyEtc || '', memo: this.memoCan((S.u[id] || {}).memo) ? (((S.u[id] || {}).memo || {}).text || '') : '' }; }
+  unitPrefill(id) { const S = this.state; const b0 = this.unitSnap(id); const cr0 = (S.u[id] || {}).carrier || ''; return { linkC: Object.assign({}, ((S.u[id] || {}).link || {}).contact || {}), links: this.linkPre(id), linksBase: this.linkPre(id).map(x => x.unit).join(', '), idLock: !!(b0.owner || b0.phone || cr0), idBase: { name: b0.owner || '', phone: b0.phone || '', carrier: cr0 }, idUnlock: false, idAsk: false, idAskText: '', idBy: S.me, idReason: '', baseId: id, base: b0, hasPrior: S.cards.some(c => c.unit === id), name: b0.owner, phone: b0.phone, ask: b0.ask, adj: b0.adj, status: b0.status, tags: ((S.u[id] || {}).tags || []).slice(), brokers: ((S.u[id] || {}).brokers || []).map(x => Object.assign({}, x)), media: ((S.u[id] || {}).media || []).slice(), carrier: (S.u[id] || {}).carrier || '', listAt: (S.u[id] || {}).listAt || '', preAt: (S.u[id] || {}).preAt || '', preExp: (S.u[id] || {}).preExp || '', preMemo: (S.u[id] || {}).preMemo || '', conAt: (S.u[id] || {}).conAt || '', balAt: (S.u[id] || {}).balAt || '', conMemo: (S.u[id] || {}).conMemo || '', taxBy: ((S.u[id] || {}).taxBy || '').split(' / ').filter(x => !/^기타:/.test(x))[0] || '', taxEtc: (((S.u[id] || {}).taxBy || '').split(' / ').find(x => /^기타:/.test(x)) || '').replace(/^기타:\s*/, ''), sellWhen: (S.u[id] || {}).sellWhen || '', sellWhy: ((S.u[id] || {}).sellWhy || []).slice(), sellWhyEtc: (S.u[id] || {}).sellWhyEtc || '', memo: this.memoCan((S.u[id] || {}).memo) ? (((S.u[id] || {}).memo || {}).text || '') : '', ...this.inflowPre(S.cards.filter(c => c.unit === id && c.kind === 'owner' && !c.deleted && c.inflow)[0]) }; }
+  // 이전 상담카드의 유입경로를 불러옴 (개인 소유자 = 같은 호실의 최근 카드, 2026-11-17 대표 요청)
+  inflowPre(pc) { if (!pc || !pc.inflow) return {}; const i0 = pc.inflow, fx = v => String(v || '').trim().replace(' ', 'T').slice(0, 16);
+    return { inflow: (i0.ch || []).slice(), visitAt: fx(i0.visitAt), visitBy: i0.visitBy || '', inMedia: (i0.media || []).slice(), inBrokers: (i0.brokers || []).map(x => Object.assign({}, x)), inFriend: i0.friend || '', inSite: i0.site || undefined, visitBase: i0.visitAt || i0.visitBy ? { at: fx(i0.visitAt), by: i0.visitBy || '' } : null, inflowBase: pc.inflowText || '' }; }
   OWNK = ['ocType','ocUnk','ocDep','ocRent','ocMemo','ocEnd','ocEndMode','ocParty','ocPartyName','ocRight','ocRenewFrom','ocRaiseDep','ocRaiseRent','ocEtc','ocPartyPhone','ocPartyAgent','ocHq','ocOpts','ocShow','ocTen','ocTenPh','ocTenReq'];
   OWNL = { ocType: '계약형태', ocUnk: '미확인 사유', ocDep: '보증금', ocRent: '월세', ocMemo: '계약형태 메모', ocEnd: '예상 종료일', ocEndMode: '종료일 구분', ocParty: '계약주체', ocPartyName: '계약주체 상호', ocRight: '갱신청구권', ocRenewFrom: '갱신 전 종료일', ocRaiseDep: '보증금 인상', ocRaiseRent: '월세 인상', ocEtc: '계약형태 기타', ocPartyPhone: '계약주체 연락처', ocPartyAgent: '계약주체 중개사', ocHq: '계약진행 당사자', ocOpts: '추가 옵션', ocShow: '집 보여주는 방법', ocTen: '임차인명', ocTenPh: '임차인 연락처', ocTenReq: '임차인 요구사항' };
   ownPre(id) { const S = this.state, o = (S.u[id] || {}).own || {}, s = S.u[id] || {}; const m = S.modules || {}; const auto = !o.ocType && !!m.presale && (!s.status || s.status === '미확인' || !s.owner); const r = {}; this.OWNK.forEach(k => { r[k] = (k === 'ocOpts' || k === 'ocHq') ? (o[k] || []).slice() : (o[k] || ''); }); if (!r.ocType) r.ocType = '미확인'; r.ocAutoUnk = auto; return r; }
@@ -6100,7 +6105,7 @@ class Component extends DCLogic {
     const head = '[사이트 ' + (c.visit ? '방문예약' : '관심등록') + ' · ' + this.gWhen(c) + ']';
     const body = [this.kindName(c.kind) + (u ? ' · ' + u.b + '동 ' + u.ho + '호' : c.interest ? ' · 관심 ' + c.interest : '') + (deals.length ? ' · ' + deals.join(' · ') : ''), c.visit ? '방문 희망: ' + c.visit : '', '문의: ' + (c.text || '(없음)')].filter(Boolean).join('\n');
     const vm = String(c.visit || '').match(/(\d{4}-\d{2}-\d{2})\D+(\d{1,2}:\d{2})/);
-    f = Object.assign(f, { kind: c.kind || f.kind, name: c.name || '', phone: c.phone || '', interest: c.interest || f.interest || '', complex: c.complex || '', fromGuest: c.id, mgr: f.mgr || S.me || '', inflow: ['사이트'],
+    f = Object.assign(f, { kind: c.kind || f.kind, name: c.name || '', phone: c.phone || '', interest: c.interest || f.interest || '', complex: c.complex || '', fromGuest: c.id, mgr: f.mgr || S.me || '', inflow: (f.inflow || []).filter(x => x !== '사이트').concat('사이트'),
       text: done ? '' : head + '\n' + body + '\n\n----추가상담내역:\n' }, u ? { unit: u.b + '동 ' + u.ho + '호' } : {}, wants.length ? { wants, tr: JSON.parse(JSON.stringify(c.trades || {})) } : {},
       vm && (c.kind === 'client' || c.kind === 'buyer') ? { vis: { on: true, date: vm[1], time: vm[2].padStart(5, '0'), mgr: S.me || '', note: '', units: [] } } : {});
     this.setState({ tab: 'card', form: f });
@@ -6628,7 +6633,7 @@ class Component extends DCLogic {
           onName: e => { const v = e.target.value; const f0 = S.brokers.find(x => x.name === v.trim()); upd(f0 ? { name: v, phone: b.phone || f0.phone } : { name: v }); },
           onPhone: e => upd({ phone: this.fmtTel(e.target.value) }), del: () => setFm({ [key]: fm[key].filter((x, j) => j !== i) }) }; });
     const roleF = this.rl(S.me), canMgr = !!(S.perms.mgr || {})[roleF]; const mdT = () => { const d = new Date(); return String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0'); };
-    const uMemo = fUnit ? (S.u[fUnit] || {}).memo : null, memoCan = this.memoCan(uMemo); const isIn = kind === 'buyer' || kind === 'client'; const inf = fm.inflow || [];
+    const uMemo = fUnit ? (S.u[fUnit] || {}).memo : null, memoCan = this.memoCan(uMemo); const isCu = kind === 'buyer' || kind === 'client', isIn = isCu || kind === 'owner'; const inf = fm.inflow || [];   /* 유입경로: 개인 소유자도 (2026-11-17 대표) */
     const staffOpts = [{ v: '', l: '선택하세요' }].concat(Object.keys(S.roles).map(n => ({ v: n, l: n })));
     const f = tab !== 'card' ? {} : {
       kindChips: kinds.map(k => Object.assign(this.chip(kind === k, this.KIND[k][1]), { label: this.KIND[k][2], ml: (D.generic ? { seller: '임차인', buyer: '전세 희망', owner: '개인 소유자', client: '신규분양' } : { seller: '수분양자', buyer: '분양권 매수', owner: '소유자', client: '신규' })[k] || this.KIND[k][2], onClick: () => setFm({ kind: k }) })),
@@ -6699,7 +6704,7 @@ class Component extends DCLogic {
           vsInflow: inf.length ? inf.join(' · ') : '유입경로 미선택', vsMgr: vs.mgr || '', vsMgrOpts: [{ v: '', l: '선택하세요' }].concat(Object.keys(S.roles || {}).map(n => ({ v: n, l: n }))), onVsMgr: e => setVs({ mgr: e.target.value }),
           vsNote: vs.note || '', onVsNote: e => setVs({ note: e.target.value.slice(0, 200) }), vsDongOpts: [{ v: '', l: '선택' }].concat(Object.keys(D.bmap).map(n => ({ v: n, l: n + '동' }))), vsWalls: ['가벽 설치', '가벽 미설치'],
           vsUnits: U.map(rowOf) }; })(),
-      cplxOn: isIn, complex: fm.complex || this.cplx().def, cplxOpts: this.cplxOpts(), onComplex: e => setFm({ complex: e.target.value }),
+      cplxOn: isCu, complex: fm.complex || this.cplx().def, cplxOpts: this.cplxOpts(), onComplex: e => setFm({ complex: e.target.value }),
       unitLabel: kind === 'seller' || kind === 'owner' ? '호실' : '관심 호실 (자유기재)', unitPh: kind === 'seller' || kind === 'owner' ? '예: 101동 2403호' : '예: 104동 고층, 80B 고층', unit: fm.unit, onUnit: fk('unit'),
       dong: fDong, ho: fHo, dongOpts: [{ v: '', l: '동 선택' }].concat(Object.keys(D.bmap).map(n => ({ v: n, l: n + '동' }))),
       onDong: e => { const d = e.target.value; setFmU({ dong: d, unit: d && fHo ? d + '동 ' + fHo + '호' : (d ? d + '동' : '') }); },
@@ -6723,7 +6728,7 @@ class Component extends DCLogic {
         return { gOn: true, gOpen: !fm.gClose, gTog: () => setFm({ gClose: !fm.gClose }), gTogLabel: fm.gClose ? '펼치기' : '접기', gWhen: (g.visit ? '방문예약' : '관심등록') + ' · ' + this.gWhen(g), gRows: rows,
           gText: g.text ? '문의: ' + g.text : '(손님 문의 내용 없음)', gConsent: '개인정보 동의 — 필수 ✓ · 마케팅 ' + (cs.mkt ? '✓' : '–') + ' · 제3자 ' + (cs.third ? '✓' : '–') + (cs.at ? ' (' + String(cs.at).slice(0, 16).replace('T', ' ') + ')' : '') }; })(),
       onName: fk('name'), phone: fm.phone, onPhone: e => { const ph = this.fmtPhone(e.target.value); const p = { phone: ph }; const dg = ph.replace(/\D/g, '');
-        if (isIn && dg.length >= 10 && fm.phonePre !== dg) { const pc = S.cards.find(c => (c.kind === 'buyer' || c.kind === 'client') && String(c.phone || '').replace(/\D/g, '') === dg);
+        if (isCu && dg.length >= 10 && fm.phonePre !== dg) { const pc = S.cards.find(c => (c.kind === 'buyer' || c.kind === 'client') && String(c.phone || '').replace(/\D/g, '') === dg);
           if (pc) { p.phonePre = dg; const fx = v => String(v || '').trim().replace(' ', 'T').slice(0, 16); const i0 = pc.inflow || (pc.visit ? { ch: ['방문'], visitAt: fx(pc.visit) } : null);
             if (i0) Object.assign(p, { inflow: (i0.ch || []).slice(), visitAt: fx(i0.visitAt), visitBy: i0.visitBy || '', inMedia: (i0.media || []).slice(), inBrokers: (i0.brokers || []).map(x => Object.assign({}, x)), inFriend: i0.friend || '', visitBase: i0.visitAt || i0.visitBy ? { at: fx(i0.visitAt), by: i0.visitBy || '' } : null, inflowBase: pc.inflowText || '' });
             if (pc.mgr) Object.assign(p, { mgr: pc.mgr, mgrOk: pc.mgrOk || null, mgrBase: pc.mgr, mgrBaseOk: pc.mgrOk || null, mgrUnlock: false, mgrReason: '' });
@@ -6757,7 +6762,7 @@ class Component extends DCLogic {
       mfAddLabel: ([fm.taxBy || fm.taxEtc, fm.sellWhen, (fm.sellWhy || []).length].filter(Boolean).length ? [fm.taxBy || fm.taxEtc, fm.sellWhen, (fm.sellWhy || []).length].filter(Boolean).length + '개 선택 ' : '') + (S.mfAdd ? '▲' : '▼'),
       hasWhyEtc: (fm.sellWhy || []).includes('기타'), whyEtc: fm.sellWhyEtc || '', onWhyEtc: fk('sellWhyEtc'),
       memoCan, memoLock: !memoCan, memo: fm.memo || '', onMemo: fk('memo'), memoInfo: uMemo && uMemo.text ? '최근 작성 ' + uMemo.by + ' · ' + uMemo.at : '작성자 · 관리자 · 권한자만 볼 수 있습니다', memoBy: uMemo ? uMemo.by : '',
-      isInflow: isIn, inNone: !inf.length,
+      isInflow: isIn, inNone: !inf.length, inCols: kind === 'owner' && fUnit ? 'repeat(2,minmax(0,1fr))' : 'minmax(0,1fr)',
       inChips: ['방문', '유선', '부동산', '지인', '사이트'].map(v => { const on = inf.includes(v); return Object.assign(this.chip(on, '#157a3f'), { label: v, onClick: () => { const p = { inflow: on ? inf.filter(x => x !== v) : inf.concat(v) }; if (v === '부동산' && !on && !(fm.inBrokers || []).length) p.inBrokers = [{ name: '', phone: '', custom: false }]; setFm(p); } }); }),
       inSiteOn: inf.includes('사이트'), siteHas: !!fm.inSite, siteNo: !fm.inSite, siteLabel: (fm.inSite || {}).label || '', siteWho: fm.inSite ? fm.inSite.by + ' 확인 · ' + fm.inSite.when : '', siteAt: fm.inSite ? '접수 ' + fm.inSite.at + ' · 공개 매물 댓글 \'' + (fm.name ? fm.name[0] + '*' : '') + ' · 매물 중개요청\'' : '',
       inVisit: inf.includes('방문'), visitAt: fm.visitAt || '', onVisitAt: fk('visitAt'), visitBy: fm.visitBy || '', onVisitBy: fk('visitBy'), staffOpts, visitLocked: !!fm.visitBase && !canMgr, visitNote: fm.visitBase ? (canMgr ? '저장된 방문 기록 · 변경 시 사유 입력 필요' : '저장된 방문 기록 · 변경은 관리자·권한자만') : '',

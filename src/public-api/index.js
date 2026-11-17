@@ -36,6 +36,8 @@ export function cleanLead(c) {
     writer: visit ? '게스트 방문예약' : '게스트 등록', guest: true, synced: true, agree: true,
     consent: { req: true, mkt: !!c.consent.mkt, third: !!c.consent.third, at: str(c.consent.at, 30) },
     tags: visit ? ['상담', '방문예약'] : ['상담'],
+    // 유입경로 = 사이트 (상담카드와 같은 모양, 2026-11-17 대표 — 개인 소유자 · 신규분양 매수 모두)
+    inflow: { ch: ['사이트'], visitAt: '', visitBy: '', media: [], brokers: [], friend: '' }, inflowText: '사이트(' + (visit ? '방문예약' : '관심등록') + ')',
     want: plain(c.want, 3000) || null, gsb: plain(c.gsb, 2000)
   };
   return JSON.stringify(card).length <= 20000 ? card : null;
