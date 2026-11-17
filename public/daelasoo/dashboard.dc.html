@@ -1745,23 +1745,53 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <label data-m="optpref" style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73;grid-column:span 2">확장·옵션 선호<input value="{{ f.optPref }}" onChange="{{ f.onOptPref }}" placeholder="예: 에어컨 5대 필수" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:14px;color:#1d1d1f;background:#fff"></label>
       </div>
     </sc-if>
-    <sc-if value="{{ f.isClient }}" hint-placeholder-val="{{ false }}">
-      <div data-m="ccond" style="background:#f5f5f7;border-radius:14px;padding:12px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 12px">
-        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
-          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:#6e6e73;min-height:22px"><span style="margin-right:2px">{{ f.wantTitle }}</span>
-            <sc-for list="{{ f.wantChips }}" as="c"><button onClick="{{ c.onClick }}" title="해제" style="border:none;background:{{ c.color }};color:#fff;border-radius:9999px;padding:2px 9px;font-size:12px;font-weight:600;cursor:pointer;line-height:18px">{{ c.label }}</button></sc-for>
-          </div>
-          <select value="" onChange="{{ f.onWant }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ f.wantOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
-        </div>
-        <sc-for list="{{ f.multiFields }}" as="mf">
-          <div style="display:flex;flex-direction:column;gap:4px;min-width:0;grid-column:{{ mf.span }}">
-            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:#6e6e73;min-height:22px"><span style="margin-right:2px">{{ mf.label }}</span>
-              <sc-if value="{{ mf.none }}"><span style="font-size:12px;color:#8e8e93">· 무관</span></sc-if>
-              <sc-for list="{{ mf.chips }}" as="c"><button onClick="{{ c.onClick }}" title="해제" style="border:none;background:#0066cc;color:#fff;border-radius:9999px;padding:2px 9px;font-size:12px;font-weight:600;cursor:pointer;line-height:18px">{{ c.label }} ✕</button></sc-for>
+    <sc-if value="{{ f.isTrade }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:10px;background:{{ f.trBg }};border-radius:14px;padding:{{ f.trPad }}">
+        <sc-if value="{{ f.isClient }}" hint-placeholder-val="{{ false }}">
+          <div data-m="ccond" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 12px">
+            <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+              <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:#6e6e73;min-height:22px"><span style="margin-right:2px">{{ f.wantTitle }}</span>
+                <sc-for list="{{ f.wantChips }}" as="c"><button onClick="{{ c.onClick }}" title="해제" style="border:none;background:{{ c.color }};color:#fff;border-radius:9999px;padding:2px 9px;font-size:12px;font-weight:600;cursor:pointer;line-height:18px">{{ c.label }}</button></sc-for>
+              </div>
+              <select value="" onChange="{{ f.onWant }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ f.wantOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
             </div>
-            <select value="" onChange="{{ mf.onAdd }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ mf.opts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+            <sc-for list="{{ f.multiFields }}" as="mf">
+              <div style="display:flex;flex-direction:column;gap:4px;min-width:0;grid-column:{{ mf.span }}">
+                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:#6e6e73;min-height:22px"><span style="margin-right:2px">{{ mf.label }}</span>
+                  <sc-if value="{{ mf.none }}"><span style="font-size:12px;color:#8e8e93">· 무관</span></sc-if>
+                  <sc-for list="{{ mf.chips }}" as="c"><button onClick="{{ c.onClick }}" title="해제" style="border:none;background:#0066cc;color:#fff;border-radius:9999px;padding:2px 9px;font-size:12px;font-weight:600;cursor:pointer;line-height:18px">{{ c.label }} ✕</button></sc-for>
+                </div>
+                <select value="" onChange="{{ mf.onAdd }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ mf.opts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+              </div>
+            </sc-for>
           </div>
-        </sc-for>
+        </sc-if>
+        <sc-if value="{{ f.wantRowOn }}" hint-placeholder-val="{{ true }}"><div style="background:#f5f5f7;border-radius:14px;padding:12px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73;width:200px">{{ f.wantTitle }}
+            <select value="" onChange="{{ f.onWant }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ f.wantOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+          </label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:38px">
+            <sc-if value="{{ f.noWants }}" hint-placeholder-val="{{ true }}"><span style="font-size:12px;color:#8e8e93">선택하면 아래에 조건 입력칸이 열립니다</span></sc-if>
+            <sc-for list="{{ f.wantChips }}" as="c"><button onClick="{{ c.onClick }}" title="해제" style="border:none;background:{{ c.color }};color:#fff;border-radius:9999px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer">{{ c.label }}</button></sc-for>
+          </div>
+          <sc-if value="{{ f.ocTotalOn }}" hint-placeholder-val="{{ false }}"><div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-height:38px;justify-content:center"><span style="font-size:11px;color:#6e6e73">총분양금액</span><span style="font-size:16px;font-weight:800;color:#1d1d1f;font-variant-numeric:tabular-nums;white-space:nowrap">{{ f.ocTotal }}<span style="font-size:11px;font-weight:600;color:#b25000">{{ f.ocTotalNote }}</span></span></div></sc-if>
+        </div></sc-if>
+        <sc-if value="{{ f.hasTr }}" hint-placeholder-val="{{ false }}"><div style="container-type:inline-size;min-width:0"><div data-m="trgrid" style="display:grid;grid-template-columns:{{ f.trCols }};gap:10px;align-items:stretch"><sc-for list="{{ f.tradeBlocks }}" as="blk">
+          <div style="border:1px solid {{ blk.bd }};border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;background:#fff">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="width:10px;height:10px;border-radius:3px;background:{{ blk.color }}"></span>
+              <span style="font-size:14px;font-weight:700">{{ blk.label }}</span>
+              <span style="margin-left:auto;font-size:11px;font-weight:600;color:{{ blk.stateFg }}">{{ blk.state }}</span>
+            </div>
+            <div style="container-type:inline-size;min-width:0"><div data-m="trf" style="display:grid;grid-template-columns:{{ blk.cols }};gap:8px;align-items:end">
+              <sc-for list="{{ blk.fields }}" as="fd">
+                <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73;min-width:0"><div style="display:flex;align-items:center;gap:6px;white-space:nowrap;height:20px">{{ fd.label }}<sc-for list="{{ fd.chips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:2px 8px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">{{ c.label }}</button></sc-for><sc-if value="{{ fd.linked }}"><span style="font-size:10.5px;color:#8e8e93">매물상태 연동</span></sc-if></div>
+                  <sc-if value="{{ fd.isInput }}"><input type="{{ fd.type }}" inputmode="{{ fd.mode }}" value="{{ fd.value }}" onChange="{{ fd.onChange }}" placeholder="{{ fd.ph }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:14px;color:#1d1d1f;background:#fff"></sc-if>
+                  <sc-if value="{{ fd.isText }}"><div style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:14px;color:#1d1d1f;background:#fff;display:flex;align-items:center;font-weight:700;background:#fafafa">{{ fd.text }}</div></sc-if></div>
+              </sc-for>
+            </div></div>
+          </div>
+        </sc-for></div></div></sc-if>
       </div>
     </sc-if>
     <sc-if value="{{ f.vsOn }}" hint-placeholder-val="{{ false }}">
@@ -1843,36 +1873,6 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <div style="font-size:11.5px;color:#6e6e73">{{ f.ctNote }}</div>
       </sc-if>
     </div>
-    </sc-if>
-    <sc-if value="{{ f.isTrade }}" hint-placeholder-val="{{ false }}">
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <sc-if value="{{ f.wantRowOn }}" hint-placeholder-val="{{ true }}"><div style="background:#f5f5f7;border-radius:14px;padding:12px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
-          <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73;width:200px">{{ f.wantTitle }}
-            <select value="" onChange="{{ f.onWant }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 8px;font-size:14px;background:#fff;color:#1d1d1f"><sc-for list="{{ f.wantOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
-          </label>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:38px">
-            <sc-if value="{{ f.noWants }}" hint-placeholder-val="{{ true }}"><span style="font-size:12px;color:#8e8e93">선택하면 아래에 조건 입력칸이 열립니다</span></sc-if>
-            <sc-for list="{{ f.wantChips }}" as="c"><button onClick="{{ c.onClick }}" title="해제" style="border:none;background:{{ c.color }};color:#fff;border-radius:9999px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer">{{ c.label }}</button></sc-for>
-          </div>
-          <sc-if value="{{ f.ocTotalOn }}" hint-placeholder-val="{{ false }}"><div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-height:38px;justify-content:center"><span style="font-size:11px;color:#6e6e73">총분양금액</span><span style="font-size:16px;font-weight:800;color:#1d1d1f;font-variant-numeric:tabular-nums;white-space:nowrap">{{ f.ocTotal }}<span style="font-size:11px;font-weight:600;color:#b25000">{{ f.ocTotalNote }}</span></span></div></sc-if>
-        </div></sc-if>
-        <div style="container-type:inline-size;min-width:0"><div data-m="trgrid" style="display:grid;grid-template-columns:{{ f.trCols }};gap:10px;align-items:stretch"><sc-for list="{{ f.tradeBlocks }}" as="blk">
-          <div style="border:1px solid {{ blk.bd }};border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;background:#fff">
-            <div style="display:flex;align-items:center;gap:8px">
-              <span style="width:10px;height:10px;border-radius:3px;background:{{ blk.color }}"></span>
-              <span style="font-size:14px;font-weight:700">{{ blk.label }}</span>
-              <span style="margin-left:auto;font-size:11px;font-weight:600;color:{{ blk.stateFg }}">{{ blk.state }}</span>
-            </div>
-            <div style="container-type:inline-size;min-width:0"><div data-m="trf" style="display:grid;grid-template-columns:{{ blk.cols }};gap:8px;align-items:end">
-              <sc-for list="{{ blk.fields }}" as="fd">
-                <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73;min-width:0"><div style="display:flex;align-items:center;gap:6px;white-space:nowrap;height:20px">{{ fd.label }}<sc-for list="{{ fd.chips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:2px 8px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">{{ c.label }}</button></sc-for><sc-if value="{{ fd.linked }}"><span style="font-size:10.5px;color:#8e8e93">매물상태 연동</span></sc-if></div>
-                  <sc-if value="{{ fd.isInput }}"><input type="{{ fd.type }}" inputmode="{{ fd.mode }}" value="{{ fd.value }}" onChange="{{ fd.onChange }}" placeholder="{{ fd.ph }}" style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:14px;color:#1d1d1f;background:#fff"></sc-if>
-                  <sc-if value="{{ fd.isText }}"><div style="box-sizing:border-box;width:100%;min-width:0;height:38px;border:1px solid #d2d2d7;border-radius:10px;padding:0 10px;font-size:14px;color:#1d1d1f;background:#fff;display:flex;align-items:center;font-weight:700;background:#fafafa">{{ fd.text }}</div></sc-if></div>
-              </sc-for>
-            </div></div>
-          </div>
-        </sc-for></div></div>
-      </div>
     </sc-if>
     <sc-if value="{{ f.noKind }}" hint-placeholder-val="{{ false }}">
       <div style="background:#fff4e8;color:#b25000;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6">활성화된 거래 모듈이 없습니다. 설정 · 모듈에서 분양권 또는 매매 · 전세 · 월세 중 하나를 켜 주세요.</div>
@@ -6920,7 +6920,7 @@ class Component extends DCLogic {
       idAskApply: () => { const r = (fm.idAskText || '').trim(); if (r) setFm({ idUnlock: true, idAsk: false, idReason: r, idBy: fm.idBy || S.me }); }, idAskCancel: () => setFm({ idAsk: false, idAskText: '' }),
       idReasonOn: (kind === 'seller' || kind === 'owner') && !!fm.idUnlock && !!fm.idReason, idReasonText: '인적사항 변경 사유: ' + (fm.idReason || '') + ' · 작성자 ' + (fm.idBy || S.me),
       idRevert: () => { const b = fm.idBase || {}; setFm({ name: b.name, phone: b.phone, carrier: b.carrier, idUnlock: false, idReason: '' }); },
-      hasAdBox: (fm.tags || []).includes('광고중') || (fm.tags || []).includes('광고중(타부동산)'), trCols: wants.length > 1 ? 'repeat(2,minmax(0,1fr))' : 'minmax(0,1fr)', ownBox: kind === 'owner', diffOpen: !!S.diffOpen, diffArrow: S.diffOpen ? '▲' : '▼', toggleDiff: () => this.setState({ diffOpen: !S.diffOpen }),
+      hasAdBox: (fm.tags || []).includes('광고중') || (fm.tags || []).includes('광고중(타부동산)'), trCols: wants.length > 1 ? 'repeat(2,minmax(0,1fr))' : 'minmax(0,1fr)', hasTr: wants.length > 0, trBg: kind === 'client' ? '#f5f5f7' : 'transparent', trPad: kind === 'client' ? '12px' : '0',   /* 신규분양 매수: 희망거래 줄 + 찾는 조건 = 한 판 (2026-11-17 대표) */ ownBox: kind === 'owner', diffOpen: !!S.diffOpen, diffArrow: S.diffOpen ? '▲' : '▼', toggleDiff: () => this.setState({ diffOpen: !S.diffOpen }),
       ...(() => { const pd = String(fm.phone || '').replace(/\D/g, ''); const same = c => (kind === 'seller' || kind === 'owner') ? (fUnit && c.unit === fUnit) : (pd.length >= 10 && String(c.phone || '').replace(/\D/g, '') === pd); const uk = kind === 'seller' || kind === 'owner'; const L = S.cards.filter(c => (uk ? (c.kind === 'seller' || c.kind === 'owner') : c.kind === kind) && (c.changes || []).length && same(c)).slice().sort((a, b) => String(b.at).localeCompare(String(a.at))).map(c => { const t = (uk ? (c.kind === 'seller' ? '[분양권] ' : '[입주] ') : '') + c.changes.join(' / '); return { at: String(c.at).slice(2, 10).replace(/-/g, '.'), text: t, full: t }; }); return { pastDiff: L, pastDiffNone: !L.length, diffBoxOn: diff.length > 0 || (uk && L.length > 0) }; })(), optItemsOpen: !!S.optItemsOpen, optItemsArrow: S.optItemsOpen ? '▲' : '▼', toggleOptItems: () => this.setState({ optItemsOpen: !S.optItemsOpen }), optHasItems: true, ocAuto: kind === 'owner' && !!fm.ocAutoUnk && (fm.ocType || '미확인') === '미확인',
       ocType: fm.ocType || '미확인', ocTypeOpts: ['미확인', '전세', '월세', '실거주', '공실', '신규(명변)'], onOcType: e => setFm({ ocType: e.target.value, ocEndMode: e.target.value === '미확인' ? '미확인' : (fm.ocEndMode === '미확인' ? '' : fm.ocEndMode) }),
       ocIsUnk: (fm.ocType || '미확인') === '미확인', ocIsJeonse: fm.ocType === '전세', ocIsWolse: fm.ocType === '월세', ocIsMemo: ['실거주', '공실', '신규(명변)'].includes(fm.ocType), ocMemoPh: fm.ocType + ' 메모',
