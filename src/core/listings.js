@@ -63,6 +63,10 @@ export function areaOf(unit) {
 // 필수 항목 (부록 A) → [{ k, label }]. k 가 있으면 매물 창에서, 없으면 공개 설정에서 채움
 export function missing(l, cfg) {
   const u = UNIT[l.unit_id] || {}, m = [], need = (ok, k, lab) => { if (!ok) m.push({ k, label: lab }); };
+  if (l.source === 'unitpub') {   // 분양팀 카드 (시안 r57 A안): 금액 · 입주 가능일만 — 향 · 관리비 · 공개 설정은 없으면 '상담 시 안내'
+    if (l.deal === 'sale') need(l.ask > 0, 'ask', '매매가'); else need(l.dep > 0, 'dep', '보증금');
+    need(!blank(l.move), 'move', '입주 가능일'); return m;
+  }
   need(!blank(OFFICE.name) && !blank(OFFICE.address) && !blank(OFFICE.tel) && !blank(OFFICE.regNo) && !blank(OFFICE.ceo), '', '사무소 표시 (사이트 자료)');
   need(!blank(cfg.approval) && cfg.ok.approval, '', '사용승인일 확인 (공개 설정)');
   need(!blank(cfg.parking[u.block]) && cfg.ok.parking, '', '주차대수 확인 (공개 설정)');
@@ -88,7 +92,9 @@ export function pubAfter(st, pub) {
 }
 
 // 연락 표시 (10.4): 담당 자격이 '공인중개사'일 때만 이름, 그 밖(중개보조원 · 미지정 · 관심등록 출처)은 모두 사무소명. 전화는 항상 대표번호
+export const UNITPUB_NAME = '첨단대라수분양팀';   // 신규분양 매물 카드 연락 이름 (2026-11-17 대표)
 export function contactOf(l, staff) {
+  if (l.source === 'unitpub') return { contact: UNITPUB_NAME, tel: OFFICE.tel || '' };
   const named = l.source === 'card' && !!staff && !!staff.active && staff.license === '공인중개사';
   return { contact: named ? '담당 ' + staff.name + ' · ' + OFFICE.name : OFFICE.name, tel: OFFICE.tel || '' };
 }
@@ -108,7 +114,17 @@ export const pubMemo = s => String(s || '').replace(/(01[016789]|0\d{1,2})[-.\s]
 //   unitData: 그 세대 자료(옵션) — 없으면 옵션 줄 없음
 export function publicRow(l, cfg, staff, now, unitData) {
   if (l.pub !== 'on' || !PUB_OK.includes(l.status) || l.deleted_at || missing(l, cfg).length) return null;
-  const u = UNIT[l.unit_id], t = typeOf(u.type), a = areaOf(u), r = cfg.rooms[u.type];
+  const u = UNIT[l.unit_id], t = typeOf(u.type), a = areaOf(u), r = cfg.rooms[u.type] || [t.rooms || null, t.baths || null];
+  if (l.source === 'unitpub') {   // 분양팀 카드 → 손님 '현재 매물' (시안 r57 A안): 번호 = 매물 번호, nu = 1 (분양전환요청 · 향/관리비 없으면 '상담 시 안내')
+    const NA = '상담 시 안내', fac = FACING.includes(l.facing);
+    return { id: l.id, nu: 1, deal: l.deal, dong: u.dong, block: u.block || '', label: label(u), band: band(u.floor, TOP[u.dong]), type: u.type, kind: t.kind || '아파트',
+      exclusive: a.exclusive, supply: a.supply, ask: l.deal === 'sale' ? l.ask : null, dep: l.deal === 'sale' ? null : l.dep, rent: null, term: '',
+      move: l.move, mgmt: l.mgmt_na ? null : l.mgmt, mgmt_na: l.mgmt_na ? 1 : 0, mgmt_items: l.mgmt_na ? '[]' : l.mgmt_items || '[]', facing: fac ? l.facing : '', basis: fac ? (l.basis || '거실') : '', rooms: r[0], baths: r[1],
+      approval: cfg.ok.approval && !blank(cfg.approval) ? cfg.approval : NA, parking: cfg.ok.parking && !blank(cfg.parking[u.block]) ? cfg.parking[u.block] : NA, urgent: l.urgent ? 1 : 0,
+      badge: l.status === '가계약' ? '계약 진행중' : l.deal === 'sale' ? '신규분양 · 3년 뒤 분양가 매입보장(헷지했지)' : '',
+      memo: pubMemo(l.memo_pub) || null, opts: l.opt_show === 0 || unitData == null ? null : JSON.stringify(optSummary(u.type, unitData)),
+      at: l.pub_at || now, updated: now, contact: UNITPUB_NAME, tel: OFFICE.tel || '' };
+  }
   return Object.assign({
     id: l.id, deal: l.deal, dong: u.dong, block: u.block, label: label(u), band: band(u.floor, TOP[u.dong]), type: u.type, kind: t.kind || '',
     exclusive: a.exclusive, supply: a.supply, ask: l.deal === 'sale' ? l.ask : null, dep: l.deal === 'sale' ? null : l.dep,

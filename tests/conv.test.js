@@ -108,7 +108,13 @@ test('손님 화면 공개 → 매물보드 광고중 카드 (시안 r56 A안)',
   assert.equal((await pub(boss, '103-1502', '둘 다')).status, 200);
   let s = await one('sale'), j = await one('jeonse');
   assert.equal(s.status, '광고중'); assert.equal(j.status, '광고중'); assert.equal((await cards()).length, 2, '둘 다 = 카드 2장');
-  assert.ok(s.ask > 0, '매매 = 매입보장가'); assert.equal(s.pub, 'off', '공개 사본은 이 줄이 아님');
+  assert.ok(s.ask > 0, '매매 = 매입보장가'); assert.equal(s.pub, 'on', '카드가 곧 공개 매물 (시안 r57)'); assert.ok(j.dep > 0, '전세 = 임대보증금');
+  const gl = async () => ((await mf.fetch('http://localhost/api/public/listings')).json()).then(x => (x.rows || x.listings || []).filter(r => r.nu));
+  let G = await gl(); assert.equal(G.length, 2, '손님 현재 매물에 매매 · 전세'); assert.ok(G.find(r => r.deal === 'jeonse').dep > 0, '전세 보증금 공개 (A안)');
+  assert.ok(!JSON.stringify(G).includes('1502'), '손님 응답에 호수 없음');
+  assert.equal((await boss('/api/staff/listings/' + s.id, { method: 'PATCH', body: { ver: s.ver, ask: 1, facing: '남동', basis: '거실', memo_pub: '즉시 상담' } })).status, 200);
+  s = await one('sale'); assert.ok(s.ask > 1, '매매가 잠금'); assert.equal(s.facing, '남동');
+  G = await gl(); assert.equal(G.find(r => r.deal === 'sale').facing, '남동', '창에서 고친 향 → 손님 화면');
   assert.equal((await move(staff, s, '협의중')).status, 403, '직원은 분양팀 카드 못 옮김');
 
   // 매매 카드 철회 → 손님 화면은 전세만 / 전세 카드 계약 → 공개 끔
@@ -119,7 +125,10 @@ test('손님 화면 공개 → 매물보드 광고중 카드 (시안 r56 A안)',
   // 다시 신규분양 공개 → 철회 카드가 광고중으로 / 공개 끄기 → 철회
   await pub(boss, '103-1502', '매매'); assert.equal((await one('sale')).status, '광고중');
   s = await one('sale'); assert.equal((await move(boss, s, '가계약')).status, 200); assert.equal(await pubDeal(), '매매', '가계약까지는 공개 유지');
-  await pub(boss, '103-1502', null); assert.equal((await one('sale')).status, '철회');
+  await pub(boss, '103-1502', null); assert.equal((await one('sale')).status, '철회'); assert.equal((await gl()).length, 0, '공개 끄면 현재 매물에서 빠짐');
+  await pub(boss, '103-1502', '둘 다'); j = await one('jeonse');
+  assert.equal((await boss('/api/staff/listings/' + j.id + '/publish', { body: { ver: j.ver, op: 'off' } })).status, 200, '창의 공개 끄기');
+  assert.equal(await pubDeal(), '매매', '공개 끄기 = 그 거래만 빼기'); await pub(boss, '103-1502', null);
 
   // 공개 중 계약완료 → 카드 '계약'
   await pub(boss, '103-1502', '매매'); await set(boss, '103-1502', { status: '계약완료' });

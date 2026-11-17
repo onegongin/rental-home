@@ -63,7 +63,7 @@ export async function init(db) {
   // 호실 이야기 [확인] (2026-11-04): 원글에 확인한 직원 · 시각, 자동 답글 표시, 게스트 출입증 → 관심등록 상담카드
   for (const [t, c] of [['comments', 'ack_by TEXT'], ['comments', 'ack_at INTEGER'], ['comments', 'auto INTEGER DEFAULT 0'], ['guests', 'card TEXT']]) { try { await db.prepare('ALTER TABLE ' + t + ' ADD COLUMN ' + c).run(); } catch (e) { /* 이미 있음 */ } }
   // 공개 매물 카드 '기타' · '옵션' (시안 listing-public2 A안 확정 2026-11-04): 직원이 적는 공개용 기타 내용 · 옵션 표시 끄기 / 공개 사본 memo · opts(JSON)
-  for (const [t, c] of [['listings', 'memo_pub TEXT'], ['listings', 'opt_show INTEGER DEFAULT 1'], ['public_listings', 'memo TEXT'], ['public_listings', 'opts TEXT']]) { try { await db.prepare('ALTER TABLE ' + t + ' ADD COLUMN ' + c).run(); } catch (e) { /* 이미 있음 */ } }
+  for (const [t, c] of [['listings', 'memo_pub TEXT'], ['listings', 'opt_show INTEGER DEFAULT 1'], ['public_listings', 'memo TEXT'], ['public_listings', 'opts TEXT'], ['public_listings', 'nu INTEGER DEFAULT 0']]) { try { await db.prepare('ALTER TABLE ' + t + ' ADD COLUMN ' + c).run(); } catch (e) { /* 이미 있음 */ } }
   // 최근 거래완료 (시안 listing-done B안 2026-11-05): 계약 · 잔금완료 매물의 공개용 사본 — 타입 · 단지 · 면적만 (가격 · 동 · 층 · 날짜 안 보냄), 30일 지나면 안 보냄
   try { await db.prepare('CREATE TABLE IF NOT EXISTS public_done (id TEXT PRIMARY KEY, deal TEXT, type TEXT, block TEXT, kind TEXT, exclusive REAL, done_at INTEGER)').run(); } catch (e) { /* 이미 있음 */ }
   for (const c of ['done_at INTEGER', 'done_hide INTEGER DEFAULT 0']) { try { await db.prepare('ALTER TABLE listings ADD COLUMN ' + c).run(); } catch (e) { /* 이미 있음 */ } }

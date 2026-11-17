@@ -13,7 +13,7 @@ export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;'
 const ld = o => '<script type="application/ld+json">' + JSON.stringify(o).replace(/</g, '\\u003c') + '</script>';
 const ymd = t => new Date((t || Date.now()) + 9 * 3600e3).toISOString().slice(0, 10);
 const where = r => String(r.label || '').replace(/\/\d+층$/, '');
-const nu = r => String(r.id || '').startsWith('nu');   // 신규분양 공개 매물 (시안 r47) — 방향 · 관리비는 상담 시 안내
+const nu = r => !!r.nu || String(r.id || '').startsWith('nu');   // 신규분양 공개 매물 (시안 r47) — 방향 · 관리비는 상담 시 안내
 const top = r => (String(r.label || '').match(/\/(\d+)층/) || [])[1] || '';
 export const titleOf = r => S.name + ' ' + where(r) + ' ' + r.type + ' ' + DEAL[r.deal] + ' ' + priceText(r).replace(/^\S+ /, '');
 export const urlOf = (base, r) => base + '/listings/' + r.id;
@@ -66,7 +66,7 @@ export function listingPage(base, r) {
   const rows = [
     ['소재지', S.address + ' · ' + S.name + ' ' + where(r)], ['종류 · 거래', (r.kind || '공동주택') + ' · ' + DEAL[r.deal]], ['가격', priceText(r)],
     ['면적', '전용 ' + r.exclusive + '㎡' + (r.supply ? ' · 공급 ' + r.supply + '㎡' : '') + ' (' + r.type + '타입)'], ['층', r.band + ' / 총 ' + top(r) + '층'],
-    ['방향', nu(r) ? '라인별 상이 · 상담 시 안내' : r.facing + '향 (' + r.basis + ' 기준)'], ['방 · 욕실', r.rooms + '개 · ' + r.baths + '개'], ['입주 가능일', r.move], ['관리비', nu(r) ? '상담 시 안내' : mgmtText(r)],
+    ['방향', nu(r) && !r.facing ? '라인별 상이 · 상담 시 안내' : r.facing + '향 (' + r.basis + ' 기준)'], ['방 · 욕실', r.rooms + '개 · ' + r.baths + '개'], ['입주 가능일', r.move], ['관리비', nu(r) && r.mgmt == null && !r.mgmt_na ? '상담 시 안내' : mgmtText(r)],
     ['사용승인일', r.approval], ['주차', r.parking]
   ].concat(optLine(r) ? [['옵션', optLine(r)]] : [], r.memo ? [['기타', r.memo]] : [], [['연락', (r.contact || O.name) + ' · ' + (r.tel || O.tel)]]);
   const body = '<nav class="bc"><a href="/">홈</a> › <a href="/listings">매물</a> › <a href="/listings/' + r.deal + '">' + DEAL[r.deal] + '</a></nav>' +

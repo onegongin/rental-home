@@ -26,7 +26,7 @@ const items = v => { try { return JSON.parse(v || '[]'); } catch (e) { return []
 function shape(u, l, owner, grant, cfg) {
   const it = Object.assign({}, l, { grant });
   const raw = can(u, 'listing.raw', it), unit = UNIT[l.unit_id] || {};
-  const o = owner || { name: '', phone: '' };
+  const o = l.source === 'unitpub' ? { name: '첨단대라수 분양팀', phone: '' } : owner || { name: '', phone: '' };   // 분양팀 카드 (시안 r57)
   return {
     id: l.id, ver: l.ver, unit_id: l.unit_id, dong: unit.dong, ho: unit.ho, type: unit.type, block: unit.block, deal: l.deal, status: l.status,
     pub: l.pub, req_by: l.req_by, source: l.source, writer: l.writer, mgr: l.mgr, ask: l.ask, adj: l.adj, dep: l.dep, rent: l.rent, term: l.term,
@@ -98,6 +98,7 @@ export async function staffListings(req, env, url, u) {
       else v = String(v || '').trim().slice(0, k === 'memo' ? 1000 : 30) || null;
       if ((v ?? null) !== (cur[k] ?? null)) patch[k] = v;
     }
+    if (cur.source === 'unitpub') delete patch.ask;   // 분양팀 매매가 = 매입보장가 (잠금, 시안 r57)
     // 관리비 '확인 불가'를 고르면 금액은 비움
     if (patch.mgmt_na ?? cur.mgmt_na) { if (cur.mgmt != null) patch.mgmt = null; else delete patch.mgmt; }
     if (!Object.keys(patch).length) return J({ ok: true, ver: cur.ver, same: true });
@@ -114,7 +115,7 @@ export async function staffListings(req, env, url, u) {
     if (cur.source === 'unitpub') {
       if (!can(u, 'unit.publish')) return J({ ok: false, err: 'perm', msg: '분양팀 카드는 대표 · 관리자 · 권한자만 옮길 수 있습니다.' }, 403);
       const reason = String(b.reason || '').trim().slice(0, 200);
-      const r = await LR.commit(db, cur, { status: st }, { ver: b.ver, who: u.name, cfg, events: [['상태', cur.status + ' → ' + st + (reason ? ' · 사유: ' + reason : '')]] });
+      const r = await LR.commit(db, cur, { status: st, pub: PUB_OK.includes(st) ? 'on' : 'off', pub_at: cur.pub_at || Date.now() }, { ver: b.ver, who: u.name, cfg, events: [['상태', cur.status + ' → ' + st + (reason ? ' · 사유: ' + reason : '')]] });
       if (!r.ok) return send(r);
       const pv = await boardMoved(db, cur, st, u.name);
       if (pv) await log('세대 공개', '세대 ' + cur.unit_id, '매물보드 ' + st + ' → 손님 화면 ' + (pv === 'status' ? '공개 불가 (대상 아님)' : pv));
@@ -139,6 +140,18 @@ export async function staffListings(req, env, url, u) {
 
   if (op === 'publish') {
     const want = b.op;
+    // 분양팀 카드 (시안 r57 A안): 공개 끄기 = 철회 (손님 화면 공개에서 이 거래만 빼기) · 공개 켜기 = 광고중으로 다시
+    if (cur.source === 'unitpub') {
+      if (!can(u, 'unit.publish')) return J({ ok: false, err: 'perm', msg: '분양팀 카드 공개는 대표 · 관리자 · 권한자만 바꿀 수 있습니다.' }, 403);
+      if (want !== 'off' && want !== 'approve') return J({ ok: false, err: 'input' }, 400);
+      const st = want === 'off' ? '철회' : (PUB_OK.includes(cur.status) ? cur.status : '광고중');
+      const r = await LR.commit(db, cur, { status: st, pub: want === 'off' ? 'off' : 'on', pub_at: Date.now() }, { ver: b.ver, who: u.name, cfg, events: [[want === 'off' ? '공개 끔' : '공개 켬', '분양팀 · ' + cur.status + ' → ' + st]] });
+      if (!r.ok) return send(r);
+      const pv = await boardMoved(db, cur, st, u.name);
+      if (pv) await log('세대 공개', '세대 ' + cur.unit_id, '매물 창 ' + (want === 'off' ? '공개 끄기' : '공개 켜기') + ' → 손님 화면 ' + (pv === 'status' ? '공개 불가 (대상 아님)' : pv));
+      const now = await LR.getListing(db, cur.id);
+      return J({ ok: true, ver: now ? now.ver : r.row.ver, pub: now ? now.pub : r.row.pub, status: now ? now.status : st, unitPub: pv });
+    }
     const miss = missing(cur, cfg);
     if (want === 'request') {
       if (!can(u, 'listing.request', it)) return J({ ok: false, err: 'perm' }, 403);

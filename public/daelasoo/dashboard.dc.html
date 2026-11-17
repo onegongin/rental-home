@@ -4709,11 +4709,11 @@ class Component extends DCLogic {
     const tag = (t, bg, fg) => ({ t, bg, fg });
     const card = l => { const d = this.LB_DEAL[l.deal] || ['', '#1d1d1f'], off = ['계약', '잔금완료', '보류', '철회'].includes(l.status), tags = [];
       if (l.source === 'unitpub') { const live = ['접수', '확인중', '광고중', '협의중', '가계약'].includes(l.status);   /* 손님 화면 공개에서 생긴 카드 (시안 r56 A안) */
-        if (live) tags.push(tag(l.status === '가계약' ? '공개 · 계약 진행중' : '공개중', '#e9f7ee', '#157a3f'));
+        if (live && l.pub === 'on') tags.push(tag(l.status === '가계약' ? '공개 · 계약 진행중' : '공개중', '#e9f7ee', '#157a3f'));
         tags.push(tag('분양팀 · ' + (l.deal === 'sale' ? '매입보장가' : '임대보증금'), '#eef2ff', '#3949ab'));
         return { unit: l.dong + '-' + l.ho, type: l.type, deal: d[0], dealBg: d[1], price: this.lbPrice(l), tags, hasTags: true, auto: live, bd: live ? '1.5px solid #157a3f' : '1px solid transparent',
           meta: '첨단대라수 분양팀 · 담당 ' + (l.mgr || '-'), drag: top ? 'true' : 'false', cur: top ? 'grab' : 'pointer',
-          onDragStart: () => { this._lbDrag = l; }, open: () => this.goUnitBoard(l.dong + '-' + l.ho) }; }
+          onDragStart: () => { this._lbDrag = l; }, open: () => this.ldOpen(l.id) }; }   /* 매물 창 (시안 r57 A안) */
       if (l.urgent) tags.push(tag('급매', '#fde8ec', '#c8381e'));
       if (l.pub === 'on') tags.push(tag(l.status === '가계약' ? '공개 · 계약 진행중' : '공개중', '#e9f7ee', '#157a3f'));
       else if (l.pub === 'req') tags.push(tag('공개 요청', '#e8f0fb', '#0066cc'));
@@ -4746,13 +4746,15 @@ class Component extends DCLogic {
     const E0 = { ask: l.ask ?? '', adj: l.adj ?? '', dep: l.dep ?? '', rent: l.rent ?? '', term: l.term || '', move: l.move || '', mgmt: l.mgmt ?? '', mgmt_na: !!l.mgmt_na, facing: l.facing || '', basis: l.basis || '', facing_auto: !!l.facing_auto, mgmt_items: l.mgmt_items.slice(), urgent: !!l.urgent, memo_pub: l.memo_pub || '', opt_show: l.opt_show !== false, done_hide: !!l.done_hide };
     const E = S.ldEd || E0, dirty = !!S.ldEd && JSON.stringify(S.ldEd) !== JSON.stringify(E0);
     // 필수 항목: 매물 칸은 지금 입력한 값으로 바로 판단 (저장 전에도), 공개 설정 · 사이트 자료 항목은 서버 결과
-    const has = v => String(v ?? '').trim() !== '', missLive = l.missing.filter(m => !m.k).concat([
+    const UP = l.source === 'unitpub';   /* 분양팀 카드 (시안 r57 A안): 금액 · 입주 가능일만 필수, 매매가 = 매입보장가 잠금 */
+    const has = v => String(v ?? '').trim() !== '', missLive = UP ? [[l.deal === 'sale' ? has(E.ask) : has(E.dep), l.deal === 'sale' ? 'ask' : 'dep', l.deal === 'sale' ? '매매가' : '보증금'], [has(E.move), 'move', '입주 가능일']].filter(x => !x[0]).map(([, k, label]) => ({ k, label })) : l.missing.filter(m => !m.k).concat([
       [l.deal === 'sale' ? has(E.ask) : has(E.dep), l.deal === 'sale' ? 'ask' : 'dep', l.deal === 'sale' ? '매매가' : '보증금'],
       [!(l.deal === 'wolse' || l.deal === 'short') || has(E.rent), 'rent', '월세'], [has(E.move), 'move', '입주 가능일'],
       [E.mgmt_na || has(E.mgmt), 'mgmt', '관리비'], [has(E.facing), 'facing', '향'], [!(has(E.facing) && E.facing_auto), 'facing', '향 확인 (배치도 기준 자동)'], [has(E.basis), 'basis', '향 기준']].filter(x => !x[0]).map(([, k, label]) => ({ k, label })));
     const setE = p => this.setState({ ldEd: Object.assign({}, E, p), ldFlash: null });
     const fld = (k, label, ph) => ({ label, value: String(E[k] ?? ''), ph: ph || '', onChange: e => setE({ [k]: e.target.value }), bd: S.ldFlash === k ? '#c8381e' : '#d2d2d7' });
-    const fields = (l.deal === 'sale' ? [fld('ask', '매매가 (만원)'), fld('adj', '조정가능가 (만원)')] : [fld('dep', '보증금 (만원)')].concat(l.deal === 'jeonse' ? [] : [fld('rent', '월세 (만원)')]))
+    const fields = UP ? (l.deal === 'sale' ? [Object.assign(fld('ask', '매매가 (만원) · 매입보장가 자동'), { onChange: () => this.flash('매매가는 매입보장가로 자동입니다 (분양가표)'), bd: '#e5e5ea' })] : [fld('dep', '보증금 (만원) · 임대보증금 자동, 고칠 수 있음')]).concat([fld('move', '입주 가능일', '즉시 입주 · 입주일 협의')])
+      : (l.deal === 'sale' ? [fld('ask', '매매가 (만원)'), fld('adj', '조정가능가 (만원)')] : [fld('dep', '보증금 (만원)')].concat(l.deal === 'jeonse' ? [] : [fld('rent', '월세 (만원)')]))
       .concat([fld('move', '입주 가능일', '즉시 · 협의 · 2027-03')]).concat(l.deal === 'short' ? [fld('term', '단기 가능기간', '3~6개월')] : []);
     const pick = (list, key, multi) => list.map(v => { const on = multi ? E[key].includes(v) : E[key] === v;
       return Object.assign(this.chip(on, '#1d1d1f'), { label: v, onClick: () => setE(Object.assign({ [key]: multi ? (on ? E[key].filter(x => x !== v) : E[key].concat(v)) : (on ? '' : v) }, key === 'facing' || key === 'basis' ? { facing_auto: false } : {})) }); });
@@ -4763,7 +4765,11 @@ class Component extends DCLogic {
     const pubWith = (b, msg) => !dirty ? act('publish', b, msg)
       : this.lbAct(l.id, null, Object.assign({ ver: l.ver }, E), '저장했습니다').then(r => r && r.ok ? this.lbAct(l.id, 'publish', Object.assign({ ver: r.ver }, b), msg) : null);
     const blocked = off || missLive.length > 0, btns = [];
-    if (l.pub === 'on' && (c.publish || c.edit)) btns.push(btn('공개 끄기', () => act('publish', { op: 'off' }, '비공개로 바꿨습니다')));
+    if (UP) {   /* 분양팀: 공개 끄기 = 손님 화면 공개에서 이 거래만 빼기 (카드 철회) · 공개 켜기 = 다시 */
+      const dn = l.deal === 'sale' ? '신규분양' : '전세', after = () => { this._convOk = false; this._convAt = 0; this.convLoad(); };
+      if (l.pub === 'on') btns.push(btn('공개 끄기', () => { if (window.confirm('손님 화면 공개에서 ' + dn + '을 뺍니다 (카드는 철회). 끌까요?')) act('publish', { op: 'off' }, '공개를 껐습니다').then(after); }));
+      else btns.push(btn('공개 켜기', () => pubWith({ op: 'approve' }, '공개했습니다. 손님 화면 현재 매물에 바로 보입니다').then(after), 'blue', missLive.length > 0));
+    } else if (l.pub === 'on' && (c.publish || c.edit)) btns.push(btn('공개 끄기', () => act('publish', { op: 'off' }, '비공개로 바꿨습니다')));
     else if (l.pub === 'req' && c.publish) {
       btns.push(btn('승인 · 공개', () => pubWith({ op: 'approve' }, '승인했습니다. 공개사이트에 바로 보입니다'), 'blue', blocked));
       btns.push(btn('반려', () => { const why = window.prompt('반려 사유 (이력에 남아 요청한 직원이 봅니다)', ''); if (why !== null) act('publish', { op: 'reject', reason: why }, '반려했습니다'); }, 'red'));
@@ -4776,7 +4782,7 @@ class Component extends DCLogic {
       : this.flash(m.label.includes('사이트 자료') ? '사이트 자료(site.json)에서 채우는 항목입니다' : '매물보드 [공개 설정]에서 채웁니다 (대표 · 관리자 · 권한자)');
     const names = Object.keys(roles).filter(n => roles[n] !== '열람'), pv = j.preview || {};
     return { loading: false, ready: true, close, title: l.dong + '동 ' + l.ho + '호 ' + l.type, deal: d[0], dealBg: d[1], status: l.status, urgent: !!l.urgent,
-      meta: this.lbPrice(l) + ' · 작성 ' + (l.writer || '-') + ' · 담당 ' + (l.mgr || '미배정') + (l.source === 'guest' ? ' · 관심등록 (소유자 확인 후 공개)' : ''),
+      meta: this.lbPrice(l) + ' · 작성 ' + (l.writer || '-') + ' · 담당 ' + (l.mgr || '미배정') + (l.source === 'guest' ? ' · 관심등록 (소유자 확인 후 공개)' : UP ? ' · 분양팀 (손님 화면 공개에서 생김)' : ''),
       canEdit: !!c.edit, stChips: this.LB_ST.concat(this.LB_FOLD).map(st => Object.assign(this.chip(l.status === st, '#1d1d1f'), { label: st, onClick: () => this.lbSetSt(l, st) })),
       pubLabel: l.pub === 'on' ? '공개중' : l.pub === 'req' ? '요청됨' : '비공개', pubBg: l.pub === 'on' ? '#e9f7ee' : l.pub === 'req' ? '#e8f0fb' : '#f2f2f5', pubFg: l.pub === 'on' ? '#157a3f' : l.pub === 'req' ? '#0066cc' : '#8e8e93',
       btns, isOff: off, offText: l.status + ' 상태는 공개할 수 없습니다.', hasMiss: !off && missLive.length > 0, missN: missLive.length + '개 항목 부족:',
@@ -5087,7 +5093,7 @@ class Component extends DCLogic {
         // 늘 보이는 줄: 전용면적 · 향 · 입주 가능 · 옵션 · 기타 / 접는 줄: 방·욕실 · 관리비 · 사용승인 · 주차 — 요약 한 줄은 항상 보임 (명시사항, 시안 listing-public2 A안 확정 2026-11-04)
         let op = null; try { op = x.opts ? JSON.parse(x.opts) : null; } catch (e) { op = null; }
         const optT = !op ? '' : !op.exp ? '기본 (확장 없음)' : '확장' + (op.items && op.items.length ? ' + ' + op.items.slice(0, 2).join(' · ') + (op.items.length > 2 ? ' 외 ' + (op.items.length - 2) : '') : '');
-        const dl = [['전용면적', x.exclusive ? x.exclusive + '㎡' : ''], ['향', String(x.id).startsWith('nu') ? '라인별 상이 · 상담 시 안내' : x.facing + '향 (' + x.basis + ' 기준)'], ['입주 가능', x.move]].concat(x.term ? [['단기 기간', x.term]] : []).concat(optT ? [['옵션', optT]] : []);
+        const dl = [['전용면적', x.exclusive ? x.exclusive + '㎡' : ''], ['향', (x.nu || String(x.id).startsWith('nu')) && !x.facing ? '라인별 상이 · 상담 시 안내' : x.facing + '향 (' + x.basis + ' 기준)'], ['입주 가능', x.move]].concat(x.term ? [['단기 기간', x.term]] : []).concat(optT ? [['옵션', optT]] : []);
         const mi = Array.isArray(x.mgmt_items) ? x.mgmt_items : [], mg = x.mgmt_na ? '확인 불가 (미등기건물 · 신축건물 등 관리비 내역 확인 불가)' : x.mgmt == null ? '상담 시 안내' : '월 ' + x.mgmt + '만원' + (mi.length ? ' (' + mi.join(' · ') + ')' : '');   /* 신규분양 매물(시안 r47)은 관리비 칸 없음 */
         const dl2 = [['방 · 욕실', '방 ' + x.rooms + ' · 욕실 ' + x.baths], ['관리비', mg], ['사용승인', x.approval], ['주차', x.parking]];
         const pk = String(x.parking || '').match(/세대당\s*약?\s*([\d.]+)대/), fo = (S.glFold || {})[x.id] !== undefined ? !!S.glFold[x.id] : !!(S.glAuto || {})[x.id];
@@ -5097,8 +5103,8 @@ class Component extends DCLogic {
           toggleFold: () => this.setState(ss => ({ glFold: Object.assign({}, ss.glFold, { [x.id]: !fo }) })), contact: x.contact, tel: x.tel, telHref: 'tel:' + String(x.tel || '').replace(/\D/g, ''),
           open: () => { this.setState({ glSel: x.id, lcOpen: true }); this.cmLoad('l:' + x.id); },
           hasSite: !!(this.D.HOT || {})[x.dong], site: () => this.spGoDong(+x.dong),
-          bkLabel: String(x.id).startsWith('nu') ? '분양전환요청' : '중개요청',   /* 신규분양 공개 매물 (2026-11-17 대표) */
-          bk: () => this.setState({ bkReq: { nu: String(x.id).startsWith('nu'), lid: x.id, label: [d[0], x.label, x.type, price(x)].filter(Boolean).join(' · '), name: (this.cmMe() || {}).name || '', phone: '', msg: '', agree: false, err: '' } }) }; }),
+          bkLabel: x.nu || String(x.id).startsWith('nu') ? '분양전환요청' : '중개요청',   /* 신규분양 공개 매물 (2026-11-17 대표) */
+          bk: () => this.setState({ bkReq: { nu: !!x.nu || String(x.id).startsWith('nu'), lid: x.id, label: [d[0], x.label, x.type, price(x)].filter(Boolean).join(' · '), name: (this.cmMe() || {}).name || '', phone: '', msg: '', agree: false, err: '' } }) }; }),
       office: (o.name || '') + ' · 대표 ' + (o.ceo || '') + ' · 등록번호 ' + (o.regNo || ''), office2: (o.address || '') + ' · 대표번호 ' + (o.tel || ''),
       /* 최근 거래완료 (계약 · 잔금완료 30일, 타입 · 단지 · 면적만 · 날짜 없음, 시안 listing-done B안 확정 2026-11-05) */ hasDone: !!(S.gl.done || []).length, done: (S.gl.done || []).map(x => { const d = this.LB_DEAL[x.deal] || ['', '#1d1d1f']; return { deal: d[0], dealBg: d[1], title: x.type + ' · ' + x.block + (x.kind === '오피스텔' ? ' 오피스텔' : ''), area: x.exclusive ? '전용 ' + x.exclusive + '㎡' : '' }; }) };
   }

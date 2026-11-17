@@ -6,30 +6,19 @@ import { J, body, ip, device } from '../lib/http.js';
 import { can } from '../core/permissions.js';
 import { CONV, PUB_KIND, KIND_KO, cleanConv } from '../core/conv.js';
 import { UNIT } from '../core/units.js';
-import { listConv, getConv, setConv, setPub, listVacancy, putPubListing, dropPubListing, pubEligible } from '../repo/conv.js';
-import { band, TOP, areaOf } from '../core/listings.js';
-import SITE from '../../public/daelasoo/data/site.json' with { type: 'json' };
+import { listConv, getConv, setConv, setPub, listVacancy, dropPubListing } from '../repo/conv.js';
 import { DEALS, DEAL_KO } from '../core/conv.js';
 import { priceOf } from '../core/price.js';
 import { getOne } from '../repo/kv.js';
 import { audit } from '../repo/audit.js';
 import { syncUnitBoard, dealsOf, dealKo, LIVE } from '../repo/unit-pub-board.js';
 
-// 신규분양 공개 매물 한 줄 (공개 칸만): 동 · 층구간 · 타입 · 면적 · 매입보장가(만원) · 입주 시기 · 방/욕실 · 사무소 연락처
-async function saleRow(db, id) {
-  const un = UNIT[id], pr = priceOf(id) || {}, e = (await pubEligible(db, id)) || {}, T = (SITE.types || {})[un.type] || {}, ar = areaOf(un), o = SITE.office || {}, bd = band(un.floor, TOP[un.dong]);
-  return { deal: 'sale', dong: un.dong, block: un.block || '', label: un.dong + '동 ' + bd, band: bd, type: un.type, kind: '아파트', exclusive: ar.exclusive, supply: ar.supply,
-    ask: pr.hedge ? Math.round(pr.hedge / 1e4) : null, mgmt_items: '[]', move: e.kind === 'vac' ? '즉시 입주' : '입주일 협의', facing: '라인별 상이', basis: '상담 시 안내', rooms: T.rooms || null, baths: T.baths || null,
-    approval: '상담 시 안내', parking: '상담 시 안내', urgent: 0, badge: '신규분양 · 3년 뒤 분양가 매입보장(헷지했지)', contact: '첨단대라수분양팀', tel: o.tel || '' };   // 신규분양 매물 카드 연락 이름 (2026-11-17 대표)
-}
-
 // 공개 켜기 · 끄기 한 번에: 공개 세대 + 손님 '현재 매물'(신규분양 = 매입보장가, 시안 r47) + 매물보드 카드(시안 r56)
 export async function applyPub(db, id, on, by, deal) {
   const r = await setPub(db, id, on, by, Date.now(), deal);
   if (r === 'status') return r;
-  if (on && (deal === '매매' || deal === '둘 다')) await putPubListing(db, id, await saleRow(db, id));
-  else await dropPubListing(db, id);
-  await syncUnitBoard(db, id, by);
+  if (!on) await dropPubListing(db, id);   // 예전 'nu…' 사본 (켤 때는 syncUnitBoard 가 지움)
+  await syncUnitBoard(db, id, by);         // 매물보드 카드 = 손님 '현재 매물' (시안 r57 A안)
   return 'ok';
 }
 
