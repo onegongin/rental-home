@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r54 · 상담이력 N차</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ .wrap{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:var(--sub);font-size:13px;margin:0 0 18px;line-height:1.6}
+ h2{font-size:16px;margin:26px 0 10px}
+ .note{font-size:12.5px;color:var(--sub);line-height:1.65;margin:8px 2px 0}
+ .pill{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer}
+ .pill.on{background:#0066cc;border-color:#0066cc;color:#fff}
+ .log{padding:14px 16px;overflow-x:auto}
+ .lh,.lr{display:grid;grid-template-columns:96px 64px 100px 110px 90px 120px minmax(0,1fr) 112px;font-size:13px;min-width:900px}
+ .lh div{padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea;font-size:12px}
+ .lh .new{color:#c8381e}
+ .lr{border-bottom:1px solid #f0f0f2} .lr>div{padding:9px 8px}
+ .lr.g{background:#fffbf3}
+ .sq{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap}
+ .s1{background:#f0f0f2;color:#6e6e73} .sN{background:#e8f0fb;color:#0066cc} .sL{background:#0066cc;color:#fff}
+ .sG{background:#fff0e0;color:#b25000}
+ .tot{font-size:10.5px;color:#8e8e93;margin-top:3px;display:block}
+ .nm{color:#1d1d1f;font-weight:600;text-decoration:underline;text-decoration-color:#c7c7cc;text-underline-offset:3px}
+ .lg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#3a3a3c;margin-top:10px;align-items:center}
+ .opt{display:grid;grid-template-columns:1fr 1fr;gap:14px} .optc{padding:14px;font-size:13px;line-height:1.6} .optc b{font-size:14px}
+ .rec{display:inline-block;background:#c8381e;color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:6px}
+ @media (max-width:760px){ .opt{grid-template-columns:1fr} }
+</style></head><body><div class="wrap">
+<h1>시안 r54 · 상담이력대장 '일시' 뒤에 N차</h1>
+<p class="sub">기존 사이트(cd-daelasoo1) 상담이력대장처럼, 같은 세대 · 같은 손님의 상담이 <b>몇 번째인지</b>(1차 · 2차 · 3차…)를 일시 바로 뒤 칸에 보여 줍니다. 시안 자료는 가상.</p>
+
+<div class="card log">
+ <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap"><b style="font-size:16px;margin-right:6px">상담이력대장</b><button class="pill on">전체 7</button><button class="pill">임차인 3</button><button class="pill">신규분양 매수 4</button><button class="pill">새 손님 등록 1</button></div>
+ <div class="lh"><div>일시</div><div class="new">N차</div><div>구분</div><div>호실 / 희망</div><div>성명</div><div>연락처</div><div>상담내용</div><div>작성자</div></div>
+ <div class="lr g"><div>2026-11-17</div><div><span class="sq sG">접수</span></div><div style="color:#157a3f;font-weight:700">신규분양 매수</div><div style="color:#0066cc">59 A</div><div style="color:#0066cc;font-weight:700;text-decoration:underline">테스트</div><div>010-1234-5678</div><div>테스트 — [매매] 조건 미기재</div><div style="color:#6e6e73">게스트 등록</div></div>
+ <div class="lr"><div>2026-11-17</div><div><span class="sq sL">3차 · 최근</span></div><div style="color:#157a3f;font-weight:700">신규분양 매수</div><div style="color:#0066cc">104동 402호</div><div class="nm">정경화</div><div>010-4619-6639</div><div>희망거래 변경 — [계약조건] 10.16 혜택가</div><div style="color:#6e6e73">황후권</div></div>
+ <div class="lr"><div>2026-11-17</div><div><span class="sq sL">1차 · 최근</span></div><div style="color:#157a3f;font-weight:700">신규분양 매수</div><div style="color:#0066cc">102동 1902호</div><div class="nm">배광범</div><div>010-9727-7191</div><div>[변동] 담당자: 황후권 / 유입경로: 지인 — 혜택 400+300 — [계약조건] 10.16 혜택가</div><div style="color:#6e6e73">황후권</div></div>
+ <div class="lr"><div>2026-11-16</div><div><span class="sq sN">2차</span></div><div style="color:#157a3f;font-weight:700">신규분양 매수</div><div style="color:#0066cc">104동 402호</div><div class="nm">정경화</div><div>010-4619-6639</div><div>[변동] 유입경로: 부동산(첨단대라수 김혜화) — 계약금 입금 완료</div><div style="color:#6e6e73">황후권</div></div>
+ <div class="lr"><div>2026-11-12</div><div><span class="sq s1">1차</span></div><div style="color:#157a3f;font-weight:700">신규분양 매수</div><div style="color:#0066cc">104동 402호</div><div class="nm">정경화</div><div>010-4619-6639</div><div>첫 방문 상담 · 59B 저층 희망</div><div style="color:#6e6e73">황후권</div></div>
+ <div class="lr"><div>2026-10-28</div><div><span class="sq sL">2차 · 최근</span></div><div style="color:#8e2c6e;font-weight:700">임차인</div><div style="color:#0066cc">101동 1203호</div><div class="nm">김민수</div><div>010-2231-5521</div><div>대출 상담 결과 전달, 다음 주 결정</div><div style="color:#6e6e73">기존(황후권)</div></div>
+ <div class="lr"><div>2026-10-21</div><div><span class="sq s1">1차</span></div><div style="color:#8e2c6e;font-weight:700">임차인</div><div style="color:#0066cc">101동 1203호</div><div class="nm">김민수</div><div>010-2231-5521</div><div>분양전환 의향 있음, 대출 상담 요청</div><div style="color:#6e6e73">기존(황후권)</div></div>
+ <div class="lg"><span><span class="sq s1">1차</span> 첫 상담</span><span><span class="sq sN">2차</span> 이어진 상담</span><span><span class="sq sL">3차 · 최근</span> 그 세대 · 손님의 가장 최근 상담</span><span><span class="sq sG">접수</span> 손님이 사이트에서 등록 (차수에 안 셈)</span></div>
+</div>
+<p class="note">• 세는 기준: <b>임차인 · 개인 소유자 = 같은 호실</b>, <b>신규분양 매수 · 전세 희망 = 같은 연락처</b>(번호 없으면 이름). 날짜 순서대로 1차부터.<br>• 기존 이력 올리기(r53)로 들어온 줄도 같이 셉니다 → 예전 상담 2번 + 이 사이트 1번 = '3차'.<br>• 휴대폰 화면에서는 일시 옆에 작게 붙여 보여 줍니다 (예: 2026-11-17 · 3차).<br>• 상담카드를 열 때 위쪽에 "정경화 · 4차 상담" 처럼 다음 차수도 함께 보여 줍니다.</p>
+
+<h2>고르실 것 — 손님이 사이트에서 등록한 줄(게스트)</h2>
+<div class="opt">
+ <div class="card optc"><b>A안 · '접수'로 따로 표시, 차수에 안 셈</b><span class="rec">추천</span><br>손님이 직접 남긴 등록은 상담이 아니므로 '접수'로 보여 주고, 직원이 상담카드를 쓴 것부터 1차로 셉니다.</div>
+ <div class="card optc"><b>B안 · 손님 등록도 1차로 셈</b><br>손님 등록 = 1차, 직원 첫 상담 = 2차. 손님과의 모든 접촉 횟수를 보고 싶을 때.</div>
+</div>
+</div></body></html>

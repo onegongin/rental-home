@@ -366,18 +366,19 @@ html:root [data-m=ccond]{grid-template-columns:repeat(2,minmax(0,1fr))!important
 [data-m=gbox]{grid-template-columns:72px minmax(0,1fr)!important}
 [data-m=own2]{grid-template-columns:minmax(0,1fr)!important}
 [data-m=logq]{width:100%!important;order:9}
-[data-m=logrow]{grid-template-columns:auto minmax(0,1fr) auto!important;grid-template-areas:"at kind ed" "unit name ed" "ph ph ph" "tx tx tx" "wr wr wr";margin:0 0 8px!important;border:1px solid #e5e5ea!important;border-radius:12px;padding:6px 4px;background:#fff}
+[data-m=logrow]{grid-template-columns:auto auto minmax(0,1fr) auto!important;grid-template-areas:"at sq kind ed" "unit unit name ed" "ph ph ph ph" "tx tx tx tx" "wr wr wr wr";margin:0 0 8px!important;border:1px solid #e5e5ea!important;border-radius:12px;padding:6px 4px;background:#fff}
 [data-m=logrow]>div{padding:3px 8px!important}
 [data-m=logrow]>div:nth-child(1){grid-area:at;font-size:11.5px}
-[data-m=logrow]>div:nth-child(2){grid-area:kind;font-size:12px}
-[data-m=logrow]>div:nth-child(3){grid-area:unit}
-[data-m=logrow]>div:nth-child(4){grid-area:name;font-weight:700}
-[data-m=logrow]>div:nth-child(5){grid-area:ph;font-size:12px;color:#3a3a3c}
-[data-m=logrow]>div:nth-child(6){grid-area:tx;font-size:13px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-[data-m=logrow]>div:nth-child(7){grid-area:wr;font-size:11px}
-[data-m=logrow]>div:nth-child(7)::before{content:"작성 · "}
-[data-m=logrow]>div:nth-child(8){grid-area:ed;align-items:flex-end!important}
-[data-m=logrow]>div:nth-child(9){grid-column:1 / -1}
+[data-m=logrow]>div:nth-child(2){grid-area:sq;padding-left:0!important}
+[data-m=logrow]>div:nth-child(3){grid-area:kind;font-size:12px}
+[data-m=logrow]>div:nth-child(4){grid-area:unit}
+[data-m=logrow]>div:nth-child(5){grid-area:name;font-weight:700}
+[data-m=logrow]>div:nth-child(6){grid-area:ph;font-size:12px;color:#3a3a3c}
+[data-m=logrow]>div:nth-child(7){grid-area:tx;font-size:13px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+[data-m=logrow]>div:nth-child(8){grid-area:wr;font-size:11px}
+[data-m=logrow]>div:nth-child(8)::before{content:"작성 · "}
+[data-m=logrow]>div:nth-child(9){grid-area:ed;align-items:flex-end!important}
+[data-m=logrow]>div:nth-child(10){grid-column:1 / -1}
 [data-m=pedlg]{grid-template-columns:1fr!important;padding:14px!important}
 [data-m=glsep]{display:none!important}
 [data-m=dbwrap]{overflow:visible!important}
@@ -2132,8 +2133,9 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <input data-m="logq" value="{{ logQ }}" onChange="{{ onLogQ }}" placeholder="호실 · 이름 · 연락처 · 내용 검색" style="height:34px;width:260px;max-width:100%;border:1px solid #d2d2d7;border-radius:9999px;padding:0 14px;font-size:13px">
     </div>
     <sc-if value="{{ logNoEdit }}"><div style="font-size:11px;color:#8e8e93;margin-top:-4px">{{ me }} · 상담이력 수정 권한 없음 (관리자가 설정에서 부여)</div></sc-if>
-    <div data-m="loghd" style="display:grid;grid-template-columns:96px 100px 110px 90px 120px minmax(0,1fr) 112px 112px;gap:0;font-size:12px">
+    <div data-m="loghd" style="display:grid;grid-template-columns:96px 64px 100px 110px 90px 120px minmax(0,1fr) 112px 112px;gap:0;font-size:12px">
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">일시</div>
+      <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">N차</div>
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">구분</div>
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">호실 / 희망</div>
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">성명</div>
@@ -2143,8 +2145,9 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">수정</div>
     </div>
     <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="8">
-      <div data-m="logrow" style="display:grid;grid-template-columns:96px 100px 110px 90px 120px minmax(0,1fr) 112px 112px;font-size:13px;border-bottom:1px solid #f0f0f2;margin-top:-12px;background:{{ l.rowBg }}">
+      <div data-m="logrow" style="display:grid;grid-template-columns:96px 64px 100px 110px 90px 120px minmax(0,1fr) 112px 112px;font-size:13px;border-bottom:1px solid #f0f0f2;margin-top:-12px;background:{{ l.rowBg }}">
         <div style="padding:9px 8px;color:#6e6e73;font-variant-numeric:tabular-nums">{{ l.at }}</div>
+        <div style="padding:8px 8px"><sc-if value="{{ l.sqOn }}" hint-placeholder-val="{{ false }}"><span title="{{ l.sqTip }}" style="display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap;background:{{ l.sqBg }};color:{{ l.sqFg }}">{{ l.sq }}</span></sc-if></div>
         <div style="padding:9px 8px;font-weight:700;color:{{ l.kindFg }};white-space:nowrap">{{ l.kind }}</div>
         <div style="padding:9px 8px"><button onClick="{{ l.go }}" style="border:none;background:transparent;padding:0;color:#0066cc;font-size:13px;font-weight:600;cursor:pointer;text-align:left">{{ l.unit }}</button></div>
         <div style="padding:9px 8px;display:flex;flex-direction:column;align-items:flex-start;gap:3px"><sc-if value="{{ l.isG }}" hint-placeholder-val="{{ false }}"><button onClick="{{ l.gGo }}" title="눌러서 상담카드 열기 (손님이 쓴 내용이 함께 보입니다)" style="border:none;background:transparent;padding:0;color:#0066cc;font-size:13px;font-weight:700;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:3px">{{ l.name }}</button><span title="{{ l.gTip }}" style="font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px;background:{{ l.gTagBg }};color:{{ l.gTagFg }};white-space:nowrap">{{ l.gTag }}</span></sc-if><sc-if value="{{ l.notG }}"><button onClick="{{ l.nGo }}" title="눌러서 이 내용으로 상담카드 열기 (상담내용만 빈칸)" style="border:none;background:transparent;padding:0;color:#1d1d1f;font-size:13px;font-weight:600;cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:#c7c7cc;text-underline-offset:3px">{{ l.name }}</button><sc-if value="{{ l.fromG }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;color:#157a3f;font-weight:400">↳ 손님 등록에서 만든 카드</span></sc-if></sc-if></div>
@@ -6087,6 +6090,11 @@ class Component extends DCLogic {
   ctKv(c) { if (!c) return []; const ct = c.ct || {}, sv = this.seeCust(c), w = v => Number(v) ? (Number(v) / 1e4).toLocaleString() + '만' : '', md = v => v ? String(v).slice(5).replace('-', '.') : '';
     return [['계약자', [sv ? c.name : this.maskN(c.name), sv ? c.phone : this.maskP(c.phone)].filter(Boolean).join(' · ')], ['적용가', (ct.basis === 'benefit' ? '10.16 혜택가' : '매입보장가') + (Number(ct.price) ? ' ' + (Number(ct.price) / 1e8).toFixed(2) + '억' : '')], ['계약금', w(ct.dep)], ['입금예정', md(ct.date)], ['자금', ct.fund && ct.fund !== '미정' ? ct.fund : ''],
       ['잔금예정', md(ct.bal)], ['입주예정', md(ct.move)], ['소개', ct.intro && ct.intro !== '없음' ? ct.intro + (ct.bk || ct.side ? ' · ' + (ct.bk || ct.side) : '') : ''], ['계약진행', ct.staff || ''], ['담당', c.mgr || c.writer || '']].filter(r => r[1]).map(([k, v]) => ({ k, v })); }
+  // 상담 N차 (시안 r54 A안 확정 2026-11-17, 기존 사이트와 같은 셈): 임차인 · 개인 소유자 = 같은 호실, 신규분양 매수 · 전세 희망 = 같은 연락처(없으면 이름) · 날짜 순 · 손님 등록(게스트)은 '접수'로 따로
+  seqKeyOf(c) { if (!c || c.guest) return ''; if ((c.kind === 'seller' || c.kind === 'owner' || !c.kind) && c.unit) return 'U|' + c.unit; const ph = this.gDig(c.phone); if (ph.length >= 9) return 'P|' + ph; const nm = String(c.name || '').trim(); return nm ? 'N|' + nm : (c.unit ? 'U|' + c.unit : ''); }
+  seqMap(cards) { const L = (cards || this.state.cards || []).filter(c => !c.deleted && this.seqKeyOf(c)).sort((a, b) => String(a.at || '').localeCompare(String(b.at || '')) || this.gTs(a.id) - this.gTs(b.id)), n = {}, m = {};
+    L.forEach(c => { const k = this.seqKeyOf(c); n[k] = (n[k] || 0) + 1; m[c.id] = { n: n[k], k }; }); Object.keys(m).forEach(id => { const x = m[id]; x.tot = n[x.k]; x.last = x.n === x.tot; }); return m; }
+  seqNext(c) { const k = this.seqKeyOf(Object.assign({}, c, { guest: false })); return k ? (this.state.cards || []).filter(x => !x.deleted && this.seqKeyOf(x) === k).length + 1 : 1; }
   // 상담이력대장 이름 클릭 → 그 카드 내용으로 상담카드 열기 (상담내용만 빈칸, 2026-11-17 대표 요청)
   cardForm(c) { const S = this.state, u = c.unit && this.D.byId[c.unit], isCu = c.kind === 'buyer' || c.kind === 'client', cl = v => v ? JSON.parse(JSON.stringify(v)) : v;
     let f = this.blankForm(); try { if (u) f = Object.assign(f, this.unitPrefill(c.unit), c.kind === 'owner' ? this.ownPre(c.unit) : {}, { unitLock: true, unitUnlock: false, unitBaseId: c.unit, unitAsk: false, unitAskText: '', unitReason: '' }); } catch (e) {}
@@ -7002,6 +7010,7 @@ class Component extends DCLogic {
     const logDelOk = ['대표', '관리자'].includes((S.roles || {})[S.me]), gone = S.cardsGone || [], logGone = !!S.logGone && logDelOk && gone.length > 0;
     const fA = t => { const d = new Date(Number(t) || t || 0), p2 = n => String(n).padStart(2, '0'); return isNaN(d) ? '' : d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()); };
     const gNewL = this.gNew(), gNewIds = {}; gNewL.forEach(c => { gNewIds[c.id] = 1; });   /* 상담카드 안 만든 손님 등록 (시안 r50) */
+    const SQ = tab === 'log' ? this.seqMap() : {};   /* N차 (시안 r54) */
     const logRows = tab !== 'log' ? [] : (logGone ? gone : S.cards).filter(c => (S.logKind === 'all' || (S.logKind === 'gnew' ? !!gNewIds[c.id] : c.kind === S.logKind)) &&(!q || [c.unit, c.name, c.phone, c.text, c.interest].join(' ').includes(q))).slice().sort(lsort).map(c => ({
       canDel: logDelOk && !c.deleted, del: () => this.setState({ logDel: { id: this.cid(c), pick: '', text: '' } }),
       isGone: !!c.deleted, goneText: c.deleted ? '삭제 · ' + (c.deleted.by || '') + ' · ' + fA(c.deleted.at) + ' · 사유: ' + (c.deleted.reason || '') : '',
@@ -7009,9 +7018,12 @@ class Component extends DCLogic {
         this.setState(ss => { const x = (ss.cardsGone || []).find(y => this.cid(y) === id); if (!x) return null; const nx = Object.assign({}, x); delete nx.deleted; const left = (ss.cardsGone || []).filter(y => y !== x);
           return { cards: ss.cards.concat(nx).sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')) || String(b.id || '').localeCompare(String(a.id || ''))), cardsGone: left, logGone: left.length ? ss.logGone : false }; });
         this.flash('상담 기록을 되살렸습니다 · 접속기록에 남습니다'); },
-      ...(() => { if (!c.guest) return { isG: false, notG: true, fromG: !!c.fromGuest, rowBg: 'transparent', nGo: () => { if (c.deleted) return this.flash('삭제된 상담입니다 · 되살린 뒤 열 수 있습니다'); this.setState({ tab: 'card', form: this.cardForm(c) }); this.flash('지난 상담 내용으로 상담카드를 열었습니다 · 상담내용만 새로 적어 주세요'); } }; const dn = gNewIds[c.id] ? null : this.gDone(c);
+      ...(() => { if (!c.guest) return { isG: false, notG: true, fromG: !!c.fromGuest, rowBg: 'transparent', nGo: () => { if (c.deleted) return this.flash('삭제된 상담입니다 · 되살린 뒤 열 수 있습니다'); this.setState({ tab: 'card', form: this.cardForm(c) }); this.flash((c.name || '') + ' · ' + this.seqNext(c) + '차 상담 — 지난 상담 내용으로 상담카드를 열었습니다 · 상담내용만 새로 적어 주세요'); } }; const dn = gNewIds[c.id] ? null : this.gDone(c);
         return { isG: true, notG: false, fromG: false, rowBg: '#fffbf3', gGo: () => this.openNote(c.id), gTag: dn ? '상담카드 작성됨 · ' + (dn.writer || '') : '상담카드 미작성', gTagBg: dn ? '#e8f5ec' : '#fff0e0', gTagFg: dn ? '#157a3f' : '#b25000',
           gTip: dn ? (dn.writer || '') + ' · ' + (dn.at || '') + ' 상담카드 작성' : '이름을 누르면 손님이 쓴 내용으로 상담카드가 열립니다' }; })(),
+      ...(() => { const x = SQ[c.id]; if (c.deleted || (!x && !c.guest)) return { sqOn: false };
+        return c.guest ? { sqOn: true, sq: '접수', sqBg: '#fff0e0', sqFg: '#b25000', sqTip: '손님이 사이트에서 등록 — 차수에 안 셈' }
+          : { sqOn: true, sq: x.n + '차' + (x.last ? ' · 최근' : ''), sqBg: x.last ? '#0066cc' : x.n === 1 ? '#f0f0f2' : '#e8f0fb', sqFg: x.last ? '#fff' : x.n === 1 ? '#6e6e73' : '#0066cc', sqTip: '전체 ' + x.tot + '번 중 ' + x.n + '번째 상담' }; })(),
       at: c.at, kind: this.kindName(c.kind), kindFg: this.kindColor(c.kind), hasConsent: !!c.consent, consentText: c.consent ? '필수✓ 마케팅' + (c.consent.mkt ? '✓' : '–') + ' 제3자' + (c.consent.third ? '✓' : '–') : '',
       unit: c.unit ? c.unit.replace('-', '동 ') + '호' : (c.want ? [c.interest, c.want.dong, c.want.type, c.want.floor].filter(x => x && x !== '무관').join(' · ') || '조건 무관' : (c.interest || '-')),
       go: () => { const id = c.unit || this.parseUnit(c.interest); if (id) { const u = D.byId[id]; this.setState({ tab: 'board', group: Math.floor((u.b - 101) / 3), sel: id, focusB: null }); } },
