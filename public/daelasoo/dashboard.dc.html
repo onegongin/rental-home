@@ -786,6 +786,8 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <span style="font-size:15px;font-weight:700">타입별 세대수</span>
         <span style="font-size:12px;color:#6e6e73">{{ typeSumText }}</span>
       </div>
+      <sc-if value="{{ typeRowsOn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:5px"><sc-for list="{{ typeRows }}" as="r"><div style="display:grid;grid-template-columns:44px repeat(3,minmax(0,1fr));gap:5px;align-items:center"><span style="font-size:12px;font-weight:700;color:#6e6e73">{{ r.lb }}</span><sc-for list="{{ r.items }}" as="t"><div style="display:flex;align-items:center;gap:5px;font-size:12.5px;padding:5px 8px;border-radius:8px;background:#f5f5f7;min-width:0"><span style="flex-shrink:0;width:10px;height:10px;border-radius:3px;background:{{ t.bg }}"></span><b style="font-weight:700">{{ t.code }}</b><span style="margin-left:auto;font-weight:800;font-variant-numeric:tabular-nums">{{ t.n }}<small style="font-size:10.5px;font-weight:500;color:#6e6e73">세대</small></span></div></sc-for></div></sc-for></div></sc-if>
+      <sc-if value="{{ typeGridOn }}" hint-placeholder-val="{{ true }}">
       <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px">
         <sc-for list="{{ typeList }}" as="t" hint-placeholder-count="24">
           <div style="display:flex;align-items:center;gap:4px;font-size:11px;padding:3px 5px;border-radius:6px;background:#fafafa;min-width:0">
@@ -795,6 +797,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
           </div>
         </sc-for>
       </div>
+      </sc-if>
     </div>
     <sc-for list="{{ groupCards }}" as="g" hint-placeholder-count="3">
       <div style="flex:{{ g.flex }};background:#fff;border-radius:16px;padding:9px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px">
@@ -815,6 +818,19 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         </div>
       </div>
     </sc-for>
+    <!-- 타입 실내사진 (시안 r60 확정 2026-11-18): 남는 높이를 채움 — 타입 칩 · 큰 사진 ‹ › · 작은 사진 줄 · 평면도 · 관심 등록 -->
+    <div data-m="ipbd" style="flex:1 1 0;min-height:300px;background:#fff;border-radius:16px;padding:10px 14px 12px;display:{{ ip.disp }};flex-direction:column;gap:7px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font-size:15px;font-weight:700">타입 실내사진</span><span style="font-size:12px;color:#6e6e73">{{ ip.where }}</span></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap"><sc-for list="{{ ip.chips }}" as="c"><button type="button" onClick="{{ c.onClick }}" style="display:flex;align-items:center;gap:5px;border:1px {{ c.bs }} {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit"><span style="width:9px;height:9px;border-radius:3px;background:{{ c.dot }}"></span>{{ c.label }}</button></sc-for></div>
+      <div style="position:relative;flex:1 1 0;min-height:150px;border-radius:12px;overflow:hidden;background:#1d1d1f">
+        <img src="{{ ip.big }}" alt="{{ ip.cap }}" onClick="{{ ip.zoom }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:zoom-in">
+        <button type="button" class="hero-nv" onClick="{{ ip.prev }}" aria-label="이전 사진" style="left:8px;opacity:1">‹</button><button type="button" class="hero-nv" onClick="{{ ip.next }}" aria-label="다음 사진" style="right:8px;opacity:1">›</button>
+        <span style="position:absolute;left:10px;bottom:10px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);border-radius:9999px;padding:3px 10px;pointer-events:none">{{ ip.cap }}</span>
+        <button type="button" onClick="{{ ip.zoom }}" style="position:absolute;right:10px;bottom:10px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);border:none;border-radius:9999px;padding:3px 10px;cursor:zoom-in;font-family:inherit">크게 보기 ↗</button>
+      </div>
+      <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;flex:0 0 auto"><sc-for list="{{ ip.thumbs }}" as="t"><button type="button" onClick="{{ t.go }}" aria-label="{{ t.alt }}" style="flex:none;width:62px;height:42px;padding:0;border:2px solid {{ t.bd }};border-radius:8px;overflow:hidden;cursor:pointer;opacity:{{ t.op }};background:#eee"><img src="{{ t.src }}" alt="" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover"></button></sc-for></div>
+      <div style="display:flex;gap:6px;flex:0 0 auto"><button type="button" onClick="{{ ip.plan }}" style="flex:1;height:34px;border:1px solid #d2d2d7;background:#fff;border-radius:9999px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">평면도 보기</button><sc-if value="{{ ip.regOn }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ ip.reg }}" style="flex:1;height:34px;border:none;background:#0066cc;color:#fff;border-radius:9999px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">이 타입 관심 등록</button></sc-if></div>
+    </div>
     <!-- 단지 조경 (시안 preview/siteplan-side A안): 남는 높이를 채움 — 위 큰 사진 1 + 아래 3 -->
     <div style="flex:1 1 0;min-height:240px;background:#fff;border-radius:16px;padding:9px 14px 12px;display:{{ spGarden.disp }};flex-direction:column;gap:6px">
       <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:15px;font-weight:700">{{ spGarden.title }}</span><span style="font-size:12px;color:#6e6e73">{{ spGarden.names }}</span></div>
@@ -6545,7 +6561,21 @@ class Component extends DCLogic {
     // 단지배치 탭 오른쪽 단지 조경 (site.json siteplan.garden) — 누르면 크게 보기(siZoom)
     const SG = D.generic && (D.S.siteplan || {}).garden, sgP = x => 'assets/' + D.S.site.code + '/' + x + '?v=' + (D.S.assetVer || 1), sgL = SG ? SG.photos.map(([src, nm]) => [sgP(src), SG.title + ' · ' + nm]) : [];
     const spGarden = SG ? { disp: 'flex', title: SG.title, names: SG.photos.map(x => x[1]).join(' · '), photos: SG.photos.map(([src, nm], i) => ({ src: sgL[i][0], alt: sgL[i][1], col: i === 0 ? '1 / -1' : 'auto', zoom: () => this.setState({ siZoom: sgL[i][0], siZoomSet: sgL, siZoomI: i }) })) } : { disp: 'none', title: '', names: '', photos: [] };
-    const groupCards = D.GROUPS.map((g, i) => ({ flex: SG ? '0 0 auto' : '1 1 auto', cols: D.generic ? '4' : '3', name: this.gName(i) + ' · ' + g[0] + '~' + g[g.length - 1] + '동', color: D.GCOLOR[i], total: g.reduce((a, no) => a + D.bmap[no].units.length, 0).toLocaleString() + '세대', showGo: !isGuest, go: () => this.setState({ tab: 'board', group: i, focusB: null }),
+    // 타입 실내사진 보드 (시안 r60 확정): site.json content.interior.types — 사진 있는 타입만 켜짐, 남는 높이를 채움
+    const IT = D.generic ? (((D.S.content || {}).interior || {}).types || []).filter(x => x.photos > 0) : [], ipOn = IT.length > 0;
+    const famOf = k => (k.match(/^\d+/) || [k])[0], tOrder = Object.keys(D.types).slice().sort((a, b) => (Number(famOf(b)) || 0) - (Number(famOf(a)) || 0) || a.localeCompare(b));
+    const ip = (() => { if (!ipOn) return { disp: 'none', chips: [], thumbs: [] };
+      const p2 = n => String(n).padStart(2, '0'), ver = '?v=' + (D.S.assetVer || 1), P = (t, i, sm) => 'assets/' + D.S.site.code + '/interior/' + (sm ? 't/' : '') + t + '_' + p2(i + 1) + '.jpg' + ver;
+      const it = IT.find(x => x.type === S.ipT) || IT[0], k = it.type, n = it.photos, ii = Math.min(S.ipT === k ? S.ipI || 0 : 0, n - 1), L = Array.from({ length: n }, (_, i) => [P(k, i), k + ' 실내 ' + (i + 1) + ' / ' + n]);
+      const go = i => this.setState({ ipT: k, ipI: (i + n) % n });
+      return { disp: 'flex', where: it.where ? it.where + ' 촬영' : '', big: L[ii][0], cap: L[ii][1], prev: () => go(ii - 1), next: () => go(ii + 1), zoom: () => this.setState({ siZoom: L[ii][0], siZoomSet: L, siZoomI: ii }),
+        chips: tOrder.map(t => { const has = IT.some(x => x.type === t), on = t === k, c = (D.types[t] || {}).color || '#d2d2d7';
+          return { label: t + (has ? '' : ' · 준비 중'), dot: c, bg: on ? '#1d1d1f' : '#fff', fg: on ? '#fff' : has ? '#1d1d1f' : '#aeaeb2', bd: on ? '#1d1d1f' : '#d2d2d7', bs: has ? 'solid' : 'dashed',
+            onClick: () => has ? this.setState({ ipT: t, ipI: 0 }) : (this.flash(t + ' 실내 사진은 준비 중입니다 · 평면도를 엽니다'), this.planPop(t)) }; }),
+        thumbs: L.map((x, i) => ({ src: P(k, i, true), alt: x[1], bd: i === ii ? '#c8381e' : 'transparent', op: i === ii ? '1' : '.55', go: () => go(i) })),
+        plan: () => this.planPop(k), regOn: !!isGuest, reg: () => this.setState({ gRegOpen: true, gReg: Object.assign(this.gBlank('client', ''), { interest: k + ' 타입' }) }) }; })();
+    const typeRows = D.generic ? [...new Set(tOrder.map(famOf))].map(f => ({ lb: f + '㎡', items: tOrder.filter(t => famOf(t) === f).map(t => ({ code: t, n: D.types[t].n.toLocaleString(), bg: D.types[t].color })) })) : [];
+    const groupCards = D.GROUPS.map((g, i) => ({ flex: SG || ipOn ? '0 0 auto' : '1 1 auto', cols: D.generic ? '4' : '3', name: this.gName(i) + ' · ' + g[0] + '~' + g[g.length - 1] + '동', color: D.GCOLOR[i], total: g.reduce((a, no) => a + D.bmap[no].units.length, 0).toLocaleString() + '세대', showGo: !isGuest, go: () => this.setState({ tab: 'board', group: i, focusB: null }),
       dongs: g.map(no => { const n = F ? (bMatch[no] || 0) : (bSale[no] || 0); const b = D.bmap[no];
         return { name: no + '동', units: b.units.length, stat: isGuest ? b.min + '~' + (b.ph ? 49 : b.max) + '층' : (F ? '해당 ' : '매물 ') + n, fg: isGuest ? '#6e6e73' : n ? '#157a3f' : '#8e8e93', go: () => isGuest ? this.setState({ unitPop: no }) : this.goGroupOf(no) }; }) }));
     const typeList = Object.keys(D.types).map(k => { const t = D.types[k]; return { code: k, n: t.n.toLocaleString(), bg: t.ph ? '#fff' : t.color, ring: t.ph ? 'inset 0 0 0 2px ' + t.color : 'none' }; });
@@ -7224,7 +7254,7 @@ cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.com
       overviewHint: isGuest ? '동을 누르면 유니트 배치가 확대됩니다' : '동을 누르면 유니트 배치가 확대되고, 팝업에서 동호배치표로 이동합니다',
       guestRows: /* 게스트 칸 (시안 guest-settings 확정 2026-11-03) — 공개 사이트 탭 → 방문상담 단추 → 직원 미리 보기. 옛 'public'(챔피언스시티 파일용) 스위치는 뺌 */ [['noCity', (((window.__SITE || {}).site || {}).short || '단지') + ' 소개 탭 숨기기', '켜면 맨 앞 소개 탭(사업개요 · 입지환경 · 단지 개요 · 평면 안내)을 뺍니다'], ['noBoard', '동호배치표 탭 숨기기', '켜면 공개 사이트에서 동호배치표 탭을 뺍니다'], ['noOption', '옵션계산기 탭 숨기기', '켜면 공개 사이트에서 옵션계산기 탭을 뺍니다 · 손님이 고른 옵션은 저장되지 않습니다'], ['noPrice', '분양가표 탭 숨기기', '켜면 공개 사이트에서 분양가표 탭을 뺍니다'], ['noCmt', '호실 이야기(댓글) 숨기기', '켜면 동호배치표 호실 안내 아래 댓글 칸을 숨깁니다'], ['visit', '방문상담 예약 단추', '켜면 공개 사이트 위쪽 보드에 [방문상담 예약] 단추가 보입니다 · 관심등록 단추는 항상 있음'], ['enabled', '직원 화면에서 미리 보기', "켜면 직원 화면 위쪽에 '게스트' 탭들이 생겨 공개 사이트를 그대로 볼 수 있습니다"], ['hideStaff', '미리 보기 탭 잠깐 숨기기', '켜면 직원 화면에서만 게스트 탭을 뺍니다 · 공개 사이트에는 영향 없음']].map(([k, l, desc]) => { const on = k === 'visit' ? GS.visit !== false : !!GS[k]; return { label: l, desc, bg: on ? '#34c759' : '#e5e5ea', knob: on ? '21px' : '3px', infoOn: S.gTip === k, infoFg: S.gTip === k ? '#0066cc' : '#8e8e93', info: e => { if (e) { e.stopPropagation(); e.preventDefault(); } this.setState({ gTip: S.gTip === k ? null : k }); }, onClick: e => { if (e && e.target && e.target.closest && e.target.closest('[data-mo=ginfo]')) return; this.setState(ss => ({ guest: Object.assign({}, ss.guest, { [k]: !on }) })); } }; }),
       isOverview: tab === 'overview' || isGuest, isBoard: tab === 'board' || isGB, isOption: tab === 'option' || isGO, isCard: tab === 'card', isLog: tab === 'log', isPrice: (tab === 'price' || isGP) && !D.generic, isPrice2: (tab === 'price' || isGP) && !!D.generic, pt, isCity: !D.generic && (tab === 'city' || isGC), city: D.generic ? {} : this.cityVals(), isSiteIntro: !!D.generic && (tab === 'city' || isGC), si: D.generic && (tab === 'city' || isGC || this.state.siZoom) ? this.siteIntroVals() : {}, /* siZoom: 단지배치 탭 단지 조경 크게 보기도 이 창을 씀 */
-      hotspots, groupLegend, groupCards, typeList, spGarden,
+      hotspots, groupLegend, groupCards, typeList, spGarden, ip, typeRows, typeRowsOn: typeRows.length > 0, typeGridOn: !typeRows.length,
       groupChips, colorModes, togglePrice: () => { if (D.generic) this.prLoad(); this.setState({ showPrice: !S.showPrice }); }, priceSegOn: !!S.showPrice && D.generic && !guestOnly && !this._gm, priceSeg: this.prSeg(), priceChip, filterChips, axis, bldgs, legend, bgridCols, bgridM,
       noSelText: isGB ? '배치표에서 호실을 누르면 타입 개요 · 공급안내 · 평면이 표시됩니다' : '배치표에서 호실을 누르면 타입 개요 · 분양가 · 확장비 · 옵션 · 프리미엄 · 납부현황이 표시됩니다', boardStaff: !isGB, showGuestNav: guestOnly && vis.length > 1,
       altType: (S.upPlan && S.upPlan.code) || (S.pp && S.pp.code) || (S.sel && D.byId[S.sel] ? D.byId[S.sel].type : '') || '',
