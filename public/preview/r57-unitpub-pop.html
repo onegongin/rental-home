@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r57 · 분양팀 카드 매물 창</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ body{background:#f5f5f7;color:#1d1d1f;margin:0;font-family:Pretendard,system-ui,sans-serif}
+ .wrap{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:#6e6e73;font-size:13px;margin:0 0 18px;line-height:1.6}
+ h2{font-size:16px;margin:26px 0 10px}
+ .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+ .pop{background:#fff;border-radius:18px;box-shadow:0 16px 40px rgba(0,0,0,.14);overflow:hidden}
+ .ph{padding:16px 18px 10px;border-bottom:1px solid #f0f0f2;position:relative}
+ .ph b{font-size:19px} .ph .x{position:absolute;right:14px;top:14px;width:30px;height:30px;border-radius:50%;background:#f0f0f2;display:flex;align-items:center;justify-content:center}
+ .ph small{display:block;color:#6e6e73;font-size:12px;margin-top:3px}
+ .bdg{display:inline-block;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;vertical-align:3px;margin-left:4px}
+ .sale{background:#c8381e;color:#fff} .jeon{background:#0066cc;color:#fff} .st{background:#f0f0f2;color:#1d1d1f} .pt{background:#eef2ff;color:#3949ab}
+ .sec{padding:12px 18px;border-bottom:1px solid #f0f0f2}
+ .lb{font-size:12px;color:#6e6e73;margin:0 0 6px;font-weight:600}
+ .chips{display:flex;flex-wrap:wrap;gap:5px}
+ .c{border:1px solid #d2d2d7;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:600;background:#fff}
+ .c.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+ .box{border:1px solid #e5e5ea;border-radius:12px;padding:12px}
+ .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+ .ok{color:#157a3f;font-size:12.5px;font-weight:700;margin:6px 0}
+ .pv{background:#f5f5f7;border-radius:10px;padding:8px 10px;font-size:11.5px;color:#3a3a3c;line-height:1.6}
+ .btn{border:1px solid #d2d2d7;border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:700;background:#fff}
+ .btn.p{background:#0066cc;color:#fff;border-color:#0066cc}
+ .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+ .f{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:#6e6e73}
+ .in{border:1px solid #d2d2d7;border-radius:10px;height:34px;display:flex;align-items:center;padding:0 10px;font-size:13px;color:#1d1d1f;background:#fff}
+ .in.lock{background:#f5f5f7;color:#3a3a3c}
+ .auto{font-size:10px;font-weight:800;color:#3949ab;background:#eef2ff;border-radius:5px;padding:0 5px;margin-left:4px}
+ .ta{border:1px solid #d2d2d7;border-radius:10px;padding:8px 10px;font-size:12.5px;min-height:44px;line-height:1.55}
+ .tg{display:flex;align-items:center;gap:8px;font-size:12px;margin-top:6px}
+ .sw{width:34px;height:20px;border-radius:9999px;background:#34c759;position:relative;flex:none}
+ .sw:after{content:'';position:absolute;right:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff}
+ .sw.off{background:#d2d2d7}.sw.off:after{right:auto;left:2px}
+ .note{font-size:12.5px;color:#6e6e73;line-height:1.7;margin:10px 2px 0}
+ .opt{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+ .card{background:#fff;border-radius:14px;border:1px solid #e5e5ea;padding:16px 18px}
+ .card h3{margin:0 0 6px;font-size:15px} .card p{font-size:13px;line-height:1.7;margin:0;color:#3a3a3c}
+ .rec{display:inline-block;background:#c8381e;color:#fff;border-radius:9999px;font-size:11px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+ @media(max-width:860px){.two,.opt{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}}
+</style></head><body><div class="wrap">
+<h1>시안 r57 · 매물보드 분양팀 카드 → 매물 창</h1>
+<p class="sub">매물보드 광고중의 분양팀 카드를 누르면 아이파크처럼 <b>매물 창</b>이 열립니다 (지금은 호실 상세로 이동). 일반 매물 창과 같은 모양에, 분양팀 카드만 다른 점은 <span class="auto">자동</span> 표시입니다.</p>
+
+<div class="two">
+<!-- 매매 -->
+<div class="pop">
+ <div class="ph"><b>104동 2702호 59B</b><span class="bdg sale">매매</span><span class="bdg st">광고중</span><span class="bdg pt">분양팀</span><span class="x">✕</span>
+  <small>3.53억 · 담당 황후권 · 손님 화면 공개에서 생김</small></div>
+ <div class="sec"><div class="lb">상태</div><div class="chips"><span class="c">접수</span><span class="c">확인중</span><span class="c on">광고중</span><span class="c">협의중</span><span class="c">가계약</span><span class="c">계약</span><span class="c">보류</span><span class="c">철회</span></div>
+  <div class="note" style="margin-top:6px">계약 = 손님 화면 공개 끔 · 보류 · 철회 = 신규분양만 빠짐</div></div>
+ <div class="sec"><div class="box"><div class="row"><span style="font-weight:800;font-size:13px">공개 <span class="bdg" style="background:#e9f7ee;color:#157a3f">공개중 · 신규분양</span></span><span class="btn">공개 끄기</span></div>
+  <div class="ok">필수 항목을 모두 채웠습니다.</div>
+  <div class="pv">공개 화면 미리보기: 104동 고층/28층 59B · 매매 3억 5,300만 (매입보장가) · 입주일 협의 · 신규분양 · 3년 뒤 분양가 매입보장(헷지했지) · 연락 첨단대라수분양팀 ☎ 1800-7240</div></div></div>
+ <div class="sec"><div class="lb">공개 항목</div>
+  <div class="grid3">
+   <div class="f">매매가 (만원)<span class="auto" style="margin:0;align-self:flex-start">자동 · 매입보장가</span><div class="in lock">35,300</div></div>
+   <div class="f">입주 가능일<div class="in">입주일 협의 (만기 11-19)</div></div>
+   <div class="f">관리비 (월, 만원)<div class="in">상담 시 안내</div></div>
+  </div>
+  <div class="lb" style="margin-top:10px">향</div><div class="chips"><span class="c">남</span><span class="c on">남동</span><span class="c">남서</span><span class="c">동</span><span class="c">서</span></div>
+  <div class="lb" style="margin-top:10px">기타 내용 (공개 카드에 그대로)</div>
+  <div class="ta">올수리 준신축 · 3년 뒤 분양가 매입보장<br>즉시 상담 가능합니다</div>
+  <div class="tg"><span class="sw"></span>옵션 표시 <b>가변형 벽체</b></div>
+  <div class="tg"><span class="sw"></span>거래완료 표시 — 계약되면 '최근 거래완료'에 30일 (날짜 · 가격 없이)</div>
+  <div class="row" style="margin-top:10px"><span class="btn">급매</span><span class="btn p">저장</span></div></div>
+ <div class="sec"><div class="lb">소유자</div><div class="row"><b style="font-size:13px">첨단대라수 분양팀 <span style="font-weight:400;color:#6e6e73">(회사 · 연락처 없음)</span></b><span class="btn">세대 정보 열기</span></div></div>
+ <div class="sec" style="border:none"><div class="lb">담당 · 공유</div><div style="font-size:13px">담당 <b>황후권</b> <span class="btn" style="margin-left:6px">담당 바꾸기 ▾</span></div></div>
+</div>
+
+<!-- 전세 -->
+<div class="pop">
+ <div class="ph"><b>104동 2502호 59B</b><span class="bdg jeon">전세</span><span class="bdg st">광고중</span><span class="bdg pt">분양팀</span><span class="x">✕</span>
+  <small>1.862억 · 담당 황후권 · 손님 화면 공개에서 생김</small></div>
+ <div class="sec"><div class="lb">상태</div><div class="chips"><span class="c">접수</span><span class="c">확인중</span><span class="c on">광고중</span><span class="c">협의중</span><span class="c">가계약</span><span class="c">계약</span><span class="c">보류</span><span class="c">철회</span></div></div>
+ <div class="sec"><div class="box"><div class="row"><span style="font-weight:800;font-size:13px">공개 <span class="bdg" style="background:#e9f7ee;color:#157a3f">공개중 · 전세</span></span><span class="btn">공개 끄기</span></div>
+  <div class="ok">필수 항목을 모두 채웠습니다.</div>
+  <div class="pv">공개 화면 미리보기: 104동 고층/28층 59B · 전세 <b style="color:#c8381e">1억 8,620만</b> · 입주일 협의 · 연락 첨단대라수분양팀 ☎ 1800-7240</div></div></div>
+ <div class="sec"><div class="lb">공개 항목</div>
+  <div class="grid3">
+   <div class="f">보증금 (만원)<span class="auto" style="margin:0;align-self:flex-start">자동 · 임대보증금 (고칠 수 있음)</span><div class="in">18,620</div></div>
+   <div class="f">입주 가능일<div class="in">입주일 협의</div></div>
+   <div class="f">관리비 (월, 만원)<div class="in">상담 시 안내</div></div>
+  </div>
+  <div class="lb" style="margin-top:10px">기타 내용</div><div class="ta">전세 계약 후 분양전환 상담 가능</div>
+  <div class="row" style="margin-top:10px"><span class="btn">급매</span><span class="btn p">저장</span></div></div>
+ <div class="sec" style="border:none"><div class="lb">소유자</div><div class="row"><b style="font-size:13px">첨단대라수 분양팀</b><span class="btn">세대 정보 열기</span></div></div>
+</div>
+</div>
+
+<h2>규칙</h2>
+<div class="card"><p>
+· 창 모양 · 저장 · 상태 · 담당 바꾸기 · 이력은 일반 매물 창과 같음 (아이파크와 같은 창)<br>
+· <b>매매가 = 매입보장가 자동 · 잠금</b> (분양가표에서 바뀌면 같이) · 입주 가능일 기본 = 만기 지남 '즉시 입주' / 만기 전 '입주일 협의'<br>
+· 저장한 향 · 입주 · 관리비 · 기타 내용 · 급매 → 손님 '현재 매물' 카드에 그대로 (지금은 '라인별 상이 · 상담 시 안내' 고정)<br>
+· [공개 끄기] = 호실 상세의 손님 화면 공개에서 이 거래만 빼기 · [세대 정보 열기] = 동호배치표 호실 상세<br>
+· 소유자 = '첨단대라수 분양팀' (개인 소유자 연락처 없음) · 고치기는 대표 · 관리자 · 권한자
+</p></div>
+
+<h2>전세 금액 공개 — 골라 주세요</h2>
+<div class="opt">
+ <div class="card"><h3>A안 · 전세도 현재 매물에 보증금 공개<span class="rec">추천</span></h3><p>전세 카드도 손님 '현재 매물'에 매물로 올라가고 보증금이 보입니다 (오른쪽 창 미리보기처럼). 금액은 임대보증금 자동이지만 창에서 고칠 수 있습니다.</p></div>
+ <div class="card"><h3>B안 · 전세는 지금처럼 가격 없이</h3><p>손님 화면에는 공개 세대 칸에 '전세'만 (가격 없음, 2026-11-17 결정 그대로). 보증금은 직원 매물 창에만 보입니다.</p></div>
+</div>
+</div></body></html>
