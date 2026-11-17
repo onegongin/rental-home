@@ -2128,7 +2128,7 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <div style="padding:9px 8px;color:#6e6e73;font-variant-numeric:tabular-nums">{{ l.at }}</div>
         <div style="padding:9px 8px;font-weight:700;color:{{ l.kindFg }};white-space:nowrap">{{ l.kind }}</div>
         <div style="padding:9px 8px"><button onClick="{{ l.go }}" style="border:none;background:transparent;padding:0;color:#0066cc;font-size:13px;font-weight:600;cursor:pointer;text-align:left">{{ l.unit }}</button></div>
-        <div style="padding:9px 8px;display:flex;flex-direction:column;align-items:flex-start;gap:3px"><sc-if value="{{ l.isG }}" hint-placeholder-val="{{ false }}"><button onClick="{{ l.gGo }}" title="눌러서 상담카드 열기 (손님이 쓴 내용이 함께 보입니다)" style="border:none;background:transparent;padding:0;color:#0066cc;font-size:13px;font-weight:700;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:3px">{{ l.name }}</button><span title="{{ l.gTip }}" style="font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px;background:{{ l.gTagBg }};color:{{ l.gTagFg }};white-space:nowrap">{{ l.gTag }}</span></sc-if><sc-if value="{{ l.notG }}"><span>{{ l.name }}</span><sc-if value="{{ l.fromG }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;color:#157a3f;font-weight:400">↳ 손님 등록에서 만든 카드</span></sc-if></sc-if></div>
+        <div style="padding:9px 8px;display:flex;flex-direction:column;align-items:flex-start;gap:3px"><sc-if value="{{ l.isG }}" hint-placeholder-val="{{ false }}"><button onClick="{{ l.gGo }}" title="눌러서 상담카드 열기 (손님이 쓴 내용이 함께 보입니다)" style="border:none;background:transparent;padding:0;color:#0066cc;font-size:13px;font-weight:700;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:3px">{{ l.name }}</button><span title="{{ l.gTip }}" style="font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px;background:{{ l.gTagBg }};color:{{ l.gTagFg }};white-space:nowrap">{{ l.gTag }}</span></sc-if><sc-if value="{{ l.notG }}"><button onClick="{{ l.nGo }}" title="눌러서 이 내용으로 상담카드 열기 (상담내용만 빈칸)" style="border:none;background:transparent;padding:0;color:#1d1d1f;font-size:13px;font-weight:600;cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:#c7c7cc;text-underline-offset:3px">{{ l.name }}</button><sc-if value="{{ l.fromG }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;color:#157a3f;font-weight:400">↳ 손님 등록에서 만든 카드</span></sc-if></sc-if></div>
         <div style="padding:9px 8px;font-variant-numeric:tabular-nums">{{ l.phone }}</div>
         <div style="padding:9px 8px;line-height:1.5;text-wrap:pretty">{{ l.text }}</div>
         <div style="padding:9px 8px;color:#6e6e73;display:flex;flex-direction:column;gap:2px;white-space:nowrap">{{ l.writer }}<sc-if value="{{ l.hasConsent }}"><span title="개인정보 동의 (필수 · 마케팅 · 제3자)" style="font-size:10.5px;color:#157a3f;white-space:nowrap">{{ l.consentText }}</span></sc-if></div>
@@ -6052,6 +6052,17 @@ class Component extends DCLogic {
     return r; }
   // 관심단지 목록 (시안 r37 확정 2026-11-16) — cfg 'complexes'(이름 목록) · 'complexDef'(기본). 없으면 단지 이름 하나. 손님 화면은 /api/public/complexes
   cplx() { const S = this.state, nm = ((this.D.S || {}).site || {}).name || '첨단대라수1차', L = (Array.isArray(S.complexes) ? S.complexes : []).map(x => String(x || '').trim()).filter(Boolean), list = L.length ? L : [nm]; return { list, def: list.includes(S.complexDef) ? S.complexDef : list[0] }; }
+  // 상담이력대장 이름 클릭 → 그 카드 내용으로 상담카드 열기 (상담내용만 빈칸, 2026-11-17 대표 요청)
+  cardForm(c) { const S = this.state, u = c.unit && this.D.byId[c.unit], isCu = c.kind === 'buyer' || c.kind === 'client', cl = v => v ? JSON.parse(JSON.stringify(v)) : v;
+    let f = this.blankForm(); try { if (u) f = Object.assign(f, this.unitPrefill(c.unit), c.kind === 'owner' ? this.ownPre(c.unit) : {}, { unitLock: true, unitUnlock: false, unitBaseId: c.unit, unitAsk: false, unitAskText: '', unitReason: '' }); } catch (e) {}
+    const w = c.want || {}, T = c.trades || {};
+    return Object.assign(f, this.inflowPre(c), {
+      kind: c.kind || f.kind, name: c.name || '', phone: c.phone || '', carrier: c.carrier || f.carrier || '', unit: u ? u.b + '동 ' + u.ho + '호' : (c.interest || ''), interest: c.interest || '', complex: c.complex || '',
+      mgr: c.mgr || f.mgr || '', mgrOk: c.mgr ? c.mgrOk || null : f.mgrOk || null, mgrBase: c.mgr || f.mgrBase || '', mgrBaseOk: c.mgr ? c.mgrOk || null : f.mgrBaseOk || null, mgrUnlock: false, mgrReason: '',
+      wants: Object.keys(T).filter(k => T[k]), tr: cl(T) || {}, ccond: c.cond, fromGuest: c.fromGuest, ct: cl(c.ct), vis: cl(c.vis),
+      wantDongs: (w.dongs || []).slice(), wantTypes: (w.types || []).slice(), wantFloors: (w.floors || []).slice(), budget: w.budget || '', pBudget: w.pBudget || '', optPref: w.opt || '',
+      mkt: !!(c.consent && c.consent.mkt), mktBase: c.consent || null, custBase: isCu ? { name: c.name || '', phone: c.phone || '', key: c.custKey || c.id } : null, custMask: isCu && !this.seeCust(c), custReason: '', custAsk: '',
+      phonePre: String(c.phone || '').replace(/\D/g, ''), text: '' }); }
   // 상담카드 계약완료 → 계약자DB 자동 기재 (시안 r51 A안 확정 2026-11-17): 계약조건(적용가: 매입보장가 = 헷지했지 · 10.16 혜택가) · 계약자 · 핸드폰 · 통신사
   //   이미 다른 계약자가 있으면 바꾸고 이전 값은 세대 이력(idHist)에 남김. onlyEmpty = 계약자 빈칸일 때만 (예전 카드 한 번 반영용)
   ctDbPlan(c, onlyEmpty) { const ct = c && c.ct; if (!ct || ct.prog !== '계약완료' || !ct.unit || !this.D.byId[ct.unit] || !String(c.name || '').trim()) return null;
@@ -6954,7 +6965,7 @@ class Component extends DCLogic {
         this.setState(ss => { const x = (ss.cardsGone || []).find(y => this.cid(y) === id); if (!x) return null; const nx = Object.assign({}, x); delete nx.deleted; const left = (ss.cardsGone || []).filter(y => y !== x);
           return { cards: ss.cards.concat(nx).sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')) || String(b.id || '').localeCompare(String(a.id || ''))), cardsGone: left, logGone: left.length ? ss.logGone : false }; });
         this.flash('상담 기록을 되살렸습니다 · 접속기록에 남습니다'); },
-      ...(() => { if (!c.guest) return { isG: false, notG: true, fromG: !!c.fromGuest, rowBg: 'transparent' }; const dn = gNewIds[c.id] ? null : this.gDone(c);
+      ...(() => { if (!c.guest) return { isG: false, notG: true, fromG: !!c.fromGuest, rowBg: 'transparent', nGo: () => { if (c.deleted) return this.flash('삭제된 상담입니다 · 되살린 뒤 열 수 있습니다'); this.setState({ tab: 'card', form: this.cardForm(c) }); this.flash('지난 상담 내용으로 상담카드를 열었습니다 · 상담내용만 새로 적어 주세요'); } }; const dn = gNewIds[c.id] ? null : this.gDone(c);
         return { isG: true, notG: false, fromG: false, rowBg: '#fffbf3', gGo: () => this.openNote(c.id), gTag: dn ? '상담카드 작성됨 · ' + (dn.writer || '') : '상담카드 미작성', gTagBg: dn ? '#e8f5ec' : '#fff0e0', gTagFg: dn ? '#157a3f' : '#b25000',
           gTip: dn ? (dn.writer || '') + ' · ' + (dn.at || '') + ' 상담카드 작성' : '이름을 누르면 손님이 쓴 내용으로 상담카드가 열립니다' }; })(),
       at: c.at, kind: this.kindName(c.kind), kindFg: this.kindColor(c.kind), hasConsent: !!c.consent, consentText: c.consent ? '필수✓ 마케팅' + (c.consent.mkt ? '✓' : '–') + ' 제3자' + (c.consent.third ? '✓' : '–') : '',
