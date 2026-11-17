@@ -128,7 +128,7 @@ export async function staffApi(req, env, url, u) {
     for (const x of kvRows) {
       if (x.s !== 'c') continue;
       const v = parse(x.v), old = cur['c|' + x.k];
-      if (v && v.mgr && v.mgr !== (old && old.mgr) && (old || v.mgr !== u.name))
+      if (v && v.mgr && !v.legacy && v.mgr !== (old && old.mgr) && (old || v.mgr !== u.name))   // 기존 이력 올리기(legacy) 줄은 알림 안 함 (시안 r53)
         await notify(env, { kind: 'assign', text: '[상담카드 담당] ' + [v.name, v.phone].filter(Boolean).join(' · ') + (v.unit ? ' · ' + unitLabel(v.unit) : '') + '\n' + ((old && old.mgr) || '미배정') + ' → ' + v.mgr + '\n— ' + u.name, dm: [v.mgr], actor: u.name, path: '?go=c:' + x.k });
     }
     // R1: 소유자 상담카드 '입주 후 거래' → 매물보드 (설계서 10.1) · 공개 설정이 바뀌면 공개 사본 다시 만들기

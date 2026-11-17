@@ -365,6 +365,7 @@ html:root [data-m=ccond]{grid-template-columns:repeat(2,minmax(0,1fr))!important
 [data-m=loghd],[data-m=dbhd]{display:none!important}
 [data-m=gbox]{grid-template-columns:72px minmax(0,1fr)!important}
 [data-m=own2]{grid-template-columns:minmax(0,1fr)!important}
+[data-m=limpsum]{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 [data-m=logq]{width:100%!important;order:9}
 [data-m=logrow]{grid-template-columns:auto auto minmax(0,1fr) auto!important;grid-template-areas:"at sq kind ed" "unit unit name ed" "ph ph ph ph" "tx tx tx tx" "wr wr wr wr";margin:0 0 8px!important;border:1px solid #e5e5ea!important;border-radius:12px;padding:6px 4px;background:#fff}
 [data-m=logrow]>div{padding:3px 8px!important}
@@ -2129,9 +2130,25 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <span style="font-size:17px;font-weight:700;margin-right:6px">상담이력대장</span>
       <sc-for list="{{ logChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for>
       <sc-if value="{{ hasGoneChip }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goneChip.onClick }}" style="border:1px solid {{ goneChip.bd }};background:{{ goneChip.bg }};color:{{ goneChip.fg }};border-radius:9999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">{{ goneChip.label }}</button></sc-if>
+      <sc-if value="{{ limp.can }}" hint-placeholder-val="{{ false }}"><button onClick="{{ limp.toggle }}" style="margin-left:6px;border:1.5px dashed #0066cc;background:#f5f9ff;color:#0066cc;border-radius:9999px;padding:5px 13px;font-size:12px;font-weight:800;cursor:pointer">⬆ 기존 이력 올리기</button></sc-if>
       <button onClick="{{ toggleLogSort }}" style="margin-left:auto;display:flex;align-items:center;gap:6px;border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:#1d1d1f;padding:0">{{ logSortLabel }}<span style="position:relative;width:36px;height:21px;border-radius:9999px;background:{{ logSortBg }};transition:background .2s"><span style="position:absolute;top:2px;left:{{ logSortKnob }};width:17px;height:17px;border-radius:9999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s"></span></span></button>
       <input data-m="logq" value="{{ logQ }}" onChange="{{ onLogQ }}" placeholder="호실 · 이름 · 연락처 · 내용 검색" style="height:34px;width:260px;max-width:100%;border:1px solid #d2d2d7;border-radius:9999px;padding:0 14px;font-size:13px">
     </div>
+    <sc-if value="{{ limp.open }}" hint-placeholder-val="{{ false }}"><div style="border:1px solid #d6e6fb;background:#fbfdff;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:15px">기존 상담이력 올리기</b><span style="font-size:12px;color:#6e6e73">cd-daelasoo1 › 상담이력대장 › CSV 내려받기 파일 (분양전환_상담이력대장.csv) · 대표 계정으로 내려받아야 연락처가 가려지지 않습니다</span><button onClick="{{ limp.close }}" style="margin-left:auto;border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:4px 10px;font-size:12px;cursor:pointer">닫기</button></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><input type="file" accept=".csv,text/csv" onChange="{{ limp.pick }}" style="font-size:13px"><span style="font-size:12.5px;color:{{ limp.msgFg }};font-weight:600">{{ limp.msg }}</span></div>
+      <sc-if value="{{ limp.has }}" hint-placeholder-val="{{ false }}">
+        <div data-m="limpsum" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px"><sc-for list="{{ limp.sum }}" as="s"><div style="background:#f5f5f7;border-radius:12px;padding:8px 12px;font-size:12px;color:#6e6e73">{{ s.l }}<b style="display:block;font-size:19px;color:{{ s.c }}">{{ s.n }}</b></div></sc-for></div>
+        <div style="font-size:12px;color:#6e6e73;line-height:1.6">칸 맞추기: 상담일 → 일시 · 동호 → 호실 · 고객구분/상담경로 '신규방문' → 신규분양 매수, 그 밖 → 임차인 · 성명 · 연락처 · 생년월일 그대로 · 담당자 → 담당 · 작성자 '기존(담당자)' · 나머지 칸(전환여부 · 확율 · 자금 · 관계자 등)은 상담내용 아래 [기존] 줄로</div>
+        <div style="overflow-x:auto;border:1px solid #ececf0;border-radius:12px;max-height:340px;overflow-y:auto"><div style="min-width:860px">
+          <div style="display:grid;grid-template-columns:70px 44px 96px 100px 110px 80px minmax(0,1fr) 90px;font-size:11.5px;font-weight:700;color:#6e6e73;background:#f5f5f7;position:sticky;top:0"><span style="padding:6px 8px">상태</span><span style="padding:6px 8px">줄</span><span style="padding:6px 8px">일시</span><span style="padding:6px 8px">구분</span><span style="padding:6px 8px">호실 / 희망</span><span style="padding:6px 8px">성명</span><span style="padding:6px 8px">상담내용 · 메모</span><span style="padding:6px 8px">담당</span></div>
+          <sc-for list="{{ limp.rows }}" as="r"><div style="display:grid;grid-template-columns:70px 44px 96px 100px 110px 80px minmax(0,1fr) 90px;font-size:12px;border-top:1px solid #f0f0f2"><span style="padding:6px 8px"><span style="font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px;white-space:nowrap;background:{{ r.bg }};color:{{ r.fg }}">{{ r.st }}</span></span><span style="padding:6px 8px;color:#8e8e93">{{ r.line }}</span><span style="padding:6px 8px">{{ r.at }}</span><span style="padding:6px 8px">{{ r.kind }}</span><span style="padding:6px 8px">{{ r.unit }}</span><span style="padding:6px 8px">{{ r.name }}</span><span style="padding:6px 8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{{ r.text }}">{{ r.text }}</span><span style="padding:6px 8px">{{ r.mgr }}</span></div></sc-for>
+        </div></div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;color:#6e6e73;margin-right:auto">{{ limp.foot }}</span><button onClick="{{ limp.close }}" style="border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:8px 16px;font-size:13px;cursor:pointer">취소</button><button onClick="{{ limp.go }}" disabled="{{ limp.noGo }}" style="border:none;background:#0066cc;color:#fff;border-radius:9999px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;opacity:{{ limp.goOp }}">{{ limp.goLabel }}</button></div>
+      </sc-if>
+      <sc-if value="{{ limp.hasBatches }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid #ececf0;padding-top:10px"><span style="font-size:12px;font-weight:700;color:#6e6e73">올린 기록 · 되돌리기 (그때 올린 줄만 지움)</span>
+        <sc-for list="{{ limp.batches }}" as="b"><div style="display:flex;align-items:center;gap:8px;font-size:12.5px"><span>{{ b.label }}</span><button onClick="{{ b.undo }}" style="border:1px solid #f2c4cc;background:#fff;color:#d2264b;border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:700;cursor:pointer">되돌리기</button></div></sc-for></div></sc-if>
+    </div></sc-if>
     <sc-if value="{{ logNoEdit }}"><div style="font-size:11px;color:#8e8e93;margin-top:-4px">{{ me }} · 상담이력 수정 권한 없음 (관리자가 설정에서 부여)</div></sc-if>
     <div data-m="loghd" style="display:grid;grid-template-columns:96px 64px 100px 110px 90px 120px minmax(0,1fr) 112px 112px;gap:0;font-size:12px">
       <div style="padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea">일시</div>
@@ -6090,6 +6107,45 @@ class Component extends DCLogic {
   ctKv(c) { if (!c) return []; const ct = c.ct || {}, sv = this.seeCust(c), w = v => Number(v) ? (Number(v) / 1e4).toLocaleString() + '만' : '', md = v => v ? String(v).slice(5).replace('-', '.') : '';
     return [['계약자', [sv ? c.name : this.maskN(c.name), sv ? c.phone : this.maskP(c.phone)].filter(Boolean).join(' · ')], ['적용가', (ct.basis === 'benefit' ? '10.16 혜택가' : '매입보장가') + (Number(ct.price) ? ' ' + (Number(ct.price) / 1e8).toFixed(2) + '억' : '')], ['계약금', w(ct.dep)], ['입금예정', md(ct.date)], ['자금', ct.fund && ct.fund !== '미정' ? ct.fund : ''],
       ['잔금예정', md(ct.bal)], ['입주예정', md(ct.move)], ['소개', ct.intro && ct.intro !== '없음' ? ct.intro + (ct.bk || ct.side ? ' · ' + (ct.bk || ct.side) : '') : ''], ['계약진행', ct.staff || ''], ['담당', c.mgr || c.writer || '']].filter(r => r[1]).map(([k, v]) => ({ k, v })); }
+  // ── 기존 상담이력 올리기 (시안 r53 A안 확정 2026-11-17): cd-daelasoo1 '분양전환_상담이력대장.csv' → 상담 기록만 (배치표 · 전환상태 · 계약자DB 안 건드림) ──
+  csvRows(t) { const out = []; let row = [], cur = '', q = false; t = String(t || '').replace(/^﻿/, '');
+    for (let i = 0; i < t.length; i++) { const ch = t[i];
+      if (q) { if (ch === '"') { if (t[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+      else if (ch === '"') q = true; else if (ch === ',') { row.push(cur); cur = ''; }
+      else if (ch === '\n' || ch === '\r') { if (ch === '\r' && t[i + 1] === '\n') i++; row.push(cur); out.push(row); row = []; cur = ''; } else cur += ch; }
+    if (cur || row.length) { row.push(cur); out.push(row); } return out.filter(r => r.some(x => String(x).trim())); }
+  limpKey(c) { return [c.at, c.unit || this.gDig(c.phone) || c.name || c.interest || '', String(c.text || '').replace(/\s+/g, '').slice(0, 60)].join('|'); }
+  limpParse(text, fname) { const S = this.state, R = this.csvRows(text); if (R.length < 2) return { err: '빈 파일입니다' };
+    const H = R[0].map(x => String(x).trim()), ix = k => H.indexOf(k), miss = ['상담일', '동호', '상담내용'].filter(k => ix(k) < 0);
+    if (miss.length) return { err: '기존 사이트 상담이력 CSV 가 아닌 것 같습니다 — 없는 칸: ' + miss.join(', ') };
+    const g = (r, k) => { const i = ix(k); return i < 0 ? '' : String(r[i] == null ? '' : r[i]).trim(); }, p2 = n => String(n).padStart(2, '0'), d0 = new Date(), today = d0.getFullYear() + '-' + p2(d0.getMonth() + 1) + '-' + p2(d0.getDate());
+    const dt = v => { const m = String(v).match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/); return m ? m[1] + '-' + p2(m[2]) + '-' + p2(m[3]) : ''; };
+    const MAIN = ['상담일', '동호', '상담내용', '성명', '생년월일', '연락처', '담당자'], have = {}; (S.cards || []).concat(S.cardsGone || []).forEach(c => { have[this.limpKey(c)] = 1; });
+    const base = Date.now(), batch = 'imp' + base, items = [];
+    R.slice(1).forEach((r, i) => { const ct = g(r, '고객구분'), isN = ct === '신규방문' || g(r, '상담경로') === '신규방문', dh = g(r, '동호');
+      const m = dh.match(/(10[1-4])\D*(\d{3,4})/), uid = m ? m[1] + '-' + Number(m[2]) : '', okU = !!(uid && this.D.byId[uid]);
+      const rawPh = g(r, '연락처'), masked = /\*/.test(rawPh), phone = masked ? '' : this.fmtPhone(rawPh.replace(/\D/g, '')), memo = g(r, '상담내용'), mgr = g(r, '담당자');
+      const extra = H.map((k, j) => [k, String(r[j] == null ? '' : r[j]).trim()]).filter(([k, v]) => k && v && !MAIN.includes(k)).map(([k, v]) => k + ' ' + v).join(' · ');
+      let at = dt(g(r, '상담일')), st = 'new'; const msg = [];
+      if (!okU && !isN) { st = 'bad'; msg.push(dh ? "없는 호실 '" + dh + "'" : '동호 없음'); }
+      else if (!memo && !extra) { st = 'bad'; msg.push('내용 없음'); }
+      if (!at) { at = today; if (st === 'new') st = 'warn'; msg.push('상담일 없음 → 오늘'); }
+      if (masked) { if (st === 'new') st = 'warn'; msg.push('연락처 가려짐 → 번호 빼고'); }
+      const card = { id: 'c' + (base + i), kind: isN ? 'client' : 'seller', at, unit: isN ? '' : uid, interest: isN ? (okU ? uid.replace('-', '동 ') + '호' : dh) : '', name: g(r, '성명'), phone, birth: g(r, '생년월일') || undefined,
+        text: memo + (extra ? (memo ? '\n' : '') + '[기존] ' + extra : ''), writer: '기존(' + (mgr || '-') + ')', mgr, legacy: batch, custKey: isN ? 'c' + (base + i) : undefined };
+      if (st !== 'bad') { const k = this.limpKey(card); if (have[k]) { st = 'dup'; msg.length = 0; msg.push('이미 있음'); } have[k] = 1; }
+      items.push({ line: i + 2, st, msg: msg.join(' · '), card }); });
+    return { fname, batch, items }; }
+  limpPick(e) { const f = e && e.target && e.target.files && e.target.files[0]; if (!f) return; this.setState({ limp: { open: true, msg: '읽는 중…' } });
+    f.arrayBuffer().then(buf => { let t = new TextDecoder('utf-8').decode(buf); if (t.includes('�')) { try { t = new TextDecoder('euc-kr').decode(buf); } catch (e2) {} }   /* 엑셀에서 다시 저장한 파일(CP949)도 */
+      const r = this.limpParse(t, f.name); this.setState({ limp: r.err ? { open: true, msg: r.err, bad: true } : Object.assign({ open: true }, r) }); }).catch(() => this.setState({ limp: { open: true, msg: '파일을 읽지 못했습니다', bad: true } })); }
+  limpGo() { const L = this.state.limp || {}, ok = (L.items || []).filter(x => x.st === 'new' || x.st === 'warn').map(x => x.card); if (!ok.length) return;
+    if (!window.confirm('기존 상담이력 ' + ok.length + '줄을 상담이력대장에 올립니다.\n(배치표 · 전환상태 · 계약자DB는 바뀌지 않습니다 · [되돌리기]로 이번에 올린 줄만 지울 수 있습니다)')) return;
+    this.setState(ss => ({ cards: ok.concat(ss.cards || []), limp: { open: true, msg: ok.length + '줄을 올렸습니다 · 서버에 저장 중 (화면 위 저장 표시가 사라지면 끝)' }, logKind: 'imp' })); }
+  // 올린 묶음 = 카드의 legacy 값 (imp + 올린 시각)
+  limpBatches() { const m = {}; (this.state.cards || []).forEach(c => { if (c.legacy) m[c.legacy] = (m[c.legacy] || 0) + 1; }); return Object.keys(m).sort().reverse().map(b => { const d = new Date(Number(b.slice(3)) || 0), p2 = n => String(n).padStart(2, '0'); return { batch: b, n: m[b], at: d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) }; }); }
+  limpUndo(b) { if (!window.confirm(b.at + ' 에 올린 기존 이력 ' + b.n + '줄을 지울까요? (그 뒤 새로 쓴 상담카드는 그대로)')) return;
+    this.setState(ss => ({ cards: (ss.cards || []).filter(c => c.legacy !== b.batch) })); this.flash('기존 이력 ' + b.n + '줄을 지웠습니다'); }
   // 상담 N차 (시안 r54 A안 확정 2026-11-17, 기존 사이트와 같은 셈): 임차인 · 개인 소유자 = 같은 호실, 신규분양 매수 · 전세 희망 = 같은 연락처(없으면 이름) · 날짜 순 · 손님 등록(게스트)은 '접수'로 따로
   seqKeyOf(c) { if (!c || c.guest) return ''; if ((c.kind === 'seller' || c.kind === 'owner' || !c.kind) && c.unit) return 'U|' + c.unit; const ph = this.gDig(c.phone); if (ph.length >= 9) return 'P|' + ph; const nm = String(c.name || '').trim(); return nm ? 'N|' + nm : (c.unit ? 'U|' + c.unit : ''); }
   seqMap(cards) { const L = (cards || this.state.cards || []).filter(c => !c.deleted && this.seqKeyOf(c)).sort((a, b) => String(a.at || '').localeCompare(String(b.at || '')) || this.gTs(a.id) - this.gTs(b.id)), n = {}, m = {};
@@ -7011,14 +7067,14 @@ class Component extends DCLogic {
     const fA = t => { const d = new Date(Number(t) || t || 0), p2 = n => String(n).padStart(2, '0'); return isNaN(d) ? '' : d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()); };
     const gNewL = this.gNew(), gNewIds = {}; gNewL.forEach(c => { gNewIds[c.id] = 1; });   /* 상담카드 안 만든 손님 등록 (시안 r50) */
     const SQ = tab === 'log' ? this.seqMap() : {};   /* N차 (시안 r54) */
-    const logRows = tab !== 'log' ? [] : (logGone ? gone : S.cards).filter(c => (S.logKind === 'all' || (S.logKind === 'gnew' ? !!gNewIds[c.id] : c.kind === S.logKind)) &&(!q || [c.unit, c.name, c.phone, c.text, c.interest].join(' ').includes(q))).slice().sort(lsort).map(c => ({
+    const logRows = tab !== 'log' ? [] : (logGone ? gone : S.cards).filter(c => (S.logKind === 'all' || (S.logKind === 'gnew' ? !!gNewIds[c.id] : S.logKind === 'imp' ? !!c.legacy : c.kind === S.logKind)) &&(!q || [c.unit, c.name, c.phone, c.text, c.interest].join(' ').includes(q))).slice().sort(lsort).map(c => ({
       canDel: logDelOk && !c.deleted, del: () => this.setState({ logDel: { id: this.cid(c), pick: '', text: '' } }),
       isGone: !!c.deleted, goneText: c.deleted ? '삭제 · ' + (c.deleted.by || '') + ' · ' + fA(c.deleted.at) + ' · 사유: ' + (c.deleted.reason || '') : '',
       back: () => { const id = this.cid(c); if (!window.confirm('이 상담 기록을 되살릴까요?\n' + [c.unit ? c.unit.replace('-', '동 ') + '호' : '', c.name].filter(Boolean).join(' · '))) return;
         this.setState(ss => { const x = (ss.cardsGone || []).find(y => this.cid(y) === id); if (!x) return null; const nx = Object.assign({}, x); delete nx.deleted; const left = (ss.cardsGone || []).filter(y => y !== x);
           return { cards: ss.cards.concat(nx).sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')) || String(b.id || '').localeCompare(String(a.id || ''))), cardsGone: left, logGone: left.length ? ss.logGone : false }; });
         this.flash('상담 기록을 되살렸습니다 · 접속기록에 남습니다'); },
-      ...(() => { if (!c.guest) return { isG: false, notG: true, fromG: !!c.fromGuest, rowBg: 'transparent', nGo: () => { if (c.deleted) return this.flash('삭제된 상담입니다 · 되살린 뒤 열 수 있습니다'); this.setState({ tab: 'card', form: this.cardForm(c) }); this.flash((c.name || '') + ' · ' + this.seqNext(c) + '차 상담 — 지난 상담 내용으로 상담카드를 열었습니다 · 상담내용만 새로 적어 주세요'); } }; const dn = gNewIds[c.id] ? null : this.gDone(c);
+      ...(() => { if (!c.guest) return { isG: false, notG: true, fromG: !!c.fromGuest, rowBg: c.legacy ? '#fafafa' : 'transparent', nGo: () => { if (c.deleted) return this.flash('삭제된 상담입니다 · 되살린 뒤 열 수 있습니다'); this.setState({ tab: 'card', form: this.cardForm(c) }); this.flash((c.name || '') + ' · ' + this.seqNext(c) + '차 상담 — 지난 상담 내용으로 상담카드를 열었습니다 · 상담내용만 새로 적어 주세요'); } }; const dn = gNewIds[c.id] ? null : this.gDone(c);
         return { isG: true, notG: false, fromG: false, rowBg: '#fffbf3', gGo: () => this.openNote(c.id), gTag: dn ? '상담카드 작성됨 · ' + (dn.writer || '') : '상담카드 미작성', gTagBg: dn ? '#e8f5ec' : '#fff0e0', gTagFg: dn ? '#157a3f' : '#b25000',
           gTip: dn ? (dn.writer || '') + ' · ' + (dn.at || '') + ' 상담카드 작성' : '이름을 누르면 손님이 쓴 내용으로 상담카드가 열립니다' }; })(),
       ...(() => { const x = SQ[c.id]; if (c.deleted || (!x && !c.guest)) return { sqOn: false };
@@ -7033,7 +7089,7 @@ class Component extends DCLogic {
       editTip: c.edits && c.edits.length ? c.edits.map(e => e.at + ' ' + e.by + ' · ' + e.reason).join('\n') : '',
       text: (c.changes ? '[변동] ' + c.changes.join(' / ') + (c.text ? '  —  ' : '') : '') + c.text + (c.guest && c.visit ? (c.text ? '  —  ' : '') + '방문 희망 ' + c.visit : '') + (c.cond ? '  —  [계약조건] ' + c.cond : '') + (c.kind === 'buyer' && c.want ? '  —  총예산 ' + (c.want.budget ? (+c.want.budget).toLocaleString() + '만' : '-') + ' · P ' + (c.want.pBudget ? (+c.want.pBudget).toLocaleString() + '만' : '-') : '') + this.tradeSummary(c) }));
     const kc = k => S.cards.filter(c => (c.kind || 'seller') === k).length;
-    const logChips = [['all','전체 ' + S.cards.length]].concat(['seller', 'buyer', 'owner', 'client'].filter(k => kc(k) || (k === 'seller' || k === 'buyer' ? mods.presale : trMods.length)).map(k => [k, this.KIND[k][0] + ' ' + kc(k)])).concat(gNewL.length || S.logKind === 'gnew' ? [['gnew', '새 손님 등록 ' + gNewL.length]] : []).map(([k, l]) => Object.assign(this.chip(S.logKind === k, k === 'gnew' ? '#b25000' : '#0066cc'), { label: l, onClick: () => this.setState({ logKind: k }) }));
+    const logChips = [['all','전체 ' + S.cards.length]].concat(['seller', 'buyer', 'owner', 'client'].filter(k => kc(k) || (k === 'seller' || k === 'buyer' ? mods.presale : trMods.length)).map(k => [k, this.KIND[k][0] + ' ' + kc(k)])).concat(gNewL.length || S.logKind === 'gnew' ? [['gnew', '새 손님 등록 ' + gNewL.length]] : [], (n => n || S.logKind === 'imp' ? [['imp', '기존 이력 ' + n]] : [])(S.cards.filter(c => c.legacy).length)).map(([k, l]) => Object.assign(this.chip(S.logKind === k, k === 'gnew' ? '#b25000' : '#0066cc'), { label: l, onClick: () => this.setState({ logKind: k }) }));
     const logGoneChip = logDelOk && gone.length ? Object.assign(this.chip(logGone, '#d2264b'), { label: '삭제된 상담 ' + gone.length, onClick: () => this.setState({ logGone: !logGone }) }) : null;
     const LDR = ['중복 등록', '잘못 입력', '시험 입력', '고객 요청 (개인정보 삭제)', '기타'], LD = S.logDel, ldC = LD && S.cards.find(c => this.cid(c) === LD.id);
     const logDelV = !LD || !ldC ? null : {
@@ -7171,6 +7227,16 @@ cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.com
       o, f, callOpts: ['통화','부재','문자','종료'], ...(W => D.generic ? { wantDongOpts: ['무관'].concat(W.dong), wantTypeOpts: ['무관'].concat(W.type), wantFloorOpts: ['무관'].concat(W.floor) } : { wantDongOpts: ['무관','101~103동','104~106동','107~109동','110~112동'].concat(Object.keys(D.bmap).map(n => n + '동')),
       wantTypeOpts: ['무관','84A','84B','84C','84D','84E','84F','103A1-3','103B1-3','112A1-3','128A1-3','펜트'], wantFloorOpts: ['무관','10층 이하','10~20층','20층 이상','30층 이상','40층 이상'], })(this.wantLists()),
       logSortBg: logNew ? '#34c759' : '#e5e5ea', logSortKnob: logNew ? '17px' : '2px', logSortLabel: logNew ? '최신 상담 위로' : '오래된 상담 위로', toggleLogSort: () => this.setState({ logNewest: !logNew }),
+      limp: (() => { const L = S.limp || {}, can0 = logDelOk && !!D.generic, it = L.items || [], cnt = k => it.filter(x => x.st === k).length, ok = cnt('new') + cnt('warn');   /* 기존 이력 올리기 (시안 r53) — 대표 · 관리자 */
+        const ST = { new: ['새로', '#e8f5ec', '#157a3f'], warn: ['확인', '#fff0e0', '#b25000'], bad: ['못 올림', '#fde8ec', '#d2264b'], dup: ['이미 있음', '#f0f0f2', '#6e6e73'] };
+        const show = it.filter(x => x.st !== 'new').concat(it.filter(x => x.st === 'new')).slice(0, 300), B = can0 && L.open ? this.limpBatches() : [];
+        return { can: can0, open: can0 && !!L.open, toggle: () => this.setState({ limp: L.open ? null : { open: true } }), close: () => this.setState({ limp: null }), pick: e => this.limpPick(e),
+          msg: L.msg || (it.length ? L.fname + ' · ' + it.length + '줄 읽음 — 아래 미리보기를 확인하고 올리세요 (아직 저장 안 됨)' : 'CSV 파일을 고르세요'), msgFg: L.bad ? '#d2264b' : '#3a3a3c', has: it.length > 0,
+          sum: [['새로 들어감', cnt('new'), '#157a3f'], ['임차인 / 신규분양 매수', it.filter(x => x.st === 'new' || x.st === 'warn').reduce((a, x) => (a[x.card.kind === 'client' ? 1 : 0]++, a), [0, 0]).join(' / '), '#1d1d1f'], ['확인 필요 (올라감)', cnt('warn'), '#b25000'], ['못 올림', cnt('bad'), '#d2264b'], ['이미 있음 (건너뜀)', cnt('dup'), '#6e6e73']].map(([l, n, c]) => ({ l, n: String(n), c })),
+          rows: show.map(x => { const c = x.card, s = ST[x.st]; return { st: s[0], bg: s[1], fg: s[2], line: String(x.line), at: c.at, kind: this.kindName(c.kind), unit: c.unit ? c.unit.replace('-', '동 ') + '호' : (c.interest || '-'), name: this.maskN(c.name || ''), mgr: c.mgr || '', text: (x.msg ? '⚠ ' + x.msg + ' — ' : '') + String(c.text || '').replace(/\n/g, ' ') }; }),
+          foot: it.length > 300 ? '미리보기는 확인할 줄 먼저 300줄까지 · 이름은 가려서 보여 줍니다 (저장은 원래 값)' : '이름은 가려서 보여 줍니다 (저장은 원래 값) · 같은 파일을 두 번 올려도 이미 있는 줄은 건너뜁니다',
+          go: () => this.limpGo(), noGo: !ok, goOp: ok ? '1' : '.4', goLabel: ok + '줄 올리기',
+          hasBatches: B.length > 0, batches: B.map(b => ({ label: b.at + ' 올림 · ' + b.n + '줄', undo: () => this.limpUndo(b) })) }; })(),
       logChips, logRows, hasGoneChip: !!logGoneChip, goneChip: logGoneChip || {}, lgdxOpen: !!logDelV, lgdx: logDelV || {}, logNoEdit: !can('logEdit'), leOpen: !!S.logEdit, le: S.logEdit ? this.logEditVals(can) : {}, logQ: S.logQ, onLogQ: e => this.setState({ logQ: e.target.value }),
       priceHead, priceCells, phRows, expRows, payRows,
       moduleRows, menuRows, menuReset,
