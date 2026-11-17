@@ -1829,6 +1829,10 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <sc-if value="{{ f.ctHistOn }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:#6e6e73;line-height:1.7"><sc-for list="{{ f.ctHist }}" as="h"><div>· {{ h }}</div></sc-for></div></sc-if>
       </div>
       <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#0066cc;font-weight:600;min-width:0;opacity:{{ f.ctDoneOp }}">계약 기타내역 <span style="font-weight:400;color:#6e6e73">— 계약완료 뒤 켜짐 · 특약 · 옵션 · 하자 · 이사 등</span><textarea value="{{ f.ctEtc }}" onChange="{{ f.onCtEtc }}" disabled="{{ f.ctEtcRo }}" placeholder="예: 에어컨 2대 포함 특약 · 1월 20일 입주 확정" style="box-sizing:border-box;width:100%;min-height:72px;border:1px solid #d2d2d7;border-radius:10px;padding:8px 10px;font-size:14px;font-family:inherit;resize:vertical;background:{{ f.ctDoneBg }}"></textarea></label>
+      <sc-if value="{{ f.ctDbOn }}" hint-placeholder-val="{{ false }}"><div style="border:1.5px solid #9fd3b0;background:#f2fbf5;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:13px;font-weight:800;color:#157a3f">{{ f.ctDbTitle }}</span><span style="font-size:11.5px;color:#5b7d66">{{ f.ctDbHint }}</span></div>
+        <sc-for list="{{ f.ctDbRows }}" as="r"><div style="display:flex;gap:10px;align-items:baseline;font-size:12.5px;border-bottom:1px solid #dcefe3;padding:3px 0"><span style="width:64px;flex-shrink:0;color:#5b7d66;font-weight:700">{{ r.f }}</span><span style="color:#8e8e93;text-decoration:line-through">{{ r.from }}</span><span style="color:#8e8e93">→</span><span style="color:#157a3f;font-weight:700">{{ r.to }}</span></div></sc-for>
+      </div></sc-if>
       <div style="font-size:11.5px;color:#6e6e73">{{ f.ctNote }}</div>
       </sc-if>
     </div>
@@ -5650,7 +5654,7 @@ class Component extends DCLogic {
     try { let since = first ? 0 : Math.max(0, this._srvSv - 10e6), rows = [], more = true, g = 0;
       while (more && g++ < 30) { const j = await this.srvFetch('pull?since=' + since); rows = rows.concat(j.rows || []); more = !!j.more; if (j.now) since = j.now; }
       this._srvSv = Math.max(this._srvSv, since);
-      if (first) { this._srv = { cfg: {}, u: {}, c: {} }; const done = () => { this._srvReady = true; this.srvDiff({}, this.state, this._fresh); this._fresh = false; this._srvFirstEver = false; try { localStorage.setItem(this.k('cc-srv-synced'), '1'); } catch (e) {} this.srvFlush(); }; if (rows.length) this.srvApply(rows, false, done, this._srvFirstEver && !this._fresh); else done(); if (!rows.some(r => r.s === 'c') && !(this.state.cards || []).length && (this.state.sync || {}).feedKey) setTimeout(() => this.flash('공유 서버에 상담카드가 없습니다. 구글시트 기록을 가져올까요?', { label: '가져오기', fn: () => this.sheetImport(true) }), 1500); }
+      if (first) { this._srv = { cfg: {}, u: {}, c: {} }; const done = () => { this._srvReady = true; setTimeout(() => this.ctDbBackfill(), 4000);this.srvDiff({}, this.state, this._fresh); this._fresh = false; this._srvFirstEver = false; try { localStorage.setItem(this.k('cc-srv-synced'), '1'); } catch (e) {} this.srvFlush(); }; if (rows.length) this.srvApply(rows, false, done, this._srvFirstEver && !this._fresh); else done(); if (!rows.some(r => r.s === 'c') && !(this.state.cards || []).length && (this.state.sync || {}).feedKey) setTimeout(() => this.flash('공유 서버에 상담카드가 없습니다. 구글시트 기록을 가져올까요?', { label: '가져오기', fn: () => this.sheetImport(true) }), 1500); }
       else if (rows.length) this.srvApply(rows, false);
       this.setState({ srvSt: 'ok', srvAt: Date.now() }); this.srvFlush();
     } catch (e) { if (e.message !== 'nokey' && e.message !== 'auth') this.setState({ srvSt: 'off' }); }
@@ -6047,6 +6051,22 @@ class Component extends DCLogic {
     return r; }
   // 관심단지 목록 (시안 r37 확정 2026-11-16) — cfg 'complexes'(이름 목록) · 'complexDef'(기본). 없으면 단지 이름 하나. 손님 화면은 /api/public/complexes
   cplx() { const S = this.state, nm = ((this.D.S || {}).site || {}).name || '첨단대라수1차', L = (Array.isArray(S.complexes) ? S.complexes : []).map(x => String(x || '').trim()).filter(Boolean), list = L.length ? L : [nm]; return { list, def: list.includes(S.complexDef) ? S.complexDef : list[0] }; }
+  // 상담카드 계약완료 → 계약자DB 자동 기재 (시안 r51 A안 확정 2026-11-17): 계약조건(적용가: 매입보장가 = 헷지했지 · 10.16 혜택가) · 계약자 · 핸드폰 · 통신사
+  //   이미 다른 계약자가 있으면 바꾸고 이전 값은 세대 이력(idHist)에 남김. onlyEmpty = 계약자 빈칸일 때만 (예전 카드 한 번 반영용)
+  ctDbPlan(c, onlyEmpty) { const ct = c && c.ct; if (!ct || ct.prog !== '계약완료' || !ct.unit || !this.D.byId[ct.unit] || !String(c.name || '').trim()) return null;
+    const s = (this.state.u || {})[ct.unit] || {}; if (onlyEmpty && s.owner) return null;
+    const to = { cond: ct.basis === 'benefit' ? '10.16 혜택가' : '헷지했지', owner: String(c.name).trim(), phone: c.phone || '', carrier: c.carrier || '' };
+    const rows = [['cond', '계약조건'], ['owner', '계약자'], ['phone', '핸드폰'], ['carrier', '통신사']].filter(([k]) => to[k] && String(s[k] || '') !== String(to[k])).map(([k, f]) => ({ k, f, from: s[k] && s[k] !== '-' ? s[k] : '', to: to[k] }));
+    return rows.length ? { id: ct.unit, rows } : null; }
+  ctDbApply(pl, by) { const s = (this.state.u || {})[pl.id] || {}, d = new Date(), p2 = n => String(n).padStart(2, '0');
+    const at = d.getFullYear() + '.' + p2(d.getMonth() + 1) + '.' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()), patch = {};
+    pl.rows.forEach(r => { patch[r.k] = r.to; });
+    this.setUnit(pl.id, Object.assign(patch, { idHist: (s.idHist || []).concat({ at, by: by || '', reason: '상담카드 계약완료', changes: pl.rows.map(r => ({ f: r.f, from: r.from, to: r.to })) }), dbAt: at, dbBy: by || '' })); }
+  // 예전에 계약완료로 저장된 카드 한 번 반영 (계약자 빈칸인 호실만 · 대표 · 관리자 화면에서 접속당 한 번)
+  ctDbBackfill() { const S = this.state; if (this._ctBf || !['대표', '관리자'].includes((S.roles || {})[S.me])) return; this._ctBf = true;
+    const last = {}; (S.cards || []).filter(c => c.kind === 'client' && c.ct && !c.deleted).forEach(c => { const k = String(c.phone || '').replace(/\D/g, '') || c.id; if (!last[k] || String(c.id) > String(last[k].id)) last[k] = c; });
+    const done = []; Object.values(last).forEach(c => { const pl = this.ctDbPlan(c, true); if (pl) { this.ctDbApply(pl, c.writer || S.me); done.push(pl.id.replace('-', '동 ') + '호'); } });
+    if (done.length) this.flash('계약완료 상담카드 → 계약자DB 자동 기재: ' + done.join(', ')); }
   // 계약관리 저장 (시안 r48): 사유를 적고 확정된 칸을 고쳤으면 기록 · 내부용 값 빼기 · 직접 쓴 이름이 3번째면 설정 목록에 추가
   ctSave(ct0) { const S = this.state, ct = Object.assign({}, ct0), rs = String(S.ctReason || '').trim();
     if (ct.fixed && S.ctAsk && rs) { const at = new Date(Date.now() + 9 * 3600e3).toISOString().slice(5, 16).replace('T', ' '); ct.hist = (ct.hist || []).concat(at + ' · ' + S.me + ' 수정 — ' + [ct.intro, ct.bk || ct.side, ct.staff].filter(Boolean).join(' · ') + ' · 사유: ' + rs); setTimeout(() => this.setState({ ctAsk: false, ctReason: '' }), 0); }
@@ -6284,7 +6304,8 @@ class Component extends DCLogic {
     const LS = {}; if (condBoard) ((S.lease || {}).rows || []).forEach(t => { LS[t.dong + '-' + t.ho] = t; });   /* 현재 임대차 (임차만기 탭과 같은 자료) */
     const st = id => { const s = st0(id); if (!condBoard) return s; const cv = this.condOf(id, s).v, lt = LS[id], cs = (S.convSt || {})[id];
       let k = '', vd = 0, end = lt ? lt.end_date || '' : '';
-      if (cv === '10.16 혜택가') k = '분양전환 계약'; else if (cv === '전세연장') k = '전세연장'; else if (cs === '신규입주' || cs === '계약완료') k = '신규분양 계약';
+      if (cs === '신규입주') k = '신규분양 계약';   /* 신규분양 매수 상담카드 계약완료 = 신규입주 — 계약조건(10.16 혜택가 · 헷지했지)보다 먼저 (시안 r51) */
+      else if (cv === '10.16 혜택가') k = '분양전환 계약'; else if (cv === '전세연장') k = '전세연장'; else if (cs === '계약완료') k = '신규분양 계약';
       else if (end && this.ddays(end) < 0) { k = '공실'; vd = Math.max(0, this.vacOf(end).day); } else k = '퇴거 예정';
       return Object.assign({}, s, { status: k, _prog: k, _vd: vd, _end: end, _lease: lt || null }, cv ? { _cond: cv } : {}); };   /* 진행상태 (시안 r46 확정 2026-11-17) */
     const match = u => { if (!F) return true; const s = st(u.id); const t = D.types[u.type];
@@ -6501,8 +6522,8 @@ class Component extends DCLogic {
         resaleText: sb.resaleText, resaleBg: sb.resaleBg, resaleFg: sb.resaleFg, holding: sb.holding,
         stageChips: sb.stageChips.map(c => Object.assign({}, c, { onClick: null })), cdateText: s.cdate || '미입력',
         ...(() => { const x = condBoard ? st(su.id) : null; if (!x) return { pg: { on: false }, oldOwner: true, oldStatus: true }; const c = STATUS[x.status] || {}, lt = x._lease, ds = this.condOf(su.id, S.u[su.id] || {}).v, ow = (S.u[su.id] || {}).owner || '';
-          const hist = []; if (x.status === '공실') hist.push({ t: x._vd ? '공실 ' + x._vd + '일째' : '공실', d: this.vacOf(x._end).start + '부터', c: '#d2264b' }); if (x.status === '신규분양 계약') hist.push({ t: '신규분양 계약', d: '전환상태 ' + ((S.convSt || {})[su.id] || ''), c: '#157a3f' });
-          if (ds === '10.16 혜택가') hist.push({ t: '분양전환 계약', d: '10.16 혜택가 · ' + (ow || ''), c: '#0066cc' }); if (ds === '전세연장') hist.push({ t: '전세연장', d: x._end ? '~ ' + x._end : '', c: '#0f8a8a' });
+          const hist = []; if (x.status === '공실') hist.push({ t: x._vd ? '공실 ' + x._vd + '일째' : '공실', d: this.vacOf(x._end).start + '부터', c: '#d2264b' }); if (x.status === '신규분양 계약') hist.push({ t: '신규분양 계약', d: '전환상태 ' + ((S.convSt || {})[su.id] || '') + (ds ? ' · ' + ds + (ow ? ' · ' + ow : '') : ''), c: '#157a3f' });
+          if (ds === '10.16 혜택가' && x.status !== '신규분양 계약') hist.push({ t: '분양전환 계약', d: '10.16 혜택가 · ' + (ow || ''), c: '#0066cc' }); if (ds === '전세연장') hist.push({ t: '전세연장', d: x._end ? '~ ' + x._end : '', c: '#0f8a8a' });
           if (x._end && ds !== '전세연장') hist.push({ t: this.ddays(x._end) < 0 ? '임차 만기 · 퇴거' : '임차 만기 예정', d: x._end, c: '#b25000' });
           if (logs.length) hist.push({ t: '상담 ' + logs.length + '회', d: '상담이력대장', c: '#c7c7cc' });
           if (lt && (lt.contract_date || lt.move_in)) hist.push({ t: '전세 계약', d: (lt.contract_date || lt.move_in) + (lt.deposit ? ' · 보증금 ' + Number(lt.deposit).toLocaleString() + '만' : ''), c: '#e8e8ed' });
@@ -6687,7 +6708,10 @@ class Component extends DCLogic {
               ctLockHint: !done ? '' : fx ? (boss ? (asking ? '' : '확정됨 — 고치려면 사유가 필요합니다') : '확정됨 — 고치기 · 지우기는 관리자 · 대표만 (사유 필요)') : (boss ? '확정하면 소개 구분 · 이름 · 계약진행 직원이 잠깁니다' : '관리자 · 대표가 확정하면 잠깁니다'),
               ctHistOn: !!(ct.hist && ct.hist.length), ctHist: (ct.hist || []).slice().reverse(),
               ctEtc: ct.etc || '', onCtEtc: e => done ? setCt({ etc: e.target.value.slice(0, 2000) }) : null }; })(),
-          ctNote: '적용 분양가는 고른 적용가(매입보장가 · 10.16 혜택가)로 자동 (고칠 수 있음) · 저장하면 계약할 호실의 전환상태가 가계약 · 계약중 · 계약완료(= 신규입주)로 바뀝니다' + (prev && !fm.ct ? ' · 지난 상담 값을 이어받음' : '') }; })(),
+          ...(() => { const pl = this.ctDbPlan({ ct, name: fm.name, phone: fm.phone, carrier: fm.carrier });   /* 시안 r51: 저장하면 계약자DB에 들어갈 값 미리 보기 */
+            return { ctDbOn: !!pl, ctDbTitle: pl ? '✓ 저장하면 계약자DB에 자동으로 들어갑니다 — ' + pl.id.replace('-', '동 ') + '호' : '', ctDbRows: pl ? pl.rows.map(r => ({ f: r.f, from: r.from || '빈칸', to: r.to })) : [],
+              ctDbHint: pl && pl.rows.some(r => r.k === 'owner' && r.from) ? '이전 계약자는 세대 이력에 남습니다' : '' }; })(),
+          ctNote: '적용 분양가는 고른 적용가(매입보장가 · 10.16 혜택가)로 자동 (고칠 수 있음) · 저장하면 계약할 호실의 전환상태가 가계약 · 계약중 · 계약완료(= 신규입주)로 바뀌고, 계약완료면 계약자DB(계약조건 · 계약자 · 핸드폰 · 통신사)도 자동으로 채워집니다' + (prev && !fm.ct ? ' · 지난 상담 값을 이어받음' : '') }; })(),
       ...(() => { if (!(D.generic && (kind === 'client' || kind === 'buyer'))) return { vsOn: false };   /* 방문 · 관심호실 (2026-11-17 대표, 원본 사이트 '예약방문 · 관심호실(세대방문)') */
         const ph = String(fm.phone || '').replace(/\D/g, ''), prev = ph ? S.cards.filter(c => c.vis && String(c.phone || '').replace(/\D/g, '') === ph).sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0] : null;
         const vs = Object.assign({ on: false, date: '', time: '10:00', mgr: '', note: '', units: [] }, prev ? prev.vis : {}, fm.vis || {}), setVs = p => setFm({ vis: Object.assign({}, vs, p) });
@@ -6829,6 +6853,8 @@ class Component extends DCLogic {
           const lc = fm.linkC || {}; const contact = { name: (lc.name || '').trim(), phone: lc.phone || '', rel: lc.rel || '', relEtc: lc.rel === '기타' ? (lc.relEtc || '').trim() : '', corp: ['관리', '부동산'].includes(lc.rel) ? (lc.corp || '').trim() : '', memo: ['관리', '부동산'].includes(lc.rel) ? (lc.memo || '').trim() : '' }; const grp = units.length ? { units, rel, contact } : null; if (contact.name || contact.rel) card.links = (card.links || '') + ' · 관계자 ' + [contact.name, contact.phone, contact.rel === '기타' ? contact.relEtc || '기타' : contact.rel, contact.corp, contact.memo].filter(Boolean).join(' '); old.forEach(id => { if (!units.includes(id)) this.setUnit(id, { link: null }); }); units.forEach(id => this.setUnit(id, { link: grp })); }
         if ((kind === 'seller' || kind === 'owner') && fUnit && fm.idUnlock && fm.idBase) { const b = fm.idBase, to = { name: fm.name || '', phone: fm.phone || '', carrier: fm.carrier || '' }; const ch = [['name', '성명'], ['phone', '연락처'], ['carrier', '통신사']].filter(([k]) => String(b[k] || '') !== String(to[k] || '')); if (ch.length) { const d4 = new Date(), at4 = d4.getFullYear() + '.' + String(d4.getMonth() + 1).padStart(2, '0') + '.' + String(d4.getDate()).padStart(2, '0') + ' ' + String(d4.getHours()).padStart(2, '0') + ':' + String(d4.getMinutes()).padStart(2, '0'); const ent = { at: at4, by: fm.idBy || S.me, reason: fm.idReason, changes: ch.map(([k, l]) => ({ f: l, from: b[k] || '', to: to[k] || '' })) }; card.idEdit = ent; card.changes = (card.changes || []).concat(['인적사항 변경 사유: ' + fm.idReason + ' · ' + ent.by]); const s9 = S.u[fUnit] || {}; this.setUnit(fUnit, { owner: to.name, phone: to.phone, carrier: to.carrier, idHist: (s9.idHist || []).concat(ent), dbAt: at4, dbBy: ent.by }); } }
         this.setState(ss => ({ cards: [card].concat(ss.cards), form: this.blankForm() }));
+        if (kind === 'client' && card.ct) { const pl = this.ctDbPlan(card); if (pl) { this.ctDbApply(pl, S.me); setTimeout(() => this.flash('계약자DB 자동 기재 · ' + pl.id.replace('-', '동 ') + '호 · ' + pl.rows.map(r => r.f).join(' · ')), 2300); }   /* 시안 r51 */
+          this._convOk = false; this._convAt = 0; setTimeout(() => this.convLoad(), 1500); }   /* 서버가 바꾼 전환상태를 바로 다시 불러옴 (위쪽 숫자 · 진행상태) */
         if (inObj && inObj.media.length) { const cnt = {}; [card].concat(S.cards).forEach(c => ((c.inflow || {}).media || []).forEach(m => { if (!S.inflow.includes(m)) cnt[m] = (cnt[m] || 0) + 1; })); const add = Object.keys(cnt).filter(m => cnt[m] >= 5); if (add.length) { this.setState(ss => ({ inflow: ss.inflow.concat(add.filter(m => !ss.inflow.includes(m))) })); setTimeout(() => this.flash('유입매체 목록에 자동 추가: ' + add.join(', ')), 2300); } }
         if (kind === 'seller' && fUnit) { const s1 = st(fUnit); const p1 = {}; if (!s1.owner && fm.name) p1.owner = fm.name; if (!s1.phone && fm.phone) p1.phone = fm.phone; if (Object.keys(p1).length) this.setUnit(fUnit, p1); }
         if (kind === 'owner') { const s0 = st(fUnit); const tags = (fm.tags || []).slice(); const p = { owner: fm.name || s0.owner || '', phone: fm.phone || s0.phone || '', carrier: fm.carrier || s0.carrier || '', tags, brokers: tags.includes('광고중(타부동산)') ? (fm.brokers || []).filter(b => (b.name || '').trim()).map(b => ({ name: b.name.trim(), phone: b.phone || '', agent: (b.agent || '').trim() })) : [], media: tags.includes('광고중') ? (fm.media || []).slice() : [] };
