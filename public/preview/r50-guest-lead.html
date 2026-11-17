@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r50 · 손님 등록 → 상담카드</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:var(--sub);font-size:13px;margin:0 0 18px;line-height:1.6}
+ h2{font-size:16px;margin:28px 0 10px;display:flex;align-items:center;gap:8px}
+ .no{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--tab);color:#fff;font-size:13px;align-items:center;justify-content:center}
+ .note{font-size:12.5px;color:var(--sub);line-height:1.6;margin:8px 2px 0}
+ .pill{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+ .pill.on{background:#0066cc;border-color:#0066cc;color:#fff}
+ /* 머리글 + 종 */
+ .hdr{display:flex;align-items:center;gap:14px;padding:12px 16px;position:relative}
+ .hdr b{font-size:16px} .tabs{display:flex;gap:6px;font-size:13px;color:#1d1d1f;flex-wrap:wrap}
+ .tabs span{padding:6px 10px;border-radius:9999px} .tabs .on{background:var(--tab);color:#fff;font-weight:700}
+ .bellb{margin-left:auto;position:relative;width:38px;height:38px;border-radius:50%;border:1px solid #e5e5ea;background:#fff;font-size:17px;cursor:pointer}
+ .bellb i{position:absolute;top:-4px;right:-4px;background:#d2264b;color:#fff;font-style:normal;font-size:11px;font-weight:800;border-radius:9999px;padding:1px 6px}
+ .bellp{position:absolute;right:12px;top:58px;width:min(360px,calc(100vw - 32px));background:#fff;border:1px solid #e5e5ea;border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:5;overflow:hidden}
+ .bellp .hd{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid #f0f0f2;font-size:14px;font-weight:800}
+ .bellp .hd small{font-size:12px;color:#8e8e93;font-weight:600}
+ .bi{padding:10px 14px;border-bottom:1px solid #f5f5f7;font-size:13px;display:flex;flex-direction:column;gap:4px}
+ .bi.new{background:#fff7f0} .bi .k{font-size:12px;font-weight:800} .bi .ln{color:#3a3a3c}
+ .bi .acts{display:flex;gap:6px;margin-top:2px}
+ /* 대장 */
+ .log{padding:14px 16px}
+ .lh,.lr{display:grid;grid-template-columns:96px 82px 110px 120px 120px minmax(0,1fr) 120px;font-size:13px}
+ .lh div{padding:8px;color:#6e6e73;font-weight:700;border-bottom:1px solid #e5e5ea;font-size:12px}
+ .lr{border-bottom:1px solid #f0f0f2} .lr>div{padding:9px 8px}
+ .lr.guest{background:#fffbf3}
+ .nm{border:none;background:none;padding:0;color:#0066cc;font-weight:700;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:inherit}
+ .tg{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px;margin-top:3px}
+ .tg.w{background:#fff0e0;color:#b25000} .tg.d{background:#e8f5ec;color:#157a3f}
+ .src{font-size:11.5px;color:#6e6e73;margin-top:3px}
+ /* 상담카드 */
+ .cardf{padding:18px;display:flex;flex-direction:column;gap:12px}
+ .gbox{border:1.5px solid #f3c58d;background:#fffaf2;border-radius:12px;padding:12px 14px}
+ .gbox .t{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800;color:#8a4b00}
+ .gbox .t small{font-weight:600;color:#b25000;font-size:11.5px}
+ .gbox .t button{margin-left:auto}
+ .gg{display:grid;grid-template-columns:96px 1fr 96px 1fr;gap:6px 10px;font-size:13px;margin-top:10px}
+ .gg dt{color:#8e6a3a;font-weight:700} .gg dd{margin:0}
+ .gq{margin-top:8px;background:#fff;border:1px solid #f1dcbc;border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.55;white-space:pre-wrap}
+ .row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ .fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#6e6e73}
+ .fld input,.fld select,.fld textarea{border:1px solid #d2d2d7;border-radius:10px;padding:9px 10px;font-size:13.5px;font-family:inherit;color:#1d1d1f;background:#fff}
+ .fld .auto{background:#eef5ff;border-color:#b6d1f5}
+ textarea{min-height:120px;resize:vertical}
+ .save{align-self:flex-end;background:#0066cc;color:#fff;border:none;border-radius:9999px;padding:10px 22px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
+ .opt{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+ .optc{padding:14px;font-size:13px;line-height:1.6} .optc b{font-size:14px}
+ .rec{display:inline-block;background:#c8381e;color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:6px}
+ .flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+ .flow span{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+ @media (max-width:560px){
+  .lh{display:none} .lr{grid-template-columns:1fr 1fr;gap:0} .lr>div{padding:4px 8px}
+  .gg{grid-template-columns:80px 1fr} .row{grid-template-columns:1fr 1fr} .opt{grid-template-columns:1fr}
+ }
+</style></head><body><div class="wrap">
+<h1>시안 r50 · 손님 등록 → 알림 · 상담카드 연결</h1>
+<p class="sub">손님이 관심등록 · 방문예약을 하면 ① 직원 화면 종(🔔)에 바로 뜨고 ② 상담이력대장에서 <b>이름을 누르면 신규 상담카드</b>가 열리며 ③ <b>손님이 쓴 내용이 카드 위에 붙어</b> 계속 보입니다. 아래는 모두 눌러 볼 수 있는 시안입니다 (저장은 안 됨).</p>
+
+<div class="flow"><span>손님 등록</span>→<span>🔔 알림 + 상담이력대장 '새 등록'</span>→<span>이름 클릭 → 상담카드 (손님 작성 칸 붙음)</span>→<span>저장 → 대장에 '상담카드 작성됨 · 담당 · 시각'</span></div>
+
+<h2><span class="no">1</span>직원 화면 종(🔔) — 화면이 닫혀 있던 동안 온 등록도 표시</h2>
+<div class="card">
+ <div class="hdr"><b>첨단대라수1차</b><div class="tabs"><span>동호배치표</span><span>상담카드</span><span class="on">상담이력대장</span><span>공실 · 신규분양</span></div>
+  <button class="bellb" onclick="bp.hidden=!bp.hidden">🔔<i>1</i></button>
+  <div class="bellp" id="bp">
+   <div class="hd">알림 · 손님 등록 · 중개요청 <small>상담카드 안 만든 1건</small></div>
+   <div class="bi new"><span class="k" style="color:#157a3f">관심등록 · 개인 소유자 <span style="color:#8e8e93;font-weight:600">11.17 12:08</span></span>
+    <span class="ln">테스트 · 010-1234-5678 · 104동 402호</span>
+    <div class="acts"><button class="pill on" onclick="openCard()">상담카드 만들기</button><button class="pill" onclick="bp.hidden=true">대장에서 보기</button></div></div>
+   <div class="bi"><span class="k" style="color:#8e8e93">방문예약 · 신규분양 매수 <span style="font-weight:600">11.16 15:20</span></span>
+    <span class="ln">홍길동 · 010-2222-3333 · 11/18 14:00</span><span class="src" style="color:#157a3f">✓ 황후권 상담카드 작성 · 11.16 15:41</span></div>
+  </div>
+ </div>
+</div>
+<p class="note">• 지금은 이 기기에서 화면이 <b>열려 있을 때 들어온 등록만</b> 종에 쌓여서, 닫혀 있던 동안 온 등록은 안 보였습니다 → <b>서버에 저장된 손님 등록 중 '상담카드 안 만든 것'</b>을 숫자로 보여 주도록 바꿉니다 (모든 직원 · 모든 기기 같은 숫자).<br>• 화면이 열려 있으면 새 등록이 오는 순간 '띵동' 소리 + 아래 안내가 뜹니다 (지금과 같음). 텔레그램 알림은 그대로.</p>
+
+<h2><span class="no">2</span>상담이력대장 — 손님 등록 줄</h2>
+<div class="card log">
+ <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap"><b style="font-size:16px;margin-right:6px">상담이력대장</b><button class="pill on">전체 2</button><button class="pill">개인 소유자 1</button><button class="pill">신규분양 매수 1</button><button class="pill" style="border-color:#f3c58d;color:#b25000">새 손님 등록 1</button></div>
+ <div class="lh"><div>일시</div><div>구분</div><div>호실 / 희망</div><div>성명</div><div>연락처</div><div>상담내용</div><div>작성자</div></div>
+ <div class="lr guest"><div>2026-11-17<br><span style="font-size:11.5px;color:#8e8e93">12:08</span></div><div style="color:#8e2c6e;font-weight:700">개인 소유자</div><div style="color:#0066cc;font-weight:600">104동 402호</div>
+  <div><button class="nm" onclick="openCard()" title="눌러서 신규 상담카드">테스트</button><br><span class="tg w">상담카드 미작성</span></div>
+  <div>010-1234-5678</div><div><span style="color:#8e8e93">(손님 문의 없음)</span><div class="src">거래 구분: 매도 · 방문 희망 없음</div></div>
+  <div style="color:#6e6e73">게스트 등록<br><span style="font-size:10.5px;color:#157a3f">필수✓ 마케팅✓ 제3자✓</span></div></div>
+ <div class="lr guest"><div>2026-11-16<br><span style="font-size:11.5px;color:#8e8e93">15:20</span></div><div style="color:#0066cc;font-weight:700">신규분양 매수</div><div style="color:#0066cc;font-weight:600">80A 고층</div>
+  <div><button class="nm" onclick="openCard(1)">홍길동</button><br><span class="tg d">상담카드 작성됨 →</span></div>
+  <div>010-2222-3333</div><div>매입보장 조건 궁금합니다<div class="src">방문 희망 11/18 14:00</div></div>
+  <div style="color:#6e6e73">게스트 방문예약<br><span style="font-size:10.5px;color:#157a3f">황후권 11.16 15:41</span></div></div>
+ <div class="lr"><div>2026-11-16</div><div style="color:#0066cc;font-weight:700">신규분양 매수</div><div style="color:#0066cc;font-weight:600">80A 고층</div>
+  <div>홍길동<br><span class="src" style="color:#157a3f">↳ 손님 등록에서 만든 카드</span></div><div>010-2222-3333</div><div>[사이트 방문예약 · 11.16 15:20] 매입보장 조건 문의 … 방문 확정</div><div style="color:#6e6e73">황후권</div></div>
+</div>
+<p class="note">• 손님이 쓴 줄은 연한 노란 바탕 · <b>이름이 파란 밑줄</b> → 누르면 신규 상담카드가 열립니다.<br>• 카드를 저장하면 그 줄에 <b>'상담카드 작성됨'</b>(누가 · 언제)으로 바뀌고, 다시 누르면 만든 카드로 갑니다. 같은 손님 카드를 두 번 만드는 일을 막습니다.<br>• 손님이 쓴 원본 줄은 그대로 남습니다(지우거나 고치지 않음 — 개인정보 동의 기록 포함).</p>
+
+<h2><span class="no">3</span>열리는 상담카드 — 손님 작성 칸이 위에 붙음</h2>
+<div class="card cardf" id="cf">
+ <div style="display:flex;align-items:center;gap:8px"><b style="font-size:16px">상담카드</b><span class="pill on" style="cursor:default" id="cfk">개인 소유자</span><span style="margin-left:auto;font-size:12px;color:#6e6e73">담당 황후권 (연 사람)</span></div>
+ <div class="gbox">
+  <div class="t">📝 손님이 사이트에 쓴 내용 <small id="gwhen">관심등록 · 2026-11-17 12:08</small><button class="pill" onclick="gd.hidden=!gd.hidden">접기 / 펼치기</button></div>
+  <div id="gd">
+   <dl class="gg">
+    <dt>구분</dt><dd id="g1">개인 소유자 (매도)</dd><dt>호실</dt><dd id="g2">104동 402호 · 59B · 4층</dd>
+    <dt>성명</dt><dd id="g3">테스트</dd><dt>연락처</dt><dd id="g4">010-1234-5678</dd>
+    <dt>생년월일</dt><dd>—</dd><dt>관심단지</dt><dd>첨단대라수1차</dd>
+    <dt>거래 조건</dt><dd id="g5">매도 · 희망가 미입력</dd><dt>방문 희망</dt><dd id="g6">없음</dd>
+    <dt>동의</dt><dd colspan="3" style="grid-column:span 3;color:#157a3f">필수 ✓ · 마케팅 ✓ · 제3자 ✓ (11.17 12:08)</dd>
+   </dl>
+   <div class="gq" id="g7">(손님 문의 내용 없음)</div>
+  </div>
+ </div>
+ <div class="row">
+  <label class="fld">성명<input class="auto" id="f1" value="테스트"></label>
+  <label class="fld">연락처<input class="auto" id="f2" value="010-1234-5678"></label>
+  <label class="fld">호실<input class="auto" id="f3" value="104동 402호"></label>
+  <label class="fld">유입경로<input class="auto" value="사이트"></label>
+ </div>
+ <label class="fld">상담내용<textarea id="f4">[사이트 관심등록 · 11.17 12:08]
+개인 소유자 · 104동 402호 · 매도
+문의: (없음)
+
+----추가상담내역:
+</textarea></label>
+ <p class="note" style="margin:0">• <span style="background:#eef5ff;border:1px solid #b6d1f5;border-radius:4px;padding:0 4px">파란 칸</span> = 손님 등록에서 자동으로 채운 값 (고칠 수 있음). 손님 원본 칸(노란 상자)은 고칠 수 없고, 저장 뒤에도 이 카드를 열면 늘 위에 보입니다.</p>
+ <button class="save" onclick="alert('시안: 저장하면 상담이력대장 손님 줄이 \'상담카드 작성됨\'으로 바뀝니다')">저장</button>
+</div>
+
+<h2>방식 고르기</h2>
+<div class="opt">
+ <div class="card optc"><b>A안 · 이름 누르면 바로 상담카드</b><span class="rec">추천</span><br>위 시안 그대로. 한 번 클릭으로 카드가 열리고, 손님 원본은 카드 위 노란 상자로 함께 봄. 공개 매물 '중개요청 → 상담카드'와 같은 방식이라 직원이 헷갈리지 않음.</div>
+ <div class="card optc"><b>B안 · 먼저 손님 원본 창 → [상담카드 만들기]</b><br>이름을 누르면 손님이 쓴 내용만 작은 창으로 먼저 보여 주고, 단추를 눌러야 카드가 열림. 확인만 하고 카드는 나중에 만들 때 편하지만 한 번 더 눌러야 함.</div>
+</div>
+</div>
+<script>
+ const bp=document.getElementById('bp'), gd=document.getElementById('gd');
+ function openCard(b){ bp.hidden=true;
+  if(b){ cfk.textContent='신규분양 매수'; gwhen.textContent='방문예약 · 2026-11-16 15:20'; g1.textContent='신규분양 매수'; g2.textContent='관심: 80A 고층'; g3.textContent='홍길동'; g4.textContent='010-2222-3333'; g5.textContent='—'; g6.textContent='11/18 14:00 방문상담'; g7.textContent='매입보장 조건 궁금합니다';
+   f1.value='홍길동'; f2.value='010-2222-3333'; f3.value='80A 고층'; f4.value='[사이트 방문예약 · 11.16 15:20]\n신규분양 매수 · 관심 80A 고층 · 방문 11/18 14:00\n문의: 매입보장 조건 궁금합니다\n\n----추가상담내역:\n방문 확정'; }
+  document.getElementById('cf').scrollIntoView({behavior:'smooth'}); }
+</script>
+</body></html>
