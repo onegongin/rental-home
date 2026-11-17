@@ -70,8 +70,8 @@ function info(D) {
   // 헷지했지 질문 (content.hedge.faq, 시안 r30-footer-faq A안 확정 2026-11-16) — 답이 길어 질문만 보이고 누르면 답. [글, 1] = 진하게
   const HQ = ((D.content || {}).hedge || {}).faq || [], seg = a => [].concat(a).map(x => Array.isArray(x) ? '<b>' + esc(x[0]) + '</b>' : esc(x)).join('');
   // 질문 한 줄(Q ｜ Q ｜ Q) · 누르면 바로 아래 답, 답 칸이 누른 질문 아래를 가리킴 · 휴대폰은 세로 + 질문 밑 (시안 r32-hedge-row 확정 2026-11-16). 답 글은 HTML 에 그대로 있어 검색에도 읽힘
-  const hfqJs = "(function(){var r=document.currentScript.parentNode,w=r.querySelector('.hq-row'),o=-1;function at(b,a){if(matchMedia('(max-width:767px)').matches){b.after(a);a.style.marginLeft='';return}w.after(a);var R=w.getBoundingClientRect(),B=b.getBoundingClientRect(),W=Math.min(520,R.width),m=B.left+B.width/2-R.left,l=Math.max(0,Math.min(m-W/2,R.width-W));a.style.marginLeft=l+'px';a.style.setProperty('--tip',(m-l-6)+'px')}w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var k=+b.getAttribute('data-k');r.querySelectorAll('.hq-ans').forEach(function(a){a.hidden=true});w.querySelectorAll('button').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-expanded','false')});if(o===k){o=-1;return}o=k;var a=r.querySelector('#hqa'+k);b.classList.add('on');b.setAttribute('aria-expanded','true');at(b,a);a.hidden=false});addEventListener('resize',function(){if(o>=0)at(w.querySelector('[data-k=\"'+o+'\"]'),r.querySelector('#hqa'+o))})})();";
-  const hfq = HQ.length ? ['      <div class="hfq"><b>헷지했지 <span>· 분양가 보호 약정 · 질문을 누르면 답이 열립니다</span></b>',
+  const hfqJs = "(function(){var r=document.currentScript.parentNode,w=r.querySelector('.hq-row'),o=-1;function at(b,a){if(matchMedia('(max-width:767px)').matches){b.after(a);a.style.marginLeft='';return}w.after(a);var R=w.getBoundingClientRect(),B=b.getBoundingClientRect(),W=Math.min(900,R.width),m=B.left+B.width/2-R.left,l=Math.max(0,Math.min(m-W/2,R.width-W));a.style.marginLeft=l+'px';a.style.setProperty('--tip',(m-l-6)+'px')}w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var k=+b.getAttribute('data-k');r.querySelectorAll('.hq-ans').forEach(function(a){a.hidden=true});w.querySelectorAll('button').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-expanded','false')});if(o===k){o=-1;return}o=k;var a=r.querySelector('#hqa'+k);b.classList.add('on');b.setAttribute('aria-expanded','true');at(b,a);a.hidden=false});addEventListener('resize',function(){if(o>=0)at(w.querySelector('[data-k=\"'+o+'\"]'),r.querySelector('#hqa'+o))})})();";
+  const hfq = HQ.length ? ['      <div class="hfq"><b>헷지했지 <span>· 분양가 보호 약정</span></b>',
     '        <div class="hq-row">' + HQ.map(([q], k) => (k ? '<i>｜</i>' : '') + '<button type="button" data-k="' + k + '" aria-expanded="false" aria-controls="hqa' + k + '">Q. ' + esc(q) + '</button>').join('') + '</div>',
     ...HQ.map(([, a], k) => '        <div class="hq-ans" id="hqa' + k + '" hidden>' + seg(a) + '</div>'),
     '        <script>' + hfqJs + '</script>', '      </div>'] : [];
@@ -80,28 +80,36 @@ function info(D) {
   const yr = t => String(t).replace(/\{연차:(\d{4})\}/g, (x, y) => (new Date().getFullYear() - Number(y) + 1) + '년차');
   const OV = ((D.content || {}).overview || {}).items || [], PM = ((((D.content || {}).siteMap || {}).board || {}).premium || {}).items || [];
   const H2 = '<h2 style="margin:0 0 6px;font-size:14px;font-weight:800;color:#1d1d1f">';
-  const intro = I.intro || OV.length || PM.length ? [
-    '    <div class="hwin" style="flex:1 1 100%;border-top:1px solid #ececf0;padding-top:14px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:18px 32px">',
-    '      <style>.hwin dl{margin:0;display:grid;grid-template-columns:92px 1fr;gap:2px 10px;font-size:12.5px}.hwin dt{color:#6e6e73;font-weight:700}.hwin dd{margin:0}.hwin ul{margin:0;padding-left:16px;font-size:12.5px;line-height:1.8}@media (max-width:900px){.hwin{grid-template-columns:1fr!important}}</style>',
-    I.intro ? '      <section>' + H2 + esc(S.name) + ' 단지 소개</h2><p style="margin:0;line-height:1.75">' + esc(I.intro) + '</p></section>' : null,
-    OV.length ? '      <section>' + H2 + '사업개요</h2><dl>' + OV.map(([k, v]) => '<dt>' + esc(k) + '</dt><dd>' + esc(yr(v)).replace(/\n/g, ' ') + '</dd>').join('') + '</dl></section>' : null,
+  // 시안 r64 A안 확정: 평소엔 접어 두고 [단지 정보 더 보기] — 검색 로봇은 접힌 글도 읽음
+  const ovSkip = I.ovSkip || [], OV2 = OV.filter(([k]) => !ovSkip.includes(k));
+  const intro = I.intro || OV2.length || PM.length ? [
+    '    <details class="hwmore" style="flex:1 1 100%;border-top:1px solid #ececf0;padding-top:12px">',
+    '      <style>.hwmore summary{cursor:pointer;font-size:13px;font-weight:800;color:#0066cc;list-style:none;display:inline-flex;align-items:center;gap:6px}.hwmore summary::-webkit-details-marker{display:none}.hwmore summary:after{content:"▾";font-size:12px}.hwmore[open] summary:after{content:"▴"}.hwin{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:16px;margin-top:12px}.hwin>section{background:#f7f7f9;border-radius:12px;padding:14px 16px}.hwin p{margin:0;line-height:1.75;font-size:12.5px}.hwin dl{margin:0;display:grid;grid-template-columns:86px 1fr;gap:3px 10px;font-size:12.5px}.hwin dt{color:#6e6e73;font-weight:700}.hwin dd{margin:0}.hwin ul{margin:0;padding-left:16px;font-size:12.5px;line-height:1.85}@media (max-width:900px){.hwin{grid-template-columns:1fr}}</style>',
+    '      <summary>' + esc(S.name) + ' 단지 정보 더 보기 (소개 · 사업개요 · 입지)</summary>',
+    '      <div class="hwin">',
+    I.intro ? '      <section>' + H2 + '단지 소개</h2><p>' + esc(I.intro) + '</p></section>' : null,
+    OV2.length ? '      <section>' + H2 + '사업개요</h2><dl>' + OV2.map(([k, v]) => '<dt>' + esc(k) + '</dt><dd>' + esc(yr(v)).replace(/\n/g, ' ') + '</dd>').join('') + '</dl></section>' : null,
     PM.length ? '      <section>' + H2 + '입지 · 개발 계획</h2><ul>' + PM.map(x => '<li>' + esc(x.title) + '</li>').join('') + '</ul><p style="margin:4px 0 0;font-size:11.5px;color:#8e8e93">예정 사항은 관계기관 사정에 따라 바뀔 수 있습니다</p></section>' : null,
-    '    </div>'].filter(Boolean) : [];
+    '      </div>', '    </details>'].filter(Boolean) : [];
   return [
-    '    <section style="flex:1 1 auto;min-width:0">',
+    '    <div class="hwtop" style="flex:1 1 100%;display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px 28px;align-items:start">',
+    '      <style>@media (max-width:900px){.hwtop{grid-template-columns:1fr!important}.hwtop .si-faq{grid-template-columns:1fr!important;grid-auto-flow:row!important;grid-template-rows:none!important}}</style>',
+    '    <section style="min-width:0">',
     '      <h1 style="margin:0 0 6px;font-size:18px;font-weight:800;color:#1d1d1f">' + esc(S.name) + (I.nameSub ? ' <span style="font-size:13px;font-weight:600;color:#6e6e73">' + esc(I.nameSub) + '</span>' : '') + '</h1>',
     '      <p class="si-line" style="margin:0">' + esc(I.addr) + '</p>',
+    I.addr2 ? '      <p class="si-line" style="margin:0">' + esc(I.addr2) + '</p>' : null,
     '      <p class="si-line" style="margin:0;font-weight:700;color:#c8381e">' + esc(I.deals) + '</p>',
-    '      <p class="si-line" style="margin:0"><span class="pc">' + esc(sc[0]) + '</span><span class="mo">' + esc(sc[1] || sc[0]) + '</span></p>',
+    I.addr2 ? null : '      <p class="si-line" style="margin:0"><span class="pc">' + esc(sc[0]) + '</span><span class="mo">' + esc(sc[1] || sc[0]) + '</span></p>',
     '      <p class="si-line" style="margin:6px 0 0">상담문의 <a href="tel:' + tel(O.tel) + '">' + esc(O.tel) + '</a></p>',
     '    </section>',
-    '    <section style="flex:0 1 auto;margin-left:auto;min-width:0">',
+    '    <section style="min-width:0">',
     '      <h2 style="margin:0 0 6px;font-size:14px;font-weight:800;color:#1d1d1f">자주 묻는 질문</h2>',
-    '      <dl class="si-faq" style="margin:0;display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);gap:4px 28px;justify-content:start">',
+    '      <dl class="si-faq" style="margin:0;display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 24px;font-size:12.5px">',
     ...faq,
     '      </dl>',
-    ...(hfq.length ? ['      <style>.hfq{margin-top:10px;padding-top:8px;border-top:1px dashed #e5e5ea}.hfq>b{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:#6b5ce7;margin-bottom:4px}.hfq>b:before{content:"";width:7px;height:7px;border-radius:50%;background:#6b5ce7}.hfq>b span{font-weight:500;color:#8e8e93}.hq-row{display:flex;flex-wrap:wrap;align-items:center}.hq-row button{border:0;background:none;padding:4px 0;font:inherit;font-weight:700;color:#1d1d1f;cursor:pointer;white-space:nowrap}.hq-row button::after{content:"+";color:#6b5ce7;font-weight:500;margin-left:5px}.hq-row button.on{color:#6b5ce7}.hq-row button.on::after{content:"−"}.hq-row i{font-style:normal;color:#c7c7cc;margin:0 12px}.hq-ans{position:relative;margin-top:6px;background:#f6f4ff;border-radius:10px;padding:10px 14px;color:#3a3a3c;max-width:520px;box-sizing:border-box}.hq-ans[hidden]{display:none}.hq-ans b{color:#1d1d1f}.hq-ans:before{content:"";position:absolute;top:-6px;left:var(--tip,24px);width:12px;height:12px;background:#f6f4ff;transform:rotate(45deg)}@media (max-width:767px){.hq-row{flex-direction:column;align-items:flex-start}.hq-row i{display:none}.hq-row button{white-space:normal;text-align:left}.hq-ans{margin:2px 0 6px;max-width:none}.hq-ans:before{display:none}}</style>', ...hfq] : []),
+    ...(hfq.length ? ['      <style>.hfq{margin-top:10px;padding-top:10px;border-top:1px dashed #e5e5ea;display:flex;flex-wrap:wrap;align-items:center;gap:4px 24px}.hfq>b{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:#6b5ce7;margin:0}.hfq>b:before{content:"";width:7px;height:7px;border-radius:50%;background:#6b5ce7}.hfq>b span{font-weight:500;color:#8e8e93}.hq-row{display:flex;flex-wrap:wrap;align-items:center}.hq-row button{border:0;background:none;padding:4px 0;font:inherit;font-weight:700;color:#1d1d1f;cursor:pointer;white-space:nowrap}.hq-row button::after{content:"+";color:#6b5ce7;font-weight:500;margin-left:5px}.hq-row button.on{color:#6b5ce7}.hq-row button.on::after{content:"−"}.hq-row i{font-style:normal;color:#c7c7cc;margin:0 20px}.hq-ans{position:relative;margin-top:6px;background:#f6f4ff;border-radius:10px;padding:10px 14px;color:#3a3a3c;max-width:900px;box-sizing:border-box;flex-basis:100%;line-height:1.7}.hq-ans[hidden]{display:none}.hq-ans b{color:#1d1d1f}.hq-ans:before{content:"";position:absolute;top:-6px;left:var(--tip,24px);width:12px;height:12px;background:#f6f4ff;transform:rotate(45deg)}@media (max-width:767px){.hfq{display:block}.hfq>b{margin-bottom:4px}.hq-row{flex-direction:column;align-items:flex-start}.hq-row i{display:none}.hq-row button{white-space:normal;text-align:left}.hq-ans{margin:2px 0 6px;max-width:none}.hq-ans:before{display:none}}</style>', ...hfq] : []),
     '    </section>',
+    '    </div>',
     ...intro,
     '    <!-- 안내 페이지 링크 한 줄 (시안 preview/home-links A안, 2026-11-05) — 손님 이동 + 검색 로봇이 안내 페이지를 따라 들어오게 -->',
     '    <nav class="hwln" aria-label="단지 안내" style="flex:1 1 100%;font-size:12.5px;line-height:1.9">',
