@@ -983,14 +983,15 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
         <sc-if value="{{ p.guest }}" hint-placeholder-val="{{ false }}">
         <div style="padding:14px 18px;display:flex;flex-direction:column;gap:10px">
           <div style="font-size:12px;font-weight:700;color:#6e6e73">분양금액</div>
+          <sc-if value="{{ p.hgOn }}" hint-placeholder-val="{{ false }}"><div style="background:linear-gradient(135deg,#fff4f2,#fff);border:1.5px solid #c8381e;border-radius:14px;padding:12px 14px"><div style="font-size:12.5px;font-weight:800;color:#c8381e">신규 분양전환 (매입보장) 분양가</div><div style="font-size:26px;font-weight:900;margin:2px 0;font-variant-numeric:tabular-nums">{{ p.hgBig }}</div><div style="font-size:12px;color:#6e6e73">{{ p.hgSub }}</div></div></sc-if>
           <div style="background:#f0f6ff;border-radius:12px;padding:10px 12px;display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:700;color:#0066cc">총분양금액</span><span style="margin-left:auto;font-size:20px;font-weight:800;color:#0066cc;font-variant-numeric:tabular-nums">{{ p.supplyTotal }}</span></div>
           <div style="display:flex;flex-direction:column;font-size:13px">
             <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f0f2"><span style="color:#6e6e73">호실 분양가</span><span style="font-size:11px;color:#8e8e93">{{ p.band }}</span><span style="margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums">{{ p.price }}</span></div>
-            <div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid #f0f0f2"><span style="color:#6e6e73;margin-right:4px">발코니 확장</span><sc-for list="{{ p.expChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for><span style="margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums">{{ p.expCost }}</span></div>
+            <sc-if value="{{ p.gp }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid #f0f0f2"><span style="color:#6e6e73;margin-right:4px">발코니 확장</span><span style="margin-left:auto;background:#e9f7ee;color:#157a3f;border-radius:9999px;padding:2px 10px;font-size:12px;font-weight:800">확장 완료 · 분양가 포함</span></div></sc-if><sc-if value="{{ p.notGp }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid #f0f0f2"><span style="color:#6e6e73;margin-right:4px">발코니 확장</span><sc-for list="{{ p.expChips }}" as="c"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer">{{ c.label }}</button></sc-for><span style="margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums">{{ p.expCost }}</span></div></sc-if>
             <div style="display:flex;align-items:center;gap:8px;padding:8px 0"><span style="color:#6e6e73">선택옵션</span><span style="font-size:11px;color:#8e8e93">{{ p.optCount }}</span><button onClick="{{ p.goOption }}" style="border:none;background:#f0f6ff;color:#0066cc;border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer">옵션계산기로 →</button><span style="margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums">{{ p.optTotal }}</span></div>
             <div style="font-size:11px;color:#8e8e93;line-height:1.5">{{ p.optList }}</div>
           </div>
-          <button onClick="{{ p.openReg }}" style="height:44px;border:none;border-radius:12px;background:#0066cc;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px">매물등록 / 매수요청</button>
+          <button onClick="{{ p.openReg }}" style="height:44px;border:none;border-radius:12px;background:#0066cc;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px">{{ p.regLabel }}</button>
         </div>
         </sc-if>
         <sc-if value="{{ cm.on }}" hint-placeholder-val="{{ false }}">
@@ -4512,6 +4513,12 @@ class Component extends DCLogic {
   gName(i) { const D = this.D; return D.GLABEL && D.GLABEL[i] ? D.GLABEL[i] : (i + 1) + '그룹'; }   // 동 묶음 이름: generic 은 site.json groups.label (1단지·2단지)
   bandLabel(u) { const D = this.D; if (D.generic) { const r = D.PRICEROW[u.id]; return r ? (r.floors[0] === r.floors[1] ? r.floors[0] + '층' : r.floors[0] + '~' + r.floors[1] + '층') : '공고 금액 없음'; } return D.types[u.type].ph ? '49층 단일가' : D.BANDS[this.bandIdx(u.f)]; }
   priceOf(u) { const t = this.D.types[u.type]; if (this.D.generic) return (this.D.PRICEROW[u.id] || {}).total || 0; if (t.ph) return this.D.PH[u.type] * 1e6; return this.D.PRICE[this.pf(u.type)][this.bandIdx(u.f)] * 1e6; }
+  gPriceOf(id) { const M = this.state.gPrice || {}, r = M[id];
+    if (r === undefined) { if (!(this._gpGet = this._gpGet || {})[id]) { this._gpGet[id] = 1; fetch('/api/public/unit-price/' + id).then(x => x.json()).then(j => this.setState(ss => ({ gPrice: Object.assign({}, ss.gPrice, { [id]: j && j.ok ? j : null }) }))).catch(() => this.setState(ss => ({ gPrice: Object.assign({}, ss.gPrice, { [id]: null }) }))); }
+      return { open: false, band: '', price: '불러오는 중…', total: '…', big: '', sub: '' }; }
+    if (!r || !r.open) return { open: false, band: '분양전환 완료 세대', price: '금액 비공개', total: '-', big: '', sub: '' };
+    const w = n => n.toLocaleString() + '원';
+    return { open: true, band: '매입보장가', price: w(r.hedge), total: w(r.hedge), big: this.eok(r.hedge) + '원', sub: w(r.hedge) + ' · 3년 뒤 분양가에 다시 사드립니다 (헷지했지 매입보장)' }; }
   eok(n) { if (!n) return '0'; const neg = n < 0; n = Math.abs(Math.round(n)); const e = Math.floor(n / 1e8), m = Math.round((n % 1e8) / 1e4); return (neg ? '-' : '') + ((e ? e + '억 ' : '') + (m ? m.toLocaleString() + '만' : '')).trim(); }
   man(n) { return n ? Math.round(n / 1e4).toLocaleString() + '만' : '0'; }
   fmtPhone(v) { const d = String(v || '').replace(/\D/g, '').slice(0, 11); if (d.length < 4) return d; if (d.length < 8) return d.slice(0, 3) + '-' + d.slice(3); return d.slice(0, 3) + '-' + d.slice(3, d.length - 4) + '-' + d.slice(-4); }
@@ -6646,13 +6653,15 @@ class Component extends DCLogic {
     if (su && (tab === 'board' || isGB)) {
       const s = st(su.id), t = D.types[su.type];
       const sb = this.saleBox(su, s.ask, false); const expand = sb._expand, os = sb._os;
+      const GP = isGB && D.generic ? this.gPriceOf(su.id) : null;   /* 손님 호실 분양금액 = 매입보장가 (시안 r62 A안) */
       const setF = k => e => this.setUnit(su.id, { [k]: e.target.value });
       const logs = isGB ? [] : S.cards.filter(c => c.unit === su.id);
       const tradeFields = [];
       if (mods.sale) tradeFields.push({ label: '매매 희망가 (만원)', key: 'saleAsk', type: 'text', ph: '예: 95000' });
       if (mods.jeonse) tradeFields.push({ label: '전세 보증금 (만원)', key: 'jDep', type: 'text', ph: '예: 45000' }, { label: '전세 계약종료일', key: 'jEnd', type: 'date', ph: '' });
       if (mods.wolse) tradeFields.push({ label: '월세 보증금/월세', key: 'wDep', type: 'text', ph: '예: 5000/180' }, { label: '월세 계약종료일', key: 'wEnd', type: 'date', ph: '' });
-      p = { staff: !isGB, guest: isGB, openReg: () => this.setState(ss => ({ gRegOpen: true, gReg: ss.gReg && (ss.gReg.unit || ss.gReg.name || ss.gReg.interest) ? (ss.gReg.kind === 'seller' && !this.parseUnit(ss.gReg.unit) ? Object.assign({}, ss.gReg, { unit: su.b + '동 ' + su.ho + '호', gDong: null, gHo: null }) : ss.gReg) : this.gBlank('seller', su.b + '동 ' + su.ho + '호') })), title: su.b + '동 ' + su.ho + '호', type: su.type, typeBg: t.ph ? '#fff' : t.color, typeRing: t.ph ? 'inset 0 0 0 2px ' + t.color : 'none',
+      p = { staff: !isGB, guest: isGB, gp: !!GP, notGp: !GP, hgOn: !!(GP && GP.open), hgBig: GP ? GP.big : '', hgSub: GP ? GP.sub : '', regLabel: GP ? '신규분양전환 상담 요청' : '매물등록 / 매수요청',
+        openReg: GP ? () => this.setState({ gRegOpen: true, gReg: Object.assign(this.gBlank('client', ''), { interest: su.b + '동 ' + su.ho + '호' }) }) : () => this.setState(ss => ({ gRegOpen: true, gReg: ss.gReg && (ss.gReg.unit || ss.gReg.name || ss.gReg.interest) ? (ss.gReg.kind === 'seller' && !this.parseUnit(ss.gReg.unit) ? Object.assign({}, ss.gReg, { unit: su.b + '동 ' + su.ho + '호', gDong: null, gHo: null }) : ss.gReg) : this.gBlank('seller', su.b + '동 ' + su.ho + '호') })), title: su.b + '동 ' + su.ho + '호', type: su.type, typeBg: t.ph ? '#fff' : t.color, typeRing: t.ph ? 'inset 0 0 0 2px ' + t.color : 'none',
         floorInfo: su.f + '층 · ' + (t.ph ? '펜트하우스' : su.l + '호 라인'), owner: s.owner || '', phone: s.phone || '',
         ownerText: s.owner || '수분양자 미입력', ownerFg: s.owner ? '#1d1d1f' : '#8e8e93',
         phoneText: s.phone ? (can('phone') ? s.phone : this.maskPhone(s.phone)) : '연락처 미입력', phoneFg: s.phone ? '#1d1d1f' : '#8e8e93',
@@ -6670,14 +6679,14 @@ class Component extends DCLogic {
         toggleNew: () => this.setUnit(su.id, { saleNew: !s.saleNew }),
         resaleWarn: false /* 전매제한 안내 — 이 사이트(민간임대 분양전환)는 안 씀, 2026-11-17 대표 요청으로 끔 */,
         tagChips: ['상담','부재','광고중','광고중(타부동산)'].map(v => { const on = (s.tags || []).includes(v); return Object.assign(this.chip(on, '#1d1d1f'), { label: v === '광고중' && on && (s.media || []).length ? '광고중 · ' + s.media.join(' · ') : v }); }),
-        band: sb.band, price: sb.price,
+        band: GP ? GP.band : sb.band, price: GP ? GP.price : sb.price,
         expChips: t.ph ? [Object.assign(this.chip(true, '#0066cc'), { label: '기본 포함', onClick: null })] : [['선택', true], ['미선택', false]].map(([l, v]) => Object.assign(this.chip(expand === v, '#0066cc'), { label: l, onClick: () => this.setUnit(su.id, { expand: v }) })),
         expCost: sb.expCost, optCount: sb.optCount, optTotal: sb.optTotal,
         optList: os.list.length ? os.list.map(x => x.name + ' ' + x.label).join(' · ') + (expand ? '' : ' (확장 미선택 → 옵션 비활성)') : '선택된 옵션 없음',
         goOption: () => this.setState({ tab: isGB ? 'goption' : 'option', pickB: su.b, optDraft: null, optReturn: isGB ? 'gboard' : S.optReturn }),
         expText: t.ph ? '기본 포함' : (expand ? '선택' : '미선택'), loanText: s.loan || '미정',
         askText: s.ask ? (+s.ask).toLocaleString() + '만' : '미입력', adjText: s.adj ? (+s.adj).toLocaleString() + '만' : '미입력',
-        supplyTotal: sb.supplyTotal, ask: s.ask || '', adj: s.adj || '', onAsk: e => this.setUnit(su.id, { ask: e.target.value.replace(/\D/g, '') }), onAdj: e => this.setUnit(su.id, { adj: e.target.value.replace(/\D/g, '') }),
+        supplyTotal: GP ? GP.total : sb.supplyTotal, ask: s.ask || '', adj: s.adj || '', onAsk: e => this.setUnit(su.id, { ask: e.target.value.replace(/\D/g, '') }), onAdj: e => this.setUnit(su.id, { adj: e.target.value.replace(/\D/g, '') }),
         sellTotal: this.eok(sb._supply + sb._ask),
         sbx: sb, schedule: sb.schedule, paidCash: sb.paidCash, loanAmt: sb.loanAmt, invest: sb.invest,
         supply: sb.supply, cdate: sb.cdate,

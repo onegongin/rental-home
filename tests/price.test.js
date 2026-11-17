@@ -30,7 +30,7 @@ test('공개 폴더 · 손님 API 코드에 분양가 없음', () => {
     const s = readFileSync(f, 'utf8');
     assert.ok(!/421000000|461000000|RENT_UP/.test(s), f + ' 에 분양가 · 전세연장 표가 있음');
   }
-  for (const f of readdirSync('src/public-api')) assert.ok(!/core\/price|dls-units/.test(readFileSync('src/public-api/' + f, 'utf8')), f);
+  for (const f of readdirSync('src/public-api').filter(f => f !== 'unit-price.js')) assert.ok(!/core\/price|dls-units/.test(readFileSync('src/public-api/' + f, 'utf8')), f);   // unit-price.js = 매입보장가 한 개만 (시안 r62, 아래 시험)
 });
 
 const KEY = 'price-office';
@@ -73,4 +73,11 @@ test('API: 직원만 · 상담카드 자동 채움', async () => {
   // 손님 API 응답에 가격 없음
   const g = await (await mf.fetch('http://localhost/api/public/units')).text();
   assert.ok(!/benefit|hedge|421000000/.test(g));
+});
+
+test('손님 호실 분양금액 = 매입보장가만 (시안 r62)', async () => {
+  const r = await (await mf.fetch('http://localhost/api/public/unit-price/101-2202')).json();
+  assert.equal(r.ok, true); assert.ok(r.hedge > 0); assert.deepEqual(Object.keys(r).sort(), ['hedge', 'id', 'ok', 'open']);
+  const t = JSON.stringify(r); assert.ok(!/benefit|dep|need/.test(t), '혜택가 · 보증금 없음');
+  assert.equal((await mf.fetch('http://localhost/api/public/unit-price/999-1')).status, 404);
 });

@@ -14,6 +14,7 @@ import { listPubGuest } from '../repo/public-units.js';
 import { groupPub } from '../core/conv.js';
 import { notify, DEAL_KO, unitLabel } from '../notify/index.js';
 import { readComplexes } from '../repo/complexes.js';
+import { unitPrice } from './unit-price.js';
 
 const KINDS = ['buyer', 'seller', 'client', 'owner'];
 const str = (v, n) => typeof v === 'string' ? v.trim().slice(0, n) : '';
@@ -82,6 +83,7 @@ export async function publicApi(req, env, url) {
 
   if (p === '/api/public/comments') return commentsApi(req, env, url);
   if (p === '/api/public/listings') return publicListings(req, env, url);
+  { const m = p.match(/^\/api\/public\/unit-price\/(\d{3}-\d{3,4})$/); if (m && req.method === 'GET') return unitPrice(env, m[1]); }   // 손님 호실 매입보장가 (시안 r62)
   // R2 공개 세대 (공실 · 퇴거확정(매물동의)) — 동 · 층구간 · 타입 · 면적 · 구분 · 세대 수만 (호수 · 가격 없음)
   if (p === '/api/public/units' && req.method === 'GET') return J({ ok: true, rows: groupPub(await listPubGuest(db)) });
   if (p === '/api/public/broker') return brokerApi(req, env, url);   // 공개 매물 중개요청 (관심등록 없이)
