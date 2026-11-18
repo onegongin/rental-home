@@ -52,7 +52,7 @@
 ## 토큰 절약 · 화면 작업 순서
 1. `public/daelasoo/dashboard.dc.html`(약 750KB) · 참고 사이트 `index.html`(약 800KB)은 **통째로 Read 금지** — grep 으로 찾고 필요한 줄만.
 2. 사진은 열어보지 않는다 (대표가 요청할 때만).
-3. 새 화면은 `public/preview/<이름>.html` 단독 시안 → 대표 확인 → "확정"이면 연결. 스타일은 `public/preview/style-tokens.css` (배경 #f5f5f7 · 글자 #1d1d1f · 링크 #0066cc · 선택 #c8381e · 카드 흰색 · 모서리 14px · Pretendard · 휴대폰 560px 이하도).
+3. 새 화면은 `public/preview/<이름>.html` 단독 시안 (2026-11-18 옛 시안 r2~r65 모두 삭제 — 확정된 시안은 지워도 됨, 기록은 git) → 대표 확인 → "확정"이면 연결. 스타일은 `public/preview/style-tokens.css` (배경 #f5f5f7 · 글자 #1d1d1f · 링크 #0066cc · 선택 #c8381e · 카드 흰색 · 모서리 14px · Pretendard · 휴대폰 560px 이하도).
 4. 한 대화 = 한 단계(R번호).
 
 ## 구조 원칙 (아이파크와 같음)
