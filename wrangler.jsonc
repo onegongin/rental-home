@@ -10,10 +10,12 @@
   },
   // 서버 자리 자동 조정: 한국 손님이 LA 쪽으로 연결돼도 DB(APAC) 가까이에서 서버 코드를 돌림 (아이파크 2026-11-05 속도 경험)
   "placement": { "mode": "smart" },
+  // 우리 주소 rental-home.kr (2026-11-18 iTEASY 구입 · Cloudflare 네임서버). www 는 서버가 rental-home.kr 로 넘김. 예전 workers.dev 주소도 계속 열림
+  "routes": [{ "pattern": "rental-home.kr", "custom_domain": true }, { "pattern": "www.rental-home.kr", "custom_domain": true }],
   // SITE_URL = 단지 주소 (경로 /daelasoo 포함). 사이트맵 · RSS · 검색용 페이지 · 알림 링크 · robots.txt 가 모두 이 값을 씀
   //   검색용 페이지(/daelasoo/plan · /daelasoo/listings · /daelasoo/sitemap.xml …)는 서버가 이 경로 아래에서만 만든다 (src/worker.js)
   // DB_DRIVER: "d1"(지금) | "supabase"(필요할 때, _설계서/Supabase_전환_안내.md)
-  "vars": { "SITE_URL": "https://rental-home.onegongin.workers.dev/daelasoo", "DB_DRIVER": "d1" },
+  "vars": { "SITE_URL": "https://rental-home.kr/daelasoo", "DB_DRIVER": "d1" },
   "compatibility_flags": ["nodejs_compat"],
   // 아침 요약 매일 08:30 (UTC 23:30) · 자동 백업 매일 03:00 (UTC 18:00)
   "triggers": { "crons": ["30 18,23 * * *"] },  // 예약 1개 = 03:30 백업 · 08:30 아침 요약 (계정 예약 칸 5개 중 1개만 씀)

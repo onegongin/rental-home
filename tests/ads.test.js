@@ -148,7 +148,7 @@ test('검색 노출: 사이트맵 · RSS · 매물 페이지(구조화 데이터
   const g = agent('9.9.9.9');
   let r = await g('/daelasoo/sitemap.xml');
   assert.equal(r.status, 200);
-  assert.ok(r.text.includes('https://rental-home.onegongin.workers.dev/daelasoo/listings/' + L.id), '사이트맵에 매물');
+  assert.ok(r.text.includes('https://rental-home.kr/daelasoo/listings/' + L.id), '사이트맵에 매물');
   assert.ok(r.text.includes('/daelasoo/listings/jeonse'));
   r = await g('/daelasoo/rss.xml');
   assert.ok(r.text.includes('<item><title>첨단대라수1차 101동 중층 80A 전세'));
@@ -166,7 +166,7 @@ test('검색 노출: 사이트맵 · RSS · 매물 페이지(구조화 데이터
   const t = await a('/api/staff/ads');
   assert.equal(t.json.seo.indexnow, true);
   assert.equal(t.json.seo.listings, 1);
-  assert.ok(t.json.seo.pings.some(p => p.why === '공개' && p.urls.includes('https://rental-home.onegongin.workers.dev/daelasoo/listings/' + L.id)));
+  assert.ok(t.json.seo.pings.some(p => p.why === '공개' && p.urls.includes('https://rental-home.kr/daelasoo/listings/' + L.id)));
 });
 
 test('게시기록 → 보류(자동 비공개) → 내려야 할 광고 → 내림 완료', async () => {

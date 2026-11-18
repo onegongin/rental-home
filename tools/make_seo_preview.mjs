@@ -3,7 +3,7 @@
 import fs from 'fs';
 import { listingPage, listPage } from '../src/seo/pages.js';
 
-const base = 'https://rental-home.onegongin.workers.dev/daelasoo', now = Date.parse('2026-11-03T14:00:00+09:00');
+const base = 'https://rental-home.kr/daelasoo', now = Date.parse('2026-11-03T14:00:00+09:00');
 const R = (id, o) => Object.assign({ id, block: '1단지', kind: '아파트', rent: null, ask: null, dep: null, term: '', mgmt_na: 0, mgmt_items: '["일반관리비","수도"]', basis: '거실', rooms: 3, baths: 2,
   approval: '2027-01 예정 (사용승인 전)', parking: '공동주택 519대 (세대당 약 1.33대)', urgent: 0, badge: '', contact: '제니스원부동산', tel: '1800-7240', at: now, updated: now }, o);
 const rows = [
