@@ -1,4 +1,5 @@
 #DaumWebMasterTool:e3cefce00ab828e0b064f6ca0fa5490342b05d0b66a31201b5981d4537c68363:LSr9wi71I6+MYd9iMzmuXg==
+#DaumWebMasterTool:daf69406d9f32aa35c66a0ad6bba2765d7c419b51a1797a5624f6618626d8dc0:LSr9wi71I6+MYd9iMzmuXg==
 User-agent: *
 Allow: /
 Disallow: /daelasoo/staff/
