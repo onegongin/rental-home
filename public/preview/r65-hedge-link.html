@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r65 · 안심단지 칩 링크</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ body{background:#f5f5f7;color:#1d1d1f;margin:0;font-family:Pretendard,system-ui,sans-serif}
+ .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:#6e6e73;font-size:13px;margin:0 0 18px;line-height:1.6}
+ h2{font-size:16px;margin:26px 0 10px;display:flex;align-items:center;gap:8px}
+ .rec{background:#c8381e;color:#fff;border-radius:9999px;font-size:11px;padding:2px 8px}
+ .board{background:linear-gradient(135deg,#f6f3ff,#fff);border-radius:18px;padding:22px 26px;border:1px solid #ece8fb}
+ .tags{display:flex;gap:6px;margin-bottom:12px}
+ .tag{display:inline-flex;align-items:center;gap:4px;border-radius:9999px;padding:5px 12px;font-size:12.5px;font-weight:800;text-decoration:none;cursor:pointer;font-family:inherit;border:1px solid #d9d2f7;background:#fff;color:#5b4bc4}
+ .tag:hover{background:#efeaff}
+ .tag.r{background:#c8381e;color:#fff;border-color:#c8381e;cursor:default}
+ .hl{font-size:34px;font-weight:900;line-height:1.2;margin:0}.hl em{font-style:normal;color:#c8381e}
+ .s{margin:10px 0 0;font-size:14px;color:#3a3a3c}
+ .hint{font-size:12px;color:#6e6e73;margin-top:8px}
+ .dim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9;padding:20px}
+ .dim[hidden]{display:none}
+ .win{background:#fff;border-radius:16px;width:min(1100px,100%);height:min(780px,90vh);display:flex;flex-direction:column;overflow:hidden}
+ .wh{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #eee;font-size:13px}
+ .wh b{font-size:14px}.wh a{margin-left:auto;color:#0066cc;font-weight:700;text-decoration:none;font-size:12.5px}
+ .wh button{width:30px;height:30px;border:none;border-radius:50%;background:#f0f0f2;cursor:pointer}
+ iframe{flex:1;border:0;width:100%}
+ .note{font-size:12.5px;color:#6e6e73;line-height:1.75;margin:10px 2px 0}
+</style></head><body><div class="wrap">
+<h1>시안 r65 · '한국자산매입 안심단지' 칩 누르면</h1>
+<p class="sub">아래 두 보드의 왼쪽 위 칩을 직접 눌러 보세요.</p>
+
+<h2>A안 · 새 탭으로 헷지했지 홈페이지 <span class="rec">추천</span></h2>
+<div class="board">
+ <div class="tags"><a class="tag" href="https://hedgehg.kr/" target="_blank" rel="noopener">한국자산매입 안심단지 ↗</a><span class="tag r">신규분양 계약자 무상 가입</span></div>
+ <p class="hl">“사주세요” 하면<br><em>“사드립니다!”</em></p>
+ <p class="s">3년 뒤, 분양가에 다시 사드립니다</p>
+ <p class="hint">칩을 누르면 https://hedgehg.kr 이 새 탭으로 열림 · 우리 사이트는 그대로</p>
+</div>
+
+<h2>B안 · 우리 사이트 안 창으로</h2>
+<div class="board">
+ <div class="tags"><button class="tag" onclick="document.getElementById('d').hidden=false">한국자산매입 안심단지 ⤢</button><span class="tag r">신규분양 계약자 무상 가입</span></div>
+ <p class="hl">“사주세요” 하면<br><em>“사드립니다!”</em></p>
+ <p class="s">3년 뒤, 분양가에 다시 사드립니다</p>
+ <p class="hint">칩을 누르면 화면 위 큰 창 안에 헷지했지 홈페이지 · [새 탭으로 열기] · ✕ 닫기</p>
+</div>
+<div class="dim" id="d" hidden onclick="if(event.target===this)this.hidden=true">
+ <div class="win"><div class="wh"><b>헷지했지 · 한국자산매입</b><span style="color:#8e8e93">hedgehg.kr</span><a href="https://hedgehg.kr/" target="_blank" rel="noopener">새 탭으로 열기 ↗</a><button onclick="document.getElementById('d').hidden=true">✕</button></div>
+ <iframe src="https://hedgehg.kr/" title="헷지했지" loading="lazy"></iframe></div>
+</div>
+
+<p class="note">· B안은 헷지했지 사이트가 막지 않을 때만 보임 (지금은 보임) · 휴대폰에서는 B안도 새 탭으로 여는 쪽이 편함<br>· 두 안 모두 옆 [헷지했지에서 우리 단지 보기 ↗] 버튼은 그대로</p>
+</div></body></html>
