@@ -841,11 +841,11 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
   <!-- 최근 실거래 (국토부 · 서버가 매일 받아 둠, src/gov) — 단지배치 탭 아래 (2026-11-18 대표 요청으로 대라수1차 탭에서 옮김). 받은 거래가 있을 때만 보임 -->
   <sc-if value="{{ tr.trOn }}">
   <div style="background:#fff;border-radius:18px;padding:18px 20px">
-    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:10px"><span style="font-size:20px;font-weight:800">최근 실거래</span><span style="font-size:12.5px;color:#6e6e73">{{ tr.trSub }}</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:8px">
+    <button type="button" onClick="{{ tr.toggle }}" aria-expanded="{{ tr.open }}" style="width:100%;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;border:none;background:none;padding:0;cursor:pointer;text-align:left;font-family:inherit;color:#1d1d1f"><span style="font-size:20px;font-weight:800">최근 실거래</span><span style="font-size:12.5px;color:#6e6e73">{{ tr.trSub }}</span><span style="margin-left:auto;font-size:13px;font-weight:700;color:#0066cc">{{ tr.arrow }}</span></button>
+    <sc-if value="{{ tr.open }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:8px;margin-top:12px">
       <sc-for list="{{ tr.trRows }}" as="t"><div style="display:flex;align-items:center;gap:8px;border:1px solid #ececf0;border-radius:12px;padding:10px 12px;font-size:13px;min-width:0"><span style="flex:none;font-size:11.5px;font-weight:700;border-radius:9999px;padding:2px 8px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.kind }}</span><b style="flex:none">{{ t.type }}</b><span style="flex:none;color:#6e6e73">{{ t.floor }}</span><span style="margin-left:auto;font-weight:800;white-space:nowrap">{{ t.price }}</span><span style="flex:none;color:#8e8e93;font-size:12px">{{ t.ymd }}</span></div></sc-for>
     </div>
-    <div style="margin-top:8px;font-size:11.5px;color:#8e8e93">출처: {{ tr.trSrc }} · 동 · 호는 공개되지 않으며, 59B · 59C 는 전용면적이 같아 함께 표시합니다</div>
+    <div style="margin-top:8px;font-size:11.5px;color:#8e8e93">출처: {{ tr.trSrc }} · 동 · 호는 공개되지 않으며, 59B · 59C 는 전용면적이 같아 함께 표시합니다</div></sc-if>
   </div>
   </sc-if>
 </div>
@@ -5008,7 +5008,8 @@ class Component extends DCLogic {
     const won = v => { v = +v || 0; const e = Math.floor(v / 10000), m = v % 10000; return (e ? e + '억' : '') + (m ? (e ? ' ' : '') + m.toLocaleString() + '만' : ''); };
     const K = { sale: ['매매', '#e8f0fb', '#0066cc'], jeonse: ['전세', '#e8f5ec', '#157a3f'], wolse: ['월세', '#fff4d6', '#6e4a00'] };
     const day = t => { const d = new Date(t + 9 * 3600e3); return d.getUTCFullYear() + '.' + (d.getUTCMonth() + 1) + '.' + d.getUTCDate(); };
-    return { trOn: rows.length > 0, trSrc: T.source || '', trSub: '국토교통부 신고 자료' + (T.updated ? ' · ' + day(T.updated) + ' 갱신' : ''),
+    const open = !!this.state.trOpen;   /* 처음엔 닫힘 (2026-11-18 대표) */
+    return { open, arrow: open ? '접기 ▴' : Math.min(rows.length, 12) + '건 보기 ▾', toggle: () => this.setState({ trOpen: !open }), trOn: rows.length > 0, trSrc: T.source || '', trSub: '국토교통부 신고 자료' + (T.updated ? ' · ' + day(T.updated) + ' 갱신' : ''),
       trRows: rows.slice(0, 12).map(r => { const k = K[r.kind] || K.sale; return { kind: k[0], bg: k[1], fg: k[2], type: r.type, floor: r.floor + '층', price: r.kind === 'sale' ? won(r.price) : r.kind === 'wolse' ? won(r.dep) + ' / ' + r.rent + '만' : won(r.dep), ymd: String(r.ymd).slice(2).split('-').join('.') }; }) };
   }
   gPopLoad() { fetch('/api/public/popups', { cache: 'no-store' }).then(r => r.json()).then(j => { if (j && j.ok) this.setState({ gPops: j.list || [] }); }).catch(() => {}); }
