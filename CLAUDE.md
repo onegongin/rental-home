@@ -7,7 +7,7 @@
 ## 사이트 개요 (2026-11-13 대표 결정)
 - 공개용 + 직원용 겸용. 공개는 **단지소개 · 관심등록이 중심**. 공실 · 분양 가능 세대는 **관리자 모드에서 골라** 공개.
 - 기본틀 = site_Ipark 코드 복사 (보안 · 권한 · 가림 · 알림 · 백업 그대로). 기존 대라수 사이트 기능은 **B안**: `소스/DAELASOO/참고만_CD_DaelaSoo1-main/`(https://cd-daelasoo1.sangmooone.workers.dev 원본, **수정 금지 · git 에 안 올림**)을 보고 다시 만든다.
-- 주소: 첫 화면 `https://rental-home.onegongin.workers.dev/` · 단지 `/daelasoo/` · 직원 `/daelasoo/staff/` · 검색용 `/daelasoo/plan` · `/daelasoo/sitemap.xml` 등 (서버가 SITE_URL 경로 아래에서만 만듦, `src/worker.js` subPath · withBase)
+- **우리 주소 `https://rental-home.kr`** (2026-11-18 iTEASY 구입 · Cloudflare 네임서버 anton/wanda · wrangler routes custom_domain rental-home.kr · www · SITE_URL https://rental-home.kr/daelasoo). 예전 주소도 계속 열림: 첫 화면 `https://rental-home.onegongin.workers.dev/` · 단지 `/daelasoo/` · 직원 `/daelasoo/staff/` · 검색용 `/daelasoo/plan` · `/daelasoo/sitemap.xml` 등 (서버가 SITE_URL 경로 아래에서만 만듦, `src/worker.js` subPath · withBase)
 - GitHub 저장소 · Cloudflare 이름 **rental-home** · Cloudflare 계정 **onegonginn@gmail.com** (하위주소 onegongin) · DB rental-home-db · R2 rental-home-backup · rental-home-media
 
 ## 진행 상황 (단계가 끝날 때마다 이 표와 커밋을 갱신)
