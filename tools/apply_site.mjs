@@ -5,6 +5,7 @@
 //   값: public/daelasoo/data/site.json (site · office · seo) · 사이트 주소는 wrangler.jsonc SITE_URL
 //   실행: node tools/apply_site.mjs          → 바뀐 파일만 다시 씀
 //         node tools/apply_site.mjs --check  → 다시 쓸 게 있으면 목록만 보이고 실패 (tests/site-files.test.js)
+import { leadPopIn } from '../src/seo/lead-pop.js';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
@@ -141,7 +142,8 @@ export function build(root = ROOT) {
   const out = {};
   let f = 'public/daelasoo/index.html', h = rd(f);
   h = region(h, 'head', head(D, U), f);
-  out[f] = region(h, 'info', info(D), f);
+  h = region(h, 'info', info(D), f);
+  out[f] = region(h, 'leadpop', '<!-- 공개 세대 칸 [관심 등록 · 상담 신청] = 그 자리 짧은 창 (src/seo/lead-pop.js leadPopIn, 2026-11-18) -->\n' + leadPopIn('#pub-units', D) + '\n', f);
   f = 'public/daelasoo/staff/index.html';
   out[f] = swap(rd(f), /<title>[^<]*<\/title>/, () => '<title>' + esc(S.name) + ' · 직원 대시보드</title>', f);
   f = 'public/daelasoo/maps/location.html'; h = rd(f);

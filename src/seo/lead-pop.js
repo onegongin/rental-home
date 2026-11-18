@@ -73,7 +73,7 @@ function open(u){visit=u.searchParams.get('visit')==='1';f.reset();er.hidden=tru
  document.getElementById('lp-t').textContent=visit?'방문상담 예약':'관심등록';vb.hidden=!visit;f.interest.value=String(u.searchParams.get('int')||'').slice(0,80);
  last=document.activeElement;dim.hidden=false;document.documentElement.style.overflow='hidden';setTimeout(function(){f.name.focus()},50)}
 function close(){dim.hidden=true;document.documentElement.style.overflow='';if(last&&last.focus)last.focus()}
-document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href]');if(!a||ev.ctrlKey||ev.metaKey||ev.shiftKey)return;var u;try{u=new URL(a.href)}catch(x){return}
+document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href]');if(!a||ev.ctrlKey||ev.metaKey||ev.shiftKey)return;if(window.LP_SCOPE&&!a.closest(window.LP_SCOPE))return;var u;try{u=new URL(a.href)}catch(x){return}
  if(u.origin!==location.origin||!/\\/$/.test(u.pathname)||!(u.searchParams.get('reg')||u.searchParams.get('visit')==='1'))return;ev.preventDefault();open(u)});
 dim.addEventListener('click',function(ev){if(ev.target===dim||ev.target.closest('[data-lp-x]'))close()});
 document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&!dim.hidden)close()});
@@ -93,5 +93,15 @@ f.addEventListener('submit',function(ev){ev.preventDefault();er.hidden=true;
 })();`;
 
 // 페이지 </body> 바로 앞에 붙일 덩어리. config.js · turnstile.js 는 단지 화면 것을 그대로 씀 (withBase 가 /daelasoo/ 아래로 바꿈)
+// 단지 화면(index.html) '지금 입주 · 분양 가능한 세대' 칸 전용 (2026-11-18 대표): 그 칸 안 링크만 이 창으로 — 단지 화면 프로그램의 링크는 건드리지 않음.
+//   config.js · turnstile.js 는 index.html 이 이미 불러 둠. tools/apply_site.mjs 가 <!-- site:leadpop --> 자리에 씀
+export const leadPopIn = (scope, D) => { const s = '<style>' + CSS + '</style>' + HTML + '<script>window.LP_SCOPE=' + JSON.stringify(scope) + ';' + JS.replace(/<\/script/gi, '<\\/script') + '</script>';
+  // D = 만드는 중인 site.json (다른 단지로 바꿔 만들 때 단지 이름 · 사무소가 따라가게)
+  const n0 = DEFAULT_COMPLEX, n1 = ((D || {}).site || {}).name || n0, o1 = (D || {}).office || O;
+  let out = s.split(n0).join(n1);
+  if (O.name && o1.name) out = out.split(O.name).join(o1.name);
+  if (TEL && o1.tel) out = out.split(TEL).join(o1.tel);
+  return out;
+};
 export const leadPop = () => '<style>' + CSS + '</style>' + HTML +
   '<script src="/config.js"></script><script src="/turnstile.js"></script><script>' + JS.replace(/<\/script/gi, '<\\/script') + '</script>';
