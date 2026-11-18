@@ -4661,7 +4661,12 @@ class Component extends DCLogic {
           this.flash('지난 임대차 저장됨'); this.uhLoad(su.id, true); }).catch(() => this.flash('저장하지 못했습니다')); } };
   }
   // 임차만기 탭: 현재 임대차 전체 (/api/staff/tenancies) — 만기 가까운 순, 거르기는 화면에서
-  leaseLoad() { if (this._lsBusy) return; this._lsBusy = true; this.admGet('/api/staff/tenancies').then(j => { this._lsBusy = false; const E = Object.assign({}, this.state.lsEnd); ((j && j.rows) || []).forEach(t => { if (E[t.unit_id] === t.end_date) delete E[t.unit_id]; }); this.setState({ lease: j, lsEnd: E }); })   /* 서버에 반영된 만기일은 화면 임시값 지움 */.catch(() => { this._lsBusy = false; this.setState({ lease: { rows: [], err: true } }); }); }
+  leaseLoad() { if (this._lsBusy) return; this._lsBusy = true; this.admGet('/api/staff/tenancies').then(j => { this._lsBusy = false; const E = Object.assign({}, this.state.lsEnd); ((j && j.rows) || []).forEach(t => { if (E[t.unit_id] === t.end_date) delete E[t.unit_id]; }); this.setState({ lease: j, lsEnd: E }); this.lsFixEnd(); })   /* 서버에 반영된 만기일은 화면 임시값 지움 */.catch(() => { this._lsBusy = false; this.setState({ lease: { rows: [], err: true } }); }); }
+  // 2026-11-18 첫판이 만기일을 세대 자료 맨 위(ocEnd)에 넣어 임대차에 안 들어간 것 → own.ocEnd 로 옮김 (세대 고치기 권한자가 임차만기 탭을 열 때 한 번)
+  lsFixEnd() { const S = this.state, U = S.u || {}, can = ['edit', 'create'].some(k => !!((S.perms || {})[k] || {})[this.rl(S.me)]); if (!can) return;
+    const ids = Object.keys(U).filter(id => U[id] && U[id].ocEnd && !(U[id].own || {}).ocEnd); if (!ids.length) return;
+    ids.forEach(id => this.setUnit(id, { own: Object.assign({}, U[id].own, { ocEnd: U[id].ocEnd }), ocEnd: undefined }));
+    this.flash('만기일 ' + ids.length + '세대를 임대차에 반영했습니다'); setTimeout(() => this.setState({ lease: null }), 4000); }
   leaseVals() {
     const S = this.state, D = this.D; if (!S.lease) { setTimeout(() => this.leaseLoad(), 0); return { loading: true, ready: false }; }
     const all = (S.lease.rows || []).map(t => Object.assign({}, t, { dday: this.ddays(t.end_date) }));
@@ -4685,7 +4690,7 @@ class Component extends DCLogic {
           return { endTxt: !on && !can, endBtn: !on && can, endEdOn: on, endVal: on ? E.v || '' : '', endLbl: noEnd ? '— 입력' : cur, endBs: noEnd ? 'dashed' : 'solid', endBg: noEnd ? '#f0f6ff' : '#fff',
             endOpen: () => this.setState({ lsEd: { id: t.unit_id, v: cur } }), endSet: e => this.setState({ lsEd: { id: t.unit_id, v: e.target.value } }), endCancel: () => this.setState({ lsEd: null }),
             endSave: () => { const v = (S.lsEd || {}).v || ''; if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return this.flash('만기일을 골라 주세요');
-              if (v === cur) return this.setState({ lsEd: null }); this.setUnit(t.unit_id, { ocEnd: v }); this.setState(ss => ({ lsEd: null, lsEnd: Object.assign({}, ss.lsEnd, { [t.unit_id]: v }) })); this.flash(t.dong + '동 ' + t.ho + '호 만기일 ' + (cur ? cur + ' → ' : '') + v + ' 저장');
+              if (v === cur) return this.setState({ lsEd: null }); this.setUnit(t.unit_id, { own: Object.assign({}, ((this.state.u || {})[t.unit_id] || {}).own, { ocEnd: v }), ocEnd: undefined });   /* 임대차 칸은 세대 자료 own 안 (세대DB 와 같음) */ this.setState(ss => ({ lsEd: null, lsEnd: Object.assign({}, ss.lsEnd, { [t.unit_id]: v }) })); this.flash(t.dong + '동 ' + t.ho + '호 만기일 ' + (cur ? cur + ' → ' : '') + v + ' 저장');
               setTimeout(() => this.setState({ lease: null }), 4000); } }; })(),
         kind: t.kind, kindBg: this.kindBg(t.kind), price: this.tenPrice(t), name: t.name || '—', phone: t.phone || '', end: (S.lsEnd || {})[t.unit_id] || t.end_date || '—', right: t.renewal_right || '—', party: this.partyTxt(t),
         go: () => this.setState({ tab: 'db', dbSel: t.unit_id, dbDraft: null, uhTab: 'ten' }) }; }) };
