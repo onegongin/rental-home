@@ -12,7 +12,8 @@ export const KINDS = {
 };
 // base(알림 속 직원 화면 주소) 기본값 = wrangler.jsonc SITE_URL
 export const CFG0 = { group: '', groupTitle: '', quiet: [21, 8], off: [], bot: '', base: '' };
-export const cfgOf = (v, env) => Object.assign({}, CFG0, { base: String((env && env.SITE_URL) || '').replace(/\/$/, '') }, v && typeof v === 'object' ? v : {});
+// 알림 링크 주소 = 사이트 대표 주소(SITE_URL, 예 https://rental-home.kr/daelasoo)가 있으면 늘 그것 — 예전에 저장된 base(workers.dev · /daelasoo 빠짐)는 무시 (2026-11-18 rental-home.kr 연결)
+export const cfgOf = (v, env) => { const site = String((env && env.SITE_URL) || '').replace(/\/$/, ''), c = Object.assign({}, CFG0, { base: site }, v && typeof v === 'object' ? v : {}); if (site) c.base = site; return c; };
 export const loadNotifyCfg = async (db, env) => cfgOf(await getOne(db, 'cfg', 'notify'), env);
 export const saveNotifyCfg = (db, c, by) => putRows(db, [{ s: 'cfg', k: 'notify', v: JSON.stringify(cfgOf(c)), at: Date.now(), by }]);
 
