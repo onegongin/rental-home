@@ -34,7 +34,7 @@ function head(D, U) {
     '<meta name="description" content="' + esc(E.description) + '">',
     '<meta name="keywords" content="' + esc(E.keywords) + '">',
     '<meta name="robots" content="index,follow">',
-    V.naver ? '<meta name="naver-site-verification" content="' + esc(V.naver) + '" />' : null,
+    ...[].concat(V.naver || []).map(k => '<meta name="naver-site-verification" content="' + esc(k) + '" />'),   // 여러 주소 (workers.dev · rental-home.kr)
     V.google ? '<meta name="google-site-verification" content="' + esc(V.google) + '" />' : null,
     '<meta property="og:type" content="website">',
     '<meta property="og:locale" content="ko_KR">',
