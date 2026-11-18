@@ -46,7 +46,7 @@ export async function staffListings(req, env, url, u) {
     await fillUnitBoard(db);   // 손님 화면 공개 세대 → 광고중 카드 (시안 r56)
     const [rows, cfg, grants] = await Promise.all([LR.boardRows(db), LR.loadCfg(db), LR.myGrants(db, u.name)]);
     const owners = await LR.ownersOf(db, rows.map(r => r.unit_id));
-    return J({ ok: true, st: ST, deals: DEALS, rows: rows.map(l => shape(u, l, owners[l.unit_id], grants[l.id], cfg)) });
+    return J({ ok: true, st: ST, deals: DEALS, cfg, rows: rows.map(l => shape(u, l, owners[l.unit_id], grants[l.id], cfg)) });   // cfg = 공개 설정 저장값 (창이 불러 씀)
   }
 
   const m = p.match(/^\/api\/staff\/listings\/([0-9A-Z]{26})(?:\/(status|publish|assign|grants))?$/);
