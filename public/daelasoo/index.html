@@ -63,6 +63,7 @@ a{color:#0066cc;text-decoration:none}a:hover{text-decoration:underline}
 <!-- R2 공개 세대 (시안 preview/r2-public-pick 확정 2026-11-13) — 관리자가 고른 공실 · 퇴거확정(매물동의) 세대. 동 · 층구간 · 타입만, 공개 세대가 없으면 칸 자체를 숨김 -->
 <section id="pub-units" hidden style="max-width:1760px;margin:0 auto;padding:28px 20px 0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#1d1d1f">
   <style>
+    html[data-gtab=glist] #pub-units{display:none!important} /* 현재 매물 탭에선 겹쳐서 숨김 (2026-11-18 대표) */
     #pub-units h2{font-size:20px;font-weight:800;margin:0 0 4px}
     #pub-units .pu-lead{color:#6e6e73;font-size:14px;margin:0 0 14px;line-height:1.5}
     #pub-units .pu-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
