@@ -12,6 +12,9 @@
   "placement": { "mode": "smart" },
   // 우리 주소 rental-home.kr (2026-11-18 iTEASY 구입 · Cloudflare 네임서버). www 는 서버가 rental-home.kr 로 넘김. 예전 workers.dev 주소도 계속 열림
   "routes": [{ "pattern": "rental-home.kr", "custom_domain": true }, { "pattern": "www.rental-home.kr", "custom_domain": true }],
+  // routes 를 넣으면 workers.dev 주소 · 미리보기(stage1) 주소가 기본으로 꺼짐 → 예전 주소 · 미리보기 계속 쓰려고 켬 (2026-11-18)
+  "workers_dev": true,
+  "preview_urls": true,
   // SITE_URL = 단지 주소 (경로 /daelasoo 포함). 사이트맵 · RSS · 검색용 페이지 · 알림 링크 · robots.txt 가 모두 이 값을 씀
   //   검색용 페이지(/daelasoo/plan · /daelasoo/listings · /daelasoo/sitemap.xml …)는 서버가 이 경로 아래에서만 만든다 (src/worker.js)
   // DB_DRIVER: "d1"(지금) | "supabase"(필요할 때, _설계서/Supabase_전환_안내.md)
