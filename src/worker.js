@@ -31,8 +31,20 @@ export async function withBase(res, bp) {
   return new Response(h, { status: res.status, headers: res.headers });
 }
 
+// 대표 주소로 넘기기 (301, 2026-11-18 대표): 예전 rental-home.onegongin.workers.dev · www.rental-home.kr → SITE_URL 의 주소(rental-home.kr), 경로 · ? 그대로
+//   미리보기(stage1-… · 버전 번호-…workers.dev)는 넘기지 않음. 예전 주소의 /api/ 는 열려 있던 화면이 깨지지 않게 넘기지 않음
+export function moveTo(url, env) {
+  let to; try { to = new URL(String((env && env.SITE_URL) || '')).origin; } catch (e) { return null; }
+  const h = url.hostname, home = new URL(to).hostname;
+  if (h === home) return null;
+  const old = /\.workers\.dev$/.test(h) && h.split('.')[0] === 'rental-home' && !url.pathname.startsWith('/api/');
+  if (!old && h !== 'www.' + home) return null;
+  return to + url.pathname + url.search;
+}
+
 export default {
   async fetch(req, env0, ctx) {
+    const mv = moveTo(new URL(req.url), env0); if (mv) return Response.redirect(mv, 301);   // 예전 주소 · www → rental-home.kr (2026-11-18)
     const url = new URL(req.url), p = url.pathname, sp = subPath(p, basePath(env0)), seo = sp !== null && isSeoPath(sp, env0);
     if (!p.startsWith('/api/') && !seo) return env0.ASSETS.fetch(req);
     const conn = openDb(env0);

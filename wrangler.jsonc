@@ -6,7 +6,9 @@
   "main": "src/worker.js",
   "assets": {
     "directory": "./public",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // 예전 주소 · www 를 넘기려고 화면 파일도 서버 코드를 먼저 거침 — 그림(assets)은 빼서 요청 수 아낌 (2026-11-18)
+    "run_worker_first": ["/*", "!/daelasoo/assets/*"]
   },
   // 서버 자리 자동 조정: 한국 손님이 LA 쪽으로 연결돼도 DB(APAC) 가까이에서 서버 코드를 돌림 (아이파크 2026-11-05 속도 경험)
   "placement": { "mode": "smart" },
