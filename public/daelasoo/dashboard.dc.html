@@ -838,6 +838,16 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
   </div>
   </div>
 </div>
+  <!-- 최근 실거래 (국토부 · 서버가 매일 받아 둠, src/gov) — 단지배치 탭 아래 (2026-11-18 대표 요청으로 대라수1차 탭에서 옮김). 받은 거래가 있을 때만 보임 -->
+  <sc-if value="{{ tr.trOn }}">
+  <div style="background:#fff;border-radius:18px;padding:18px 20px">
+    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:10px"><span style="font-size:20px;font-weight:800">최근 실거래</span><span style="font-size:12.5px;color:#6e6e73">{{ tr.trSub }}</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:8px">
+      <sc-for list="{{ tr.trRows }}" as="t"><div style="display:flex;align-items:center;gap:8px;border:1px solid #ececf0;border-radius:12px;padding:10px 12px;font-size:13px;min-width:0"><span style="flex:none;font-size:11.5px;font-weight:700;border-radius:9999px;padding:2px 8px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.kind }}</span><b style="flex:none">{{ t.type }}</b><span style="flex:none;color:#6e6e73">{{ t.floor }}</span><span style="margin-left:auto;font-weight:800;white-space:nowrap">{{ t.price }}</span><span style="flex:none;color:#8e8e93;font-size:12px">{{ t.ymd }}</span></div></sc-for>
+    </div>
+    <div style="margin-top:8px;font-size:11.5px;color:#8e8e93">출처: {{ tr.trSrc }} · 동 · 호는 공개되지 않으며, 59B · 59C 는 전용면적이 같아 함께 표시합니다</div>
+  </div>
+  </sc-if>
 </div>
 </sc-if>
 
@@ -2983,16 +2993,6 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <sc-for list="{{ si.smSide }}" as="t"><button onClick="{{ t.zoom }}" title="크게 보기" aria-label="{{ t.alt }} 크게 보기" style="flex-shrink:0;border:none;padding:0;border-radius:10px;overflow:hidden;cursor:zoom-in;background:#fff"><img loading="lazy" src="{{ t.src }}" alt="{{ t.alt }}" style="display:block;width:100%;height:auto"></button></sc-for>
       <sc-if value="{{ si.smEmpty }}"><div style="flex:1 1 auto;min-height:clamp(240px,30vw,535px);border:2px dashed #ececf0;border-radius:12px"></div></sc-if>
     </div>
-  </div>
-  </sc-if>
-  <!-- 최근 실거래 (국토부 · 서버가 매일 받아 둠, src/gov · A안 2026-11-13). 받은 거래가 있을 때만 보임 -->
-  <sc-if value="{{ si.trOn }}">
-  <div style="background:#fff;border-radius:18px;padding:18px 20px">
-    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:10px"><span style="font-size:20px;font-weight:800">최근 실거래</span><span style="font-size:12.5px;color:#6e6e73">{{ si.trSub }}</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:8px">
-      <sc-for list="{{ si.trRows }}" as="t"><div style="display:flex;align-items:center;gap:8px;border:1px solid #ececf0;border-radius:12px;padding:10px 12px;font-size:13px;min-width:0"><span style="flex:none;font-size:11.5px;font-weight:700;border-radius:9999px;padding:2px 8px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.kind }}</span><b style="flex:none">{{ t.type }}</b><span style="flex:none;color:#6e6e73">{{ t.floor }}</span><span style="margin-left:auto;font-weight:800;white-space:nowrap">{{ t.price }}</span><span style="flex:none;color:#8e8e93;font-size:12px">{{ t.ymd }}</span></div></sc-for>
-    </div>
-    <div style="margin-top:8px;font-size:11.5px;color:#8e8e93">출처: {{ si.trSrc }} · 동 · 호는 공개되지 않으며, 59B · 59C 는 전용면적이 같아 함께 표시합니다</div>
   </div>
   </sc-if>
   <!-- 헷지했지 매입보장 혜택 보드 — '단지 개요' 칸 자리 (site.json content.hedge, 시안 r15-hedge-soft 확정 2026-11-14). 그림 = assets/dls/hedge/ -->
@@ -5437,7 +5437,7 @@ class Component extends DCLogic {
     this._heroTs = e => { const h = e.target.closest && e.target.closest('[data-m=sihero]'); if (e.type === 'touchstart') { this._heroX = h ? e.touches[0].clientX : null; return; } if (this._heroX == null) return; const d = e.changedTouches[0].clientX - this._heroX; this._heroX = null; if (Math.abs(d) > 40) this.heroGo((this.state.siHero || 0) + (d < 0 ? 1 : -1)); }; document.addEventListener('touchstart', this._heroTs, { passive: true }); document.addEventListener('touchend', this._heroTs, { passive: true });
     this._bzTs = e => { const h = e.target.closest && e.target.closest('[data-m=bzslide]'); if (e.type === 'touchstart') { this._bzX = h ? e.touches[0].clientX : null; return; } if (this._bzX == null) return; const d = e.changedTouches[0].clientX - this._bzX; this._bzX = null; if (Math.abs(d) > 40) this.setState({ bzI: (this.state.bzI || 0) + (d < 0 ? 1 : -1) }); }; document.addEventListener('touchstart', this._bzTs, { passive: true }); document.addEventListener('touchend', this._bzTs, { passive: true });   // 사업개요 큰 칸 슬라이드 손가락 밀기 (r31)
     this._vwRs = () => { clearTimeout(this._vwT); this._vwT = setTimeout(() => this.setState({ vw: window.innerWidth }), 150); }; window.addEventListener('resize', this._vwRs);   // 팝업 한 번에 몇 개 (3 · 2 · 1)
-    if (this.props.guestOnly) { this.gPopLoad(); this.gTrLoad(); }   // 공개 팝업은 서버에서 (그림 · 글만 · 첨부)
+    if (this.props.guestOnly) this.gPopLoad(); this.gTrLoad();   /* 최근 실거래 = 단지배치 탭 (손님 · 직원) */   // 공개 팝업은 서버에서 (그림 · 글만 · 첨부)
     if (this.props.guestOnly) { try { const q = new URLSearchParams(location.search); const TM = { city: 'gcity', plan: 'gcity', overview: 'guest', board: 'gboard', option: 'goption', price: 'gprice', list: 'glist' }; const o = {}; if (TM[q.get('tab')]) o.tab = TM[q.get('tab')]; const ty = q.get('type'); if (ty && this.D.types[ty]) { o.planOpen = ty; o.tab = o.tab || 'gcity'; } if (q.get('ad') || ty || q.get('visit') || q.get('reg') || q.get('tab')) o.ntClosed = true; if (q.get('reg') === '1' || q.get('visit') === '1') this._noPop = true; if (q.get('reg') === '1') { o.gRegOpen = true; o.gReg = this.gBlank('seller', ''); } if (q.get('reg') === 'client') { this._noPop = true; o.gRegOpen = true; o.gReg = Object.assign(this.gBlank('client', ''), { interest: String(q.get('int') || '').slice(0, 80) }); } if (q.get('visit') === '1') { const vk = this.D.generic ? 'client' : 'buyer'; o.gRegOpen = true; o.gReg = Object.assign(this.gBlank(vk), { kind: vk, visit: true, err: '' }); } if (Object.keys(o).length) this.setState(o); } catch (x) {} }
     this._hdt = () => { const h = document.querySelector('[data-cc-head]'); if (!h) return; const n = h.querySelector('[data-m=nav]'); if (window.innerWidth < 1100 && n && h.querySelector('[data-m=fam]')) h.style.setProperty('--hdt', -n.offsetTop + 'px'); else h.style.removeProperty('--hdt'); };
     window.addEventListener('resize', this._hdt); setTimeout(this._hdt, 300); setTimeout(this._hdt, 1500);
@@ -5509,7 +5509,6 @@ class Component extends DCLogic {
           bzZoom: () => this.setState({ siZoom: ZS[bi][0], siZoomSet: ZS, siZoomI: bi }),
           gal: GS.map(([f, c], i) => ({ src: P(f), alt: D.S.site.name + ' ' + (c || '투시도'), cap: c || '', cls: (i || sl) ? 'bzg-ph' : 'bzg-ph bzg-main', isMain: !i && !sl,
           zoom: () => this.setState({ siZoom: P(f), siZoomSet: ZS, siZoomI: off + i }) })) }; })((C.overview || {}).gallery || []), /* 3번째 값 = 확대 창 사진 안 안내 글(연회색, 예: AI 생성 이미지) */
-      ...this.trVals(),
       hasSiteMap: !!((C.siteMap || {}).map || (C.siteMap || {}).photo), smHasMap: !!(C.siteMap || {}).map, smNoMap: !(C.siteMap || {}).map && !!(C.siteMap || {}).photo, smPhoto: (C.siteMap || {}).photo ? P((C.siteMap || {}).photo) : '', smPhotoAlt: (C.siteMap || {}).photoAlt || D.S.site.name + ' 주변', smPhotoZoom: (C.siteMap || {}).photo ? zoom(P((C.siteMap || {}).photo)) : () => {}, smTitle: (C.siteMap || {}).title || '사업지', smSub: (C.siteMap || {}).sub || '', smMap: (C.siteMap || {}).map ? (C.siteMap || {}).map + ((C.siteMap || {}).spots ? '?p=' + (S.smSpot || 0) : '') : '',
       /* 생활시설 칩 (시안 r9-map B안 2026-11-14): S.smSpot = 고른 칩 번호(1부터, 0 = 단지 전체) → 지도 · 크게 보기 링크 · 테두리 */
       ...((SP, k) => ({ smHasSpots: !!SP.length && !!(C.siteMap || {}).map, smSpotsTitle: (C.siteMap || {}).spotsTitle || '보고 싶은 생활시설을 누르세요', smSel: k > 0 && !!SP[k - 1], smWhere: k > 0 && SP[k - 1] ? SP[k - 1].name : '',
@@ -7261,7 +7260,7 @@ cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.com
       typeSumText: Object.keys(D.types).length + '개 타입 · 합계 ' + D.units.length.toLocaleString(), isChamps: !D.generic, isSite: !!D.generic, siteName: D.generic ? D.S.site.name : '', siteLogo: D.generic ? 'assets/' + D.S.site.code + '/' + D.S.site.logo : '',
       overviewHint: isGuest ? '동을 누르면 유니트 배치가 확대됩니다' : '동을 누르면 유니트 배치가 확대되고, 팝업에서 동호배치표로 이동합니다',
       guestRows: /* 게스트 칸 (시안 guest-settings 확정 2026-11-03) — 공개 사이트 탭 → 방문상담 단추 → 직원 미리 보기. 옛 'public'(챔피언스시티 파일용) 스위치는 뺌 */ [['noCity', (((window.__SITE || {}).site || {}).short || '단지') + ' 소개 탭 숨기기', '켜면 맨 앞 소개 탭(사업개요 · 입지환경 · 단지 개요 · 평면 안내)을 뺍니다'], ['noBoard', '동호배치표 탭 숨기기', '켜면 공개 사이트에서 동호배치표 탭을 뺍니다'], ['noOption', '옵션계산기 탭 숨기기', '켜면 공개 사이트에서 옵션계산기 탭을 뺍니다 · 손님이 고른 옵션은 저장되지 않습니다'], ['noPrice', '분양가표 탭 숨기기', '켜면 공개 사이트에서 분양가표 탭을 뺍니다'], ['noCmt', '호실 이야기(댓글) 숨기기', '켜면 동호배치표 호실 안내 아래 댓글 칸을 숨깁니다'], ['visit', '방문상담 예약 단추', '켜면 공개 사이트 위쪽 보드에 [방문상담 예약] 단추가 보입니다 · 관심등록 단추는 항상 있음'], ['enabled', '직원 화면에서 미리 보기', "켜면 직원 화면 위쪽에 '게스트' 탭들이 생겨 공개 사이트를 그대로 볼 수 있습니다"], ['hideStaff', '미리 보기 탭 잠깐 숨기기', '켜면 직원 화면에서만 게스트 탭을 뺍니다 · 공개 사이트에는 영향 없음']].map(([k, l, desc]) => { const on = k === 'visit' ? GS.visit !== false : !!GS[k]; return { label: l, desc, bg: on ? '#34c759' : '#e5e5ea', knob: on ? '21px' : '3px', infoOn: S.gTip === k, infoFg: S.gTip === k ? '#0066cc' : '#8e8e93', info: e => { if (e) { e.stopPropagation(); e.preventDefault(); } this.setState({ gTip: S.gTip === k ? null : k }); }, onClick: e => { if (e && e.target && e.target.closest && e.target.closest('[data-mo=ginfo]')) return; this.setState(ss => ({ guest: Object.assign({}, ss.guest, { [k]: !on }) })); } }; }),
-      isOverview: tab === 'overview' || isGuest, isBoard: tab === 'board' || isGB, isOption: tab === 'option' || isGO, isCard: tab === 'card', isLog: tab === 'log', isPrice: (tab === 'price' || isGP) && !D.generic, isPrice2: (tab === 'price' || isGP) && !!D.generic, pt, isCity: !D.generic && (tab === 'city' || isGC), city: D.generic ? {} : this.cityVals(), isSiteIntro: !!D.generic && (tab === 'city' || isGC), si: D.generic && (tab === 'city' || isGC || this.state.siZoom) ? this.siteIntroVals() : {}, /* siZoom: 단지배치 탭 단지 조경 크게 보기도 이 창을 씀 */
+      tr: tab === 'overview' || isGuest ? this.trVals() : {}, isOverview: tab === 'overview' || isGuest, isBoard: tab === 'board' || isGB, isOption: tab === 'option' || isGO, isCard: tab === 'card', isLog: tab === 'log', isPrice: (tab === 'price' || isGP) && !D.generic, isPrice2: (tab === 'price' || isGP) && !!D.generic, pt, isCity: !D.generic && (tab === 'city' || isGC), city: D.generic ? {} : this.cityVals(), isSiteIntro: !!D.generic && (tab === 'city' || isGC), si: D.generic && (tab === 'city' || isGC || this.state.siZoom) ? this.siteIntroVals() : {}, /* siZoom: 단지배치 탭 단지 조경 크게 보기도 이 창을 씀 */
       hotspots, groupLegend, groupCards, typeList, spGarden, ip, typeRows, typeRowsOn: typeRows.length > 0, typeGridOn: !typeRows.length,
       groupChips, colorModes, togglePrice: () => { if (D.generic) this.prLoad(); this.setState({ showPrice: !S.showPrice }); }, priceSegOn: !!S.showPrice && D.generic && !guestOnly && !this._gm, priceSeg: this.prSeg(), priceChip, filterChips, axis, bldgs, legend, bgridCols, bgridM,
       noSelText: isGB ? '배치표에서 호실을 누르면 타입 개요 · 공급안내 · 평면이 표시됩니다' : '배치표에서 호실을 누르면 타입 개요 · 분양가 · 확장비 · 옵션 · 프리미엄 · 납부현황이 표시됩니다', boardStaff: !isGB, showGuestNav: guestOnly && vis.length > 1,
