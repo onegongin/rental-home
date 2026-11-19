@@ -10,12 +10,15 @@ export const maskText = t => String(t)
 const DROP = new Set(['memo', 'birth']);          // 민감 칸: 비워서 보냄
 const NAME = /^(name|owner|tenant)$/;
 const PHONE = /phone|tel/i;
+// 카드 번호 · 손님 등록 번호 · 올린 묶음 번호 (c + 13자리 등) — 전화번호처럼 보여도 가리지 않음 (2026-11-19: 가리면 남이 쓴 카드가 모두 같은 번호가 되던 것 고침)
+const ID = /^(id|fromGuest|legacy|pid)$|Id$/;
 
 export function maskDeep(v, key) {
   if (Array.isArray(v)) return v.map(x => maskDeep(x, key));
   if (v && typeof v === 'object') { const o = {}; for (const k of Object.keys(v)) o[k] = maskDeep(v[k], k); return o; }
   if (typeof v !== 'string' || !v) return v;
   if (DROP.has(key)) return '';
+  if (ID.test(key || '') && /^[A-Za-z]{0,4}\d{6,}[A-Za-z0-9-]*$/.test(v)) return v;
   if (PHONE.test(key || '')) return maskPhone(v);
   if (NAME.test(key || '')) return maskName(v);
   return maskText(v);

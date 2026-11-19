@@ -2,6 +2,7 @@
 import { J, body, ip, device } from '../lib/http.js';
 import { can } from '../core/permissions.js';
 import { maskDeep, unmask } from '../core/mask.js';
+import { pkSigner, withPk } from './pk.js';
 import { pullRows, getMany, getOne, putRows, histRows, parse } from '../repo/kv.js';
 import { audit } from '../repo/audit.js';
 import { staffComments } from './comments.js';
@@ -64,7 +65,9 @@ export async function staffApi(req, env, url, u) {
     const since = Number(url.searchParams.get('since')) || 0, LIM = 3000;
     // 설정 · 상담카드(kv) + 세대(units 표)를 동기화 번호 순으로 합침
     const rows = (await pullRows(db, since, LIM)).concat(await R.pullUnits(since, LIM)).sort((a, b) => a.sv - b.sv).slice(0, LIM);
-    return J({ ok: true, now: rows.length ? rows[rows.length - 1].sv : since, more: rows.length === LIM, rows: rows.map(r => view(u, r, perms)).filter(Boolean) });
+    const sign = await pkSigner(env), out = [];   // 상담카드에 사람 표시 pk (시안 r66)
+    for (const r of rows) { const x = await withPk(sign, r, view(u, r, perms)); if (x) out.push(x); }
+    return J({ ok: true, now: rows.length ? rows[rows.length - 1].sv : since, more: rows.length === LIM, rows: out });
   }
 
   if (p === '/api/staff/push' && req.method === 'POST') {
@@ -78,6 +81,7 @@ export async function staffApi(req, env, url, u) {
     for (const x of rows) {
       const k = String(x.k), stored = cur[x.s + '|' + k];
       let v = typeof x.v === 'string' ? parse(x.v) : x.v;
+      if (x.s === 'c' && v && typeof v === 'object') delete v.pk;   // 사람 표시는 서버가 보낼 때마다 만듦 — 저장 안 함
       const del = v == null;
       let allow = false;
       if (x.s === 'cfg') allow = can(u, 'cfg.write', k, perms);

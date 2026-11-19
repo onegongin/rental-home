@@ -6152,10 +6152,10 @@ class Component extends DCLogic {
   // ── 계약관리 진행 → 동호배치표 (시안 r52 A안 확정 2026-11-17) ──
   //   손님별 가장 최근 계약관리 카드의 계약할 호실 · 단계(가계약 · 계약중 · 계약완료). 다른 호실로 바꾸거나 단계를 지우면 빠짐
   ctMap() { const S = this.state, last = {}, m = {};
-    (S.cards || []).forEach(c => { if (c.kind !== 'client' || c.deleted || !c.ct) return; const k = this.gDig(c.phone) || c.id; if (!last[k] || this.gTs(c.id) > this.gTs(last[k].id)) last[k] = c; });
+    (S.cards || []).forEach(c => { if (c.kind !== 'client' || c.deleted || !c.ct) return; const k = this.pKey(c) || c.id; if (!last[k] || this.gTs(c.id) > this.gTs(last[k].id)) last[k] = c; });
     Object.values(last).forEach(c => { const ct = c.ct; if (ct.unit && this.CTK.includes(ct.prog) && (!m[ct.unit] || this.gTs(c.id) > this.gTs(m[ct.unit].c.id))) m[ct.unit] = { k: ct.prog, c }; }); return m; }
-  ctTrail(id, M) { const m = (M || this.ctMap())[id]; if (!m) return null; const S = this.state, ph = this.gDig(m.c.phone);
-    const L = (S.cards || []).filter(c => c.kind === 'client' && !c.deleted && c.ct && c.ct.unit === id && c.ct.prog && (c.id === m.c.id || (ph && this.gDig(c.phone) === ph))).sort((a, b) => this.gTs(a.id) - this.gTs(b.id));
+  ctTrail(id, M) { const m = (M || this.ctMap())[id]; if (!m) return null; const S = this.state, ph = this.pKey(m.c);
+    const L = (S.cards || []).filter(c => c.kind === 'client' && !c.deleted && c.ct && c.ct.unit === id && c.ct.prog && (c.id === m.c.id || (ph && this.pKey(c) === ph))).sort((a, b) => this.gTs(a.id) - this.gTs(b.id));
     const ci = this.CTK.indexOf(m.k); return { cur: m.k, ci, last: m.c, steps: this.CTK.slice(0, ci + 1).map(k => { const cs = L.filter(c => c.ct.prog === k); return { k, first: cs[0] || null, c: cs[cs.length - 1] || null }; }) }; }
   ctKv(c) { if (!c) return []; const ct = c.ct || {}, sv = this.seeCust(c), w = v => Number(v) ? (Number(v) / 1e4).toLocaleString() + '만' : '', md = v => v ? String(v).slice(5).replace('-', '.') : '';
     return [['계약자', [sv ? c.name : this.maskN(c.name), sv ? c.phone : this.maskP(c.phone)].filter(Boolean).join(' · ')], ['적용가', (ct.basis === 'benefit' ? '10.16 혜택가' : '매입보장가') + (Number(ct.price) ? ' ' + (Number(ct.price) / 1e8).toFixed(2) + '억' : '')], ['계약금', w(ct.dep)], ['입금예정', md(ct.date)], ['자금', ct.fund && ct.fund !== '미정' ? ct.fund : ''],
@@ -6200,8 +6200,13 @@ class Component extends DCLogic {
   limpBatches() { const m = {}; (this.state.cards || []).forEach(c => { if (c.legacy) m[c.legacy] = (m[c.legacy] || 0) + 1; }); return Object.keys(m).sort().reverse().map(b => { const d = new Date(Number(b.slice(3)) || 0), p2 = n => String(n).padStart(2, '0'); return { batch: b, n: m[b], at: d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) }; }); }
   limpUndo(b) { if (!window.confirm(b.at + ' 에 올린 기존 이력 ' + b.n + '줄을 지울까요? (그 뒤 새로 쓴 상담카드는 그대로)')) return;
     this.setState(ss => ({ cards: (ss.cards || []).filter(c => c.legacy !== b.batch) })); this.flash('기존 이력 ' + b.n + '줄을 지웠습니다'); }
-  // 상담 N차 (시안 r54 A안 확정 2026-11-17, 기존 사이트와 같은 셈): 임차인 · 개인 소유자 = 같은 호실, 신규분양 매수 · 전세 희망 = 같은 연락처(없으면 이름) · 날짜 순 · 손님 등록(게스트)은 '접수'로 따로
-  seqKeyOf(c) { if (!c || c.guest) return ''; if ((c.kind === 'seller' || c.kind === 'owner' || !c.kind) && c.unit) return 'U|' + c.unit; const ph = this.gDig(c.phone); if (ph.length >= 9) return 'P|' + ph; const nm = String(c.name || '').trim(); return nm ? 'N|' + nm : (c.unit ? 'U|' + c.unit : ''); }
+  // 같은 사람 표시 (시안 r66 A안 확정 2026-11-19): 서버가 카드마다 pk 를 붙여 보냄 — p… = 같은 연락처, n… = 연락처 없을 때 이름(임차인 · 소유자는 호실 + 이름)
+  //   연락처가 가려진 직원 화면도 같은 숫자. 아직 서버에 안 간 카드는 원래 번호로 셈(pAlias = 번호 → pk)
+  pAlias() { const L = this.state.cards || []; if (this._paL === L) return this._pa; const m = {}; L.forEach(c => { const d = this.gDig(c.phone); if (c.pk && c.pk[0] === 'p' && d.length >= 9) m[d] = c.pk; }); this._paL = L; this._pa = m; return m; }
+  pKey(c) { if (!c) return ''; if (c.pk && c.pk[0] === 'p') return c.pk; const d = this.gDig(c.phone); return d.length >= 9 ? (this.pAlias()[d] || 'd' + d) : ''; }
+  // 상담 N차 (시안 r54 → r66 A안 2026-11-19): 같은 연락처 = 같은 사람 (구분 · 호실 · 쓴 직원이 달라도), 연락처 없으면 이름(임차인 · 소유자는 호실 + 이름) · 날짜 순 · 손님 등록(게스트)은 '접수'로 따로
+  seqKeyOf(c) { if (!c || c.guest) return ''; const pk = this.pKey(c); if (pk) return 'P|' + pk; if (c.pk) return 'N|' + c.pk; const nm = String(c.name || '').trim(), isU = c.kind === 'seller' || c.kind === 'owner' || !c.kind;
+    if (isU && c.unit) return 'U|' + c.unit + '|' + nm; return nm ? 'N|' + nm : (c.unit ? 'U|' + c.unit : ''); }
   seqMap(cards) { const L = (cards || this.state.cards || []).filter(c => !c.deleted && this.seqKeyOf(c)).sort((a, b) => String(a.at || '').localeCompare(String(b.at || '')) || this.gTs(a.id) - this.gTs(b.id)), n = {}, m = {};
     L.forEach(c => { const k = this.seqKeyOf(c); n[k] = (n[k] || 0) + 1; m[c.id] = { n: n[k], k }; }); Object.keys(m).forEach(id => { const x = m[id]; x.tot = n[x.k]; x.last = x.n === x.tot; }); return m; }
   seqNext(c) { const k = this.seqKeyOf(Object.assign({}, c, { guest: false })); return k ? (this.state.cards || []).filter(x => !x.deleted && this.seqKeyOf(x) === k).length + 1 : 1; }
