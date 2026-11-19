@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r66 · 상담 N차 셈</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px} .lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+.box{padding:16px 18px;margin-bottom:16px}
+.box h2{font-size:16px;margin:0 0 10px}
+.rule{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rule div{background:#f7f8fb;border-radius:10px;padding:12px;font-size:13px;line-height:1.55}
+.rule b{display:block;font-size:14px;margin-bottom:4px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--sub);font-weight:600;font-size:12px}
+.sq{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700}
+.s1{background:#f0f0f2;color:#6e6e73}.sn{background:#e8f0fb;color:#0066cc}.sl{background:#0066cc;color:#fff}
+.bad td{background:#fff3f0}.bad .why{color:#c8381e}
+.good td{background:#f0faf3}.good .why{color:#157a3f}
+.why{font-size:12px;white-space:normal}
+.tag{font-size:11px;padding:1px 6px;border-radius:6px;background:#f0f0f2;color:#6e6e73;margin-left:4px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.6;margin-top:8px}
+.opt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.opt div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55}
+.opt .rec{border-color:#0066cc;background:#f5f9ff}
+.scroll{overflow-x:auto}
+@media (max-width:560px){.rule,.cmp,.opt{grid-template-columns:1fr}.wrap{padding:16px}}
+</style></head><body><div class="wrap">
+<h1>시안 r66 · 상담이력대장 N차 셈 고치기</h1>
+<p class="lead">지금 문제: <b>일반 직원 화면</b>에서는 다른 직원이 쓴 카드의 연락처가 <code>010-****-****</code> 로 가려져 와서, 차수를 <b>가린 이름(김*수)</b>으로 셉니다.<br>
+→ 같은 손님인데 쓴 직원이 다르면 1차부터 다시 세고, 김민수 · 김진수처럼 다른 사람이 한 사람으로 묶입니다. (대표 · 관리자 화면은 원래 연락처가 보여 맞게 나옴)</p>
+
+<div class="card box"><h2>고친 뒤 규칙</h2>
+<div class="rule">
+<div><b>① 같은 연락처 = 같은 사람</b>이름이 달라도(오타 · 띄어쓰기) 번호가 같으면 이어서 셈. 이름+번호가 같은 경우도 여기에 들어감</div>
+<div><b>② 모든 직원 화면이 같은 숫자</b>서버가 카드마다 '사람 표시'(번호를 알 수 없는 암호 코드)를 붙여 보냄 → 연락처가 가려져도 같은 사람끼리 묶임</div>
+<div><b>③ 연락처 없는 카드</b>임차인 · 소유자 = 같은 호실 + 같은 이름 / 그 밖 = 같은 이름 (지금과 같음). 손님 등록은 지금처럼 '접수'</div>
+</div></div>
+
+<div class="card box"><h2>예시 — 직원 A 화면 (가상 손님)</h2>
+<div class="cmp">
+<div class="scroll"><p style="margin:0 0 6px;font-weight:700">지금</p>
+<table><tr><th>일시</th><th>구분</th><th>이름</th><th>차수</th><th>문제</th></tr>
+<tr><td>11-10</td><td>신규분양 매수</td><td>김민수<span class="tag">A 작성</span></td><td><span class="sq sl">1차 · 최근</span></td><td class="why"></td></tr>
+<tr class="bad"><td>11-12</td><td>신규분양 매수</td><td>김*수<span class="tag">B 작성</span></td><td><span class="sq s1">1차</span></td><td class="why">같은 손님인데 따로 셈</td></tr>
+<tr class="bad"><td>11-14</td><td>신규분양 매수</td><td>김*수<span class="tag">B 작성 · 김진수</span></td><td><span class="sq sl">2차 · 최근</span></td><td class="why">다른 사람과 묶임</td></tr>
+<tr><td>11-05</td><td>임차인 101-501</td><td>홍길동</td><td><span class="sq s1">1차</span></td><td class="why"></td></tr>
+<tr class="bad"><td>11-15</td><td>신규분양 매수</td><td>홍길동<span class="tag">같은 번호</span></td><td><span class="sq sl">1차 · 최근</span></td><td class="why">임차인 → 매수로 바뀌면 다시 1차</td></tr>
+<tr class="bad"><td>11-16</td><td>임차인 101-501</td><td>이영희<span class="tag">새 임차인</span></td><td><span class="sq sl">2차 · 최근</span></td><td class="why">같은 호실이라 다른 사람과 이어짐</td></tr>
+</table></div>
+<div class="scroll"><p style="margin:0 0 6px;font-weight:700;color:#157a3f">고친 뒤</p>
+<table><tr><th>일시</th><th>구분</th><th>이름</th><th>차수</th><th>바뀜</th></tr>
+<tr><td>11-10</td><td>신규분양 매수</td><td>김민수<span class="tag">A 작성</span></td><td><span class="sq s1">1차</span></td><td class="why"></td></tr>
+<tr class="good"><td>11-12</td><td>신규분양 매수</td><td>김*수<span class="tag">B 작성</span></td><td><span class="sq sl">2차 · 최근</span></td><td class="why">같은 번호 → 이어서</td></tr>
+<tr class="good"><td>11-14</td><td>신규분양 매수</td><td>김*수<span class="tag">B 작성 · 김진수</span></td><td><span class="sq sl">1차 · 최근</span></td><td class="why">다른 번호 → 따로</td></tr>
+<tr><td>11-05</td><td>임차인 101-501</td><td>홍길동</td><td><span class="sq s1">1차</span></td><td class="why"></td></tr>
+<tr class="good"><td>11-15</td><td>신규분양 매수</td><td>홍길동<span class="tag">같은 번호</span></td><td><span class="sq sl">2차 · 최근</span></td><td class="why">구분이 바뀌어도 이어서</td></tr>
+<tr class="good"><td>11-16</td><td>임차인 101-501</td><td>이영희<span class="tag">새 임차인</span></td><td><span class="sq sl">1차 · 최근</span></td><td class="why">다른 사람 → 따로</td></tr>
+</table></div>
+</div>
+<p class="note">실제 자료(상담카드 68장) 확인: 대표 화면 기준으로는 지금 숫자와 고친 뒤 숫자가 같습니다 — 틀리는 건 일반 직원 화면(남이 쓴 카드)입니다. 새 상담카드를 열 때 뜨는 "○차 상담" 안내도 같은 규칙으로 셉니다.</p>
+</div>
+
+<div class="card box"><h2>정해 주실 것 — 임차인 · 개인 소유자 카드</h2>
+<div class="opt">
+<div class="rec"><b>A안 (추천) 사람 기준</b><br>연락처가 있으면 사람으로 셈 (위 예시). 연락처가 없을 때만 호실 + 이름.<br>말씀하신 "전번이 같으면 같은 상담자"와 같음</div>
+<div><b>B안 호실 기준 유지</b><br>임차인 · 소유자는 지금처럼 같은 호실이면 이어서 셈 (사람이 바뀌어도). 신규분양 매수 · 전세 희망만 연락처 기준</div>
+</div></div>
+</div></body></html>
