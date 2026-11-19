@@ -37,3 +37,12 @@ test('처음엔 전부 준비 → 다시 뜬 서버는 2번만 읽음 · 복구 
   await init(c); await d1(c).ready();
   assert.ok(c.n > 30, '복구 뒤 전부: ' + c.n);
 });
+
+test('검색용 평면 주소: 대문자(/plan/80A)도 받아서 소문자로 넘김', async () => {
+  const { isGuidePath } = await import('../src/seo/guide.js');
+  assert.ok(isGuidePath('/plan/80A'));
+  const { seoApi } = await import('../src/seo/index.js');
+  const r = await seoApi(new Request('http://x/plan/80A'), {}, new URL('http://x/plan/80A'));
+  assert.equal(r.status, 301);
+  assert.equal(r.headers.get('location'), './80a');
+});

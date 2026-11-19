@@ -144,5 +144,5 @@ export function locationPage(base) {
 }
 
 // 주소 판별 · 사이트맵에 넣을 주소
-export const isGuidePath = p => GUIDES.includes(p) || /^\/plan\/[0-9a-z]+$/.test(p);
+export const isGuidePath = p => GUIDES.includes(p) || /^\/plan\/[0-9a-zA-Z]+$/.test(p);
 export const guideUrls = () => GUIDES.concat(TYPES.map(t => '/plan/' + slugOf(t)));
