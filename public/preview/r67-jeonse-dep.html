@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r67 · 전세연장 보증금</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col h2{font-size:15px;margin:0 0 8px}
+.pop{padding:14px;display:flex;flex-direction:column;gap:9px}
+.head{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:15px;font-weight:700}
+.chip{border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:700}
+.kv{display:grid;grid-template-columns:76px minmax(0,1fr);gap:5px 10px;font-size:13px}.kv span:nth-child(odd){color:#6e6e73}
+.pr{display:flex;flex-direction:column;gap:6px;background:#fafafa;border-radius:12px;padding:10px 12px}
+.seg{display:inline-flex;background:#f2f2f5;border-radius:9999px;padding:3px}.seg b{border-radius:9999px;padding:4px 11px;font-size:12px}.seg .on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}.seg .off{color:#6e6e73;font-weight:700}
+.amt{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;font-size:12.5px;color:#424245;font-variant-numeric:tabular-nums;gap:8px}
+.row b{color:#1d1d1f}
+.sub{font-size:11.5px;color:#6e6e73;text-align:right;margin-top:-3px}
+.up{color:#0f8a8a;font-weight:700}
+.need{background:#1d1d1f;color:#fff;border-radius:12px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}.need span{font-size:12px}.need b{font-size:17px;font-variant-numeric:tabular-nums}
+.bad{outline:2px solid #c8381e;outline-offset:2px;border-radius:6px}
+.good{outline:2px solid #157a3f;outline-offset:2px;border-radius:6px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.7;margin-top:14px;padding:14px 16px}
+.note b{color:var(--fg)}
+@media (max-width:560px){.cmp{grid-template-columns:1fr}.wrap{padding:16px}}
+</style></head><body><div class="wrap">
+<h1>시안 r67 · 전세연장 호실 — 보증금 = 현재 임대차(인상된 금액)</h1>
+<p class="lead">동호배치표 → 호실 상세의 '분양가' 칸. 지금은 고객DB 엑셀의 처음 보증금을 써서, 전세연장으로 올린 보증금이 반영되지 않습니다.<br>
+고친 뒤: 계약자DB의 <b>현재 임대차 보증금</b>(인상된 금액)으로 필요금액 = 매입보장가 − 보증금. (예: 102동 1501호 80A — 실제 금액)</p>
+
+<div class="cmp">
+<div class="col"><h2>지금</h2>
+<div class="card pop">
+  <div class="head">102동 1501호 <span class="chip" style="background:#e6f5f5;color:#0f8a8a">전세연장</span></div>
+  <div class="kv"><span>계약조건</span><span>전세연장</span></div>
+  <div class="pr">
+    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;font-weight:700;color:#6e6e73">분양가</span><span class="seg"><b class="on">매입보장가</b><b class="off">10.16 혜택가</b></span></div>
+    <div class="amt">437,000,000원</div>
+    <div class="row bad"><span>임대보증금 (고객DB)</span><b>223,300,000원</b></div>
+    <div class="need"><span>필요금액 (매입보장가 − 보증금)</span><b>213,700,000원</b></div>
+  </div>
+</div>
+<p style="font-size:12.5px;color:#c8381e;margin:8px 2px 0">✕ 계약자DB 임대차는 2억 3,220만인데 처음 금액 2억 2,330만으로 계산 → 필요금액이 890만 더 많게 나옴</p>
+</div>
+
+<div class="col"><h2 style="color:#157a3f">고친 뒤</h2>
+<div class="card pop">
+  <div class="head">102동 1501호 <span class="chip" style="background:#e6f5f5;color:#0f8a8a">전세연장</span></div>
+  <div class="kv"><span>계약조건</span><span>전세연장</span></div>
+  <div class="pr">
+    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;font-weight:700;color:#6e6e73">분양가</span><span class="seg"><b class="on">매입보장가</b><b class="off">10.16 혜택가</b></span></div>
+    <div class="amt">437,000,000원</div>
+    <div class="row good"><span>임대보증금 (현재 임대차)</span><b>232,200,000원</b></div>
+    <div class="sub">처음 223,300,000원 → <span class="up">+8,900,000원 인상</span></div>
+    <div class="need"><span>필요금액 (매입보장가 − 보증금)</span><b>204,800,000원</b></div>
+  </div>
+</div>
+<p style="font-size:12.5px;color:#157a3f;margin:8px 2px 0">✓ 계약자DB와 같은 금액 · 10.16 혜택가로 바꿔도 같은 보증금으로 계산</p>
+</div>
+</div>
+
+<div class="card note">
+<b>규칙</b><br>
+① 보증금 = 계약자DB의 <b>현재 임대차 보증금</b> (임차만기 탭과 같은 자료). 없거나 0이면 지금처럼 고객DB 처음 금액<br>
+② 처음 금액과 다르면 아래에 '처음 ○ → +○ 인상' 한 줄 (같으면 안 보임 · 내려간 경우 '−○')<br>
+③ 전세연장 호실만이 아니라 <b>현재 임대차가 있는 모든 호실</b>에 같은 규칙 (지금 자료: 현재 임대차 189세대 중 93세대가 처음 금액과 다르고 모두 인상)<br>
+④ 임차 만기 지난 호실은 지금처럼 보증금 · 필요금액 숨기고 '공실 ○일째'
+</div>
+</div></body></html>
