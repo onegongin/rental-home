@@ -2,7 +2,7 @@
 import { FORMAT } from '../backup/pack.js';
 
 // 백업에 안 담는 표: 출입증 · 횟수 제한 · 일회용 연결 코드 · 잠금용 빈 표 (복구해도 의미 없거나 위험)
-const SKIP = new Set(['sessions', 'rate', 'tg_links', 'listing_guard']);
+const SKIP = new Set(['sessions', 'rate', 'tg_links', 'listing_guard', 'meta']);   // meta = 표 준비 표시 (2026-11-19, 백업에 안 넣음)
 // 복구 때 지금 그대로 두는 표 — 퇴사자 · 해지한 기기가 되살아나지 않게, 감사기록은 지우지 않게 (2026-11-03)
 // media(팝업 파일 정보)도 그대로 — 파일 자체는 백업에 없어서 되돌리면 지운 파일이 '있는 척' 하게 됨 (2026-11-04)
 export const KEEP = ['staff', 'devices', 'audit', 'media'];
@@ -47,7 +47,7 @@ export async function dump(db, by) {
 export async function restore(db, data, opt = {}) {
   const now = new Set(await tables(db)), st = [], done = {};
   for (const t of Object.keys(data.tables)) {
-    if (!now.has(t) || (KEEP.includes(t) && !opt.all)) continue;
+    if (!now.has(t) || t === 'meta' || (KEEP.includes(t) && !opt.all)) continue;   // meta = 표 준비 표시 — 되살리지 않음
     const cur = new Set(await colsOf(db, t)), src = data.tables[t] || {};
     const cols = (src.cols || []).filter(c => cur.has(c)), idx = cols.map(c => src.cols.indexOf(c));
     st.push(db.prepare('DELETE FROM ' + q(t)));
@@ -58,6 +58,7 @@ export async function restore(db, data, opt = {}) {
     done[t] = (src.rows || []).length;
   }
   for (let i = 0; i < st.length; i += 500) await db.batch(st.slice(i, i + 500));
+  try { await db.prepare('DELETE FROM meta').run(); } catch (e) { /* 없음 */ }   // 복구 뒤 서버가 새로 뜰 때 표 준비를 다시 전부
   return done;
 }
 

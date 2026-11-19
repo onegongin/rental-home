@@ -1,8 +1,22 @@
 // 표 만들기 (처음 요청 때 한 번). 세대 · 사람 · 소유 · 임대차 정식 표는 repo/d1.js (P3)
 const ready = new Set();   // DB마다 한 번 (d1 · supabase · 시험 DB)
+// 표 준비 판 번호 — 아래에 표 · 칸을 새로 넣으면 1 올린다. 서버가 새로 뜰 때 meta 표에 이 번호가 있으면 한 번만 읽고 끝
+//   (2026-11-19: 새로 뜰 때마다 40번 넘게 DB 를 오가 첫 요청이 8~10초 걸리던 것 고침)
+export const SCHEMA_VER = '2026-11-19.1';
+export async function done(db, k, ver) {
+  try { const r = await db.prepare('SELECT v FROM meta WHERE k = ?').bind(k).first(); return !!r && r.v === ver; } catch (e) { return false; }
+}
+export async function mark(db, k, ver) {
+  try {
+    await db.prepare('CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT)').run();
+    await db.prepare('DELETE FROM meta WHERE k = ?').bind(k).run();
+    await db.prepare('INSERT INTO meta (k, v) VALUES (?, ?)').bind(k, ver).run();
+  } catch (e) { /* 다음에 다시 전부 준비 */ }
+}
 export async function init(db) {
   const key = db.key || 'd1';
   if (ready.has(key)) return;
+  if (await done(db, 'schema', SCHEMA_VER)) { ready.add(key); return; }
   await db.batch([
     // 화면 공유 자료 (설정 cfg · 상담카드 c) — 챔피언스시티 방식 그대로. 세대(u)는 P3부터 units 표
     db.prepare('CREATE TABLE IF NOT EXISTS kv (s TEXT NOT NULL, k TEXT NOT NULL, v TEXT, at INTEGER, by TEXT, sv INTEGER, PRIMARY KEY (s, k))'),
@@ -88,5 +102,6 @@ export async function init(db) {
   try { await db.prepare('CREATE TABLE IF NOT EXISTS consults (id TEXT PRIMARY KEY, kind TEXT NOT NULL, unit_id TEXT, name TEXT, phone TEXT, progress TEXT, mgr TEXT, writer TEXT, data TEXT, lead_id TEXT, created_at INTEGER, at INTEGER, by TEXT, deleted_at INTEGER, del_by TEXT, del_reason TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS consult_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, consult_id TEXT NOT NULL, at INTEGER, by TEXT, date TEXT, channel TEXT, prob TEXT, memo TEXT, docs TEXT, next_date TEXT, progress TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE INDEX IF NOT EXISTS consult_logs_c ON consult_logs (consult_id)').run(); } catch (e) { /* 이미 있음 */ }
+  await mark(db, 'schema', SCHEMA_VER);
   ready.add(key);
 }

@@ -22,6 +22,7 @@ export async function seoApi(req, env, url) {
   if (env.INDEXNOW_KEY && p === '/' + env.INDEXNOW_KEY + '.txt') return out(env.INDEXNOW_KEY, 'text/plain');
   if (p === '/sitemap.xml') return out(sitemap(base, await rowsOf(db), guideUrls()), XML, 200, 'public, max-age=300');
   if (p === '/plan') return out(planIndex(base), HTML, 200, 'public, max-age=300');
+  if (p.startsWith('/plan/') && p.slice(6) !== p.slice(6).toLowerCase() && /^[\w-]+$/.test(p.slice(6))) return new Response(null, { status: 301, headers: { Location: './' + p.slice(6).toLowerCase() } });   // /plan/80A → /plan/80a (2026-11-19)
   if (p.startsWith('/plan/')) { const h = planPage(base, p.slice(6), await rowsOf(db)); return h ? out(h, HTML) : out(gonePage(base), HTML, 404); }
   if (p === '/price') return out(pricePage(base), HTML, 200, 'public, max-age=300');
   if (p === '/dongho') return out(donghoPage(base), HTML, 200, 'public, max-age=300');

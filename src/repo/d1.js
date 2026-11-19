@@ -2,6 +2,7 @@
 //   화면은 지금처럼 세대 덩어리(u)를 주고받고, 여기서 소유자 · 임대차 표로 나눠 이력까지 남긴다
 //   소유자 · 임차인이 바뀌면 이전 줄은 is_current=0 으로 닫고 새 줄을 더한다 (지우지 않음)
 import { UNITS } from '../core/units.js';
+import { SCHEMA_VER, done as metaDone, mark as metaMark } from './schema.js';
 import { ulid } from '../lib/id.js';
 import { occOf, ownerOf, leaseOf, samePerson, phoneDigits, today, dday } from '../core/tenancy.js';
 
@@ -41,6 +42,8 @@ export function d1(db) {
   const R = {
     async ready() {
       if (ready.has(db.key || 'd1')) return;
+      const ver = SCHEMA_VER + ':' + UNITS.length;   // 한 번 다 준비했으면 meta 한 줄만 읽고 끝 (schema.js 와 같은 방식)
+      if (await metaDone(db, 'd1', ver)) { ready.add(db.key || 'd1'); return; }
       await db.batch(TABLES.map(s => db.prepare(s)));
       const n = (await db.prepare('SELECT COUNT(*) n FROM units').first()).n;
       if (n < UNITS.length) {
@@ -54,6 +57,7 @@ export function d1(db) {
         await R.saveUnits(old.map(r => ({ id: r.k, v: parse(r.v), at: r.at, by: r.by || '옮김' })), { force: true, noHist: true });
         await db.prepare("DELETE FROM kv WHERE s = 'u'").run();
       }
+      await metaMark(db, 'd1', ver);
       ready.add(db.key || 'd1');
     },
 
