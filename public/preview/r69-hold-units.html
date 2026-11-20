@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r69 · 관리 호실 손님 화면 분양완료</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ body{background:#f5f5f7;color:#1d1d1f;margin:0;font-family:Pretendard,system-ui,sans-serif}
+ .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:#6e6e73;font-size:13px;margin:0 0 18px;line-height:1.7}
+ h2{font-size:16px;margin:26px 0 10px}
+ .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+ .pane{background:#fff;border-radius:18px;border:1px solid #e5e5ea;padding:16px 18px}
+ .lbl{font-size:12px;font-weight:800;color:#6e6e73;margin-bottom:8px}
+ .hd{display:flex;align-items:center;gap:8px}.hd b{font-size:20px}.tp{background:#f0913f;border-radius:9999px;padding:1px 9px;font-size:12px;font-weight:800}
+ .hg{background:linear-gradient(135deg,#fff4f2,#fff);border:1.5px solid #c8381e;border-radius:14px;padding:12px 14px;margin-top:12px}
+ .hg .t{font-size:12.5px;font-weight:800;color:#c8381e}.hg .v{font-size:24px;font-weight:900}
+ .r{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f2;font-size:13.5px}
+ .tot{display:flex;justify-content:space-between;background:#eef4ff;border-radius:12px;padding:11px 14px;margin-top:10px;color:#0066cc;font-weight:800}
+ .btn{margin-top:12px;background:#0066cc;color:#fff;border-radius:12px;padding:12px;text-align:center;font-weight:800}
+ .done{color:#6e6e73;font-weight:800}
+ .chips{display:flex;flex-wrap:wrap;gap:6px}
+ .chip{background:#fff;border:1px solid #d2d2d7;border-radius:9999px;padding:4px 11px;font-size:12.5px;font-weight:700}
+ .sw{display:flex;align-items:center;gap:10px;background:#f7f7f9;border-radius:12px;padding:10px 12px;margin-top:12px;font-size:13px}
+ .tg{width:40px;height:24px;border-radius:9999px;background:#34c759;position:relative;flex:none}.tg:after{content:'';position:absolute;right:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff}
+ .note{font-size:12.5px;color:#6e6e73;line-height:1.75;margin:10px 2px 0}
+ .warn{background:#fff7e0;border:1px solid #f3d48a;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.7;margin-top:14px}
+ @media(max-width:760px){.two{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>시안 r69 · 관리 호실 14세대 = 손님 화면에서 '분양전환 완료'</h1>
+<p class="sub">손님 동호배치표에서 아래 호실을 누르면 <b>101동 2701호처럼 '분양전환 완료'</b>로 보이고 매입보장가 · [신규분양전환 상담 요청]이 나오지 않습니다. <b>직원 화면은 지금 그대로</b> (가계약 표시 · 분양가 · 계약관리 모두 그대로).</p>
+
+<div class="pane"><div class="lbl">관리 호실 14세대</div>
+ <div class="chips"><span class="chip">101-1502</span><span class="chip">101-1702</span><span class="chip">101-2101</span><span class="chip">102-1601</span><span class="chip">102-1701</span><span class="chip">102-2701</span><span class="chip">103-2002</span><span class="chip">103-2303</span><span class="chip">103-2503</span><span class="chip">104-601</span><span class="chip">104-701</span><span class="chip">104-2402</span><span class="chip">104-2502</span><span class="chip">104-2702</span></div></div>
+
+<h2>손님 화면 · 101동 2101호를 누르면</h2>
+<div class="two">
+ <div class="pane"><div class="lbl">지금</div><div class="hd"><b>101동 2101호</b><span class="tp">80B</span></div>
+  <div class="hg"><div class="t">신규 분양전환 (매입보장) 분양가</div><div class="v">4억 3,500만원</div></div>
+  <div class="tot"><span>총분양금액</span><span>435,000,000원</span></div>
+  <div class="r"><span>호실 분양가 · 매입보장가</span><b>435,000,000원</b></div>
+  <div class="btn">신규분양전환 상담 요청</div></div>
+ <div class="pane" style="border-color:#157a3f"><div class="lbl" style="color:#157a3f">바뀜 (101동 2701호와 같은 모양)</div><div class="hd"><b>101동 2101호</b><span class="tp">80B</span></div>
+  <div class="tot" style="background:#f5f5f7;color:#6e6e73"><span>총분양금액</span><span>-</span></div>
+  <div class="r"><span>호실 분양가</span><b class="done">분양전환 완료</b></div>
+  <div class="r"><span>발코니 확장</span><span>확장 완료 · 분양가 포함</span></div>
+  <div class="btn" style="background:#8e8e93">매물등록 / 매수요청 (지금과 같음)</div></div>
+</div>
+
+<h2>직원 화면 · 호실 상세에 스위치 하나 (대표 · 관리자)</h2>
+<div class="pane" style="max-width:560px"><div class="hd"><b>101동 2101호</b><span class="tp">80B</span><span style="margin-left:auto;font-size:12px;color:#c8381e;font-weight:800">가계약 (그대로)</span></div>
+ <div class="sw"><span class="tg"></span><div><b>손님 화면에서 분양완료로 보이기</b><div style="font-size:12px;color:#6e6e73">관리 호실 · 손님에게 금액 · 상담 요청을 보이지 않음 · 직원 화면은 그대로</div></div></div></div>
+<p class="note">· 이번 14세대는 스위치를 켠 상태로 넣어 드림 · 나중에 다른 호실도 이 스위치로 켜고 끔 · 손님 '현재 매물' · '지금 입주 · 분양 가능한 세대'에도 안 나오게 함</p>
+
+<div class="warn">⚠ <b>104동 2702호</b>는 지금 손님 <b>'현재 매물'에 매매(3억 5,300만)로 공개 중</b>입니다. 분양완료로 보이게 하면 <b>현재 매물에서도 함께 내립니다</b> (매물보드 카드 = 철회). 내리지 않고 그대로 둘까요?</div>
+</div></body></html>
