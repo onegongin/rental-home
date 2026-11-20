@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r70 · MGM · 사이드 청구 내역서</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+ body{background:#f5f5f7;color:#1d1d1f;margin:0;font-family:Pretendard,system-ui,sans-serif}
+ .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:#6e6e73;font-size:13px;margin:0 0 16px;line-height:1.7}
+ .card{background:#fff;border-radius:18px;padding:18px 20px}
+ .card h2{margin:0 0 4px;font-size:18px}.card .d{font-size:12.5px;color:#6e6e73;line-height:1.6;margin-bottom:12px}
+ .kp{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+ .kp div{background:#f5f5f7;border-radius:12px;padding:9px 12px;font-size:11.5px;color:#6e6e73}.kp b{display:block;font-size:19px;color:#1d1d1f}
+ .kp .dk{background:#1d1d1f;color:#aeaeb2}.kp .dk b{color:#fff}
+ .grp{border:1px solid #ececf0;border-radius:14px;padding:12px 14px;margin-bottom:10px}
+ .gh{display:flex;align-items:center;gap:8px;margin-bottom:8px}.gh b{font-size:15px}.gh span{margin-left:auto;font-size:12.5px;color:#6e6e73}
+ .tag{font-size:11px;font-weight:800;border-radius:6px;padding:1px 7px}.m{background:#eef2ff;color:#3949ab}.s{background:#fff4e8;color:#b25000}
+ table{width:100%;border-collapse:collapse;font-size:13px}
+ th{background:#eef4ff;color:#3a3a3c;font-weight:700;padding:7px 6px;border:1px solid #d9e3f5;font-size:12px}
+ td{padding:6px;border:1px solid #e5e5ea;text-align:center;font-variant-numeric:tabular-nums}
+ td.r{text-align:right}.in{border:1px solid #0066cc;border-radius:7px;padding:2px 6px;background:#f5f9ff;color:#0066cc;font-weight:700;display:inline-block;min-width:44px}
+ .sel{border:1px solid #d2d2d7;border-radius:7px;padding:2px 6px;display:inline-block}
+ .neg{color:#c8381e}.fin{font-weight:800}
+ .tot td{background:#fafafa;font-weight:800}
+ .note{font-size:12.5px;color:#6e6e73;line-height:1.75;margin:12px 2px 0}
+ @media(max-width:760px){.kp{grid-template-columns:repeat(2,1fr)}table{font-size:11.5px}}
+</style></head><body><div class="wrap">
+<h1>시안 r70 · 청구서 'MGM' 칸에 사이드 추가 · 금액 칸을 직원 수수료처럼</h1>
+<p class="sub">상담카드(신규분양 매수) › 2. 계약관리 › 계약완료 정리에서 <b>소개 구분 = MGM</b>(부동산명) 또는 <b>사이드</b>(사이드 이름)를 고르고 대표 · 관리자가 <b>[확정]</b>한 호실이 모입니다. MGM 은 부동산별, 사이드는 <b>사이드 이름별</b>로 묶습니다.</p>
+
+<div class="card">
+ <h2>MGM · 사이드 청구 내역서</h2>
+ <div class="d">금액 칸 = 직원 수수료와 같은 모양 (수수료 · 세금 · 세액 · 최종 · 기타). 파란 칸은 눌러서 고침 — 기본값: MGM = 상담카드에서 고른 수수료, 사이드 = 100만 · 3.3%</div>
+ <div class="kp"><div>MGM 부동산<b>1곳</b></div><div>사이드<b>2명</b></div><div>수수료 합계<b>4,000,000원</b></div><div>세액 합계<b class="neg">-66,000원</b></div><div class="dk">최종 지급 · 4호실<b>3,934,000원</b></div></div>
+
+ <div class="grp"><div class="gh"><span class="tag m">MGM</span><b>첨단대라수</b><span>1호실 · 최종 2,000,000원</span></div>
+  <table><tr><th>동·호</th><th>계약자</th><th>수수료</th><th>세금</th><th>세액</th><th>최종</th><th>기타</th><th>확정</th></tr>
+  <tr><td>104동 402호</td><td>정경화</td><td class="r"><span class="in">200만</span></td><td><span class="sel">현금영수증 ▾</span></td><td class="r">0</td><td class="r fin">2,000,000</td><td><span class="in" style="min-width:80px">&nbsp;</span></td><td>황후권 11.21</td></tr></table></div>
+
+ <div class="grp"><div class="gh"><span class="tag s">사이드</span><b>김사이드</b><span>2호실 · 최종 1,934,000원</span></div>
+  <table><tr><th>동·호</th><th>계약자</th><th>수수료</th><th>세금</th><th>세액</th><th>최종</th><th>기타</th><th>확정</th></tr>
+  <tr><td>101동 1201호</td><td>홍**</td><td class="r"><span class="in">100만</span></td><td><span class="sel">3.3% ▾</span></td><td class="r neg">-33,000</td><td class="r fin">967,000</td><td><span class="in" style="min-width:80px">&nbsp;</span></td><td>황후권 11.20</td></tr>
+  <tr><td>103동 903호</td><td>이**</td><td class="r"><span class="in">100만</span></td><td><span class="sel">3.3% ▾</span></td><td class="r neg">-33,000</td><td class="r fin">967,000</td><td><span class="in" style="min-width:80px">지인 소개</span></td><td>황후권 11.21</td></tr>
+  <tr class="tot"><td colspan="2">합계</td><td class="r">2,000,000</td><td></td><td class="r neg">-66,000</td><td class="r">1,934,000</td><td colspan="2"></td></tr></table></div>
+
+ <div class="grp"><div class="gh"><span class="tag s">사이드</span><b>박사이드</b><span>확정 전 1호실 (목록에 안 나옴 — 상담카드에서 [확정] 필요)</span></div></div>
+</div>
+
+<p class="note">· 세금: 3.3% 원천징수(세액 −3.3%) · 현금영수증(0) · 부가세 10%(+10%) — 직원 수수료와 같은 세 가지. 세금계산서로 고른 MGM(110만 · 220만)은 '부가세'로 넣음 (100만 + 부가세 10만)<br>
+· 수수료 · 세금 · 기타를 고치면 저장 · 기록. 상담카드에서 부동산 · 사이드 이름 · 호실을 바꾸면 확정이 풀려 목록에서 빠짐 (지금 MGM 과 같음)<br>
+· 위쪽 '부동산 · 현금영수증 · 세금계산서' 칸 → '부동산 · 사이드 · 수수료 · 세액 · 최종'으로 · A4 인쇄 · 엑셀에도 같은 칸<br>
+· 사이드 이름 = 상담카드 계약완료 정리에서 고른 사이드 이름 그대로 (예시 이름은 가상)</p>
+</div></body></html>
