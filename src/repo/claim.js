@@ -12,8 +12,12 @@ export async function claimRows(db) {
     all(db, 'SELECT name, fee, tax FROM claim_staff'),
     dashCards(db)
   ]);
+  const pay = {}; try { (await all(db, 'SELECT k, fee, tax, memo FROM mgm_pay')).forEach(r => { pay[r.k] = r; }); } catch (e) { /* 표 없음 */ }
   // 계약자 · 계약담당 · MGM = 상담카드(대시보드) 계약관리 (2026-11-17 대표: 분양전환상담 카드 삭제) — MGM 은 상담카드에서 대표 · 관리자가 확정한 것
-  return { conv, claims, locks, staff, cards: asConsults(cards).consults };
+  return { conv, claims, locks, staff, pay, cards: asConsults(cards).consults };
+}
+export async function setMgmPay(db, k, v, by, now = Date.now()) {
+  await db.prepare('INSERT INTO mgm_pay (k, fee, tax, memo, at, by) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (k) DO UPDATE SET fee = excluded.fee, tax = excluded.tax, memo = excluded.memo, at = excluded.at, by = excluded.by').bind(k, v.fee, v.tax, v.memo, now, by).run();
 }
 
 export const getClaim = (db, id) => db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();

@@ -97,10 +97,17 @@ test('API: 대상 · 기본값 · 청구 · 잠금 · 추가 호실 · MGM 확�
   assert.equal(V.mgmWait.length, 1); assert.equal(V.mgm.length, 0);
   await push([card('cN2', '2026-11-12 10:00', { kind: 'client', name: '박신규', phone: '010-2000-0002', mgr: '김', ct: Object.assign({}, CT, { fixed: { by: '대표', at: '2026-11-12 10:00' } }) })]);   // 상담카드에서 대표 확정
   V = (await adm('/api/staff/claims')).json;
-  assert.equal(V.mgmWait.length, 0); assert.equal(V.mgm[0].agency, '행복부동산'); assert.equal(V.mgm[0].total, 2200000); assert.equal(V.mgm[0].rows[0].unit, '102-1902');
+  assert.equal(V.mgmWait.length, 0); assert.equal(V.mgm[0].name, '행복부동산'); assert.equal(V.mgm[0].type, 'MGM'); assert.equal(V.mgm[0].total, 2200000, '220만 세금계산서 = 200만 + 부가세 10%'); assert.equal(V.mgm[0].rows[0].unit, '102-1902');
   await push([card('cN3', '2026-11-13 10:00', { kind: 'client', name: '박신규', phone: '010-2000-0002', mgr: '김', ct: Object.assign({}, CT, { bk: '다른부동산', fixed: { by: '대표', at: '2026-11-12 10:00' }, hist: ['사유: 정정'] }) })]);   // 대표가 사유 적고 고침
   V = (await adm('/api/staff/claims')).json;
-  assert.equal(V.mgm[0].agency, '다른부동산', '가장 최근 상담카드 기준');
+  assert.equal(V.mgm[0].name, '다른부동산', '가장 최근 상담카드 기준');
+  // 금액 고치기 (시안 r70) · 사이드
+  assert.equal((await adm('/api/staff/claims/mgmpay', { body: { key: '102-1902', fee: 150, tax: '3.3%', memo: '조정' } })).status, 200);
+  V = (await adm('/api/staff/claims')).json;
+  assert.equal(V.mgm[0].rows[0].fee, 150); assert.equal(V.mgm[0].rows[0].fin, 1500000 - 49500); assert.equal(V.mgm[0].rows[0].memo, '조정');
+  await push([card('cS1', '2026-11-13 11:00', { kind: 'client', name: '사이드손님', phone: '010-2000-0009', mgr: '김', ct: { prog: '계약완료', unit: '103-903', intro: '사이드', side: '김사이드', staff: '김', fixed: { by: '대표', at: '2026-11-13 11:00' } } })]);
+  V = (await adm('/api/staff/claims')).json;
+  const sd = V.mgm.find(a => a.type === '사이드'); assert.equal(sd.name, '김사이드'); assert.equal(sd.rows[0].fee, 100); assert.equal(sd.rows[0].fin, 967000, '사이드 기본 100만 · 3.3%');
   const acts = (await boss('/api/admin/audit')).json.rows.map(x => x.act);
   for (const a of ['수수료 청구', '청구서 잠금', '청구서 잠금 해제', '청구 호실 추가', '청구 되돌림']) assert.ok(acts.includes(a), a);
 });

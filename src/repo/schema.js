@@ -2,7 +2,7 @@
 const ready = new Set();   // DB마다 한 번 (d1 · supabase · 시험 DB)
 // 표 준비 판 번호 — 아래에 표 · 칸을 새로 넣으면 1 올린다. 서버가 새로 뜰 때 meta 표에 이 번호가 있으면 한 번만 읽고 끝
 //   (2026-11-19: 새로 뜰 때마다 40번 넘게 DB 를 오가 첫 요청이 8~10초 걸리던 것 고침)
-export const SCHEMA_VER = '2026-11-19.1';
+export const SCHEMA_VER = '2026-11-21.1';   // mgm_pay 표 (시안 r70)
 export async function done(db, k, ver) {
   try { const r = await db.prepare('SELECT v FROM meta WHERE k = ?').bind(k).first(); return !!r && r.v === ver; } catch (e) { return false; }
 }
@@ -91,6 +91,7 @@ export async function init(db) {
   try { await db.prepare('CREATE TABLE IF NOT EXISTS daily_reports (date TEXT PRIMARY KEY, data TEXT, saved_at INTEGER, saved_by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   // R3-3 수수료 청구서 + MGM (시안 r3-claim 2026-11-13): 완료 바로 전 상태(done_from, 구분) · 청구 줄(호실 · 추가 호실) · 청구서 잠금 · 담당자별 기본 수수료
   try { await db.prepare('ALTER TABLE unit_conv ADD COLUMN done_from TEXT').run(); } catch (e) { /* 이미 있음 */ }
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS mgm_pay (k TEXT PRIMARY KEY, fee INTEGER, tax TEXT, memo TEXT, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }   // MGM · 사이드 금액 고친 값 (시안 r70)
   try { await db.prepare('CREATE TABLE IF NOT EXISTS claims (id TEXT PRIMARY KEY, unit_id TEXT NOT NULL, extra INTEGER DEFAULT 0, reason TEXT, date TEXT, fee INTEGER, tax TEXT, memo TEXT, excluded INTEGER DEFAULT 0, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS claim_locks (date TEXT PRIMARY KEY, locked INTEGER, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS claim_staff (name TEXT PRIMARY KEY, fee INTEGER, tax TEXT, at INTEGER, by TEXT)').run(); } catch (e) { /* 이미 있음 */ }

@@ -40,7 +40,27 @@ export function totals(rows) {
   return { n: on.length, total, wh, vat, fin: total + wh + vat, byFee, unset: rows.filter(r => !r.excluded && r.fee == null).length };
 }
 
-// MGM: 확정된 신규고객 카드 → 부동산별
+// MGM · 사이드 청구 내역서 (시안 r70 확정 2026-11-21): 확정된 신규분양 매수 카드 → MGM = 부동산별 · 사이드 = 사이드 이름별
+//   금액 = 직원 수수료와 같은 모양(수수료 만원 · 세금 · 세액 · 최종 · 기타). 기본값: MGM = 상담카드에서 고른 금액(세금계산서 = 수수료 + 부가세 10%), 사이드 = 100만 · 3.3%
+//   pay = { [호실]: { fee, tax, memo } } 청구서 화면에서 고친 값 (mgm_pay 표)
+export const MGM_DEF = { '100만 · 현금영수증': [100, '현금영수증'], '110만 · 세금계산서': [100, '부가세'], '200만 · 현금영수증': [200, '현금영수증'], '220만 · 세금계산서': [200, '부가세'] };
+export const SIDE_DEF = [100, '3.3%'];
+export function payGroups(cards, pay) {
+  pay = pay || {}; const g = {};
+  const add = (type, name, c, def) => {
+    const k = type + ':' + name, a = (g[k] = g[k] || { type, name, rows: [] }), key = c.contractUnit || ('c:' + c.id), p = pay[key] || {};
+    const fee = p.fee != null ? p.fee : def[0], tax = p.tax || def[1], fx = type === 'MGM' ? c.mgmFixed : c.sideFixed;
+    a.rows.push({ key, id: c.id, unit: c.contractUnit || '', name: c.name || '', fee, tax, tx: taxAmt(fee, tax), fin: finAmt(fee, tax), memo: p.memo || '', fixed: fx });
+  };
+  cards.forEach(c => {
+    if (c.mgmFixed && c.mgmAgency && MGM_DEF[c.mgmFee]) add('MGM', c.mgmAgency, c, MGM_DEF[c.mgmFee]);
+    else if (c.sideFixed && c.sideName) add('사이드', c.sideName, c, SIDE_DEF);
+  });
+  return Object.values(g).map(a => Object.assign(a, { fee: a.rows.reduce((s, r) => s + r.fee * 1e4, 0), tx: a.rows.reduce((s, r) => s + r.tx, 0), total: a.rows.reduce((s, r) => s + r.fin, 0) }))
+    .sort((x, y) => (x.type === y.type ? 0 : x.type === 'MGM' ? -1 : 1) || y.total - x.total || x.name.localeCompare(y.name));
+}
+
+// (예전) MGM: 확정된 신규고객 카드 → 부동산별
 export function mgmGroups(cards) {
   const g = {};
   cards.filter(c => c.mgmFixed && c.mgmAgency && MGM_FEES[c.mgmFee]).forEach(c => {

@@ -8,7 +8,7 @@
 //   POST /api/staff/claims/mgm   { id, fixed }               신규고객 카드 MGM 확정 · 취소
 import { J, body, ip, device } from '../lib/http.js';
 import { can } from '../core/permissions.js';
-import { FEE0, TAXES, TAX_KO, MGM_FEES, kindOf, cleanItem, totals, mgmGroups, finAmt, taxAmt } from '../core/claim.js';
+import { FEE0, TAXES, TAX_KO, MGM_FEES, kindOf, cleanItem, totals, payGroups, finAmt, taxAmt } from '../core/claim.js';
 import { unitId } from '../core/consult.js';
 import * as Q from '../repo/claim.js';
 import { getConsult, updateConsult } from '../repo/consult.js';
@@ -41,8 +41,8 @@ export function buildClaims(R) {
   const L = Object.fromEntries(R.locks.map(l => [l.date, l]));
   const dates = [...new Set(rows.filter(r => r.date).map(r => r.date))].sort().reverse();
   const invoices = dates.map(d => { const rs = rows.filter(r => r.date === d).sort(sortU); return { date: d, locked: !!(L[d] && L[d].locked), lockBy: L[d] ? L[d].by : '', rows: rs, sum: totals(rs) }; });
-  const mgm = mgmGroups(R.cards.filter(c => c.kind === 'new'));
-  const mgmWait = R.cards.filter(c => c.kind === 'new' && c.mgmAgency && !c.mgmFixed).map(c => ({ id: c.id, name: c.name || '', unit: c.contractUnit || '', agency: c.mgmAgency, fee: c.mgmFee || '' }));
+  const mgm = payGroups(R.cards.filter(c => c.kind === 'new'), R.pay);   // MGM · 사이드 (시안 r70)
+  const mgmWait = R.cards.filter(c => c.kind === 'new' && ((c.mgmAgency && !c.mgmFixed) || (c.sideName && !c.sideFixed))).map(c => ({ id: c.id, name: c.name || '', unit: c.contractUnit || '', agency: c.mgmAgency ? 'MGM ' + c.mgmAgency : '사이드 ' + c.sideName, fee: c.mgmFee || '' }));
   return { today: today(), est: { rows: est, sum: totals(est) }, invoices, staff: R.staff, staffNames: [...new Set(R.cards.map(c => c.mgr).filter(Boolean))].sort(), mgm, mgmWait, fee0: FEE0, taxes: TAXES, taxKo: TAX_KO, mgmFees: Object.keys(MGM_FEES) };
 }
 
@@ -118,6 +118,15 @@ export async function staffClaim(req, env, url, u) {
     if (!name || !x) return J({ ok: false, err: 'input' }, 400);
     await Q.setStaffFee(db, name, x.fee, x.tax, u.name);
     await audit(db, Object.assign({ act: '담당자 기본 수수료', target: name, detail: x.fee == null ? '기본값(100만 · 3.3%)으로' : x.fee + '만 · ' + TAX_KO[x.tax] }, who));
+    return J({ ok: true });
+  }
+
+  // MGM · 사이드 금액 고치기 (시안 r70): { key(호실), fee(만원), tax, memo }
+  if (p === '/api/staff/claims/mgmpay') {
+    const k = String(b.key || '').slice(0, 40), fee = Number(b.fee);
+    if (!k || !Number.isInteger(fee) || fee < 0 || fee > 100000 || !TAXES.includes(b.tax)) return J({ ok: false, err: 'input' }, 400);
+    await Q.setMgmPay(db, k, { fee, tax: b.tax, memo: String(b.memo || '').trim().slice(0, 200) || null }, u.name);
+    await audit(db, Object.assign({ act: 'MGM · 사이드 금액', target: k, detail: fee + '만 · ' + TAX_KO[b.tax] + (b.memo ? ' · ' + String(b.memo).slice(0, 60) : '') }, who));
     return J({ ok: true });
   }
 

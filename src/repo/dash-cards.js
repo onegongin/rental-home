@@ -27,7 +27,8 @@ export function asConsults(cards) {
     const id = last.id;
     consults.push({ id, kind, unit_id: kind === 'tenant' || kind === 'owner' ? (last.unit || null) : null, name: last.name || '', mgr: C.staff || last.mgr || '', writer: last.writer || '', at: last.at || '',
       progress: C.prog || '', book: V.on && V.date ? V.date + ' ' + (V.time || '') : guestVisit, contractUnit: C.unit || null, intUnits: (V.units || []).map(u => u.unit).filter(Boolean), ctype: inflowOf(last)[0] || '',
-      mgmAgency: C.intro === 'MGM' ? (C.bk || null) : null, mgmBroker: null, mgmFee: C.intro === 'MGM' ? (C.mgmFee || null) : null, mgmFixed: C.intro === 'MGM' && C.fixed ? { by: C.fixed.by, at: Date.parse(String(C.fixed.at || '').replace(' ', 'T') + ':00+09:00') || null } : null });
+      mgmAgency: C.intro === 'MGM' ? (C.bk || null) : null, mgmBroker: null, mgmFee: C.intro === 'MGM' ? (C.mgmFee || null) : null, sideName: C.intro === '사이드' ? (C.side || null) : null, sideFixed: C.intro === '사이드' && C.fixed ? { by: C.fixed.by, at: Date.parse(String(C.fixed.at || '').replace(' ', 'T') + ':00+09:00') || null } : null,   /* 사이드 (시안 r70) */
+      mgmFixed: C.intro === 'MGM' && C.fixed ? { by: C.fixed.by, at: Date.parse(String(C.fixed.at || '').replace(' ', 'T') + ':00+09:00') || null } : null });
     list.forEach(c => { if (c.guest) return; logs.push({ consult_id: id, date: dayOf(c), at: Date.parse(String(c.at || '').replace(' ', 'T') + ':00+09:00') || 0, channel: inflowOf(c).includes('방문') ? '방문상담' : '전화'   /* 유입경로 '방문' = 방문상담 (예약만 한 날은 아님) */, memo: '', kind, unit_id: kind === 'tenant' ? (c.unit || null) : null, mgr: (c.ct && c.ct.staff) || c.mgr || '' }); });
   });
   return { consults, logs };

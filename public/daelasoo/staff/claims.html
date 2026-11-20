@@ -106,12 +106,12 @@ async function load() {
 
 function draw() {
   const sumTxt = s => s.n + '건 · ' + won(s.fin);
-  const mgmTot = V.mgm.reduce((s, a) => s + a.total, 0), mgmN = V.mgm.reduce((s, a) => s + a.rows.length, 0);
+  const mgmTot = V.mgm.reduce((s, a) => s + a.total, 0), mgmN = V.mgm.reduce((s, a) => s + a.rows.length, 0);   // MGM · 사이드 (시안 r70)
   $('app').innerHTML = `
   <div class="head"><div><h1>청구서</h1><p class="lead">수수료는 만원 단위 · 기본값은 계약담당 직원에게 정해 둔 금액 (없으면 ${V.fee0.fee}만 · ${esc(V.taxKo[V.fee0.tax])})</p></div></div>
   <div class="cols">
     <div class="card list">
-      <small>MGM</small><button class="it mgm ${sel === 'mgm' ? 'on' : ''}" data-s="mgm"><b>MGM 청구 내역서</b><span>${mgmN}호실 · ${won(mgmTot)}${V.mgmWait.length ? ' · 확정 대기 ' + V.mgmWait.length : ''}</span></button>
+      <small>MGM</small><button class="it mgm ${sel === 'mgm' ? 'on' : ''}" data-s="mgm"><b>MGM · 사이드 청구 내역서</b><span>${mgmN}호실 · ${won(mgmTot)}${V.mgmWait.length ? ' · 확정 대기 ' + V.mgmWait.length : ''}</span></button>
       <small>수수료</small><button class="it est ${sel === 'est' ? 'on' : ''}" data-s="est"><b>예상청구 (미확정)</b><span>${sumTxt(V.est.sum)}</span></button>
       ${V.invoices.map(i => `<button class="it inv ${sel === i.date ? 'on' : ''}" data-s="${i.date}"><b>${i.date} 청구서 ${i.locked ? '🔒' : '· 작성중'}</b><span>${sumTxt(i.sum)}</span></button>`).join('')}
       <small>설정</small><button class="it ${sel === 'staff' ? 'on' : ''}" data-s="staff"><b>담당자별 기본 수수료</b><span>${V.staff.length}명 지정</span></button>
@@ -149,16 +149,19 @@ function feeView(rows, s, inv) {
 }
 
 function mgmView() {
-  const all = V.mgm.flatMap(a => a.rows), tot = all.reduce((s, r) => s + r.amt, 0);
-  const by = p => all.filter(r => r.proof === p).reduce((s, r) => s + r.amt, 0);
-  return `<div class="ptitle">첨단 대라수 1차 MGM 청구 내역서</div>
-    <h2>MGM 청구 내역서</h2>
-    <p class="note">상담카드(신규분양 매수) › 2. 계약관리 상담 › 계약완료 정리에서 <b>MGM · 부동산명 · MGM 수수료</b>를 고르고 <b>대표 · 관리자가 [확정]</b>한 호실만 부동산별로 모입니다. 고치기 · 확정 풀기는 상담카드에서 사유를 적어야 합니다.</p>
-    ${V.mgmWait.length ? `<div class="warn"><b>확정 대기 ${V.mgmWait.length}건</b> — ${V.mgmWait.map(w => `${esc(w.agency)} · ${esc(w.name)}${w.unit ? ' (' + uName(w.unit) + ')' : ''} · ${esc(w.fee || '금액 없음')} — 상담카드에서 확정`).join(' / ')}</div>` : ''}
-    <div class="sum"><div><small>부동산</small><b>${V.mgm.length}곳</b></div><div><small>현금영수증</small><b>${won(by('현금영수증'))}</b></div><div><small>세금계산서</small><b>${won(by('세금계산서'))}</b></div><div class="fin"><small>MGM 총액 · ${all.length}호실</small><b>${won(tot)}</b></div></div>
-    ${V.mgm.length ? V.mgm.map(a => `<div class="agency"><div class="hd"><div><b>${esc(a.agency)}</b> <span>${a.brokers.length ? '중개사 ' + esc(a.brokers.join(', ')) : ''}</span></div><span>${a.rows.length}호실 · <b style="color:var(--ink);font-size:14px">${won(a.total)}</b></span></div>
-      <div class="tbl"><table><tr><th>동·호</th><th>계약자</th><th>MGM 금액</th><th>증빙</th><th>확정</th><th class="noprint"></th></tr>${a.rows.map(r => `<tr><td>${r.unit ? uName(r.unit) : '—'}</td><td>${esc(r.name)}</td><td class="r">${won(r.amt)}</td><td>${esc(r.proof)}</td><td>${esc(r.fixed.by || '')} ${r.fixed.at ? new Date(r.fixed.at).toLocaleDateString('ko-KR') : ''}</td><td class="noprint"></td></tr>`).join('')}</table></div></div>`).join('')
-      : '<p class="note">확정된 MGM 지급 부동산이 없습니다.</p>'}
+  const M = V.mgm.filter(a => a.type === 'MGM'), S = V.mgm.filter(a => a.type === '사이드'), n = L => L.reduce((t, a) => t + a.rows.length, 0);
+  const feeIn = r => `<input class="fee" data-mk="${esc(r.key)}" data-mf="fee" value="${r.fee}">만`;
+  const taxIn = r => `<select data-mk="${esc(r.key)}" data-mf="tax">${V.taxes.map(t => `<option value="${t}" ${t === r.tax ? 'selected' : ''}>${esc(V.taxKo[t])}</option>`).join('')}</select>`;
+  const grp = a => `<div class="agency"><div class="hd"><div><span class="tag" style="background:${a.type === 'MGM' ? '#eef2ff;color:#3949ab' : '#fff4e8;color:#b25000'}">${a.type}</span> <b>${esc(a.name)}</b></div><span>${a.rows.length}호실 · 최종 <b style="color:var(--ink);font-size:14px">${won(a.total)}</b></span></div>
+      <div class="tbl"><table><tr><th>동·호</th><th>계약자</th><th>수수료</th><th>세금</th><th>세액</th><th>최종</th><th>기타</th><th>확정</th></tr>${a.rows.map(r => `<tr><td>${r.unit ? uName(r.unit) : '—'}</td><td>${esc(r.name)}</td><td>${feeIn(r)}</td><td>${taxIn(r)}</td><td class="r">${signed(r.tx).replace('원', '')}</td><td class="r"><b>${won(r.fin)}</b></td>
+        <td class="l"><input data-mk="${esc(r.key)}" data-mf="memo" value="${esc(r.memo)}" placeholder="메모" style="width:100%;min-width:70px"></td><td>${esc((r.fixed && r.fixed.by) || '')} ${r.fixed && r.fixed.at ? new Date(r.fixed.at).toLocaleDateString('ko-KR') : ''}</td></tr>`).join('')}
+      ${a.rows.length > 1 ? `<tr class="tot"><td colspan="2">합계</td><td class="r">${won(a.fee)}</td><td></td><td class="r">${signed(a.tx).replace('원', '')}</td><td class="r">${won(a.total)}</td><td colspan="2"></td></tr>` : ''}</table></div></div>`;
+  return `<div class="ptitle">첨단 대라수 1차 MGM · 사이드 청구 내역서</div>
+    <h2>MGM · 사이드 청구 내역서</h2>
+    <p class="note">상담카드(신규분양 매수) › 2. 계약관리 상담 › 계약완료 정리에서 소개 구분 <b>MGM(부동산명)</b> 또는 <b>사이드(사이드 이름)</b>를 고르고 <b>대표 · 관리자가 [확정]</b>한 호실이 모입니다. 수수료 · 세금 · 기타는 여기서 고칩니다 (기본값: MGM = 상담카드 금액, 세금계산서는 수수료 + 부가세 10% · 사이드 = 100만 · 3.3%). 부동산 · 사이드 이름 · 호실은 상담카드에서 사유를 적고 고칩니다.</p>
+    ${V.mgmWait.length ? `<div class="warn"><b>확정 대기 ${V.mgmWait.length}건</b> — ${V.mgmWait.map(w => `${esc(w.agency)} · ${esc(w.name)}${w.unit ? ' (' + uName(w.unit) + ')' : ''} — 상담카드에서 확정`).join(' / ')}</div>` : ''}
+    <div class="sum" style="grid-template-columns:repeat(2,minmax(0,220px))"><div><small>MGM 부동산</small><b>${M.length}곳 · ${n(M)}호실</b></div><div><small>사이드</small><b>${S.length}명 · ${n(S)}호실</b></div></div>
+    ${V.mgm.length ? V.mgm.map(grp).join('') : '<p class="note">확정된 MGM · 사이드가 없습니다.</p>'}
     <div class="acts"><span style="flex:1"></span><button class="btn k" id="print">A4 인쇄 · PDF</button><button class="btn s" id="xlsx">엑셀 받기</button></div>`;
 }
 
@@ -177,6 +180,10 @@ function bind() {
     const v = el.dataset.f === 'fee' ? (el.value.trim() === '' ? '' : Number(el.value.replace(/[^\d]/g, ''))) : el.value;
     if ((await post('/item', { key: el.dataset.k, [el.dataset.f]: v })).ok) load();
   }));
+  document.querySelectorAll('[data-mf]').forEach(el => el.addEventListener('change', async () => {   // MGM · 사이드 금액 (한 줄 통째로 저장)
+    const k = el.dataset.mk, q = f => document.querySelector(`[data-mk="${CSS.escape(k)}"][data-mf="${f}"]`), fee = Number(String(q('fee').value).replace(/[^\d]/g, ''));
+    if ((await post('/mgmpay', { key: k, fee, tax: q('tax').value, memo: q('memo').value })).ok) load();
+  }));
   document.querySelectorAll('[data-ex]').forEach(b => b.onclick = async () => { if ((await post('/item', { key: b.dataset.ex, excluded: b.dataset.v === '1' })).ok) load(); });
   document.querySelectorAll('[data-back]').forEach(b => b.onclick = async () => { if ((await post('/item', { key: b.dataset.back, back: true })).ok) { flash('예상청구로 되돌렸습니다'); load(); } });
   document.querySelectorAll('[data-delx]').forEach(b => b.onclick = async () => { if (confirm('추가 호실을 지울까요?') && (await post('/extra/' + b.dataset.delx + '/del')).ok) load(); });
@@ -193,10 +200,10 @@ async function xlsx() {
   const X = await import('https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs');
   let A, name;
   if (sel === 'mgm') {
-    A = [['첨단 대라수 1차 MGM 청구 내역서'], [], ['부동산', '중개사', '동·호', '계약자', 'MGM 금액', '증빙']];
-    V.mgm.forEach(a => a.rows.forEach(r => A.push([a.agency, a.brokers.join(', '), r.unit, r.name, r.amt, r.proof])));
-    A.push([], ['합계', '', '', '', V.mgm.reduce((s, a) => s + a.total, 0)]);
-    name = '대라수1차_MGM청구내역서_' + V.today + '.xlsx';
+    A = [['첨단 대라수 1차 MGM · 사이드 청구 내역서'], [], ['구분', '부동산 · 사이드', '동·호', '계약자', '수수료', '세금', '세액', '최종', '기타']];
+    V.mgm.forEach(a => a.rows.forEach(r => A.push([a.type, a.name, r.unit, r.name, r.fee * 1e4, V.taxKo[r.tax], r.tx, r.fin, r.memo])));
+    A.push([], ['합계', '', '', '', V.mgm.reduce((s, a) => s + a.fee, 0), '', V.mgm.reduce((s, a) => s + a.tx, 0), V.mgm.reduce((s, a) => s + a.total, 0)]);
+    name = '대라수1차_MGM사이드청구내역서_' + V.today + '.xlsx';
   } else {
     const i = V.invoices.find(x => x.date === sel), s = i.sum;
     A = [['첨단 대라수 1차 분양전환 수수료 청구서'], ['청구일', i.date], [], ['No', '동·호', '계약자', '구분', '계약담당', '수수료(만원)', '세금', '세액', '최종', '기타']];
