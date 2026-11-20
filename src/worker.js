@@ -5,7 +5,6 @@
 //   /api/staff/*   직원 (로그인 필요)          → src/staff-api/
 //   /api/admin/*   직원 관리 · 감사기록        → src/staff-api/admin.js
 //   /sitemap.xml · /rss.xml · /listings/*  검색로봇용 (공개 매물로 자동 생성) → src/seo/
-import { naverFormMail } from './email/naver-form.js';
 import { J, sameOrigin } from './lib/http.js';
 import { init } from './repo/schema.js';
 import { repo, openDb } from './repo/index.js';
@@ -56,15 +55,6 @@ export default {
   },
 
   // 정해진 시간 자동 실행 (wrangler.jsonc triggers) — 매일 08:30 아침 요약 (UTC 23:30) · 03:30 자동 백업 + 국토부 실거래가 · 건축물대장 받기 (UTC 18:00)
-  // 메일 받기 (Cloudflare Email Routing → form@rental-home.kr): 네이버 폼 '새 답변' 알림 → 텔레그램 · 종 (2026-11-20)
-  async email(message, env0, ctx) {
-    const conn = openDb(env0);
-    if (!conn) return;
-    const env = withDb(env0, ctx, conn);
-    try { await init(env.DB); await naverFormMail(message, env); }
-    catch (e) { console.log('email', e && e.message); }
-    finally { env.ctx.done(); }
-  },
   async scheduled(event, env0, ctx) {
     const conn = openDb(env0);
     if (!conn) return;
