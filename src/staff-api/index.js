@@ -11,7 +11,6 @@ import { staffConv } from './conv.js';
 import { cleanupPub, syncConv, getConv } from '../repo/conv.js';
 import { UNIT } from '../core/units.js';
 import { staffConsult } from './consult.js';
-import { staffKpi } from './kpi.js';
 import { staffReport } from './report.js';
 import { staffClaim } from './claim.js';
 import { staffBoard } from './board.js';
@@ -49,7 +48,6 @@ export async function staffApi(req, env, url, u) {
   if (p.startsWith('/api/staff/units/') || p.startsWith('/api/staff/tenancies')) return staffUnits(req, env, url, u);
   if (p === '/api/staff/conv' || p.startsWith('/api/staff/conv/')) return staffConv(req, env, url, u);   // R2 세대 전환 상태 · 공개 세대
   if (p === '/api/staff/consults' || p.startsWith('/api/staff/consults/')) return staffConsult(req, env, url, u);   // R2 상담카드 2종
-  if (p === '/api/staff/kpi') return staffKpi(req, env, url, u);   // R3-1 KPI 보드
   if (p === '/api/staff/report') return staffReport(req, env, url, u);   // R3-2 일일업무보고
   if (p === '/api/staff/claims' || p.startsWith('/api/staff/claims/')) return staffClaim(req, env, url, u);   // R3-3 수수료 청구서 · MGM
   if (p === '/api/staff/board' || p.startsWith('/api/staff/board/')) return staffBoard(req, env, url, u);   // R3-4 직원 소통 3종

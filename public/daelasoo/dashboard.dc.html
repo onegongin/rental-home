@@ -5667,8 +5667,8 @@ class Component extends DCLogic {
     const it = (k, label, sub, go) => ({ k, label, sub, go: e => { if (e) e.stopPropagation(); this.setState({ grpOpen: false }); go(); }, bg: tab === k ? '#fdecea' : 'transparent' });
     const groups = [
       { h: '상담', items: [it('talk', '💬 소통', '상담참고 · 요청함 · 불편사항', page('board.html'))].filter(Boolean) },
-      { h: '세대 · 가격', items: [it('conv', '🏠 전환상태', '세대 상태 · 손님 공개 세대', page('units.html')), it('prices', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금', page('prices.html'))] },
-      { h: '관리', items: [it('kpi', '📊 KPI', '담당별 실적 · 미상담 세대', page('kpi.html')), top ? it('report', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', page('report.html')) : null, boss ? it('claim', '📑 청구서', '수수료 청구 · MGM', page('claims.html')) : null, boss ? it('migrate', '📥 자료 옮기기', '고객DB 엑셀 옮기기', page('migrate.html')) : null].filter(Boolean) }];
+      { h: '세대 · 가격', items: [it('prices', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금', page('prices.html'))] },
+      { h: '관리', items: [top ? it('report', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', page('report.html')) : null, boss ? it('claim', '📑 청구서', '수수료 청구 · MGM', page('claims.html')) : null].filter(Boolean) }];   /* KPI · 자료 옮기기 · 전환상태 화면 삭제 (2026-11-21 대표, 전환상태 서버 · 자료는 남김) */
     return { groups, cur: '' }; }
   has3d(code) { return !!(this.D.generic && ((this.D.S.types || {})[code] || {}).pop); }
   plan3dSrc(code) { return 'assets/' + this.D.S.site.code + '/plans/main3d_' + code + '.jpg?v=' + (this.D.S.assetVer || 1); }
