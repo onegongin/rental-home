@@ -7,6 +7,8 @@ import { parse } from './kv.js';
 const dg = v => String(v || '').replace(/\D/g, '');
 const KIND = { seller: 'tenant', client: 'new', buyer: 'new', owner: 'owner' };
 const dayOf = c => String(c.at || '').slice(0, 10);
+// 유입경로: 예전 = ['방문', …] 목록, 지금 = { ch: ['사이트', '방문', …], media, brokers … } 묶음 — 둘 다 받음 (2026-11-21 일일업무보고 · 청구서가 못 불러오던 원인)
+const inflowOf = c => Array.isArray(c.inflow) ? c.inflow : c.inflow && Array.isArray(c.inflow.ch) ? c.inflow.ch : [];
 
 export async function dashCards(db) {
   const r = (await db.prepare("SELECT k, v FROM kv WHERE s = 'c' AND v IS NOT NULL AND v <> 'null'").all()).results || [];
@@ -24,9 +26,9 @@ export function asConsults(cards) {
     const C = ct.ct || {}, V = vs.vis || {}, guestVisit = !V.on && last.guest && last.visit ? String(last.visit).slice(0, 16) : null;
     const id = last.id;
     consults.push({ id, kind, unit_id: kind === 'tenant' || kind === 'owner' ? (last.unit || null) : null, name: last.name || '', mgr: C.staff || last.mgr || '', writer: last.writer || '', at: last.at || '',
-      progress: C.prog || '', book: V.on && V.date ? V.date + ' ' + (V.time || '') : guestVisit, contractUnit: C.unit || null, intUnits: (V.units || []).map(u => u.unit).filter(Boolean), ctype: (last.inflow || [])[0] || '',
+      progress: C.prog || '', book: V.on && V.date ? V.date + ' ' + (V.time || '') : guestVisit, contractUnit: C.unit || null, intUnits: (V.units || []).map(u => u.unit).filter(Boolean), ctype: inflowOf(last)[0] || '',
       mgmAgency: C.intro === 'MGM' ? (C.bk || null) : null, mgmBroker: null, mgmFee: C.intro === 'MGM' ? (C.mgmFee || null) : null, mgmFixed: C.intro === 'MGM' && C.fixed ? { by: C.fixed.by, at: Date.parse(String(C.fixed.at || '').replace(' ', 'T') + ':00+09:00') || null } : null });
-    list.forEach(c => { if (c.guest) return; logs.push({ consult_id: id, date: dayOf(c), at: Date.parse(String(c.at || '').replace(' ', 'T') + ':00+09:00') || 0, channel: (c.inflow || []).includes('방문') ? '방문상담' : '전화'   /* 유입경로 '방문' = 방문상담 (예약만 한 날은 아님) */, memo: '', kind, unit_id: kind === 'tenant' ? (c.unit || null) : null, mgr: (c.ct && c.ct.staff) || c.mgr || '' }); });
+    list.forEach(c => { if (c.guest) return; logs.push({ consult_id: id, date: dayOf(c), at: Date.parse(String(c.at || '').replace(' ', 'T') + ':00+09:00') || 0, channel: inflowOf(c).includes('방문') ? '방문상담' : '전화'   /* 유입경로 '방문' = 방문상담 (예약만 한 날은 아님) */, memo: '', kind, unit_id: kind === 'tenant' ? (c.unit || null) : null, mgr: (c.ct && c.ct.staff) || c.mgr || '' }); });
   });
   return { consults, logs };
 }
