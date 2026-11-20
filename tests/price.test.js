@@ -80,4 +80,6 @@ test('손님 호실 분양금액 = 매입보장가만 (시안 r62)', async () =>
   assert.equal(r.ok, true); assert.ok(r.hedge > 0); assert.deepEqual(Object.keys(r).sort(), ['hedge', 'id', 'ok', 'open']);
   const t = JSON.stringify(r); assert.ok(!/benefit|dep|need/.test(t), '혜택가 · 보증금 없음');
   assert.equal((await mf.fetch('http://localhost/api/public/unit-price/999-1')).status, 404);
+  const h = await (await mf.fetch('http://localhost/api/public/unit-price/101-2101')).json();
+  assert.equal(h.open, false, '관리 호실 = 손님 화면 분양전환 완료 (시안 r69)'); assert.equal(h.hedge, null);
 });
