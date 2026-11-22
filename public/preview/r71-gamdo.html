@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r71 · 감도</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.ct{background:#f0f6ff;border:1px solid #d6e6fb;border-radius:14px;padding:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dot{width:7px;height:7px;border-radius:50%;background:#0066cc}
+.tog{border:1px solid #b9d3f3;background:#fff;color:#0066cc;border-radius:9999px;padding:3px 11px;font-size:12px;font-weight:700}
+.pg{border:1px solid #d2d2d7;background:#fff;color:#1d1d1f;border-radius:9999px;padding:4px 11px;font-size:12px;font-weight:700}
+.pg.on{background:#0066cc;border-color:#0066cc;color:#fff}
+.gsel{height:30px;border:1px solid #d2d2d7;border-radius:9999px;padding:0 10px;font-size:12.5px;font-weight:700;background:#fff;color:#1d1d1f}
+.glbl{font-size:12px;font-weight:700;color:#6e6e73}
+.sum{font-size:11.5px;color:#6e6e73}
+.new{outline:2px solid #157a3f;outline-offset:3px;border-radius:9999px}
+.g{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap;margin-right:5px;vertical-align:1px}
+.g1{background:#c8381e;color:#fff}.g2{background:#e8603c;color:#fff}.g3{background:#fde3d9;color:#b3301a}.g4{background:#fff1d6;color:#9a5b00}.g5{background:#f2f2f5;color:#424245}.g6{background:#e8eef7;color:#4a6a92}.g7{background:#e5e5ea;color:#8e8e93}
+.scale{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--sub);font-weight:700;font-size:12px}
+.sq{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px}
+.s1{background:#f0f0f2;color:#6e6e73}.sl{background:#0066cc;color:#fff}
+.nm{font-weight:600;text-decoration:underline;text-decoration-color:#c7c7cc;text-underline-offset:3px}
+.hl td{background:#f0faf3}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}
+.note b{color:var(--fg)}
+.opt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.opt div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55}
+.opt .rec{border-color:#0066cc;background:#f5f9ff}
+@media (max-width:560px){.wrap{padding:16px}.opt{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>시안 r71 · 감도 (손님 계약 가능성)</h1>
+<p class="lead">상담카드(신규분양 매수) '2. 계약관리 상담'의 가계약 앞에 <b>감도</b> 드롭다운을 추가합니다.<br>
+상담이력대장 성명 앞에는 그 손님의 <b>가장 최근 상담 감도</b>가 색 표시로 나옵니다. (아래 이름 · 번호는 모두 가상)</p>
+
+<div class="card box"><h2>① 상담카드 — 2. 계약관리 상담 줄</h2>
+<p class="note" style="margin:0 0 8px">지금</p>
+<div class="ct"><span class="dot"></span><b style="font-size:14px">2. 계약관리 상담</b><span class="tog">펼치기 ▼</span><span class="pg">○ 가계약</span><span class="pg">○ 계약중</span><span class="pg">○ 계약완료</span></div>
+<p class="note" style="margin:14px 0 8px;color:#157a3f;font-weight:700">고친 뒤 (접힌 상태에서도 바로 고를 수 있음)</p>
+<div class="ct"><span class="dot"></span><b style="font-size:14px">2. 계약관리 상담</b><span class="tog">펼치기 ▼</span>
+<span class="new" style="display:inline-flex;align-items:center;gap:5px"><span class="glbl">감도</span><select class="gsel"><option>— 선택</option><option>최상</option><option selected>상</option><option>상하</option><option>중상</option><option>중</option><option>중하</option><option>하</option></select></span>
+<span class="pg on">● 가계약</span><span class="pg">○ 계약중</span><span class="pg">○ 계약완료</span><span class="sum">101동 1502호 · 매입보장가</span></div>
+<div class="scale"><span class="g g1">최상</span><span class="g g2">상</span><span class="g g3">상하</span><span class="g g4">중상</span><span class="g g5">중</span><span class="g g6">중하</span><span class="g g7">하</span><span class="note" style="align-self:center">← 색 (높을수록 진한 빨강, 낮을수록 회색)</span></div>
+</div>
+
+<div class="card box"><h2>② 상담이력대장 — 성명 앞 감도</h2>
+<div class="scroll"><table>
+<tr><th>일시</th><th>N차</th><th>구분</th><th>호실 / 희망</th><th>성명</th><th>연락처</th><th>상담내용</th><th>작성자</th></tr>
+<tr class="hl"><td>11-22 14:10</td><td><span class="sq sl">3차 · 최근</span></td><td style="font-weight:700;color:#0066cc">신규분양 매수</td><td style="color:#0066cc">101-1502</td><td><span class="g g2">상</span><span class="nm">김민수</span></td><td>010-****-1234</td><td>가계약금 입금 일정 협의</td><td>황후권</td></tr>
+<tr><td>11-20 11:00</td><td><span class="sq s1">2차</span></td><td style="font-weight:700;color:#0066cc">신규분양 매수</td><td style="color:#0066cc">101-1502</td><td><span class="g g2">상</span><span class="nm">김민수</span></td><td>010-****-1234</td><td>세대 방문 · 80A 마음에 듦</td><td>직원이</td></tr>
+<tr><td>11-15 16:30</td><td><span class="sq s1">1차</span></td><td style="font-weight:700;color:#0066cc">신규분양 매수</td><td style="color:#0066cc">80A 고층</td><td><span class="g g2">상</span><span class="nm">김민수</span></td><td>010-****-1234</td><td>전화 문의 · 매입보장 질문</td><td>직원이</td></tr>
+<tr><td>11-21 10:20</td><td><span class="sq sl">1차 · 최근</span></td><td style="font-weight:700;color:#0066cc">신규분양 매수</td><td style="color:#0066cc">59B</td><td><span class="g g6">중하</span><span class="nm">이영희</span></td><td>010-****-5678</td><td>가격 비교 중 · 다른 단지도 봄</td><td>황후권</td></tr>
+<tr><td>11-19 15:00</td><td><span class="sq sl">1차 · 최근</span></td><td style="font-weight:700;color:#424245">임차인</td><td style="color:#0066cc">102-803</td><td><span class="nm">박철수</span></td><td>010-****-9012</td><td>전세연장 문의</td><td>직원이</td></tr>
+</table></div>
+<p class="note" style="margin-top:10px">· 김민수: 1차 때는 '중'이었지만 <b>최근 상담(3차)에서 '상'</b>으로 바꿨으므로, 지난 줄까지 모두 '상'으로 보입니다 (손님의 지금 감도).<br>
+· 감도를 고르지 않은 손님 (임차인 등 계약관리가 없는 카드)은 표시 없음.<br>
+· 같은 손님 = N차와 같은 기준 (같은 연락처, 연락처 없으면 이름). 휴대폰 화면에서도 이름 앞에 같이 나옵니다.</p>
+</div>
+
+<div class="card box"><h2>정해 주실 것 — 최근 상담에서 감도를 안 골랐을 때</h2>
+<div class="opt">
+<div class="rec"><b>A안 (추천) 이전 감도 이어받기</b><br>새 상담카드를 열면 직전 감도가 미리 채워짐. 고르지 않으면 가장 최근에 고른 값을 표시 → 매번 고르지 않아도 감도가 사라지지 않음</div>
+<div><b>B안 최근 카드 그대로</b><br>최근 카드에서 감도를 비워 두면 이름 앞 표시도 없어짐 → 매 상담마다 꼭 다시 골라야 함</div>
+</div>
+<p class="note" style="margin-top:10px">· 감도는 직원 화면에만 나오고 손님 화면 · 공개 자료에는 나가지 않습니다.<br>· 상담이력 엑셀 내려받기에도 '감도' 칸을 추가합니다.</p>
+</div>
+</div></body></html>
