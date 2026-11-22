@@ -5311,7 +5311,7 @@ class Component extends DCLogic {
   COND = { '10.16 혜택가': ['#e8f5ec', '#157a3f'], '헷지했지': ['#f3e8fb', '#7a2fb0'], '전세연장': ['#e8f0fb', '#0066cc'] };
   CTK = ['가계약', '계약중', '계약완료'];   // 계약관리 단계 (시안 r52)
   GDK = ['최상', '상', '상하', '중상', '중', '중하', '하'];   // 감도 (시안 r71 A안 확정 2026-11-22)
-  GDC = { '최상': ['#c8381e', '#fff'], '상': ['#e8603c', '#fff'], '상하': ['#fde3d9', '#b3301a'], '중상': ['#fff1d6', '#9a5b00'], '중': ['#f2f2f5', '#424245'], '중하': ['#e8eef7', '#4a6a92'], '하': ['#e5e5ea', '#8e8e93'] };}
+  GDC = { '최상': ['#c8381e', '#fff'], '상': ['#e8603c', '#fff'], '상하': ['#fde3d9', '#b3301a'], '중상': ['#fff1d6', '#9a5b00'], '중': ['#f2f2f5', '#424245'], '중하': ['#e8eef7', '#4a6a92'], '하': ['#e5e5ea', '#8e8e93'] };
   // 줄마다 그 상담 때의 감도 + 직전에 고른 감도와 비교 ▲ 오름 · ▽ 내림 (시안 r73 확정 2026-11-22) — 안 고른 카드 = 직전 값 연하게, 화살표 없음
   gdRows(SQ) { const by = {}, out = {}, ix = g => this.GDK.indexOf(g); (this.state.cards || []).filter(c => !c.deleted && !c.guest).forEach(c => { const k = SQ[c.id] ? SQ[c.id].k : this.seqKeyOf(c); if (k) (by[k] = by[k] || []).push(c); });
     Object.values(by).forEach(L => { L.sort((a, b) => String(a.at || '').localeCompare(String(b.at || '')) || this.gTs(a.id) - this.gTs(b.id)); let last = ''; L.forEach(c => { const g = c.ct && this.GDC[c.ct.gd] ? c.ct.gd : '';
