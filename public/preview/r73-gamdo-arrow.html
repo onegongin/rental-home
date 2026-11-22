@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r73 · 감도 변화</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.g{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.g.soft{opacity:.45}
+.g1{background:#c8381e;color:#fff}.g2{background:#e8603c;color:#fff}.g3{background:#fde3d9;color:#b3301a}.g4{background:#fff1d6;color:#9a5b00}.g5{background:#f2f2f5;color:#424245}.g6{background:#e8eef7;color:#4a6a92}.g7{background:#e5e5ea;color:#8e8e93}
+.up,.dn{font-size:12px;font-weight:800;margin-left:4px;vertical-align:-1px}
+.up{color:#c8381e}.dn{color:#0066cc}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:860px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--sub);font-weight:700;font-size:12px}
+th.new,td.new{background:#f0faf3}
+.sq{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px}
+.s1{background:#f0f0f2;color:#6e6e73}.sn{background:#e8f0fb;color:#0066cc}.sl{background:#0066cc;color:#fff}
+.nm{font-weight:600;text-decoration:underline;text-decoration-color:#c7c7cc;text-underline-offset:3px}
+.k{font-weight:700;color:#0066cc}.u{color:#0066cc}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}.note b{color:var(--fg)}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;align-items:center;margin-bottom:12px}
+.mob{max-width:360px;display:flex;flex-direction:column;gap:8px}
+.mc{border:1px solid #e5e5ea;border-radius:12px;padding:8px 10px;background:#fff;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.mc .r{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+@media (max-width:560px){.wrap{padding:16px}}
+</style></head><body><div class="wrap">
+<h1>시안 r73 · 감도 칸 + 바뀐 방향 화살표</h1>
+<p class="lead">r72 A안(줄마다 그 상담 때의 감도)에 <b>직전 상담보다 올랐으면 ▲, 내렸으면 ▽</b>를 붙입니다. (이름 · 번호는 가상)</p>
+
+<div class="card box"><h2>상담이력대장</h2>
+<div class="leg"><span><span class="g g3">상하</span><span class="up">▲</span> 직전보다 오름</span><span><span class="g g7">하</span><span class="dn">▽</span> 직전보다 내림</span><span><span class="g g5">중</span> 그대로 · 첫 상담</span><span><span class="g g3 soft">상하</span> 이번에 안 고름 (직전 값)</span></div>
+<div class="scroll"><table>
+<tr><th>일시</th><th>N차</th><th>구분</th><th>호실 / 희망</th><th class="new">감도</th><th>성명</th><th>연락처</th><th>상담내용</th><th>작성자</th></tr>
+<tr><td>11-22 14:10</td><td><span class="sq sl">4차 · 최근</span></td><td class="k">신규분양 매수</td><td class="u">101-1502</td><td class="new"><span class="g g2" title="상하 → 상">상</span><span class="up" title="상하 → 상">▲</span></td><td><span class="nm">김민수</span></td><td>010-****-1234</td><td>가계약금 입금 일정 협의</td><td>황후권</td></tr>
+<tr><td>11-21 10:00</td><td><span class="sq sn">3차</span></td><td class="k">신규분양 매수</td><td class="u">101-1502</td><td class="new"><span class="g g3 soft" title="이번 카드에서 안 고름 · 직전 값">상하</span></td><td><span class="nm">김민수</span></td><td>010-****-1234</td><td>대출 한도 문의</td><td>직원이</td></tr>
+<tr><td>11-20 11:00</td><td><span class="sq sn">2차</span></td><td class="k">신규분양 매수</td><td class="u">101-1502</td><td class="new"><span class="g g3" title="중 → 상하">상하</span><span class="up" title="중 → 상하">▲</span></td><td><span class="nm">김민수</span></td><td>010-****-1234</td><td>세대 방문 · 80A 마음에 듦</td><td>직원이</td></tr>
+<tr><td>11-15 16:30</td><td><span class="sq s1">1차</span></td><td class="k">신규분양 매수</td><td class="u">80A 고층</td><td class="new"><span class="g g5">중</span></td><td><span class="nm">김민수</span></td><td>010-****-1234</td><td>전화 문의 · 매입보장 질문</td><td>직원이</td></tr>
+<tr><td>11-21 15:20</td><td><span class="sq sl">2차 · 최근</span></td><td class="k">신규분양 매수</td><td class="u">59B</td><td class="new"><span class="g g7" title="중 → 하">하</span><span class="dn" title="중 → 하">▽</span></td><td><span class="nm">이영희</span></td><td>010-****-5678</td><td>다른 단지로 마음 기움</td><td>황후권</td></tr>
+<tr><td>11-18 10:20</td><td><span class="sq s1">1차</span></td><td class="k">신규분양 매수</td><td class="u">59B</td><td class="new"><span class="g g5">중</span></td><td><span class="nm">이영희</span></td><td>010-****-5678</td><td>가격 비교 중</td><td>황후권</td></tr>
+<tr><td>11-19 15:00</td><td><span class="sq sl">1차 · 최근</span></td><td style="font-weight:700;color:#424245">임차인</td><td class="u">102-803</td><td class="new" style="color:#c7c7cc">-</td><td><span class="nm">박철수</span></td><td>010-****-9012</td><td>전세연장 문의</td><td>직원이</td></tr>
+</table></div>
+<p class="note" style="margin-top:10px">· 비교 대상 = 같은 손님(N차와 같은 묶음)의 <b>바로 전에 고른 감도</b>. 김민수 4차 '상'은 3차가 비어 있어 2차 '상하'와 비교 → ▲<br>
+· 화살표에 마우스를 올리면 '상하 → 상'처럼 바뀐 내용이 보입니다.<br>
+· 순서: 최상 &gt; 상 &gt; 상하 &gt; 중상 &gt; 중 &gt; 중하 &gt; 하 · 같은 값이거나 첫 상담이면 화살표 없음 · 연한 줄(안 고름)도 화살표 없음</p>
+</div>
+
+<div class="card box"><h2>휴대폰</h2>
+<div class="mob">
+<div class="mc"><div class="r"><span style="font-size:11.5px;color:#6e6e73">11-20 11:00</span><span class="sq sn">2차</span><span class="k" style="font-size:12px">신규분양 매수</span></div>
+<div class="r"><span class="u">101-1502</span><span><span class="g g3">상하</span><span class="up">▲</span></span><b>김민수</b></div>
+<div style="font-size:12px;color:#3a3a3c">010-****-1234</div><div>세대 방문 · 80A 마음에 듦</div><div style="font-size:11px;color:#6e6e73">직원이</div></div>
+<div class="mc"><div class="r"><span style="font-size:11.5px;color:#6e6e73">11-21 15:20</span><span class="sq sl">2차 · 최근</span><span class="k" style="font-size:12px">신규분양 매수</span></div>
+<div class="r"><span class="u">59B</span><span><span class="g g7">하</span><span class="dn">▽</span></span><b>이영희</b></div>
+<div style="font-size:12px;color:#3a3a3c">010-****-5678</div><div>다른 단지로 마음 기움</div><div style="font-size:11px;color:#6e6e73">황후권</div></div>
+</div>
+</div>
+</div></body></html>
