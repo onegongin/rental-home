@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r75 · 동호배치표 금액대</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}.note b{color:var(--fg)}
+/* 동호배치표 자리 (흐리게) */
+.board{border:1px dashed #d2d2d7;border-radius:14px;height:90px;display:flex;align-items:center;justify-content:center;color:#aeaeb2;font-size:13px;margin-bottom:12px;background:repeating-linear-gradient(45deg,#fafafa,#fafafa 8px,#f3f3f5 8px,#f3f3f5 16px)}
+/* A안 */
+.pb{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px}
+.pbh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.pbh b{font-size:15px}.pbh span{font-size:11.5px;color:#8e8e93}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grp{border:1px solid #ececf0;border-radius:12px;padding:12px 12px 6px}
+.gh{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:6px}
+.gh b{font-size:14px}.gh .rg{font-size:15px;font-weight:900;color:#c8381e;white-space:nowrap}
+.ln{display:grid;grid-template-columns:44px minmax(0,1fr) 120px;gap:8px;align-items:center;padding:7px 0;border-top:1px solid #f2f2f4;font-size:12.5px}
+.tp{display:inline-block;border-radius:9999px;padding:2px 0;width:44px;text-align:center;font-size:11px;font-weight:800;color:#fff}
+.t80A{background:#5b8def}.t80B{background:#7a5af5}.t59A{background:#21a67a}.t59B{background:#e39a1c}.t59C{background:#e2577c}
+.wh{color:#424245;line-height:1.35}
+.bar{position:relative;height:6px;border-radius:3px;background:#f0f0f2;margin-top:5px}
+.bar i{position:absolute;top:0;bottom:0;border-radius:3px;background:#c8381e;opacity:.75}
+.amt{text-align:right;font-weight:800;font-size:12.5px;white-space:nowrap}
+.foot{font-size:11.5px;color:#8e8e93;line-height:1.6;margin-top:10px}
+/* B안 */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+.tbl th{color:var(--sub);font-size:12px}
+.tbl .gr td{background:#fff4f2;font-weight:800}
+.tbl .gr td:last-child{color:#c8381e}
+.tbl td:last-child{text-align:right;white-space:nowrap;font-weight:700}
+.chk{border:1px solid #f2c94c;background:#fffaeb;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.7}
+.chk b{color:#9a5b00}
+.opt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.opt div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55}
+.opt .rec{border-color:#0066cc;background:#f5f9ff}
+@media (max-width:560px){.wrap{padding:16px}.grid2,.opt{grid-template-columns:1fr}.ln{grid-template-columns:44px minmax(0,1fr);}.ln .amt{grid-column:2;text-align:left}}
+</style></head><body><div class="wrap">
+<h1>시안 r75 · 동호배치표 아래 금액대</h1>
+<p class="lead">손님 화면 <b>동호배치표</b> 아래에 <b>타입 · 라인별 금액대</b>를 넣습니다.<br>
+호실별 금액이 아니라 <b>라인 단위 범위</b>만 보여서, 어느 호실을 파는지는 여전히 드러나지 않습니다 (시안 r74와 함께 씀).</p>
+
+<div class="card box"><h2>A안 (추천) · 타입 2칸 + 라인별 막대</h2>
+<div class="board">↑ 동호배치표 (지금 그대로)</div>
+<div class="pb">
+<div class="pbh"><b>타입 · 라인별 분양가 금액대</b><span>매입보장가 기준 · 5~28층</span></div>
+<div class="grid2">
+<div class="grp">
+<div class="gh"><b>80타입</b><span class="rg">4억1,900 ~ 4억3,900만원</span></div>
+<div class="ln"><span class="tp t80B">80B</span><div><div class="wh">102동 3라인</div><div class="bar"><i style="left:0%;width:40%"></i></div></div><span class="amt">4억1,900~4억2,700</span></div>
+<div class="ln"><span class="tp t80B">80B</span><div><div class="wh">101동 1라인</div><div class="bar"><i style="left:40%;width:40%"></i></div></div><span class="amt">4억2,700~4억3,500</span></div>
+<div class="ln"><span class="tp t80A">80A</span><div><div class="wh">101동 3라인 · 102동 1라인</div><div class="bar"><i style="left:50%;width:40%"></i></div></div><span class="amt">4억2,900~4억3,700</span></div>
+<div class="ln"><span class="tp t80B">80B</span><div><div class="wh">101 · 102동 2라인</div><div class="bar"><i style="left:60%;width:40%"></i></div></div><span class="amt">4억3,100~4억3,900</span></div>
+</div>
+<div class="grp">
+<div class="gh"><b>59타입</b><span class="rg">3억3,800 ~ 3억5,500만원</span></div>
+<div class="ln"><span class="tp t59A">59A</span><div><div class="wh">103동 3라인</div><div class="bar"><i style="left:0%;width:23.5%"></i></div></div><span class="amt">3억3,800~3억4,200</span></div>
+<div class="ln"><span class="tp t59C">59C</span><div><div class="wh">104동 3라인</div><div class="bar"><i style="left:35.3%;width:29.4%"></i></div></div><span class="amt">3억4,400~3억4,900</span></div>
+<div class="ln"><span class="tp t59B">59B</span><div><div class="wh">103 · 104동 2라인 <span style="color:#9a5b00">· 103동 1라인(59C)</span></div><div class="bar"><i style="left:64.7%;width:23.5%"></i></div></div><span class="amt">3억4,900~3억5,300</span></div>
+<div class="ln"><span class="tp t59A">59A</span><div><div class="wh">104동 1라인</div><div class="bar"><i style="left:76.5%;width:23.5%"></i></div></div><span class="amt">3억5,100~3억5,500</span></div>
+</div>
+</div>
+<div class="foot">· 같은 라인 안에서는 층에 따라 금액이 다릅니다 (5~6층 낮고, 7층 이상 높음).<br>· 4층 광폭테라스 세대는 별도 금액 · 자세한 금액은 상담 시 안내 &nbsp; <a href="#" style="color:#0066cc;font-weight:700">신규분양전환 상담 요청 →</a></div>
+</div>
+<p class="note" style="margin-top:10px">· 막대 = 그 타입 안에서 어느 쪽 금액대인지 한눈에 (왼쪽 낮음 → 오른쪽 높음)<br>· 순서는 낮은 금액부터 · 휴대폰은 2칸이 위아래로, 금액은 라인 이름 아래로 내려감</p>
+</div>
+
+<div class="card box"><h2>B안 · 한 줄 표 (보내 주신 순서 그대로)</h2>
+<div class="board">↑ 동호배치표 (지금 그대로)</div>
+<table class="tbl">
+<tr><th>타입</th><th>동 · 라인</th><th style="text-align:right">금액대</th></tr>
+<tr class="gr"><td colspan="2">80타입</td><td>4억1,900 ~ 4억3,900만원</td></tr>
+<tr><td><span class="tp t80B">80B</span></td><td>101동 1라인</td><td>4억2,700 ~ 4억3,500만원</td></tr>
+<tr><td><span class="tp t80B">80B</span></td><td>101 · 102동 2라인</td><td>4억3,100 ~ 4억3,900만원</td></tr>
+<tr><td><span class="tp t80A">80A</span></td><td>101동 3라인 · 102동 1라인</td><td>4억2,900 ~ 4억3,700만원</td></tr>
+<tr><td><span class="tp t80B">80B</span></td><td>102동 3라인</td><td>4억1,900 ~ 4억2,700만원</td></tr>
+<tr class="gr"><td colspan="2">59타입</td><td>3억3,800 ~ 3억5,500만원</td></tr>
+<tr><td><span class="tp t59A">59A</span></td><td>103동 3라인</td><td>3억3,800 ~ 3억4,200만원</td></tr>
+<tr><td><span class="tp t59C">59C</span></td><td>104동 3라인</td><td>3억4,400 ~ 3억4,900만원</td></tr>
+<tr><td><span class="tp t59B">59B</span></td><td>103 · 104동 2라인</td><td>3억4,900 ~ 3억5,300만원</td></tr>
+<tr><td><span class="tp t59A">59A</span></td><td>104동 1라인</td><td>3억5,100 ~ 3억5,500만원</td></tr>
+</table>
+<p class="note" style="margin-top:8px">· 단순하지만 휴대폰에서는 글이 길어 줄이 2줄로 꺾임</p>
+</div>
+
+<div class="card box"><h2>확인해 주실 것 (분양가표 자료와 맞춰 봄)</h2>
+<div class="chk">
+금액은 <b>보내 주신 값 = 분양가표 매입보장가(5~28층)와 모두 일치</b>합니다. 다만 아래 2가지가 다릅니다 — 시안은 분양가표 자료 쪽으로 표시했습니다.<br>
+① <b>타입 이름</b>: 보내 주신 표는 80타입이 모두 <b>80A</b>인데, 자료에는 <b>101동 1 · 2라인 · 102동 2 · 3라인 = 80B</b>, 101동 3라인 · 102동 1라인 = 80A 입니다.<br>
+② <b>103동 1라인(59C)</b>이 빠져 있습니다 — 자료 금액 3억4,900~3억5,300만원 (59B 2라인과 같음). A안은 59B 줄에 함께 넣었습니다.<br>
+③ 4층 광폭테라스(101 · 104동)는 범위에서 뺐습니다 (80타입 최대 4억6,500만원 · 59타입 최대 3억8,300만원).
+</div>
+</div>
+
+<div class="card box"><h2>정해 주실 것 — 어디에 넣을까</h2>
+<div class="opt">
+<div class="rec"><b>손님 화면만 (추천)</b><br>공개 동호배치표 아래. 직원 화면은 호실마다 금액이 이미 보여서 넣지 않음</div>
+<div><b>손님 + 직원 화면 둘 다</b><br>직원도 상담할 때 한눈에 범위를 볼 수 있음</div>
+</div>
+</div>
+</div></body></html>
