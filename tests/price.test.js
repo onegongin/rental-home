@@ -82,3 +82,16 @@ test('손님 호실 분양금액 = 모든 호실 분양전환 완료 · 금액 �
   }
   assert.equal((await mf.fetch('http://localhost/api/public/unit-price/999-1')).status, 404);
 });
+
+test('손님 동호배치표 금액대 (시안 r75) = 분양가표 매입보장가 5~28층 · 12라인 모두 들어감', async () => {
+  const { PRICE } = await import('../src/core/price.js');
+  const site = JSON.parse(readFileSync(new URL('../public/daelasoo/data/site.json', import.meta.url), 'utf8'));
+  const rows = site.content.priceBand.groups.flatMap(g => g.rows).map(r => r.t + ':' + r.min + '-' + r.max);
+  const seen = new Set();
+  for (const [b, lines] of Object.entries(PRICE)) lines.forEach(l => {
+    const B = l.bands.filter(x => !x[4]), k = (B[0][3] * 100) + '-' + (B[B.length - 1][3] * 100);
+    const hit = rows.find(r => r.endsWith(':' + k));
+    assert.ok(hit, b + '동 ' + l.t + ' ' + k); seen.add(hit);
+  });
+  assert.equal(seen.size, rows.length);
+});

@@ -22,7 +22,7 @@ html:root [data-m=setnav]>button:nth-child(1){order:1!important}html:root [data-
 /* 알림 발송기록 줄 (P5) · 머리글 오른쪽은 짧게 (시안 header-compact A 확정 2026-11-02) */
 html:root [data-sec=ntf]{grid-column:1 / -1!important;order:9}
 @media (max-width:560px){html:root [data-m=ntfrow]{grid-template-columns:70px minmax(0,1fr) auto!important}html:root [data-m=ntfrow]>span:nth-child(2){display:none}}
-@media (max-width:560px){html:root [data-m=xbgrid]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media (max-width:380px){html:root [data-m=cxrow]{grid-template-columns:minmax(0,1fr)!important}}@media (max-width:760px){html:root [data-m=vsrow],html:root [data-m=vsurow]{grid-template-columns:1fr 1fr!important}}@media (max-width:560px){html:root [data-m=grpmenu]{position:fixed!important;left:16px!important;right:16px!important;top:110px!important;width:auto!important;max-height:calc(100vh - 130px);overflow-y:auto}}
+@media (max-width:560px){html:root [data-m=pbl]{grid-template-columns:44px minmax(0,1fr)!important}html:root [data-m=pba]{grid-column:2;text-align:left!important}}@media (max-width:560px){html:root [data-m=xbgrid]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media (max-width:380px){html:root [data-m=cxrow]{grid-template-columns:minmax(0,1fr)!important}}@media (max-width:760px){html:root [data-m=vsrow],html:root [data-m=vsurow]{grid-template-columns:1fr 1fr!important}}@media (max-width:560px){html:root [data-m=grpmenu]{position:fixed!important;left:16px!important;right:16px!important;top:110px!important;width:auto!important;max-height:calc(100vh - 130px);overflow-y:auto}}
 /* 헷지했지 혜택 보드 (시안 r15-hedge-soft 확정 2026-11-14) — 바탕 = 곰 그림 바탕색 연보라, 강조 = 사이트 빨강 */
 .hgb{background:#f6f6fe;border:1px solid #e6e3fb;border-radius:14px;padding:clamp(18px,2.4vw,32px);display:grid;grid-template-columns:minmax(0,1fr) 190px minmax(0,1.3fr) 180px;gap:clamp(14px,2vw,28px);align-items:center;color:#1d1d1f}
 .hgb-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.hgb-tag{font-size:12.5px;font-weight:800;border-radius:9999px;padding:5px 12px;background:#fff;color:#6b5ce7;border:1px solid #e6e3fb}.hgb-tag.r{background:#c8381e;color:#fff;border-color:#c8381e}
@@ -326,6 +326,7 @@ html:root [data-m=ccond]{grid-template-columns:repeat(2,minmax(0,1fr))!important
 [data-m=ovside]{min-height:0!important}
 [data-m=ovside]>div{position:static!important;overflow:visible!important}
 [data-m=board]{grid-template-columns:minmax(0,1fr)!important;padding:12px 10px 40px!important}
+[data-m=pbg]{grid-template-columns:minmax(0,1fr)!important}
 [data-m=bscroll]{scroll-snap-type:x mandatory;margin:0 -14px;padding:0 14px}
 [data-m=bgrid]{grid-template-columns:var(--bgm,30px repeat(3,calc(100vw - 92px)))!important;min-width:0!important}
 [data-m=bgrid]>div{scroll-snap-align:end}
@@ -909,6 +910,27 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
       <sc-for list="{{ legend }}" as="l"><span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:{{ l.bg }};box-shadow:{{ l.ring }}"></span>{{ l.label }}</span></sc-for>
       <span data-m="bnote" style="margin-left:auto"><sc-if value="{{ isChamps }}" hint-placeholder-val="{{ true }}">21F 피난층 · 101동 44F 스카이커뮤니티 · 49F 펜트하우스 병합셀</sc-if><sc-if value="{{ boardStaff }}" hint-placeholder-val="{{ true }}"> · <span style="display:inline-block;background:#d2264b;color:#fff;font-size:9px;font-weight:800;border-radius:2px;padding:0 3px;line-height:13px">급</span> = 급매</sc-if></span>
     </div>
+    <!-- 타입 · 라인별 금액대 (site.json content.priceBand, 시안 r75 A안 확정 2026-11-24) — 손님 동호배치표만 · 라인 단위라 분양 호실은 안 드러남 -->
+    <sc-if value="{{ pb.on }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1px solid #e5e5ea;border-radius:14px;padding:14px 16px;margin-top:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px"><b style="font-size:15px">{{ pb.title }}</b><span style="font-size:11.5px;color:#8e8e93">{{ pb.sub }}</span></div>
+        <div data-m="pbg" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <sc-for list="{{ pb.groups }}" as="g">
+            <div style="border:1px solid #ececf0;border-radius:12px;padding:12px 12px 6px;min-width:0">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-bottom:6px"><b style="font-size:14px">{{ g.name }}</b><span style="font-size:15px;font-weight:900;color:#c8381e;white-space:nowrap">{{ g.range }}</span></div>
+              <sc-for list="{{ g.rows }}" as="r">
+                <div data-m="pbl" style="display:grid;grid-template-columns:44px minmax(0,1fr) 124px;gap:8px;align-items:center;padding:7px 0;border-top:1px solid #f2f2f4;font-size:12.5px">
+                  <span style="display:inline-block;border-radius:9999px;padding:2px 0;width:44px;text-align:center;font-size:11px;font-weight:800;background:{{ r.bg }};color:#1d1d1f">{{ r.t }}</span>
+                  <div style="min-width:0"><div style="color:#424245;line-height:1.35">{{ r.where }}</div><div style="position:relative;height:6px;border-radius:3px;background:#f0f0f2;margin-top:5px"><i style="position:absolute;top:0;bottom:0;left:{{ r.left }}%;width:{{ r.width }}%;border-radius:3px;background:#c8381e;opacity:.75"></i></div></div>
+                  <span data-m="pba" style="text-align:right;font-weight:800;white-space:nowrap">{{ r.amt }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:11.5px;color:#8e8e93;line-height:1.6;margin-top:10px"><sc-for list="{{ pb.foot }}" as="f"><div>· {{ f }}</div></sc-for><button onClick="{{ pb.reg }}" style="border:none;background:none;padding:4px 0 0;color:#0066cc;font-size:12.5px;font-weight:700;cursor:pointer">신규분양전환 상담 요청 →</button></div>
+      </div>
+    </sc-if>
   </div>
 
   <div data-m="bpanel" data-sel="{{ selFlag }}" style="position:sticky;top:{{ stickyTop }};max-height:{{ stickyMax }};overflow-y:auto;background:#fff;border-radius:18px">
@@ -6319,6 +6341,14 @@ class Component extends DCLogic {
     this.setState({ tab: 'card', form: f });
     this.flash(done ? '이미 상담카드가 있습니다 (' + (done.writer || '') + ' · ' + (done.at || '') + ') — 이어서 상담을 기록합니다' : '손님 등록 내용으로 상담카드를 열었습니다 · 저장하면 상담이력대장에 \'상담카드 작성됨\'으로 표시됩니다'); }
   pullRemote() { const S = this.state, SY = S.sync || {}; const url = (SY.url || this.props.syncUrl || '').trim(); if (!url || this.props.guestOnly || !SY.feedKey) return; fetch(url + (url.indexOf('?') < 0 ? '?' : '&') + 'feed=guest&key=' + encodeURIComponent(SY.feedKey) + '&since=' + encodeURIComponent(S.gSince || ''), { cache: 'no-store' }).then(r => r.json()).then(j => { if (!j || !j.ok) { this.setState({ feedErr: (j && j.error) || '응답 오류' }); return; } const items = (j.items || []).map(x => { try { return Object.assign(typeof x.raw === 'string' ? JSON.parse(x.raw) : x.raw, { synced: true, guest: true }); } catch (e) { return null; } }).filter(Boolean); this.setState(ss => { const ids = {}; ss.cards.forEach(c => ids[c.id] = 1); const add = items.filter(c => !ids[c.id]); return Object.assign({ gSince: j.now || ss.gSince, feedErr: '' }, add.length ? { cards: add.concat(ss.cards) } : {}); }); if (items.length) this.addNotes(items); }).catch(() => this.setState({ feedErr: '연결 실패' })); }
+  // 타입 · 라인별 금액대 (site.json content.priceBand, 시안 r75 A안 확정 2026-11-24) — 손님 동호배치표만, 단위 만원
+  pbVals(isGB) {
+    const P = (this.D.S.content || {}).priceBand; if (!isGB || !P || !(P.groups || []).length) return { on: false };
+    const f = m => Math.floor(m / 10000) + '억' + (m % 10000 ? (m % 10000).toLocaleString() : '');
+    return { on: true, title: P.title || '', sub: P.sub || '', foot: P.foot || [], reg: () => this.setState({ gRegOpen: true, gReg: this.gBlank('client', '') }),
+      groups: P.groups.map(g => { const R = g.rows || [], lo = Math.min(...R.map(r => r.min)), hi = Math.max(...R.map(r => r.max)), w = hi - lo || 1;
+        return { name: g.name, range: f(lo) + ' ~ ' + f(hi) + '만원', rows: R.map(r => ({ t: r.t, bg: (this.D.types[r.t] || {}).color || '#e5e5ea', where: r.where, amt: f(r.min) + '~' + f(r.max), left: ((r.min - lo) / w * 100).toFixed(1), width: ((r.max - r.min) / w * 100).toFixed(1) })) }; }) };
+  }
   gRegVals(RV, isGB) {
     const S = this.state, D = this.D; if (!isGB) return {}; const r = S.gReg || this.gBlank(); const set = p => this.setState(ss => ({ gReg: Object.assign({}, ss.gReg || this.gBlank(), p, { err: '' }) }));
     const MD = S.modules, trOn = ['sale', 'jeonse', 'wolse'].some(k => MD[k]), preOn = !!MD.presale;
@@ -7303,7 +7333,7 @@ cmh: (() => { const code = S.commPop && S.commPop.indexOf('plan:') === 0 ? S.com
       typeSumText: Object.keys(D.types).length + '개 타입 · 합계 ' + D.units.length.toLocaleString(), isChamps: !D.generic, isSite: !!D.generic, siteName: D.generic ? D.S.site.name : '', siteLogo: D.generic ? 'assets/' + D.S.site.code + '/' + D.S.site.logo : '',
       overviewHint: isGuest ? '동을 누르면 유니트 배치가 확대됩니다' : '동을 누르면 유니트 배치가 확대되고, 팝업에서 동호배치표로 이동합니다',
       guestRows: /* 게스트 칸 (시안 guest-settings 확정 2026-11-03) — 공개 사이트 탭 → 방문상담 단추 → 직원 미리 보기. 옛 'public'(챔피언스시티 파일용) 스위치는 뺌 */ [['noCity', (((window.__SITE || {}).site || {}).short || '단지') + ' 소개 탭 숨기기', '켜면 맨 앞 소개 탭(사업개요 · 입지환경 · 단지 개요 · 평면 안내)을 뺍니다'], ['noBoard', '동호배치표 탭 숨기기', '켜면 공개 사이트에서 동호배치표 탭을 뺍니다'], ['noOption', '옵션계산기 탭 숨기기', '켜면 공개 사이트에서 옵션계산기 탭을 뺍니다 · 손님이 고른 옵션은 저장되지 않습니다'], ['noPrice', '분양가표 탭 숨기기', '켜면 공개 사이트에서 분양가표 탭을 뺍니다'], ['noCmt', '호실 이야기(댓글) 숨기기', '켜면 동호배치표 호실 안내 아래 댓글 칸을 숨깁니다'], ['visit', '방문상담 예약 단추', '켜면 공개 사이트 위쪽 보드에 [방문상담 예약] 단추가 보입니다 · 관심등록 단추는 항상 있음'], ['enabled', '직원 화면에서 미리 보기', "켜면 직원 화면 위쪽에 '게스트' 탭들이 생겨 공개 사이트를 그대로 볼 수 있습니다"], ['hideStaff', '미리 보기 탭 잠깐 숨기기', '켜면 직원 화면에서만 게스트 탭을 뺍니다 · 공개 사이트에는 영향 없음']].map(([k, l, desc]) => { const on = k === 'visit' ? GS.visit !== false : !!GS[k]; return { label: l, desc, bg: on ? '#34c759' : '#e5e5ea', knob: on ? '21px' : '3px', infoOn: S.gTip === k, infoFg: S.gTip === k ? '#0066cc' : '#8e8e93', info: e => { if (e) { e.stopPropagation(); e.preventDefault(); } this.setState({ gTip: S.gTip === k ? null : k }); }, onClick: e => { if (e && e.target && e.target.closest && e.target.closest('[data-mo=ginfo]')) return; this.setState(ss => ({ guest: Object.assign({}, ss.guest, { [k]: !on }) })); } }; }),
-      tr: tab === 'overview' || isGuest ? this.trVals() : {}, isOverview: tab === 'overview' || isGuest, isBoard: tab === 'board' || isGB, isOption: tab === 'option' || isGO, isCard: tab === 'card', isLog: tab === 'log', isPrice: (tab === 'price' || isGP) && !D.generic, isPrice2: (tab === 'price' || isGP) && !!D.generic, pt, isCity: !D.generic && (tab === 'city' || isGC), city: D.generic ? {} : this.cityVals(), isSiteIntro: !!D.generic && (tab === 'city' || isGC), si: D.generic && (tab === 'city' || isGC || this.state.siZoom) ? this.siteIntroVals() : {}, /* siZoom: 단지배치 탭 단지 조경 크게 보기도 이 창을 씀 */
+      tr: tab === 'overview' || isGuest ? this.trVals() : {}, isOverview: tab === 'overview' || isGuest, isBoard: tab === 'board' || isGB, pb: this.pbVals(isGB && !!D.generic), isOption: tab === 'option' || isGO, isCard: tab === 'card', isLog: tab === 'log', isPrice: (tab === 'price' || isGP) && !D.generic, isPrice2: (tab === 'price' || isGP) && !!D.generic, pt, isCity: !D.generic && (tab === 'city' || isGC), city: D.generic ? {} : this.cityVals(), isSiteIntro: !!D.generic && (tab === 'city' || isGC), si: D.generic && (tab === 'city' || isGC || this.state.siZoom) ? this.siteIntroVals() : {}, /* siZoom: 단지배치 탭 단지 조경 크게 보기도 이 창을 씀 */
       hotspots, groupLegend, groupCards, typeList, spGarden, ip, typeRows, typeRowsOn: typeRows.length > 0, typeGridOn: !typeRows.length,
       groupChips, colorModes, togglePrice: () => { if (D.generic) this.prLoad(); this.setState({ showPrice: !S.showPrice }); }, priceSegOn: !!S.showPrice && D.generic && !guestOnly && !this._gm, priceSeg: this.prSeg(), priceChip, filterChips, axis, bldgs, legend, bgridCols, bgridM,
       noSelText: isGB ? '배치표에서 호실을 누르면 타입 개요 · 공급안내 · 평면이 표시됩니다' : '배치표에서 호실을 누르면 타입 개요 · 분양가 · 확장비 · 옵션 · 프리미엄 · 납부현황이 표시됩니다', boardStaff: !isGB, showGuestNav: guestOnly && vis.length > 1,
