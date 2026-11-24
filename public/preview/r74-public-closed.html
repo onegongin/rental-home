@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r74 · 공개 동호배치표</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col h3{font-size:14px;margin:0 0 8px}
+.pop{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;display:flex;flex-direction:column;gap:8px}
+.hd{display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px}
+.tp{border-radius:9999px;padding:2px 9px;font-size:11.5px;font-weight:800;color:#fff;background:#5b8def}
+.lbl{font-size:12px;font-weight:700;color:#6e6e73}
+.hg{background:linear-gradient(135deg,#fff4f2,#fff);border:1.5px solid #c8381e;border-radius:14px;padding:12px 14px}
+.hg b{display:block;font-size:12.5px;color:#c8381e}.hg .big{font-size:26px;font-weight:900;margin:2px 0}.hg .s{font-size:12px;color:#6e6e73}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:7px 0;border-bottom:1px solid #f0f0f2}
+.row span:first-child{color:#6e6e73}
+.done{font-weight:800;color:#6e6e73}
+.btn{height:42px;border:none;border-radius:12px;background:#0066cc;color:#fff;font-size:14.5px;font-weight:700}
+.bad{outline:2px solid #c8381e;outline-offset:3px;border-radius:14px}
+.good{outline:2px solid #157a3f;outline-offset:3px;border-radius:14px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}.note b{color:var(--fg)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+.tbl th{color:var(--sub);font-size:12px}
+.ok{color:#157a3f;font-weight:700}.chg{color:#c8381e;font-weight:700}
+.opt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.opt div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55}
+.opt .rec{border-color:#0066cc;background:#f5f9ff}
+@media (max-width:560px){.wrap{padding:16px}.cmp,.opt{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>시안 r74 · 공개 동호배치표 — 분양 호실을 구분해 보이지 않게</h1>
+<p class="lead">손님(공개) 화면 <b>동호배치표</b>에서 호실을 누르면, 지금은 분양 대상 호실만 '신규 분양전환 (매입보장) 분양가'가 크게 나와 <b>어느 호실을 파는지 드러납니다.</b><br>
+고친 뒤: <b>모든 호실이 101동 1301호(분양전환 완료)와 똑같이</b> 보입니다. 판매는 <b>'현재 매물'</b>에 직접 골라 공개한 물건으로만 합니다. (금액은 예시)</p>
+
+<div class="card box"><h2>① 손님 화면 · 동호배치표 → 호실 누르기</h2>
+<div class="cmp">
+<div class="col"><h3>지금 — 분양 대상 호실 (예: 103동 1203호)</h3>
+<div class="pop bad">
+<div class="hd">103동 1203호 <span class="tp">80A</span></div>
+<div class="lbl">분양금액</div>
+<div class="hg"><b>신규 분양전환 (매입보장) 분양가</b><div class="big">4억 3,700만원</div><div class="s">437,000,000원 · 3년 뒤 분양가에 다시 사드립니다 (헷지했지 매입보장)</div></div>
+<div class="row"><span>호실 분양가</span><span>매입보장가 437,000,000원</span></div>
+<button class="btn">신규분양전환 상담 요청</button>
+</div>
+<p class="note" style="color:#c8381e;margin-top:8px">✕ 분양 호실만 금액이 보여서 누르는 호실마다 비교하면 분양 대상이 다 드러남</p>
+</div>
+<div class="col"><h3 style="color:#157a3f">고친 뒤 — 모든 호실 (101동 1301호와 같게)</h3>
+<div class="pop good">
+<div class="hd">103동 1203호 <span class="tp">80A</span></div>
+<div class="lbl">분양금액</div>
+<div class="row"><span>호실 분양가</span><span class="done">분양전환 완료</span></div>
+<button class="btn">신규분양전환 상담 요청</button>
+</div>
+<p class="note" style="color:#157a3f;margin-top:8px">✓ 분양 호실 · 분양 끝난 호실 모두 같은 모양 → 겉으로 구분 안 됨<br>✓ 상담 요청 단추는 그대로 (관심 호실 = 누른 호실)</p>
+</div>
+</div></div>
+
+<div class="card box"><h2>② 바뀌는 곳 / 그대로인 곳</h2>
+<table class="tbl">
+<tr><th>화면</th><th>지금</th><th>고친 뒤</th></tr>
+<tr><td>손님 · 동호배치표 호실 창</td><td>분양 대상 호실만 매입보장가</td><td class="chg">모든 호실 '분양전환 완료' (금액 없음)</td></tr>
+<tr><td>손님 · 현재 매물</td><td>직원이 공개한 물건 (매입보장가 · 전세 보증금)</td><td class="ok">그대로 — 판매는 여기로만</td></tr>
+<tr><td>직원 화면 (동호배치표 · 호실 상세 · 분양가표 등)</td><td>금액 · 진행상태 모두 보임</td><td class="ok">그대로</td></tr>
+<tr><td>서버</td><td>호실마다 매입보장가를 손님에게 보냄</td><td class="chg">손님에게는 금액을 아예 안 보냄 (화면을 뜯어봐도 안 보임)</td></tr>
+</table>
+</div>
+
+<div class="card box"><h2>정해 주실 것 — 직원 호실 상세의 '관리 호실' 스위치 (시안 r69)</h2>
+<p class="note" style="margin:0 0 6px">지금은 이 스위치로 호실마다 손님 화면 금액을 끄고 켭니다. 모든 호실이 닫히면 스위치가 할 일이 없어집니다.</p>
+<div class="opt">
+<div class="rec"><b>A안 (추천) 스위치 숨김</b><br>모든 호실 항상 '분양전환 완료'. 헷갈리는 스위치를 없애 깔끔. 나중에 다시 열고 싶으면 그때 되살림</div>
+<div><b>B안 스위치 남김 (기본 = 모두 닫힘)</b><br>모든 호실 기본으로 닫고, 특정 호실만 스위치를 꺼서 다시 금액을 보이게 할 수 있음</div>
+</div>
+</div>
+</div></body></html>
