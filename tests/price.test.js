@@ -75,11 +75,10 @@ test('API: 직원만 · 상담카드 자동 채움', async () => {
   assert.ok(!/benefit|hedge|421000000/.test(g));
 });
 
-test('손님 호실 분양금액 = 매입보장가만 (시안 r62)', async () => {
-  const r = await (await mf.fetch('http://localhost/api/public/unit-price/101-2202')).json();
-  assert.equal(r.ok, true); assert.ok(r.hedge > 0); assert.deepEqual(Object.keys(r).sort(), ['hedge', 'id', 'ok', 'open']);
-  const t = JSON.stringify(r); assert.ok(!/benefit|dep|need/.test(t), '혜택가 · 보증금 없음');
+test('손님 호실 분양금액 = 모든 호실 분양전환 완료 · 금액 안 보냄 (시안 r74)', async () => {
+  for (const id of ['101-2202', '101-2101', '103-1203', '101-1301']) {
+    const r = await (await mf.fetch('http://localhost/api/public/unit-price/' + id)).json();
+    assert.deepEqual(r, { ok: true, id, open: false, hedge: null }, id);
+  }
   assert.equal((await mf.fetch('http://localhost/api/public/unit-price/999-1')).status, 404);
-  const h = await (await mf.fetch('http://localhost/api/public/unit-price/101-2101')).json();
-  assert.equal(h.open, false, '관리 호실 = 손님 화면 분양전환 완료 (시안 r69)'); assert.equal(h.hedge, null);
 });
