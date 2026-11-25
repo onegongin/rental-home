@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>공지사항</title>
+<!-- 공지사항 (시안 preview/r77-notice 확정 2026-11-25) — 대시보드 '공지사항' 탭 안 iframe (?embed=1) · 서버 src/staff-api/notice.js
+     업무 · 교육 · 일정 = 대표 · 관리자만 씀 · 확인 · 알림 창 = 업무 · 일정 · 요청 · 요청 = 바로 답변 · 확인한 직원 = 대표 · 관리자만 봄 · 첨부 사진 · PDF 3개 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--link:#0066cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  button{font-family:inherit}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:1280px;margin:0 auto;padding:20px 16px 64px}
+  h1{font-size:22px;font-weight:800;margin:0 0 12px}
+  .nb{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+  .pn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+  .tool{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .chip{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:700;color:#424245;cursor:pointer}
+  .chip.on{background:#0066cc;border-color:#0066cc;color:#fff}
+  .srch{flex:1;min-width:120px;height:34px;border:1px solid #d2d2d7;border-radius:9999px;padding:0 12px;font-size:13px;font-family:inherit}
+  .wbtn{height:34px;border:none;border-radius:9999px;background:var(--on);color:#fff;font-weight:800;font-size:13px;padding:0 14px;cursor:pointer;white-space:nowrap}
+  .row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 8px;border-top:1px solid #f0f0f2;font-size:13px;border-radius:8px;cursor:pointer}
+  .row:hover{background:#fafafc}.row.sel{background:#f0f6ff}.row.pin{background:#fff8f6}.row.pin.sel{background:#f0f6ff}
+  .ct{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 0;width:58px;text-align:center;white-space:nowrap}
+  .c-업무{background:#e8f0fb;color:#0066cc}.c-요청{background:#fff1d6;color:#9a5b00}.c-교육{background:#eaf6ee;color:#157a3f}.c-일정{background:#f2f2f5;color:#424245}.c-기타{background:#f5f5f7;color:#8e8e93}.c-pin{background:var(--on);color:#fff}
+  .tt{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tt.rd{font-weight:500;color:#8e8e93}
+  .nw{font-size:10px;font-weight:900;color:var(--on);margin-left:5px}
+  .sub{font-size:11.5px;color:#8e8e93;margin-top:2px}
+  .rc{font-size:11.5px;color:#6e6e73;text-align:right;line-height:1.6;white-space:nowrap}
+  .rc b{color:#157a3f}
+  .ans{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px}
+  .a0{background:#fff1d6;color:#9a5b00}.a1{background:#eaf6ee;color:#157a3f}
+  .mine{font-size:10.5px;color:#157a3f;font-weight:800}
+  .cm{border:1px solid #d6e6fb;background:#f7fbff;color:#0066cc;border-radius:9999px;font-size:11px;font-weight:800;padding:2px 8px;cursor:pointer}
+  .inl{margin:0 8px 8px 72px;border:1px solid #d6e6fb;background:#f7fbff;border-radius:12px;padding:10px;cursor:default}
+  .dh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .dt{font-size:18px;font-weight:800;margin:8px 0 4px;word-break:break-word}
+  .dm{font-size:12px;color:#8e8e93}
+  .body{font-size:14px;line-height:1.8;margin:12px 0;padding:12px 0;border-top:1px solid #f0f0f2;border-bottom:1px solid #f0f0f2;white-space:pre-wrap;word-break:break-word}
+  .att{display:inline-flex;gap:6px;align-items:center;border:1px solid #e5e5ea;border-radius:10px;padding:6px 10px;font-size:12.5px;color:#0066cc;font-weight:700;margin:0 6px 6px 0}
+  .thumb{display:inline-block;margin:0 6px 6px 0}.thumb img{max-width:220px;max-height:160px;border-radius:10px;border:1px solid #e5e5ea;display:block}
+  .read{margin-top:10px;border:1px solid #e5e5ea;border-radius:12px;padding:10px 12px}
+  .read h4{margin:0 0 6px;font-size:12.5px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .pp{display:flex;gap:5px;flex-wrap:wrap}
+  .p{font-size:11.5px;border-radius:9999px;padding:3px 9px;font-weight:700}
+  .p.y{background:#eaf6ee;color:#157a3f}.p.n{background:#f2f2f5;color:#8e8e93}
+  .ok{margin-top:12px;height:42px;width:100%;border:none;border-radius:12px;background:#157a3f;color:#fff;font-weight:800;font-size:14px;cursor:pointer}
+  .okd{margin-top:12px;font-size:13px;color:#157a3f;font-weight:800;text-align:center}
+  .th{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .rp{border-radius:12px;padding:9px 12px;font-size:13px;line-height:1.65;background:#f5f5f7;white-space:pre-wrap;word-break:break-word}
+  .rp.boss{background:#f0f6ff;border:1px solid #d6e6fb}
+  .rp .w{font-size:11.5px;color:#6e6e73;margin-bottom:2px;display:flex;gap:6px;align-items:center;white-space:normal}
+  .rp .w b{color:#1d1d1f}.rp .w button{margin-left:auto;border:0;background:none;color:#8e8e93;font-size:11px;cursor:pointer}
+  .rb{font-size:10px;font-weight:800;background:#0066cc;color:#fff;border-radius:5px;padding:1px 5px}
+  .rin{display:flex;gap:8px;margin-top:10px;align-items:flex-end}
+  .rin textarea{flex:1;min-height:42px;border:1.5px solid #0066cc;border-radius:12px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical}
+  .rin button{height:42px;border:none;border-radius:12px;background:#0066cc;color:#fff;font-weight:800;padding:0 16px;white-space:nowrap;cursor:pointer}
+  .qk{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .qk button{font-size:11.5px;border:1px solid #d2d2d7;border-radius:9999px;padding:3px 10px;color:#424245;font-weight:700;background:#fff;cursor:pointer}
+  .done{display:flex;gap:6px;align-items:center;font-size:12.5px;margin-top:8px;color:#424245}
+  .acts{display:flex;gap:6px;margin-top:12px;justify-content:flex-end;flex-wrap:wrap}
+  .acts button{font-size:12px;border:1px solid #d2d2d7;border-radius:9999px;padding:4px 11px;font-weight:700;color:#424245;background:#fff;cursor:pointer}
+  .acts .del{color:var(--on)}
+  .back{display:none;border:0;background:none;color:var(--link);font-size:13.5px;font-weight:700;padding:0 0 8px;cursor:pointer}
+  .empty{padding:30px;text-align:center;color:var(--sub);font-size:14px}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7;background:#fff;border:1px solid var(--line);border-radius:14px}
+  .msg{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-size:14px;z-index:40;display:none}
+  .ov{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:30;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+  .wf{background:#fff;border-radius:16px;padding:18px;width:100%;max-width:560px;display:grid;gap:10px}
+  .wf h3{margin:0;font-size:17px}
+  .wf label{font-size:12px;font-weight:700;color:#6e6e73;display:grid;gap:4px}
+  .wf input[type=text],.wf select,.wf textarea{border:1px solid #d2d2d7;border-radius:10px;padding:8px 10px;font-size:14px;font-family:inherit;width:100%;background:#fff}
+  .wf textarea{min-height:140px;resize:vertical}
+  .ck{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}
+  .ck label{display:flex;flex-direction:row;gap:6px;align-items:center;color:#1d1d1f;font-weight:500;font-size:13px}
+  .fl{display:flex;gap:6px;flex-wrap:wrap}
+  .fl span{display:inline-flex;gap:6px;align-items:center;border:1px solid #e5e5ea;border-radius:9999px;padding:4px 10px;font-size:12px}
+  .fl button{border:0;background:none;color:var(--on);cursor:pointer;font-size:12px;padding:0}
+  .wb{display:flex;gap:8px;justify-content:flex-end}
+  .wb button{height:40px;border-radius:10px;padding:0 18px;font-weight:800;font-size:14px;cursor:pointer;border:0}
+  .wb .s{background:#e8e8ed;color:var(--ink)}.wb .p{background:var(--on);color:#fff}
+  .hint{font-size:11.5px;color:#8e8e93;line-height:1.6}
+  @media (max-width:760px){
+    .nb{grid-template-columns:minmax(0,1fr)}
+    .nb.open .lst{display:none}.nb:not(.open) .det{display:none}
+    .back{display:block}
+  }
+  @media (max-width:560px){.wrap{padding:16px}.row{grid-template-columns:58px minmax(0,1fr)}.row .rc{grid-column:2;text-align:left}.inl{margin-left:8px}.thumb img{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><span data-grpnav></span></div></div>
+<div class="wrap"><h1>📢 공지사항</h1><div id="app"><div class="gate">불러오는 중…</div></div></div>
+<div class="msg" id="msg"></div>
+<div id="ovl"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const when = t => { const d = new Date(t + 9 * 3600e3).toISOString(); return d.slice(5, 10) + ' ' + d.slice(11, 16); };
+const whenL = t => { const d = new Date(t + 9 * 3600e3).toISOString(); return d.slice(0, 10) + ' ' + d.slice(11, 16); };
+function flash(t) { const m = $('msg'); m.textContent = t; m.style.display = 'block'; clearTimeout(flash.t); flash.t = setTimeout(() => m.style.display = 'none', 3000); }
+const EMBED = new URLSearchParams(location.search).get('embed') === '1';
+if (EMBED) { const st = document.createElement('style'); st.textContent = '.top{display:none}body{background:transparent}.wrap{padding:0 0 20px;max-width:none}h1{display:none}.ov{position:fixed}'; document.head.appendChild(st); }
+const tell = () => { if (EMBED && parent !== window) parent.postMessage({ noticeH: document.documentElement.scrollHeight, noticeN: V ? V.n : null }, location.origin); };
+const ACK = ['업무', '일정', '요청'];
+const QUICK = ['확인했습니다', '처리했습니다', '검토 후 답변 드리겠습니다', '통화 주세요'];
+
+async function post(path, b) {
+  const r = await fetch('/api/staff/notice' + path, { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(b || {}) });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) flash(j.msg || (j.err === 'input' ? (j.field === 'title' ? '제목을 적어 주세요' : '내용을 적어 주세요') : j.err === 'perm' ? '권한이 없습니다' : '처리하지 못했습니다'));
+  return j;
+}
+
+let V = null, sel = new URLSearchParams(location.search).get('id') || null, filt = '', q = '', inl = null, W = null, busy = false;
+
+async function load() {
+  const r = await fetch('/api/staff/notice', { credentials: 'same-origin' });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { $('app').innerHTML = '<div class="gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; tell(); return; }
+  if (!j.ok) { $('app').innerHTML = '<div class="gate">불러오지 못했습니다</div>'; tell(); return; }
+  V = j; draw();
+}
+
+function shown() {
+  const k = q.trim().toLowerCase();
+  return V.list.filter(x => (!filt || (filt === 'pin' ? x.pin : filt === 'todo' ? (x.todo || x.isNew) : filt === 'wait' ? x.status === '답변 대기' : x.cat === filt)) && (!k || (x.title + ' ' + x.body).toLowerCase().includes(k)));
+}
+function cnt(f) { const o = filt; filt = f; const n = shown().length; filt = o; return n; }
+
+function rowHtml(x) {
+  const rd = !x.todo && !x.isNew, rc = [];
+  if (x.status) rc.push('<span class="ans ' + (x.status === '답변 완료' ? 'a1' : 'a0') + '">' + x.status + '</span>');
+  if (V.boss && x.ackOn) rc.push('확인 <b>' + x.ackN + '</b>/' + x.total);
+  else if (x.ackOn && x.ack && !x.mine) rc.push('<span class="mine">확인함 ✓</span>');
+  if (x.cat === '요청') rc.push('<button class="cm" data-inl="' + x.id + '">💬 ' + x.replies.length + '</button>');
+  let h = '<div class="row' + (x.pin ? ' pin' : '') + (sel === x.id ? ' sel' : '') + '" data-open="' + x.id + '"><span class="ct ' + (x.pin ? 'c-pin' : 'c-' + x.cat) + '">' + (x.pin ? '📌 ' : '') + esc(x.cat) + '</span>' +
+    '<div style="min-width:0"><div class="tt' + (rd ? ' rd' : '') + '">' + esc(x.title) + (x.isNew || x.todo ? '<span class="nw">NEW</span>' : '') + '</div><div class="sub">' + esc(x.author) + (x.mine ? ' (나)' : '') + ' · ' + when(x.at) + (x.files.length ? ' · 📎 ' + x.files.length : '') + '</div></div>' +
+    '<span class="rc">' + rc.join('<br>') + '</span></div>';
+  if (inl === x.id) h += '<div class="inl" data-stop="1">' + thread(x, 'i') + '</div>';
+  return h;
+}
+
+function thread(x, pre) {
+  const rs = x.replies.map(r => '<div class="rp' + (r.boss ? ' boss' : '') + '"><div class="w"><b>' + esc(r.who) + '</b>' + (r.boss ? '<span class="rb">답변</span>' : '') + when(r.at) + (r.canDel ? '<button data-rdel="' + r.id + '">지우기</button>' : '') + '</div>' + esc(r.body) + '</div>').join('');
+  return '<div class="th">' + (rs || '<div class="hint">아직 답변이 없습니다</div>') + '</div>' +
+    '<div class="rin"><textarea id="' + pre + 'r-' + x.id + '" placeholder="답변 쓰기… (Ctrl+Enter 로 올리기)"></textarea><button data-reply="' + x.id + '" data-pre="' + pre + '">올리기</button></div>' +
+    '<div class="qk">' + QUICK.map(t => '<button data-qk="' + pre + 'r-' + x.id + '">' + t + '</button>').join('') + '</div>' +
+    (V.boss ? '<label class="done"><input type="checkbox" id="' + pre + 'd-' + x.id + '"' + (x.status !== '답변 완료' ? ' checked' : '') + '> 올리면서 <b>답변 완료</b>로 표시</label>' : '');
+}
+
+function detHtml(x) {
+  if (!x) return '<div class="empty">왼쪽 목록에서 글을 누르면 내용이 나옵니다</div>';
+  const imgs = x.files.filter(f => f.img), docs = x.files.filter(f => !f.img);
+  let h = '<button class="back" data-back="1">← 목록으로</button><div class="dh"><span class="ct ' + (x.pin ? 'c-pin' : 'c-' + x.cat) + '">' + (x.pin ? '📌 ' : '') + esc(x.cat) + '</span><span class="dm">' + esc(x.author) + ' · ' + whenL(x.at) + (x.edited_at ? ' · 고침 ' + when(x.edited_at) : '') + '</span>' +
+    (x.status ? (V.boss ? '<button class="ans ' + (x.status === '답변 완료' ? 'a1' : 'a0') + '" style="border:0;cursor:pointer" data-st="' + x.id + '" title="눌러서 바꾸기">' + x.status + ' ⇄</button>' : '<span class="ans ' + (x.status === '답변 완료' ? 'a1' : 'a0') + '">' + x.status + '</span>') : '') + '</div>' +
+    '<div class="dt">' + esc(x.title) + '</div><div class="body">' + esc(x.body) + '</div>';
+  if (imgs.length) h += '<div>' + imgs.map(f => '<a class="thumb" href="/api/staff/media/' + f.id + '" target="_blank" rel="noopener"><img src="/api/staff/media/' + f.id + '" alt="' + esc(f.name) + '"></a>').join('') + '</div>';
+  if (docs.length) h += '<div>' + docs.map(f => '<a class="att" href="/api/staff/media/' + f.id + '">📎 ' + esc(f.name) + '</a>').join('') + '</div>';
+  if (V.boss && x.ackOn) {
+    const got = Object.fromEntries(x.ackOf.map(a => [a.who, a.at]));
+    h += '<div class="read"><h4><span>확인한 직원 ' + x.ackN + ' / ' + x.total + '</span><span style="color:#8e8e93;font-weight:500">대표 · 관리자만 보임</span></h4><div class="pp">' +
+      x.ackOf.map(a => '<span class="p y">✓ ' + esc(a.who) + ' · ' + when(a.at) + '</span>').join('') + V.staff.filter(n => !(n in got)).map(n => '<span class="p n">' + esc(n) + '</span>').join('') + '</div></div>';
+  }
+  if (x.ackOn && !x.mine) h += x.ack ? '<div class="okd">✓ 확인했습니다</div>' : '<button class="ok" data-ack="' + x.id + '">확인했습니다</button>';
+  if (x.cat === '요청') h += thread(x, 'd');
+  if (x.canEdit) h += '<div class="acts"><button data-edit="' + x.id + '">고치기</button>' + (V.boss ? '<button data-pin="' + x.id + '">' + (x.pin ? '필독 풀기' : '📌 필독') + '</button>' : '') + '<button class="del" data-del="' + x.id + '">지우기</button></div>';
+  return h;
+}
+
+function draw() {
+  const L = shown(), x = V.list.find(y => y.id === sel);
+  const chips = [['', '전체'], ['pin', '📌 필독']].concat(V.cats.map(c => [c, c]), V.boss ? [['wait', '답변 대기']] : [], [['todo', '안 읽음']]);
+  $('app').innerHTML = '<div class="nb' + (x ? ' open' : '') + '"><div class="pn lst">' +
+    '<div class="tool">' + chips.map(([k, t]) => '<button class="chip' + (filt === k ? ' on' : '') + '" data-f="' + k + '">' + t + ' ' + cnt(k) + '</button>').join('') + '</div>' +
+    '<div class="tool"><input class="srch" id="q" placeholder="제목 · 내용 찾기" value="' + esc(q) + '">' + (V.writeCats.length ? '<button class="wbtn" data-new="1">+ 글쓰기</button>' : '') + '</div>' +
+    (L.length ? L.map(rowHtml).join('') : '<div class="empty">' + (V.list.length ? '맞는 글이 없습니다' : '아직 공지가 없습니다') + '</div>') +
+    '</div><div class="pn det">' + detHtml(x) + '</div></div>';
+  bind(); tell();
+}
+
+function bind() {
+  const A = $('app');
+  A.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filt = b.dataset.f; draw(); });
+  const qi = $('q'); if (qi) qi.oninput = () => { q = qi.value; const p = qi.selectionStart; draw(); const n = $('q'); n.focus(); n.setSelectionRange(p, p); };
+  A.querySelectorAll('[data-open]').forEach(r => r.onclick = e => { if (e.target.closest('[data-inl]')) return; open(r.dataset.open); });
+  A.querySelectorAll('[data-stop]').forEach(r => r.onclick = e => e.stopPropagation());
+  A.querySelectorAll('[data-inl]').forEach(b => b.onclick = e => { e.stopPropagation(); inl = inl === b.dataset.inl ? null : b.dataset.inl; draw(); const t = $('ir-' + inl); if (t) t.focus(); });
+  A.querySelectorAll('[data-back]').forEach(b => b.onclick = () => { sel = null; draw(); });
+  A.querySelectorAll('[data-new]').forEach(b => b.onclick = () => form(null));
+  A.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => form(V.list.find(y => y.id === b.dataset.edit)));
+  A.querySelectorAll('[data-ack]').forEach(b => b.onclick = async () => { if ((await post('/' + b.dataset.ack + '/ack')).ok) { flash('확인했습니다'); load(); } });
+  A.querySelectorAll('[data-pin]').forEach(b => b.onclick = async () => { const x = V.list.find(y => y.id === b.dataset.pin); if ((await post('/' + x.id, { pin: !x.pin })).ok) load(); });
+  A.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { if (confirm('이 글을 지울까요?') && (await post('/' + b.dataset.del + '/del')).ok) { sel = null; flash('지웠습니다'); load(); } });
+  A.querySelectorAll('[data-st]').forEach(b => b.onclick = async () => { const x = V.list.find(y => y.id === b.dataset.st); if ((await post('/' + x.id + '/status', { status: x.status === '답변 완료' ? '답변 대기' : '답변 완료' })).ok) load(); });
+  A.querySelectorAll('[data-rdel]').forEach(b => b.onclick = async e => { e.stopPropagation(); if (confirm('이 답변을 지울까요?') && (await post('/reply/' + b.dataset.rdel + '/del')).ok) load(); });
+  A.querySelectorAll('[data-qk]').forEach(b => b.onclick = e => { e.stopPropagation(); const t = $(b.dataset.qk); if (t) { t.value = (t.value ? t.value.replace(/\s+$/, '') + ' ' : '') + b.textContent; t.focus(); } });
+  A.querySelectorAll('[data-reply]').forEach(b => {
+    const id = b.dataset.reply, pre = b.dataset.pre, ta = $(pre + 'r-' + id);
+    const go = async () => { if (busy) return; const t = ta.value.trim(); if (!t) { flash('답변을 적어 주세요'); return; } busy = true; const d = $(pre + 'd-' + id);
+      const j = await post('/' + id + '/reply', { body: t, done: !!(d && d.checked) }); busy = false; if (j.ok) { flash('답변을 올렸습니다'); load(); } };
+    b.onclick = e => { e.stopPropagation(); go(); };
+    if (ta) ta.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); go(); } };
+  });
+}
+
+async function open(id) {
+  sel = id; inl = null; const x = V.list.find(y => y.id === id); draw();
+  if (!EMBED) history.replaceState(null, '', '?id=' + id);
+  if (EMBED && parent !== window) parent.postMessage({ noticeTop: 1 }, location.origin);
+  else window.scrollTo(0, 0);
+  if (x && x.isNew && !x.ackOn) { x.isNew = false; await post('/' + id + '/seen'); }
+  else if (x && x.mine && x.todo) { await post('/' + id + '/seen'); load(); }
+}
+
+// ── 글쓰기 · 고치기 창 ──
+function form(x) {
+  const cats = V.cats, wc = V.writeCats, cat = x ? x.cat : (wc.includes('업무') ? '업무' : wc[0]);
+  W = { id: x ? x.id : null, files: x ? x.files.slice() : [] };
+  $('ovl').innerHTML = '<div class="ov" id="ov"><div class="wf">' +
+    '<h3>' + (x ? '글 고치기' : '새 글쓰기') + '</h3>' +
+    '<label>분류<select id="w-cat">' + cats.map(c => '<option value="' + c + '"' + (c === cat ? ' selected' : '') + (wc.includes(c) ? '' : ' disabled') + '>' + c + (wc.includes(c) ? '' : ' (대표 · 관리자)') + '</option>').join('') + '</select></label>' +
+    '<label>제목<input type="text" id="w-title" maxlength="100" value="' + esc(x ? x.title : '') + '"></label>' +
+    '<label>내용<textarea id="w-body" maxlength="5000">' + esc(x ? x.body : '') + '</textarea></label>' +
+    '<label>첨부 (사진 · PDF, 최대 3개)<input type="file" id="w-file" accept="image/*,application/pdf" multiple></label><div class="fl" id="w-fl"></div>' +
+    '<div class="ck">' + (V.boss ? '<label><input type="checkbox" id="w-pin"' + (x && x.pin ? ' checked' : '') + '> 📌 필독 (맨 위 고정)</label><label id="w-popl"><input type="checkbox" id="w-pop"' + (!x || x.popup ? ' checked' : '') + '> 접속할 때 알림 창</label>' : '') +
+    (x ? '' : '<label><input type="checkbox" id="w-tg"' + (V.boss ? '' : ' checked') + '> 텔레그램 알림' + (V.boss ? ' (직원 모두)' : ' (대표 · 관리자)') + '</label>') + '</div>' +
+    '<div class="hint">· [확인했습니다] · 알림 창은 업무 · 일정 · 요청 글만 · 요청 글은 답변을 달 수 있습니다</div>' +
+    '<div class="wb"><button class="s" id="w-x">닫기</button><button class="p" id="w-go">' + (x ? '저장' : '올리기') + '</button></div></div></div>';
+  const popVis = () => { const l = $('w-popl'); if (l) l.style.display = ACK.includes($('w-cat').value) ? '' : 'none'; };
+  $('w-cat').onchange = popVis; popVis(); fl();
+  $('w-x').onclick = close; $('ov').onclick = e => { if (e.target.id === 'ov') close(); };
+  $('w-file').onchange = async e => { for (const f of e.target.files) { if (W.files.length >= 3) { flash('첨부는 3개까지입니다'); break; } await up(f); } e.target.value = ''; };
+  $('w-go').onclick = save;
+  $('w-title').focus();
+  if (EMBED && parent !== window) parent.postMessage({ noticeTop: 1 }, location.origin);
+}
+function close() { $('ovl').innerHTML = ''; W = null; }
+function fl() { $('w-fl').innerHTML = W.files.map((f, i) => '<span>' + (f.img ? '📷 ' : '📎 ') + esc(f.name) + ' <button data-fx="' + i + '">✕</button></span>').join(''); $('w-fl').querySelectorAll('[data-fx]').forEach(b => b.onclick = () => { W.files.splice(+b.dataset.fx, 1); fl(); }); }
+// 사진 = 긴 변 1600px JPEG 로 줄여서 · PDF = 그대로
+function toJpeg(file) {
+  return new Promise((ok, no) => { const im = new Image(), u = URL.createObjectURL(file); im.onload = () => { const k = Math.min(1, 1600 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); c.toBlob(b => b ? ok(b) : no(), 'image/jpeg', 0.85); }; im.onerror = () => { URL.revokeObjectURL(u); no(); }; im.src = u; });
+}
+async function up(f) {
+  const pdf = f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+  if (!pdf && !/^image\//.test(f.type)) { flash('사진 · PDF 만 올릴 수 있습니다'); return; }
+  let data = f; if (!pdf) { try { data = await toJpeg(f); } catch (e) { flash('사진을 읽지 못했습니다'); return; } }
+  flash('올리는 중… ' + f.name);
+  const r = await fetch('/api/staff/notice/upload?img=' + (pdf ? 0 : 1) + '&name=' + encodeURIComponent(f.name), { method: 'POST', credentials: 'same-origin', body: data });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) { flash(j.msg || '올리지 못했습니다'); return; }
+  if (W) { W.files.push({ id: j.id, name: j.name, img: j.img }); fl(); flash('올렸습니다'); }
+}
+async function save() {
+  if (busy) return;
+  const b = { cat: $('w-cat').value, title: $('w-title').value, body: $('w-body').value, files: W.files };
+  if (!b.title.trim()) { flash('제목을 적어 주세요'); return; }
+  if (!b.body.trim()) { flash('내용을 적어 주세요'); return; }
+  if ($('w-pin')) b.pin = $('w-pin').checked;
+  if ($('w-pop')) b.popup = $('w-pop').checked && ACK.includes(b.cat);
+  if ($('w-tg')) b.tg = $('w-tg').checked;
+  const eid = W.id; busy = true; const j = await post(eid ? '/' + eid : '', b); busy = false;
+  if (j.ok) { if (!eid) sel = j.id; close(); flash(eid ? '저장했습니다' : '올렸습니다'); load(); }
+}
+
+load();
+setInterval(() => { if (!W && document.visibilityState === 'visible' && !document.activeElement.matches('textarea,input')) load(); }, 60000);
+window.addEventListener('resize', tell);
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

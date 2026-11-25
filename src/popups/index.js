@@ -67,7 +67,7 @@ export async function popCleanup(env, now = Date.now()) {
     if (removed) await putRows(db, [{ s: 'cfg', k: 'popups', v: JSON.stringify(after), at: now, by: '자동 정리' }]);
   }
   const refs = refsOf(after);
-  const old = (await db.prepare('SELECT id FROM media WHERE at < ?').bind(now - DAY).all()).results || [];
+  const old = (await db.prepare("SELECT id FROM media WHERE at < ? AND (aud IS NULL OR aud <> 'notice')").bind(now - DAY).all()).results || [];
   let files = await dropMedia(env, old.map(x => x.id).filter(id => !refs.has(id)));
   // 표에 없는 저장소 파일 (올리다 끊긴 것 등)
   if (env.MEDIA) {
