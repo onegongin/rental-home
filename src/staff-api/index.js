@@ -13,7 +13,6 @@ import { UNIT } from '../core/units.js';
 import { staffConsult } from './consult.js';
 import { staffReport } from './report.js';
 import { staffClaim } from './claim.js';
-import { staffBoard } from './board.js';
 import { staffNotice } from './notice.js';
 import { staffPrice } from './price.js';
 import { repo } from '../repo/index.js';
@@ -51,7 +50,6 @@ export async function staffApi(req, env, url, u) {
   if (p === '/api/staff/consults' || p.startsWith('/api/staff/consults/')) return staffConsult(req, env, url, u);   // R2 상담카드 2종
   if (p === '/api/staff/report') return staffReport(req, env, url, u);   // R3-2 일일업무보고
   if (p === '/api/staff/claims' || p.startsWith('/api/staff/claims/')) return staffClaim(req, env, url, u);   // R3-3 수수료 청구서 · MGM
-  if (p === '/api/staff/board' || p.startsWith('/api/staff/board/')) return staffBoard(req, env, url, u);   // R3-4 직원 소통 3종
   if (p === '/api/staff/notice' || p.startsWith('/api/staff/notice/')) return staffNotice(req, env, url, u);   // 공지사항 (시안 r77)
   if (p === '/api/staff/prices' || p.startsWith('/api/staff/prices/')) return staffPrice(req, env, url);   // R3-5 분양가표 · 전세연장
   if (p === '/api/staff/ads' || /^\/api\/staff\/listings\/[0-9A-Z]{26}\/ads$/.test(p)) return staffAds(req, env, url, u);   // 광고 초안 · 게시기록 · 매칭 고객 (P6)

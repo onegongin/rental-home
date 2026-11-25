@@ -5730,7 +5730,7 @@ class Component extends DCLogic {
     const page = f => () => { location.href = 'staff/' + f; };
     const it = (k, label, sub, go) => ({ k, label, sub, go: e => { if (e) e.stopPropagation(); this.setState({ grpOpen: false }); go(); }, bg: tab === k ? '#fdecea' : 'transparent' });
     const groups = [
-      { h: '상담', items: [it('talk', '💬 소통', '상담참고 · 요청함 · 불편사항', page('board.html'))].filter(Boolean) },
+      /* '상담' 묶음(💬 소통)은 지움 — 공지사항 탭이 대신 (시안 r78 A안 확정 2026-11-25) */
       { h: '세대 · 가격', items: [it('prices', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금', page('prices.html'))] },
       { h: '관리', items: [top ? it('report', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', page('report.html')) : null, boss ? it('claim', '📑 청구서', '수수료 청구 · MGM', page('claims.html')) : null].filter(Boolean) }];   /* KPI · 자료 옮기기 · 전환상태 화면 삭제 (2026-11-21 대표, 전환상태 서버 · 자료는 남김) */
     return { groups, cur: '' }; }
