@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r78 · 소통 메뉴 삭제</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}.note b{color:var(--fg)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col h3{font-size:14px;margin:0 0 8px}
+.btn{display:inline-block;border:1.5px solid #c8381e;border-radius:9999px;padding:6px 13px;font-size:14px;font-weight:700;background:#c8381e;color:#fff;margin-bottom:8px}
+.menu{background:#fff;border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.14);padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.menu h4{margin:0 0 4px 10px;font-size:11.5px;color:#8e8e93}
+.menu a{display:flex;flex-direction:column;gap:1px;padding:8px 10px;border-radius:10px;color:#1d1d1f}
+.menu a b{font-size:14px}.menu a span{font-size:11.5px;color:#6e6e73}
+.gone{position:relative;opacity:.55;background:repeating-linear-gradient(135deg,#fff,#fff 6px,#fdecea 6px,#fdecea 12px);border-radius:10px}
+.gone b{text-decoration:line-through}
+.x{font-size:11px;font-weight:800;color:#c8381e}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{color:var(--sub);font-size:12px}
+.ct{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 8px}
+.c5{background:#fff1d6;color:#9a5b00}.c6{background:#f5f5f7;color:#8e8e93}
+.ok{color:#157a3f;font-weight:700}
+.opt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.opt div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55}
+.opt .rec{border-color:#0066cc;background:#f5f9ff}
+@media (max-width:560px){.wrap{padding:16px}.cmp,.opt{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>시안 r78 · [대라수 업무 ▾]에서 '소통' 삭제</h1>
+<p class="lead">공지사항이 생겨서 <b>💬 소통</b>(상담참고 · 요청함 · 불편사항)은 겹칩니다. 메뉴에서 뺍니다.<br>
+지금 본 사이트 소통에 쓰인 글은 <b>0건</b>이라(확인함) 옮길 글은 없습니다.</p>
+
+<div class="card box"><h2>① 대라수 업무 펼침 메뉴</h2>
+<div class="cmp">
+<div class="col"><h3>지금</h3>
+<span class="btn">대라수 업무 ▾</span>
+<div class="menu">
+<div><h4>상담</h4><a class="gone"><b>💬 소통</b><span>상담참고 · 요청함 · 불편사항</span></a></div>
+<div><h4>세대 · 가격</h4><a><b>🔑 공실 · 신규분양</b><span>공실 일수 · 손님 화면 공개</span></a><a><b>💰 분양가표 · 전세연장</b><span>호실별 분양가 · 보증금</span></a></div>
+<div><h4>관리</h4><a><b>🧾 일일업무보고</b><span>오늘 실적 · 인쇄 · 엑셀</span></a><a><b>📑 청구서</b><span>수수료 청구 · MGM</span></a></div>
+</div>
+<p class="note" style="margin-top:8px"><span class="x">✕ 빗금 = 지움</span></p>
+</div>
+<div class="col"><h3 style="color:#157a3f">고친 뒤</h3>
+<span class="btn">대라수 업무 ▾</span>
+<div class="menu">
+<div><h4>세대 · 가격</h4><a><b>🔑 공실 · 신규분양</b><span>공실 일수 · 손님 화면 공개</span></a><a><b>💰 분양가표 · 전세연장</b><span>호실별 분양가 · 보증금</span></a></div>
+<div><h4>관리</h4><a><b>🧾 일일업무보고</b><span>오늘 실적 · 인쇄 · 엑셀</span></a><a><b>📑 청구서</b><span>수수료 청구 · MGM</span></a></div>
+</div>
+<p class="note" style="margin-top:8px">· '상담' 묶음이 통째로 빠지고 2칸으로<br>· 따로 열리는 화면(분양가표 · 일일업무보고 · 청구서) 위쪽 메뉴도 같이</p>
+</div>
+</div></div>
+
+<div class="card box"><h2>② 소통에서 하던 일 → 공지사항에서</h2>
+<table class="tbl">
+<tr><th>소통 (지금)</th><th>공지사항에서는</th></tr>
+<tr><td>상담참고 · 지시 (누구나 씀, 중요 고정)</td><td>지시 = <b>업무</b>(대표 · 관리자, 필독) · 직원 참고 글 = <span class="ct c6">기타</span> (직원도 씀)</td></tr>
+<tr><td>요청함 (직원 → 관리자, 처리완료)</td><td><span class="ct c5">요청</span> — 바로 답변 · 대표 · 관리자가 '답변 완료'</td></tr>
+<tr><td>사용 불편사항 (접수 · 확인중 · 반영완료)</td><td><span class="ct c5">요청</span> 글로 (제목에 '불편'처럼) — 답변으로 처리 결과</td></tr>
+</table>
+</div>
+
+<div class="card box"><h2>정해 주실 것 — 얼마나 지울까</h2>
+<div class="opt">
+<div class="rec"><b>A안 (추천) 메뉴 · 화면 · 서버까지 삭제</b><br>소통 화면(staff/board.html)과 서버 기능을 지웁니다. 쓰인 글이 0건이라 잃는 것 없음. 빈 저장 표만 남겨 둠(백업 영향 없음)</div>
+<div><b>B안 메뉴에서만 숨김</b><br>화면 · 서버는 그대로 두고 메뉴에서만 뺌. 주소(staff/board.html)를 알면 열림</div>
+</div>
+</div>
+</div></body></html>
