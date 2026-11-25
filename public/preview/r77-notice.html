@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r77 · 공지사항</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}.note b{color:var(--fg)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px}
+.tb{padding:7px 12px;border-radius:9px;font-size:13px;font-weight:700;color:#424245;position:relative;white-space:nowrap}
+.tb.on{background:#1d1d1f;color:#fff}
+.dot{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;border-radius:9px;background:#c8381e;color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:8px;border-bottom:1px solid var(--line);text-align:center}
+.tbl th{color:var(--sub);font-size:12px}.tbl td:first-child,.tbl th:first-child{text-align:left}
+.y{color:#157a3f;font-weight:800}.n{color:#c7c7cc}
+.nb{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+.pn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.tool{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.chip{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:700;color:#424245}
+.chip.on{background:#0066cc;border-color:#0066cc;color:#fff}
+.srch{flex:1;min-width:120px;height:32px;border:1px solid #d2d2d7;border-radius:9999px;padding:0 12px;font-size:12.5px}
+.wbtn{height:32px;border:none;border-radius:9999px;background:#c8381e;color:#fff;font-weight:800;font-size:12.5px;padding:0 14px}
+.row{display:grid;grid-template-columns:64px minmax(0,1fr) 84px;gap:8px;align-items:center;padding:10px 8px;border-top:1px solid #f0f0f2;font-size:13px;border-radius:8px}
+.row.sel{background:#f0f6ff}.row.pin{background:#fff8f6}
+.ct{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 0;width:58px;text-align:center}
+.c1{background:#c8381e;color:#fff}.c2{background:#e8f0fb;color:#0066cc}.c3{background:#eaf6ee;color:#157a3f}.c4{background:#f2f2f5;color:#424245}.c5{background:#fff1d6;color:#9a5b00}.c6{background:#f5f5f7;color:#8e8e93}
+.tt{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tt .nw{font-size:10px;font-weight:900;color:#c8381e;margin-left:5px}
+.tt .rd{font-weight:500;color:#8e8e93}
+.sub{font-size:11.5px;color:#8e8e93;margin-top:2px}
+.rc{font-size:11.5px;color:#6e6e73;text-align:right;line-height:1.5}
+.rc b{color:#157a3f}
+.ans{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 6px}
+.a0{background:#fff1d6;color:#9a5b00}.a1{background:#eaf6ee;color:#157a3f}
+.dh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dt{font-size:17px;font-weight:800;margin:8px 0 4px}
+.dm{font-size:12px;color:#8e8e93}
+.body{font-size:13.5px;line-height:1.8;margin:12px 0;padding:12px 0;border-top:1px solid #f0f0f2;border-bottom:1px solid #f0f0f2}
+.att{display:inline-flex;gap:6px;align-items:center;border:1px solid #e5e5ea;border-radius:10px;padding:6px 10px;font-size:12.5px;color:#0066cc;font-weight:700;margin:0 6px 6px 0}
+.read{margin-top:10px;border:1px solid #e5e5ea;border-radius:12px;padding:10px 12px}
+.read h4{margin:0 0 6px;font-size:12.5px;display:flex;justify-content:space-between}
+.pp{display:flex;gap:5px;flex-wrap:wrap}
+.p{font-size:11.5px;border-radius:9999px;padding:3px 9px;font-weight:700}
+.p.y{background:#eaf6ee;color:#157a3f}.p.n{background:#f2f2f5;color:#8e8e93}
+.ok{margin-top:12px;height:42px;width:100%;border:none;border-radius:12px;background:#157a3f;color:#fff;font-weight:800;font-size:14px}
+/* 답변 */
+.th{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.rp{border-radius:12px;padding:9px 12px;font-size:13px;line-height:1.65;background:#f5f5f7}
+.rp.boss{background:#f0f6ff;border:1px solid #d6e6fb}
+.rp .w{font-size:11.5px;color:#6e6e73;margin-bottom:2px;display:flex;gap:6px;align-items:center}
+.rp .w b{color:#1d1d1f}
+.rb{font-size:10px;font-weight:800;background:#0066cc;color:#fff;border-radius:5px;padding:1px 5px}
+.rin{display:flex;gap:8px;margin-top:10px;align-items:flex-end}
+.rin textarea{flex:1;min-height:42px;border:1.5px solid #0066cc;border-radius:12px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical}
+.rin button{height:42px;border:none;border-radius:12px;background:#0066cc;color:#fff;font-weight:800;padding:0 16px;white-space:nowrap}
+.qk{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.qk span{font-size:11.5px;border:1px solid #d2d2d7;border-radius:9999px;padding:3px 10px;color:#424245;font-weight:700}
+.done{display:flex;gap:6px;align-items:center;font-size:12.5px;margin-top:8px;color:#424245}
+/* 목록 안 바로 답변 */
+.inl{margin:0 8px 8px 72px;border:1px solid #d6e6fb;background:#f7fbff;border-radius:12px;padding:10px}
+.wf{display:grid;gap:10px}
+.wf label{font-size:12px;font-weight:700;color:#6e6e73;display:grid;gap:4px}
+.wf input,.wf select,.wf textarea{border:1px solid #d2d2d7;border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit}
+.wf textarea{min-height:90px}
+.ck{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}
+.ck label{display:flex;gap:6px;align-items:center;color:#1d1d1f;font-weight:500}
+.dis{opacity:.4}
+.mob{max-width:360px}
+@media (max-width:760px){.nb{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.wrap{padding:16px}.row{grid-template-columns:58px minmax(0,1fr)}.row .rc{grid-column:2;text-align:left}.inl{margin-left:8px}}
+</style></head><body><div class="wrap">
+<h1>시안 r77 · 직원 화면 '공지사항' — 정해 주신 내용 + 요청 바로 답변</h1>
+<p class="lead">탭 위치 = <b>설정 바로 앞 📢 공지사항</b>. 정해 주신 규칙을 반영하고, <b>요청 글에 그 자리에서 바로 답변</b>을 달 수 있게 했습니다. (글 · 이름은 가상)</p>
+
+<div class="card box"><h2>① 분류별 규칙 (정해 주신 내용)</h2>
+<table class="tbl">
+<tr><th>분류</th><th>쓰는 사람</th><th>[확인했습니다] · 확인한 직원</th><th>접속 알림 창 (필독일 때)</th><th>답변</th></tr>
+<tr><td><span class="ct c2">업무</span></td><td>대표 · 관리자</td><td class="y">○</td><td class="y">○</td><td class="n">—</td></tr>
+<tr><td><span class="ct c4">일정</span></td><td>대표 · 관리자</td><td class="y">○</td><td class="y">○</td><td class="n">—</td></tr>
+<tr><td><span class="ct c5">요청</span></td><td><b>모든 직원</b></td><td class="y">○</td><td class="y">○</td><td class="y">○ 바로 답변</td></tr>
+<tr><td><span class="ct c3">교육</span></td><td>대표 · 관리자</td><td class="n">— (NEW만)</td><td class="n">—</td><td class="n">—</td></tr>
+<tr><td><span class="ct c6">기타</span></td><td>모든 직원</td><td class="n">— (NEW만)</td><td class="n">—</td><td class="n">—</td></tr>
+</table>
+<p class="note" style="margin-top:8px">· 확인한 직원 목록 · '확인 n/7' 숫자 = 대표 · 관리자만 봄<br>· 첨부 = 사진 · PDF 3개까지 (A안)<br>· <b>요청 · 기타는 직원도 씀</b>으로 잡았습니다 (업무 · 교육 · 일정만 대표 · 관리자로 정해 주셔서). 다르면 알려 주세요.</p>
+</div>
+
+<div class="card box"><h2>② 탭 줄</h2>
+<div class="tabs"><span class="tb">동호배치표</span><span class="tb">상담카드</span><span class="tb">상담이력대장</span><span class="tb">계약자DB</span><span class="tb">대라수 업무 ▾</span><span class="tb">매물보드</span><span class="tb">광고</span><span class="tb on">📢 공지사항<span class="dot">3</span></span><span class="tb">설정</span></div>
+<p class="note" style="margin-top:8px">· 빨간 숫자 = 확인 안 한 업무 · 일정 · 요청 글 + 내 요청에 새로 달린 답변</p>
+</div>
+
+<div class="card box"><h2>③ 게시판 — 요청 글 열었을 때 (대표 · 관리자 화면)</h2>
+<div class="nb">
+<div class="pn">
+<div class="tool"><span class="chip on">전체 8</span><span class="chip">📌 필독 2</span><span class="chip">업무 2</span><span class="chip">요청 3</span><span class="chip">교육 1</span><span class="chip">일정 1</span><span class="chip">기타 1</span><span class="chip">답변 대기 1</span></div>
+<div class="tool"><input class="srch" placeholder="제목 · 내용 찾기"><button class="wbtn">+ 글쓰기</button></div>
+<div class="row pin"><span class="ct c1">📌 업무</span><div style="min-width:0"><div class="tt">12월 분양전환 계약 진행 절차 변경<span class="nw">NEW</span></div><div class="sub">대표 · 11-25 · 📎 1</div></div><span class="rc">확인 <b>4</b>/7</span></div>
+<div class="row sel"><span class="ct c5">요청</span><div style="min-width:0"><div class="tt">102동 803호 상담카드 담당자 바꿔 주세요<span class="nw">NEW</span></div><div class="sub">황후권 · 11-25 10:20</div></div><span class="rc"><span class="ans a0">답변 대기</span><br>확인 <b>2</b>/7</span></div>
+<div class="row"><span class="ct c5">요청</span><div style="min-width:0"><div class="tt">방문 예약 많은 토요일 1명 더 근무 가능할까요</div><div class="sub">직원A · 11-24 · 💬 2</div></div><span class="rc"><span class="ans a1">답변 완료</span><br>확인 <b>7</b>/7</span></div>
+<div class="inl">
+<div style="font-size:12px;color:#0066cc;font-weight:800;margin-bottom:6px">↳ 목록에서 바로 답변 (요청 글 줄의 💬 을 누르면 펼침)</div>
+<div class="rp boss" style="font-size:12.5px"><div class="w"><b>대표</b><span class="rb">답변</span>11-24 18:10</div>토요일 오후 직원B 추가 배치합니다.</div>
+<div class="rin"><textarea placeholder="답변 쓰기…"></textarea><button>올리기</button></div>
+</div>
+<div class="row"><span class="ct c4">일정</span><div style="min-width:0"><div class="tt"><span class="rd">11월 마지막 주 근무표</span></div><div class="sub">관리자 · 11-22</div></div><span class="rc">확인 <b>7</b>/7</span></div>
+<div class="row"><span class="ct c3">교육</span><div style="min-width:0"><div class="tt"><span class="rd">헷지했지 매입보장 설명 요령</span></div><div class="sub">대표 · 11-18 · 📎 1</div></div><span class="rc"></span></div>
+</div>
+
+<div class="pn">
+<div class="dh"><span class="ct c5">요청</span><span class="dm">황후권 · 2026-11-25 10:20</span><span class="ans a0">답변 대기</span></div>
+<div class="dt">102동 803호 상담카드 담당자 바꿔 주세요</div>
+<div class="body">102동 803호 임차인이 저와 계속 상담 중인데 카드 담당이 직원C로 되어 있습니다. 담당을 저로 바꿔 주세요.</div>
+<span class="att">📷 화면캡처.jpg</span>
+<div class="read"><h4><span>확인한 직원 2 / 7</span><span style="color:#8e8e93;font-weight:500">대표 · 관리자만 보임</span></h4>
+<div class="pp"><span class="p y">✓ 대표 · 10:31</span><span class="p y">✓ 직원C · 10:40</span><span class="p n">관리자</span><span class="p n">직원A</span><span class="p n">직원B</span><span class="p n">직원D</span><span class="p n">직원E</span></div></div>
+<div class="th">
+<div class="rp"><div class="w"><b>직원C</b>10:42</div>네 저는 괜찮습니다. 바꿔 주셔도 됩니다.</div>
+</div>
+<div class="rin"><textarea placeholder="답변 쓰기… (Ctrl+Enter 로 올리기)">확인했습니다. 담당 황후권으로 바꿨습니다.</textarea><button>올리기</button></div>
+<div class="qk"><span>확인했습니다</span><span>처리했습니다</span><span>검토 후 답변 드리겠습니다</span><span>통화 주세요</span></div>
+<label class="done"><input type="checkbox" checked> 올리면서 <b>답변 완료</b>로 표시 (대표 · 관리자)</label>
+</div>
+</div>
+<p class="note" style="margin-top:10px">· 답변은 글 아래에 대화처럼 쌓임 · <b>대표 · 관리자 답변 = 파란 상자 + '답변' 표시</b> · 다른 직원도 답변 가능<br>
+· 상태: 답변 대기(노랑) → 대표 · 관리자가 답변하며 '답변 완료'(초록). 칩 '답변 대기'로 아직 답 안 한 요청만 모아 봄<br>
+· 자주 쓰는 답 단추 4개 → 누르면 답변 칸에 들어감 · 새 답변이 달리면 <b>요청한 직원에게 텔레그램 알림 + 탭 빨간 숫자</b></p>
+</div>
+
+<div class="card box"><h2>④ 글쓰기 창 — 직원이 열었을 때</h2>
+<div class="pn" style="max-width:560px">
+<div class="wf">
+<label>분류<select><option>요청</option><option>기타</option><option disabled>업무 (대표 · 관리자)</option><option disabled>교육 (대표 · 관리자)</option><option disabled>일정 (대표 · 관리자)</option></select></label>
+<label>제목<input value="102동 803호 상담카드 담당자 바꿔 주세요"></label>
+<label>내용<textarea>102동 803호 임차인이 저와 계속 상담 중인데…</textarea></label>
+<label>첨부 (사진 · PDF, 최대 3개)<input type="file"></label>
+<div class="ck"><label class="dis"><input type="checkbox" disabled> 📌 필독 (대표 · 관리자)</label><label><input type="checkbox" checked> 텔레그램으로 대표 · 관리자에게 알림</label></div>
+<button class="wbtn" style="height:40px">올리기</button>
+</div></div>
+<p class="note" style="margin-top:8px">· 직원에게는 업무 · 교육 · 일정이 회색(고를 수 없음) · 필독 고정은 대표 · 관리자만<br>· 대표 · 관리자 창에는 모든 분류 + '접속할 때 알림 창' (업무 · 일정 · 요청일 때만 나옴)</p>
+</div>
+
+<div class="card box"><h2>⑤ 휴대폰 — 요청 글</h2>
+<div class="mob pn">
+<div class="dh"><span class="ct c5">요청</span><span class="ans a0">답변 대기</span></div>
+<div class="dt" style="font-size:15px">102동 803호 상담카드 담당자 바꿔 주세요</div>
+<div class="dm">황후권 · 11-25 10:20</div>
+<div class="body" style="font-size:13px">임차인이 저와 계속 상담 중인데 카드 담당이 직원C로…</div>
+<div class="rp"><div class="w"><b>직원C</b>10:42</div>네 저는 괜찮습니다.</div>
+<div class="rin"><textarea placeholder="답변 쓰기…"></textarea><button>올리기</button></div>
+</div>
+<p class="note" style="margin-top:8px">· 답변 칸은 글 맨 아래에 붙어 있어 스크롤만 내리면 바로 씀</p>
+</div>
+</div></body></html>
