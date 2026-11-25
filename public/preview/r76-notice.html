@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>시안 r76 · 공지사항</title>
+<title>시안 r76b · 공지사항</title>
 <link rel="stylesheet" href="style-tokens.css">
 <style>
 .wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
@@ -26,7 +26,9 @@ h2{font-size:16px;margin:0 0 10px}
 .row.sel{background:#f0f6ff}
 .row.pin{background:#fff8f6}
 .ct{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 0;width:58px;text-align:center}
-.c1{background:#c8381e;color:#fff}.c2{background:#e8f0fb;color:#0066cc}.c3{background:#eaf6ee;color:#157a3f}.c4{background:#f2f2f5;color:#424245}
+.c1{background:#c8381e;color:#fff}.c2{background:#e8f0fb;color:#0066cc}.c3{background:#eaf6ee;color:#157a3f}.c4{background:#f2f2f5;color:#424245}.c5{background:#fff1d6;color:#9a5b00}
+.due{font-size:11px;font-weight:800;color:#9a5b00;background:#fff8e6;border-radius:6px;padding:1px 6px;margin-left:6px}
+.chg{outline:2px solid #157a3f;outline-offset:2px;border-radius:8px}
 .tt{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tt .nw{font-size:10px;font-weight:900;color:#c8381e;margin-left:5px}
 .tt .rd{font-weight:500;color:#8e8e93}
@@ -64,31 +66,32 @@ h2{font-size:16px;margin:0 0 10px}
 @media (max-width:760px){.nb{grid-template-columns:minmax(0,1fr)}.opt{grid-template-columns:1fr}}
 @media (max-width:560px){.wrap{padding:16px}.row{grid-template-columns:58px minmax(0,1fr)}.row .rc{grid-column:2;text-align:left}}
 </style></head><body><div class="wrap">
-<h1>시안 r76 · 직원 화면 '공지사항'</h1>
-<p class="lead">직원 화면 맨 위 탭 줄에서 <b>설정 바로 앞</b>에 <b>공지사항</b> 탭을 넣습니다. 안 읽은 공지 수가 빨간 숫자로 붙습니다.<br>
+<h1>시안 r76b · 직원 화면 '공지사항' (분류에 '요청' 추가)</h1>
+<p class="lead"><b style="color:#157a3f">r76에서 바뀐 곳 = 초록 테두리</b> (분류에 '요청' 추가)<br>직원 화면 맨 위 탭 줄에서 <b>설정 바로 앞</b>에 <b>공지사항</b> 탭을 넣습니다. 안 읽은 공지 수가 빨간 숫자로 붙습니다.<br>
 대표 · 관리자가 공지를 올리면 직원은 읽고 <b>[확인했습니다]</b>를 누르고, 누가 읽었는지 볼 수 있습니다. (글 · 이름은 가상)</p>
 
 <div class="card box"><h2>① 탭 줄 — 설정 앞</h2>
 <div class="tabs">
-<span class="tb">단지배치</span><span class="tb">동호배치표</span><span class="tb">상담카드</span><span class="tb">상담이력대장</span><span class="tb">계약자DB</span><span class="tb">임차만기</span><span class="tb">대라수 업무 ▾</span><span class="tb">매물보드</span><span class="tb">광고</span><span class="tb on new">📢 공지사항<span class="dot">2</span></span><span class="tb">설정</span>
+<span class="tb">단지배치</span><span class="tb">동호배치표</span><span class="tb">상담카드</span><span class="tb">상담이력대장</span><span class="tb">계약자DB</span><span class="tb">임차만기</span><span class="tb">대라수 업무 ▾</span><span class="tb">매물보드</span><span class="tb">광고</span><span class="tb on new">📢 공지사항<span class="dot">3</span></span><span class="tb">설정</span>
 </div>
-<p class="note" style="margin-top:8px">· 빨간 숫자 = 내가 아직 [확인] 안 한 공지 수 (0이면 숨김) · 휴대폰에서도 같은 자리</p>
+<p class="note" style="margin-top:8px">· 빨간 숫자 = 내가 아직 [확인] 안 한 공지 + [완료 보고] 안 한 요청 수 (0이면 숨김) · 휴대폰에서도 같은 자리</p>
 </div>
 
 <div class="card box"><h2>② 공지 게시판 (PC: 왼쪽 목록 · 오른쪽 내용)</h2>
 <div class="nb">
 <div class="pn">
 <div class="tool">
-<span class="chip on">전체 7</span><span class="chip">📌 필독 2</span><span class="chip">업무 3</span><span class="chip">교육 1</span><span class="chip">일정 1</span><span class="chip">안 읽음 2</span>
+<span class="chip on">전체 8</span><span class="chip">📌 필독 2</span><span class="chip">업무 2</span><span class="chip chg">요청 2</span><span class="chip">교육 1</span><span class="chip">일정 1</span><span class="chip">안 읽음 3</span>
 </div>
 <div class="tool"><input class="srch" placeholder="제목 · 내용 찾기"><button class="wbtn">+ 공지 쓰기</button></div>
 <div class="row pin sel"><span class="ct c1">📌 필독</span><div style="min-width:0"><div class="tt">12월 분양전환 계약 진행 절차 변경 안내<span class="nw">NEW</span></div><div class="sub">대표 · 11-25 09:10</div></div><span class="rc">확인 <b>4</b>/7</span></div>
 <div class="row pin"><span class="ct c1">📌 필독</span><div style="min-width:0"><div class="tt">개인정보(연락처) 외부 공유 금지</div><div class="sub">관리자 · 11-20 · 📎 1</div></div><span class="rc">확인 <b>7</b>/7</span></div>
+<div class="row chg"><span class="ct c5">요청</span><div style="min-width:0"><div class="tt">이번 주 금요일까지 임차인 연락처 확인<span class="nw">NEW</span></div><div class="sub">대표 · 11-25 · <span class="due">기한 11-28 (D-3)</span></div></div><span class="rc">완료 <b>1</b>/7</span></div>
 <div class="row"><span class="ct c2">업무</span><div style="min-width:0"><div class="tt">상담카드 감도 꼭 골라 주세요<span class="nw">NEW</span></div><div class="sub">대표 · 11-24</div></div><span class="rc">확인 <b>2</b>/7</span></div>
+<div class="row chg"><span class="ct c5">요청</span><div style="min-width:0"><div class="tt"><span class="rd">관심등록 손님 상담카드 모두 작성</span></div><div class="sub">관리자 · 11-21 · <span class="due" style="color:#157a3f;background:#eaf6ee">기한 지남 · 모두 완료</span></div></div><span class="rc">완료 <b>7</b>/7</span></div>
 <div class="row"><span class="ct c4">일정</span><div style="min-width:0"><div class="tt"><span class="rd">11월 마지막 주 근무표</span></div><div class="sub">관리자 · 11-22</div></div><span class="rc">확인 <b>7</b>/7</span></div>
 <div class="row"><span class="ct c3">교육</span><div style="min-width:0"><div class="tt"><span class="rd">헷지했지 매입보장 설명 요령</span></div><div class="sub">대표 · 11-18 · 📎 1</div></div><span class="rc">확인 <b>6</b>/7</span></div>
-<div class="row"><span class="ct c2">업무</span><div style="min-width:0"><div class="tt"><span class="rd">예약방문 스케줄 입력 방법</span></div><div class="sub">관리자 · 11-17</div></div><span class="rc">확인 <b>7</b>/7</span></div>
-<p class="note" style="margin:8px 0 0">· 필독 = 맨 위 고정 · 안 읽은 글은 굵게 + NEW · 읽은 글은 회색<br>· 오른쪽 '확인 4/7' = 직원 7명 중 4명 확인</p>
+<p class="note" style="margin:8px 0 0">· 필독 = 맨 위 고정 · 안 읽은 글은 굵게 + NEW · 읽은 글은 회색<br>· 오른쪽 '확인 4/7' = 직원 7명 중 4명 확인 · <b>요청 글은 '완료 1/7'</b> (해야 할 일을 끝낸 직원 수)</p>
 </div>
 
 <div class="pn">
@@ -109,14 +112,38 @@ h2{font-size:16px;margin:0 0 10px}
 </div>
 </div>
 
+<div class="card box chg" style="outline-offset:0"><h2>②-2 '요청' 글 내용 — 직원이 해야 할 일</h2>
+<div class="nb">
+<div class="pn">
+<div class="dh"><span class="ct c5">요청</span><span class="dm">대표 · 2026-11-25 10:00</span><span class="due">기한 11-28 (금) · D-3</span></div>
+<div class="dt">이번 주 금요일까지 임차인 연락처 확인</div>
+<div class="body">담당 세대 중 연락처가 비어 있거나 바뀐 임차인을 확인해서 계약자DB에 고쳐 주세요.<br>끝나면 아래 [완료 보고]를 누르고, 남길 말이 있으면 한 줄 적어 주세요.</div>
+<div class="read"><h4><span>완료 1 / 7</span><span style="color:#8e8e93;font-weight:500">대표 · 관리자만 보임</span></h4>
+<div class="pp"><span class="p y">✓ 황후권 · 11-25</span><span class="p" style="background:#e8f0fb;color:#0066cc">👁 직원A (읽음)</span><span class="p" style="background:#e8f0fb;color:#0066cc">👁 직원B (읽음)</span><span class="p n">직원C</span><span class="p n">직원D</span><span class="p n">직원E</span><span class="p n">직원F</span></div>
+<div style="font-size:12px;color:#3a3a3c;margin-top:8px;line-height:1.6">💬 황후권: 102동 담당 12세대 확인, 2세대 번호 바뀜 → 고침</div></div>
+<div style="display:flex;gap:8px;margin-top:12px"><input class="srch" style="height:42px;border-radius:12px" placeholder="남길 말 (선택)"><button class="ok" style="margin:0;width:auto;padding:0 18px;background:#9a5b00">완료 보고</button></div>
+</div>
+<div class="pn" style="font-size:13px;line-height:1.75">
+<b>'요청' 분류만 다른 점</b><br>
+· 쓸 때 <b>기한</b>(날짜)을 넣을 수 있음 → 목록에 'D-3' · 지나면 빨간 '기한 지남'<br>
+· 직원 단추가 [확인했습니다] 대신 <b>[완료 보고]</b> + 한 줄 메모<br>
+· 대표 · 관리자는 <b>읽음 / 완료 / 안 읽음</b>을 사람별로 봄<br>
+· 기한 하루 전까지 완료 안 한 직원에게 텔레그램 알림 (쓸 때 고름)<br>
+· 탭의 빨간 숫자 = 안 읽은 공지 + 완료 안 한 요청<br><br>
+<span style="color:#6e6e73">※ 지금 있는 <b>소통 › 요청함</b>은 직원 → 관리자 방향(담당자 변경 등). 공지사항 '요청'은 <b>대표 · 관리자 → 직원</b>에게 일을 맡기는 글이라 따로 둡니다.</span>
+</div>
+</div>
+</div>
+
 <div class="card box"><h2>③ 공지 쓰기 창</h2>
 <div class="pn" style="max-width:560px">
 <div class="wf">
-<label>분류<select><option>업무</option><option>교육</option><option>일정</option><option>기타</option></select></label>
+<label>분류<select><option>업무</option><option>요청</option><option>교육</option><option>일정</option><option>기타</option></select></label>
+<label>기한 (분류가 '요청'일 때만 나옴)<input type="date" value="2026-11-28"></label>
 <label>제목<input value="12월 분양전환 계약 진행 절차 변경 안내"></label>
 <label>내용<textarea>12월 1일부터 가계약금 입금 확인은 관리자 확인 후…</textarea></label>
 <label>첨부 (사진 · PDF, 최대 3개)<input type="file"></label>
-<div class="ck"><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox" checked> 📌 필독 (맨 위 고정)</label><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox" checked> 접속할 때 알림 창으로 띄우기</label><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox"> 텔레그램 알림</label></div>
+<div class="ck"><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox" checked> 📌 필독 (맨 위 고정)</label><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox" checked> 접속할 때 알림 창으로 띄우기</label><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox"> 텔레그램 알림</label><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox" checked> 요청: 기한 하루 전 미완료 직원 알림</label></div>
 <button class="wbtn" style="height:40px">올리기</button>
 </div></div>
 </div>
@@ -136,7 +163,7 @@ h2{font-size:16px;margin:0 0 10px}
 <div class="mob pn">
 <div class="tool"><span class="chip on">전체</span><span class="chip">📌 필독</span><span class="chip">안 읽음 2</span><button class="wbtn" style="margin-left:auto">+ 쓰기</button></div>
 <div class="row pin"><span class="ct c1">📌 필독</span><div style="min-width:0"><div class="tt">12월 분양전환 계약 진행 절차…<span class="nw">NEW</span></div><div class="sub">대표 · 11-25</div></div><span class="rc">확인 <b>4</b>/7</span></div>
-<div class="row"><span class="ct c2">업무</span><div style="min-width:0"><div class="tt">상담카드 감도 꼭 골라 주세요<span class="nw">NEW</span></div><div class="sub">대표 · 11-24</div></div><span class="rc">확인 <b>2</b>/7</span></div>
+<div class="row"><span class="ct c5">요청</span><div style="min-width:0"><div class="tt">임차인 연락처 확인<span class="nw">NEW</span></div><div class="sub">대표 · <span class="due">D-3</span></div></div><span class="rc">완료 <b>1</b>/7</span></div>
 <p class="note" style="margin:8px 0 0">· 목록에서 누르면 내용이 화면 전체로 열림</p>
 </div>
 </div>
