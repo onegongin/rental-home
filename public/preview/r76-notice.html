@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r76 · 공지사항</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}.note b{color:var(--fg)}
+/* 탭 줄 */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px}
+.tb{padding:7px 12px;border-radius:9px;font-size:13px;font-weight:700;color:#424245;position:relative;white-space:nowrap}
+.tb.on{background:#1d1d1f;color:#fff}
+.tb.new{outline:2px solid #157a3f;outline-offset:1px}
+.dot{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;border-radius:9px;background:#c8381e;color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px}
+/* 게시판 */
+.nb{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;margin-top:14px}
+.pn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.tool{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.chip{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 11px;font-size:12px;font-weight:700;color:#424245}
+.chip.on{background:#0066cc;border-color:#0066cc;color:#fff}
+.srch{flex:1;min-width:120px;height:32px;border:1px solid #d2d2d7;border-radius:9999px;padding:0 12px;font-size:12.5px}
+.wbtn{height:32px;border:none;border-radius:9999px;background:#c8381e;color:#fff;font-weight:800;font-size:12.5px;padding:0 14px}
+.row{display:grid;grid-template-columns:64px minmax(0,1fr) 78px;gap:8px;align-items:center;padding:10px 8px;border-top:1px solid #f0f0f2;font-size:13px;border-radius:8px}
+.row.sel{background:#f0f6ff}
+.row.pin{background:#fff8f6}
+.ct{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 0;width:58px;text-align:center}
+.c1{background:#c8381e;color:#fff}.c2{background:#e8f0fb;color:#0066cc}.c3{background:#eaf6ee;color:#157a3f}.c4{background:#f2f2f5;color:#424245}
+.tt{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tt .nw{font-size:10px;font-weight:900;color:#c8381e;margin-left:5px}
+.tt .rd{font-weight:500;color:#8e8e93}
+.sub{font-size:11.5px;color:#8e8e93;margin-top:2px}
+.rc{font-size:11.5px;color:#6e6e73;text-align:right}
+.rc b{color:#157a3f}
+/* 상세 */
+.dh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dt{font-size:17px;font-weight:800;margin:8px 0 4px}
+.dm{font-size:12px;color:#8e8e93}
+.body{font-size:13.5px;line-height:1.8;margin:12px 0;padding:12px 0;border-top:1px solid #f0f0f2;border-bottom:1px solid #f0f0f2}
+.att{display:inline-flex;gap:6px;align-items:center;border:1px solid #e5e5ea;border-radius:10px;padding:6px 10px;font-size:12.5px;color:#0066cc;font-weight:700}
+.read{margin-top:12px;border:1px solid #e5e5ea;border-radius:12px;padding:10px 12px}
+.read h4{margin:0 0 6px;font-size:12.5px;display:flex;justify-content:space-between}
+.pp{display:flex;gap:5px;flex-wrap:wrap}
+.p{font-size:11.5px;border-radius:9999px;padding:3px 9px;font-weight:700}
+.p.y{background:#eaf6ee;color:#157a3f}.p.n{background:#f2f2f5;color:#8e8e93}
+.ok{margin-top:12px;height:42px;width:100%;border:none;border-radius:12px;background:#157a3f;color:#fff;font-weight:800;font-size:14px}
+.ed{display:flex;gap:6px;margin-top:10px;justify-content:flex-end}
+.ed span{font-size:12px;border:1px solid #d2d2d7;border-radius:9999px;padding:4px 11px;font-weight:700;color:#424245}
+/* 글쓰기 */
+.wf{display:grid;gap:10px}
+.wf label{font-size:12px;font-weight:700;color:#6e6e73;display:grid;gap:4px}
+.wf input,.wf select,.wf textarea{border:1px solid #d2d2d7;border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit}
+.wf textarea{min-height:110px}
+.ck{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}
+/* 팝업 */
+.pop{max-width:420px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.18);padding:18px}
+.pop .ph{display:flex;align-items:center;gap:8px;font-weight:800}
+.opt{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+.opt div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55}
+.opt .rec{border-color:#0066cc;background:#f5f9ff}
+.q{margin:14px 0 4px;font-size:13.5px;font-weight:800}
+.mob{max-width:360px}
+@media (max-width:760px){.nb{grid-template-columns:minmax(0,1fr)}.opt{grid-template-columns:1fr}}
+@media (max-width:560px){.wrap{padding:16px}.row{grid-template-columns:58px minmax(0,1fr)}.row .rc{grid-column:2;text-align:left}}
+</style></head><body><div class="wrap">
+<h1>시안 r76 · 직원 화면 '공지사항'</h1>
+<p class="lead">직원 화면 맨 위 탭 줄에서 <b>설정 바로 앞</b>에 <b>공지사항</b> 탭을 넣습니다. 안 읽은 공지 수가 빨간 숫자로 붙습니다.<br>
+대표 · 관리자가 공지를 올리면 직원은 읽고 <b>[확인했습니다]</b>를 누르고, 누가 읽었는지 볼 수 있습니다. (글 · 이름은 가상)</p>
+
+<div class="card box"><h2>① 탭 줄 — 설정 앞</h2>
+<div class="tabs">
+<span class="tb">단지배치</span><span class="tb">동호배치표</span><span class="tb">상담카드</span><span class="tb">상담이력대장</span><span class="tb">계약자DB</span><span class="tb">임차만기</span><span class="tb">대라수 업무 ▾</span><span class="tb">매물보드</span><span class="tb">광고</span><span class="tb on new">📢 공지사항<span class="dot">2</span></span><span class="tb">설정</span>
+</div>
+<p class="note" style="margin-top:8px">· 빨간 숫자 = 내가 아직 [확인] 안 한 공지 수 (0이면 숨김) · 휴대폰에서도 같은 자리</p>
+</div>
+
+<div class="card box"><h2>② 공지 게시판 (PC: 왼쪽 목록 · 오른쪽 내용)</h2>
+<div class="nb">
+<div class="pn">
+<div class="tool">
+<span class="chip on">전체 7</span><span class="chip">📌 필독 2</span><span class="chip">업무 3</span><span class="chip">교육 1</span><span class="chip">일정 1</span><span class="chip">안 읽음 2</span>
+</div>
+<div class="tool"><input class="srch" placeholder="제목 · 내용 찾기"><button class="wbtn">+ 공지 쓰기</button></div>
+<div class="row pin sel"><span class="ct c1">📌 필독</span><div style="min-width:0"><div class="tt">12월 분양전환 계약 진행 절차 변경 안내<span class="nw">NEW</span></div><div class="sub">대표 · 11-25 09:10</div></div><span class="rc">확인 <b>4</b>/7</span></div>
+<div class="row pin"><span class="ct c1">📌 필독</span><div style="min-width:0"><div class="tt">개인정보(연락처) 외부 공유 금지</div><div class="sub">관리자 · 11-20 · 📎 1</div></div><span class="rc">확인 <b>7</b>/7</span></div>
+<div class="row"><span class="ct c2">업무</span><div style="min-width:0"><div class="tt">상담카드 감도 꼭 골라 주세요<span class="nw">NEW</span></div><div class="sub">대표 · 11-24</div></div><span class="rc">확인 <b>2</b>/7</span></div>
+<div class="row"><span class="ct c4">일정</span><div style="min-width:0"><div class="tt"><span class="rd">11월 마지막 주 근무표</span></div><div class="sub">관리자 · 11-22</div></div><span class="rc">확인 <b>7</b>/7</span></div>
+<div class="row"><span class="ct c3">교육</span><div style="min-width:0"><div class="tt"><span class="rd">헷지했지 매입보장 설명 요령</span></div><div class="sub">대표 · 11-18 · 📎 1</div></div><span class="rc">확인 <b>6</b>/7</span></div>
+<div class="row"><span class="ct c2">업무</span><div style="min-width:0"><div class="tt"><span class="rd">예약방문 스케줄 입력 방법</span></div><div class="sub">관리자 · 11-17</div></div><span class="rc">확인 <b>7</b>/7</span></div>
+<p class="note" style="margin:8px 0 0">· 필독 = 맨 위 고정 · 안 읽은 글은 굵게 + NEW · 읽은 글은 회색<br>· 오른쪽 '확인 4/7' = 직원 7명 중 4명 확인</p>
+</div>
+
+<div class="pn">
+<div class="dh"><span class="ct c1">📌 필독</span><span class="dm">대표 · 2026-11-25 09:10 · 조회 6</span></div>
+<div class="dt">12월 분양전환 계약 진행 절차 변경 안내</div>
+<div class="body">12월 1일부터 가계약금 입금 확인은 <b>관리자 확인 후</b> 계약중으로 바꿔 주세요.<br>
+1) 가계약금 입금 → 상담카드 계약관리 '가계약'<br>
+2) 관리자 입금 확인 → '계약중'<br>
+3) 본계약 서명 → '계약완료' (계약자DB 자동 반영)<br>
+궁금한 점은 소통 › 요청함에 남겨 주세요.</div>
+<span class="att">📎 계약절차_12월.pdf</span>
+<div class="read"><h4><span>확인한 직원 4 / 7</span><span style="color:#8e8e93;font-weight:500">대표 · 관리자만 보임</span></h4>
+<div class="pp"><span class="p y">✓ 황후권</span><span class="p y">✓ 직원A</span><span class="p y">✓ 직원B</span><span class="p y">✓ 직원C</span><span class="p n">직원D</span><span class="p n">직원E</span><span class="p n">직원F</span></div></div>
+<button class="ok">확인했습니다</button>
+<div class="ed"><span>고치기</span><span>필독 풀기</span><span style="color:#c8381e">지우기</span></div>
+<p class="note" style="margin-top:6px">· 고치기 · 지우기는 쓴 사람 · 대표 · 관리자만 · 지운 글은 숨김(기록은 남음)</p>
+</div>
+</div>
+</div>
+
+<div class="card box"><h2>③ 공지 쓰기 창</h2>
+<div class="pn" style="max-width:560px">
+<div class="wf">
+<label>분류<select><option>업무</option><option>교육</option><option>일정</option><option>기타</option></select></label>
+<label>제목<input value="12월 분양전환 계약 진행 절차 변경 안내"></label>
+<label>내용<textarea>12월 1일부터 가계약금 입금 확인은 관리자 확인 후…</textarea></label>
+<label>첨부 (사진 · PDF, 최대 3개)<input type="file"></label>
+<div class="ck"><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox" checked> 📌 필독 (맨 위 고정)</label><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox" checked> 접속할 때 알림 창으로 띄우기</label><label style="display:flex;gap:6px;align-items:center;color:#1d1d1f"><input type="checkbox"> 텔레그램 알림</label></div>
+<button class="wbtn" style="height:40px">올리기</button>
+</div></div>
+</div>
+
+<div class="card box"><h2>④ 직원이 접속할 때 — 안 읽은 필독 공지 알림 창</h2>
+<div class="pop">
+<div class="ph">📢 새 필독 공지 <span class="dot" style="position:static">1</span></div>
+<div class="dt" style="font-size:15px">12월 분양전환 계약 진행 절차 변경 안내</div>
+<div class="dm">대표 · 11-25 09:10</div>
+<div style="font-size:13px;line-height:1.7;margin:10px 0;color:#3a3a3c">12월 1일부터 가계약금 입금 확인은 관리자 확인 후 계약중으로 바꿔 주세요…</div>
+<div style="display:flex;gap:8px"><button class="ok" style="margin:0;flex:1">확인했습니다</button><button style="height:42px;border:1px solid #d2d2d7;border-radius:12px;background:#fff;font-weight:700;padding:0 14px">나중에</button></div>
+</div>
+<p class="note" style="margin-top:8px;text-align:center">· '나중에'를 누르면 다음 접속 때 다시 뜸 · [확인] 하면 안 뜸</p>
+</div>
+
+<div class="card box"><h2>⑤ 휴대폰</h2>
+<div class="mob pn">
+<div class="tool"><span class="chip on">전체</span><span class="chip">📌 필독</span><span class="chip">안 읽음 2</span><button class="wbtn" style="margin-left:auto">+ 쓰기</button></div>
+<div class="row pin"><span class="ct c1">📌 필독</span><div style="min-width:0"><div class="tt">12월 분양전환 계약 진행 절차…<span class="nw">NEW</span></div><div class="sub">대표 · 11-25</div></div><span class="rc">확인 <b>4</b>/7</span></div>
+<div class="row"><span class="ct c2">업무</span><div style="min-width:0"><div class="tt">상담카드 감도 꼭 골라 주세요<span class="nw">NEW</span></div><div class="sub">대표 · 11-24</div></div><span class="rc">확인 <b>2</b>/7</span></div>
+<p class="note" style="margin:8px 0 0">· 목록에서 누르면 내용이 화면 전체로 열림</p>
+</div>
+</div>
+
+<div class="card box"><h2>정해 주실 것</h2>
+<p class="q">1. 공지를 쓸 수 있는 사람</p>
+<div class="opt">
+<div class="rec"><b>A안 (추천) 대표 · 관리자만</b><br>공지는 위에서 아래로. 직원 의견은 지금 있는 '소통'(상담참고 · 요청함 · 불편사항)으로</div>
+<div><b>B안 권한자까지</b><br>설정 › 권한에서 '공지 쓰기'를 준 직원도 씀</div>
+<div><b>C안 누구나</b><br>모든 직원이 씀 (소통 › 상담참고와 겹침)</div>
+</div>
+<p class="q">2. 읽음 확인 · 알림 창</p>
+<div class="opt">
+<div class="rec"><b>A안 (추천) 둘 다</b><br>[확인했습니다] + 누가 읽었는지 · 필독은 접속할 때 알림 창</div>
+<div><b>B안 읽음 확인만</b><br>알림 창은 없이 탭의 빨간 숫자로만</div>
+<div><b>C안 둘 다 없음</b><br>그냥 게시판 (NEW 표시만)</div>
+</div>
+<p class="q">3. 첨부 파일</p>
+<div class="opt">
+<div class="rec"><b>A안 (추천) 사진 · PDF 3개까지</b><br>사진 저장소(rental-home-media)에 보관</div>
+<div><b>B안 첨부 없음</b><br>글만 · 파일은 링크로</div>
+<div style="visibility:hidden"></div>
+</div>
+</div>
+</div></body></html>
