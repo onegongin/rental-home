@@ -7,7 +7,8 @@
   var page = (location.pathname.split('/').pop() || '').toLowerCase();
   var G = [
     ['세대 · 가격', [['./?tab=vac', '🔑 공실 · 신규분양', '공실 일수 · 손님 화면 공개'], ['prices.html', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금']]],
-    ['관리', [['report.html', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', 'top'], ['claims.html', '📑 청구서', '수수료 청구 · MGM', 'boss']]]
+    ['관리', [['report.html', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', 'top'], ['claims.html', '📑 청구서', '수수료 청구 · MGM', 'boss']]],
+    ['홍보', [['news.html', '📰 분양 소식', '검색용 글 쓰기 · 공개', 'boss']]]
   ];
   var css = document.createElement('style');
   css.textContent = '[data-grpnav]{position:relative;display:inline-block}' +
@@ -25,6 +26,7 @@
     var top = ['대표', '관리자', '권한자'].indexOf(role) >= 0, boss = role === '대표' || role === '관리자';
     menu.innerHTML = G.map(function (g) {
       var items = g[1].filter(function (x) { return !x[3] || (x[3] === 'top' ? top : boss); });
+      if (!items.length) return '';
       return '<div><h4>' + g[0] + '</h4>' + items.map(function (x) { return '<a role="menuitem" href="' + x[0] + '"' + (x[0] === page ? ' class="cur"' : '') + '><b>' + x[1] + '</b><span>' + x[2] + '</span></a>'; }).join('') + '</div>';
     }).join('');
   }

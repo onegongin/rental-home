@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+<title>분양 소식 쓰기</title>
+<!-- 분양 소식 (시안 preview/r79-news 확정 2026-11-28) — 대표 · 관리자만 · 서버 src/staff-api/news.js · 공개 페이지 src/seo/news.js (/daelasoo/news)
+     사진은 올릴 때 사무소 로고(wm.png, 정중앙 · 진하기 3% — tools/watermark.py 와 같게)를 새기고 긴 변 1600px JPEG 로 줄임 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{--bg:#f5f5f7;--ink:#1d1d1f;--sub:#6e6e73;--line:#ececf0;--on:#c8381e;--link:#0066cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif}
+  a{color:var(--link);text-decoration:none}
+  button,input,select,textarea{font-family:inherit}
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+  .top a{font-size:14px;font-weight:600}
+  .wrap{max-width:1320px;margin:0 auto;padding:20px 16px 64px}
+  h1{font-size:22px;font-weight:800;margin:0 0 4px}
+  .lead0{color:var(--sub);font-size:13.5px;margin:0 0 14px;line-height:1.6}
+  .lay{display:grid;grid-template-columns:280px minmax(0,1fr) 340px;gap:14px;align-items:start}
+  .pn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+  .li{display:block;padding:10px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+  .li:hover{background:#fafafc}.li.on{background:#f0f6ff;border-color:#d6e6fb}
+  .li b{display:block;font-size:13.5px;line-height:1.4;margin:3px 0}
+  .li small{font-size:11.5px;color:#8e8e93}
+  .st{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 7px}
+  .st.pub{background:#eaf6ee;color:#157a3f}.st.draft{background:#f2f2f5;color:#6e6e73}
+  .cat{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:1px 7px;background:#fdecea;color:#c8381e;margin-left:4px}
+  .nb{width:100%;height:38px;border:none;border-radius:10px;background:var(--on);color:#fff;font-weight:800;font-size:14px;cursor:pointer;margin-bottom:10px}
+  .wf{display:grid;gap:10px}
+  .wf label{font-size:12px;font-weight:700;color:var(--sub);display:grid;gap:4px}
+  .wf label i{font-style:normal;font-weight:600;color:#157a3f}.wf label i.x{color:var(--on)}
+  input[type=text],select,textarea{border:1px solid #d2d2d7;border-radius:10px;padding:8px 10px;font-size:14px;width:100%;background:#fff;color:var(--ink)}
+  textarea{resize:vertical;min-height:70px;line-height:1.6}
+  .blk{border:1px solid #e5e5ea;border-radius:12px;padding:8px 10px;display:grid;gap:6px;background:#fcfcfd}
+  .bh{display:flex;align-items:center;gap:6px}
+  .bh i{font-style:normal;font-size:11px;font-weight:800;background:#f2f2f5;border-radius:6px;padding:2px 8px;color:#424245}
+  .bh .sp{flex:1}
+  .bh button{border:1px solid #d2d2d7;background:#fff;border-radius:8px;font-size:12px;padding:2px 8px;cursor:pointer;color:#424245}
+  .bh button.del{color:var(--on)}
+  .imgb{display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px;align-items:start}
+  .imgb img{width:140px;height:96px;object-fit:cover;border-radius:8px;background:#eef2f7;display:block}
+  .add{display:flex;gap:6px;flex-wrap:wrap}
+  .add button{font-size:12.5px;border:1px solid #b9d3f3;color:#0066cc;border-radius:9999px;padding:5px 12px;font-weight:700;background:#fff;cursor:pointer}
+  .lk{display:flex;gap:10px;flex-wrap:wrap;font-size:13px}.lk label{display:flex;flex-direction:row;gap:4px;align-items:center;color:var(--ink);font-weight:500;font-size:13px}
+  .btns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px}
+  .btns button{height:40px;border-radius:10px;padding:0 16px;font-weight:800;font-size:14px;cursor:pointer;border:0}
+  .b-s{background:#e8e8ed;color:var(--ink)}.b-p{background:var(--on);color:#fff}.b-g{background:#fff;border:1px solid #d2d2d7 !important;color:var(--ink)}.b-x{background:#fff;color:var(--on);border:1px solid #f2c4bb !important}
+  .nv{border:1px solid #e5e5ea;border-radius:12px;padding:12px;background:#fff}
+  .nv .src{font-size:12px;color:#6e6e73;display:flex;gap:6px;align-items:center}
+  .nv .src i{width:20px;height:20px;border-radius:50%;background:var(--on);color:#fff;font-style:normal;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center}
+  .nv .tt{color:#1a0dab;font-size:16px;font-weight:700;margin:6px 0 4px;line-height:1.4;word-break:break-all}
+  .nv .ds{font-size:13px;color:#3a3a3c;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .nv .im{display:flex;gap:6px;margin-top:8px}.nv .im img{width:33%;height:64px;object-fit:cover;border-radius:8px;background:#eef2f7}
+  .ck{list-style:none;padding:0;margin:8px 0 0;font-size:12.5px;line-height:1.9}
+  .ck .o{color:#157a3f;font-weight:700}.ck .x{color:var(--on);font-weight:700}
+  .bad{margin-top:10px;background:#fff4f2;border:1px solid #f2c4bb;border-radius:10px;padding:8px 10px;font-size:12.5px;color:var(--on);line-height:1.6}
+  .hint{font-size:11.5px;color:#8e8e93;line-height:1.6}
+  .empty{padding:30px;text-align:center;color:var(--sub);font-size:14px}
+  .gate{padding:40px 20px;text-align:center;line-height:1.7;background:#fff;border:1px solid var(--line);border-radius:14px}
+  .msg{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;font-size:14px;z-index:40;display:none;max-width:calc(100vw - 32px)}
+  .pick{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:30;display:flex;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto}
+  .pick .bx{background:#fff;border-radius:16px;padding:16px;width:100%;max-width:860px}
+  .pick .gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:10px}
+  .pick .gr button{border:1px solid #e5e5ea;border-radius:10px;padding:4px;background:#fff;cursor:pointer;font-size:11px;color:#6e6e73}
+  .pick .gr img{width:100%;height:80px;object-fit:cover;border-radius:6px;display:block;margin-bottom:3px}
+  @media (max-width:1100px){.lay{grid-template-columns:240px minmax(0,1fr)}.side{grid-column:1/-1}}
+  @media (max-width:760px){.lay{grid-template-columns:minmax(0,1fr)}.imgb{grid-template-columns:1fr}.imgb img{width:100%;height:160px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><a href="./">← 직원 대시보드</a><span data-grpnav></span></div></div>
+<div class="wrap">
+  <h1>📰 분양 소식 쓰기</h1>
+  <p class="lead0">손님 화면 · 검색에 공개되는 글입니다. 공개하면 <b>rental-home.kr/daelasoo/news</b> 에 올라가고 사이트맵 · RSS 로 네이버에 알려집니다. <b>호수 · 손님 이름 · 전화번호는 쓰지 마세요</b> (전화번호 · 호수는 공개가 막힙니다).</p>
+  <div id="app"><div class="gate">불러오는 중…</div></div>
+</div>
+<div class="msg" id="msg"></div>
+<div id="ovl"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const ymd = t => new Date(t + 9 * 3600e3).toISOString().slice(0, 10);
+function flash(t, ms) { const m = $('msg'); m.textContent = t; m.style.display = 'block'; clearTimeout(flash.t); flash.t = setTimeout(() => m.style.display = 'none', ms || 3200); }
+const imgSrc = s => !s ? '' : /^assets\//.test(s) ? '../' + s : '../news/img/' + s;
+// 단지 사진 (사이트에 이미 있는 것, 로고 새겨져 있음)
+const T5 = ['59A', '59B', '59C', '80A', '80B'];
+const SITE_IMGS = [].concat(['80A', '59A'].flatMap(t => [1, 2, 3, 4, 5, 6, 7, 8].map(i => 'interior/' + t + '_0' + i + '.jpg')), [1, 2, 3, 4, 5, 6].map(i => 'interior/59B_0' + i + '.jpg'),
+  ['sky1.jpg', 'sky2.jpg', 'sky3.jpg', 'sky4.jpg', 'hero_wide.jpg', 'hero.jpg', 'park.jpg', 'siteplan.jpg', 'dongho_all.jpg'], T5.map(t => 'plans/main3d_' + t + '.jpg'), T5.map(t => 'plans/plan_' + t + '.jpg'),
+  ['infra/lotte.jpg', 'infra/park.jpg', 'infra/road.jpg'], ['airport', 'cheomdan3', 'invest', 'life', 'metro2', 'road', 'samsung', 'shopping'].map(x => 'info/' + x + '.jpg')).map(f => 'assets/dls/' + f);
+
+async function api(path, b, raw) {
+  const r = await fetch('/api/staff/news' + path, raw ? { method: 'POST', credentials: 'same-origin', body: raw } : { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(b || {}) });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) flash(j.msg || (j.field === 'title' ? '제목을 적어 주세요' : j.field === 'slug' ? '글 주소는 영문 소문자 · 숫자 · - 만' : j.err === 'perm' ? '권한이 없습니다' : '처리하지 못했습니다'), 6000);
+  return j;
+}
+
+let V = null, cur = null, D = null, dirty = false;
+const blank = () => { const d = new Date(Date.now() + 9 * 3600e3).toISOString(); return { id: null, cat: 'hedge', title: '', lead: '', blocks: [{ t: 'img', src: '', cap: '' }, { t: 'h', x: '' }, { t: 'p', x: '' }, { t: 'links', items: ['plan', 'location', 'listings'] }], tags: [V.name], slug: 'news-' + d.slice(2, 10).replace(/-/g, '') + '-' + d.slice(11, 16).replace(':', ''), status: 'draft' }; };
+
+async function load(keep) {
+  const r = await fetch('/api/staff/news', { credentials: 'same-origin' });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { $('app').innerHTML = '<div class="gate">직원 로그인이 필요합니다.<br><a href="./">직원 대시보드에서 로그인</a>한 뒤 이 화면을 다시 열어 주세요.</div>'; return; }
+  if (r.status === 403) { $('app').innerHTML = '<div class="gate">분양 소식은 대표 · 관리자만 쓸 수 있습니다.</div>'; return; }
+  if (!j.ok) { $('app').innerHTML = '<div class="gate">불러오지 못했습니다</div>'; return; }
+  V = j;
+  if (keep && cur) { const x = V.list.find(y => y.id === cur); if (x && !dirty) D = JSON.parse(JSON.stringify(x)); }
+  if (!D) { const x = V.list[0]; D = x ? JSON.parse(JSON.stringify(x)) : blank(); cur = D.id; }
+  draw();
+}
+function open(id) {
+  if (dirty && !confirm('저장하지 않은 내용이 있습니다. 다른 글로 갈까요?')) return;
+  const x = V.list.find(y => y.id === id); D = x ? JSON.parse(JSON.stringify(x)) : blank(); cur = D.id; dirty = false; draw(); window.scrollTo(0, 0);
+}
+
+// 화면에서 바로 하는 점검 (서버 checks 와 같게)
+function checks() {
+  const bl = D.blocks, text = bl.filter(b => b.t === 'p' || b.t === 'h').map(b => b.x).join('') + (D.lead || '');
+  const imgs = bl.filter(b => b.t === 'img' && b.src), heads = bl.filter(b => b.t === 'h' && b.x).length, len = [...text.replace(/\s/g, '')].length, tl = [...D.title].length, ll = [...(D.lead || '')].length;
+  return [[D.title.includes(V.name) && tl <= 60, "제목에 '" + V.name + "' · 60자 이하 (지금 " + tl + '자)'], [ll >= 60 && ll <= 150, "'한 줄로 먼저' 60~150자 (지금 " + ll + '자)'],
+    [imgs.length >= 3 && imgs.every(b => b.cap), '사진 3장 이상 · 사진 설명 (지금 ' + imgs.length + '장)'], [len >= 800, '본문 800자 이상 (지금 ' + len.toLocaleString() + '자)'], [heads >= 2, '소제목 2개 이상 (지금 ' + heads + '개)']];
+}
+function privacy() {
+  const t = [D.title, D.lead].concat(D.blocks.map(b => b.t === 'img' ? b.cap : b.x || '')).join('\n'), bad = [];
+  (t.match(/01[016789][-.\s]?\d{3,4}[-.\s]?\d{4}|0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4}/g) || []).forEach(m => bad.push('전화번호 ' + m));
+  (t.match(/\d{3}\s*동\s*\d{3,4}\s*호|\b1\d{2}-\d{3,4}\b/g) || []).forEach(m => bad.push('호수 ' + m));
+  return [...new Set(bad)];
+}
+
+function blockHtml(b, i) {
+  const head = (lab) => '<div class="bh"><i>' + lab + '</i><span class="sp"></span><button data-up="' + i + '" title="위로">↑</button><button data-dn="' + i + '" title="아래로">↓</button><button class="del" data-rm="' + i + '">지우기</button></div>';
+  if (b.t === 'h') return '<div class="blk">' + head('소제목') + '<input type="text" data-bx="' + i + '" maxlength="80" value="' + esc(b.x) + '" placeholder="질문 모양이 좋아요 — 예: 매입보장이 뭔가요?"></div>';
+  if (b.t === 'p') return '<div class="blk">' + head('글') + '<textarea data-bx="' + i + '" rows="5" maxlength="4000" placeholder="직접 보고 겪은 내용 · 숫자 · 날짜를 구체적으로">' + esc(b.x) + '</textarea></div>';
+  if (b.t === 'table') return '<div class="blk">' + head('표') + '<textarea data-bx="' + i + '" rows="4" placeholder="첫 줄 = 머리. 칸은 | 로 나눔&#10;타입 | 금액대&#10;80타입 | 4억 1,900만 ~ 4억 3,900만원">' + esc(b.x) + '</textarea><div class="hint">줄마다 한 줄 · 칸은 | 로 나눔 · <a href="#" data-pb="' + i + '">분양가표 금액대 불러오기</a></div></div>';
+  if (b.t === 'links') return '<div class="blk">' + head('페이지 링크') + '<div class="lk">' + Object.entries(V.links).map(([k, v]) => '<label><input type="checkbox" data-lk="' + i + '" value="' + k + '"' + (b.items.includes(k) ? ' checked' : '') + '> ' + esc(v) + '</label>').join('') + '</div></div>';
+  if (b.t === 'img') return '<div class="blk">' + head(i === D.blocks.findIndex(x => x.t === 'img') ? '사진 · 대표' : '사진') + '<div class="imgb">' + (b.src ? '<img src="' + esc(imgSrc(b.src)) + '" alt="">' : '<img alt="">') +
+    '<div style="display:grid;gap:6px"><input type="text" data-cap="' + i + '" maxlength="120" value="' + esc(b.cap || '') + '" placeholder="사진 설명 — 예: 101동 80A 거실 (2026년 11월 촬영)"><div class="add"><button data-upl="' + i + '">📷 사진 올리기</button><button data-site="' + i + '">🏢 단지 사진에서 고르기</button></div></div></div></div>';
+  return '';
+}
+
+function sideHtml() {
+  const ck = checks(), bad = privacy(), imgs = D.blocks.filter(b => b.t === 'img' && b.src).slice(0, 3);
+  return '<b style="font-size:13.5px">네이버 검색 결과 미리보기</b>' +
+      '<div class="nv" style="margin-top:8px"><div class="src"><i>DS</i>' + esc(V.name) + ' · rental-home.kr</div><div class="tt">' + esc(D.title || '제목') + '</div><div class="ds">' + esc(D.lead || '한 줄로 먼저 칸이 여기 설명으로 나옵니다') + '</div><div class="im">' + [0, 1, 2].map(k => imgs[k] ? '<img src="' + esc(imgSrc(imgs[k].src)) + '" alt="">' : '<img alt="">').join('') + '</div></div>' +
+      '<b style="font-size:13.5px;display:block;margin-top:14px">올리기 전 점검</b><ul class="ck">' + ck.map(([ok, t]) => '<li class="' + (ok ? 'o' : 'x') + '">' + (ok ? '✓ ' : '✕ ') + esc(t) + '</li>').join('') +
+      '<li class="' + (bad.length ? 'x' : 'o') + '">' + (bad.length ? '✕ ' : '✓ ') + '호수 · 전화번호 없음</li></ul>' +
+      (bad.length ? '<div class="bad"><b>공개가 막힙니다</b> — ' + esc(bad.join(', ')) + '<br>사무소 대표번호는 써도 됩니다</div>' : '') +
+      '<p class="hint" style="margin-top:10px">· ✕ 는 권장 사항 — 있어도 올릴 수 있습니다 (호수 · 전화번호만 막음)<br>· 직접 찍은 사진 · 촬영 시기 · 실제 숫자가 들어간 글이 네이버에서 잘 뜹니다<br>· 공개하면 텔레그램으로 링크가 옵니다 → 블로그 · 카페에 공유</p>';
+}
+
+function draw() {
+  const L = V.list;
+  $('app').innerHTML = '<div class="lay">' +
+    '<div class="pn"><button class="nb" data-new="1">+ 새 글</button>' + (L.length ? L.map(x => '<div class="li' + (x.id === cur ? ' on' : '') + '" data-open="' + x.id + '"><span class="st ' + x.status + '">' + (x.status === 'pub' ? '공개' : '임시') + '</span><span class="cat">' + esc((V.cats.find(c => c[0] === x.cat) || [])[1] || '') + '</span><b>' + esc(x.title) + '</b><small>' + ymd(x.pub_at || x.at) + ' · ' + esc(x.author || '') + '</small></div>').join('') : '<div class="empty">아직 글이 없습니다</div>') + '</div>' +
+    '<div class="pn"><div class="wf">' +
+      '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="st ' + D.status + '">' + (D.status === 'pub' ? '공개 중' : D.id ? '임시 저장' : '새 글') + '</span>' + (D.status === 'pub' ? '<a href="' + esc(V.base + '/news/' + D.slug) + '" target="_blank" rel="noopener" style="font-size:13px;font-weight:700">공개 글 보기 ↗</a>' : '') + '<span id="dirty" style="font-size:12px;color:#c8381e;font-weight:700' + (dirty ? '' : ';display:none') + '">● 저장 안 됨</span>' + '</div>' +
+      '<label>분류<select id="f-cat">' + V.cats.map(([k, v]) => '<option value="' + k + '"' + (k === D.cat ? ' selected' : '') + '>' + esc(v) + '</option>').join('') + '</select></label>' +
+      '<label>제목 <i>' + "'" + esc(V.name) + "'로 시작 권장 · 60자 이하</i><input type=\"text\" id=\"f-title\" maxlength=\"80\" value=\"" + esc(D.title) + '"></label>' +
+      '<label>한 줄로 먼저 (검색 결과 설명 · 글 맨 위 상자) <i>60~150자</i><textarea id="f-lead" rows="3" maxlength="300" placeholder="검색한 사람이 원한 답을 첫 문단에 바로">' + esc(D.lead || '') + '</textarea></label>' +
+      '<label>본문</label>' + D.blocks.map(blockHtml).join('') +
+      '<div class="add"><button data-add="h">+ 소제목</button><button data-add="p">+ 글</button><button data-add="img">+ 사진</button><button data-add="table">+ 표</button><button data-add="links">+ 페이지 링크</button></div>' +
+      '<label>해시태그 (쉼표로)<input type="text" id="f-tags" value="' + esc((D.tags || []).join(', ')) + '"></label>' +
+      '<label>글 주소 (영문 소문자 · 숫자 · -)<input type="text" id="f-slug" maxlength="80" value="' + esc(D.slug) + '"></label><div class="hint">' + esc(V.base) + '/news/<b>' + esc(D.slug) + '</b> · 공개 뒤에는 바꾸지 않는 것이 좋습니다 (검색에 잡힌 주소가 바뀜)</div>' +
+      '<div class="btns">' + (D.id ? '<button class="b-x" data-del="1">지우기</button>' : '') + (D.status === 'pub' ? '<button class="b-g" data-unpub="1">공개 내리기</button>' : '') + '<button class="b-s" data-save="1">' + (D.status === 'pub' ? '고친 내용 저장' : '임시 저장') + '</button>' + (D.status !== 'pub' ? '<button class="b-p" data-pub="1">공개 올리기</button>' : '') + '</div>' +
+    '</div></div>' +
+    '<div class="pn side" id="side">' + sideHtml() + '</div>' +
+  '</div>';
+  bind();
+}
+
+function sync() {
+  const g = id => $(id); if (!g('f-title')) return;
+  D.cat = g('f-cat').value; D.title = g('f-title').value; D.lead = g('f-lead').value; D.slug = g('f-slug').value.trim().toLowerCase();
+  D.tags = g('f-tags').value.split(/[,#]/).map(x => x.trim()).filter(Boolean);
+  document.querySelectorAll('[data-bx]').forEach(el => D.blocks[+el.dataset.bx].x = el.value);
+  document.querySelectorAll('[data-cap]').forEach(el => D.blocks[+el.dataset.cap].cap = el.value);
+  D.blocks.forEach((b, i) => { if (b.t === 'links') b.items = [...document.querySelectorAll('[data-lk="' + i + '"]:checked')].map(x => x.value); });
+}
+let rt = null;
+function bind() {
+  const A = $('app');
+  A.querySelectorAll('[data-open]').forEach(el => el.onclick = () => open(el.dataset.open));
+  A.querySelectorAll('[data-new]').forEach(el => el.onclick = () => open(null));
+  A.querySelectorAll('input,textarea,select').forEach(el => { el.oninput = el.onchange = () => { sync(); if (!dirty) { dirty = true; const d = $('dirty'); if (d) d.style.display = ''; } clearTimeout(rt); rt = setTimeout(() => { const sd = $('side'); if (sd) sd.innerHTML = sideHtml(); }, 300); }; });
+  A.querySelectorAll('[data-add]').forEach(el => el.onclick = () => { sync(); const t = el.dataset.add; D.blocks.push(t === 'img' ? { t, src: '', cap: '' } : t === 'links' ? { t, items: ['plan', 'location', 'listings'] } : { t, x: '' }); dirty = true; draw(); });
+  A.querySelectorAll('[data-rm]').forEach(el => el.onclick = () => { sync(); D.blocks.splice(+el.dataset.rm, 1); dirty = true; draw(); });
+  A.querySelectorAll('[data-up]').forEach(el => el.onclick = () => { sync(); const i = +el.dataset.up; if (i > 0) { [D.blocks[i - 1], D.blocks[i]] = [D.blocks[i], D.blocks[i - 1]]; dirty = true; draw(); } });
+  A.querySelectorAll('[data-dn]').forEach(el => el.onclick = () => { sync(); const i = +el.dataset.dn; if (i < D.blocks.length - 1) { [D.blocks[i + 1], D.blocks[i]] = [D.blocks[i], D.blocks[i + 1]]; dirty = true; draw(); } });
+  A.querySelectorAll('[data-pb]').forEach(el => el.onclick = async e => { e.preventDefault(); sync(); try { const s = await (await fetch('../data/site.json', { cache: 'no-store' })).json(), P = (s.content || {}).priceBand || {}; const f = m => Math.floor(m / 10000) + '억' + (m % 10000 ? ' ' + (m % 10000).toLocaleString() + '만' : ''); D.blocks[+el.dataset.pb].x = ['타입 | 동 · 라인 | 금액대 (매입보장가 · 5~28층)'].concat((P.groups || []).flatMap(g => g.rows.map(r => r.t + ' | ' + r.where + ' | ' + f(r.min) + ' ~ ' + f(r.max) + '원'))).join('\n'); dirty = true; draw(); } catch (x) { flash('불러오지 못했습니다'); } });
+  A.querySelectorAll('[data-upl]').forEach(el => el.onclick = () => { sync(); const i = +el.dataset.upl, f = document.createElement('input'); f.type = 'file'; f.accept = 'image/*'; f.onchange = async () => { const file = f.files[0]; if (!file) return; flash('사진에 로고를 새기는 중…'); try { const blob = await stamp(file), j = await api('/upload?name=' + encodeURIComponent(file.name), null, blob); if (j.ok) { D.blocks[i].src = j.id; dirty = true; draw(); flash('올렸습니다 · 사진 설명을 적어 주세요'); } } catch (x) { flash('사진을 읽지 못했습니다'); } }; f.click(); });
+  A.querySelectorAll('[data-site]').forEach(el => el.onclick = () => { sync(); pick(+el.dataset.site); });
+  const save = async () => { sync(); const b = { cat: D.cat, title: D.title, lead: D.lead, blocks: D.blocks, tags: D.tags, slug: D.slug };
+    if (!D.title.trim()) { flash('제목을 적어 주세요'); return null; }
+    const j = await api(D.id ? '/' + D.id : '', b); if (!j.ok) return null; if (!D.id) { D.id = cur = j.id; } dirty = false; return D.id; };
+  A.querySelectorAll('[data-save]').forEach(el => el.onclick = async () => { if (await save()) { flash('저장했습니다'); load(true); } });
+  A.querySelectorAll('[data-pub]').forEach(el => el.onclick = async () => { const bad = privacy(); if (bad.length) { flash('호수 · 전화번호를 지워야 공개됩니다: ' + bad.join(', '), 6000); return; } if (!confirm('손님 화면 · 검색에 공개할까요?')) return; const id = await save(); if (!id) return; if ((await api('/' + id + '/pub')).ok) { flash('공개했습니다 · 텔레그램으로 링크가 갑니다', 5000); D = null; cur = id; load(true); } });
+  A.querySelectorAll('[data-unpub]').forEach(el => el.onclick = async () => { if (confirm('공개를 내릴까요? (손님 화면 · 검색에서 빠짐, 글은 임시로 남음)') && (await api('/' + D.id + '/unpub')).ok) { flash('내렸습니다'); D = null; load(true); } });
+  A.querySelectorAll('[data-del]').forEach(el => el.onclick = async () => { if (confirm('이 글을 지울까요?') && (await api('/' + D.id + '/del')).ok) { flash('지웠습니다'); D = null; cur = null; dirty = false; load(); } });
+}
+
+function pick(i) {
+  $('ovl').innerHTML = '<div class="pick" id="pk"><div class="bx"><div style="display:flex;align-items:center;gap:8px"><b>단지 사진에서 고르기</b><span class="hint">사이트에 이미 있는 사진 (로고 새겨짐)</span><button id="pkx" style="margin-left:auto;border:1px solid #d2d2d7;background:#fff;border-radius:8px;padding:4px 12px;cursor:pointer">닫기</button></div><div class="gr">' +
+    SITE_IMGS.map(s => '<button data-p="' + s + '"><img src="' + esc(imgSrc(s)) + '" alt="" loading="lazy">' + esc(s.replace('assets/dls/', '')) + '</button>').join('') + '</div></div></div>';
+  $('pkx').onclick = () => $('ovl').innerHTML = ''; $('pk').onclick = e => { if (e.target.id === 'pk') $('ovl').innerHTML = ''; };
+  $('ovl').querySelectorAll('[data-p]').forEach(b => b.onclick = () => { D.blocks[i].src = b.dataset.p; dirty = true; $('ovl').innerHTML = ''; draw(); });
+}
+
+// 로고 새기기 — 긴 변 1600px · 로고 = 짧은 변 크기 정사각형 정중앙 · 진하기 3% (tools/watermark.py stamp 와 같게)
+let WM = null;
+const loadImg = src => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; });
+async function stamp(file) {
+  if (!WM) WM = await loadImg('wm.png');
+  const u = URL.createObjectURL(file); let im; try { im = await loadImg(u); } finally { URL.revokeObjectURL(u); }
+  const k = Math.min(1, 1600 / Math.max(im.width, im.height)), w = Math.round(im.width * k), h = Math.round(im.height * k), c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.drawImage(im, 0, 0, w, h);
+  const s = Math.min(w / WM.width, h / WM.height), lw = WM.width * s, lh = WM.height * s; g.globalAlpha = 0.03; g.drawImage(WM, (w - lw) / 2, (h - lh) / 2, lw, lh); g.globalAlpha = 1;
+  return new Promise((ok, no) => c.toBlob(b => b ? ok(b) : no(), 'image/jpeg', 0.85));
+}
+window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+load();
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

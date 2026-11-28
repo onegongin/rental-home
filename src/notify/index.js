@@ -8,7 +8,7 @@ import { getOne, putRows } from '../repo/kv.js';
 export const KINDS = {
   lead: '관심등록 · 방문예약', sell: '내 집 내놓기', broker: '매물 중개요청', cmt: '게스트 댓글', pub: '매물 공개 · 비공개',
   deal: '가계약 · 계약 · 잔금', assign: '담당 배정 · 공유', security: '보안 (잠김 · 권한)', expiry: '임대차 만기', ad: '광고 내리기 · 매칭 고객', cardDel: '상담 기록 삭제', backup: '엑셀 내보내기 · 백업',
-  notice: '공지사항 (새 글 · 요청 답변)'   // 공지사항 (시안 r77) — 예전 req · fb(직원 소통)는 r78 에서 지움 · morning: '아침 요약'
+  notice: '공지사항 (새 글 · 요청 답변)', news: '분양 소식 공개'   // 공지사항 (시안 r77) — 예전 req · fb(직원 소통)는 r78 에서 지움 · morning: '아침 요약'
 };
 // base(알림 속 직원 화면 주소) 기본값 = wrangler.jsonc SITE_URL
 export const CFG0 = { group: '', groupTitle: '', quiet: [21, 8], off: [], bot: '', base: '' };

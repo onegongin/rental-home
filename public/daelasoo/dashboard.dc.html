@@ -327,6 +327,7 @@ html:root [data-m=ccond]{grid-template-columns:repeat(2,minmax(0,1fr))!important
 [data-m=ovside]>div{position:static!important;overflow:visible!important}
 [data-m=board]{grid-template-columns:minmax(0,1fr)!important;padding:12px 10px 40px!important}
 [data-m=pbg]{grid-template-columns:minmax(0,1fr)!important}
+[data-m=newsg]{grid-template-columns:minmax(0,1fr)!important}
 [data-m=bscroll]{scroll-snap-type:x mandatory;margin:0 -14px;padding:0 14px}
 [data-m=bgrid]{grid-template-columns:var(--bgm,30px repeat(3,calc(100vw - 92px)))!important;min-width:0!important}
 [data-m=bgrid]>div{scroll-snap-align:end}
@@ -3078,6 +3079,21 @@ div:has(>ul[data-hl=RESORT])>div button,div:has(>ul[data-hl=PREMIUM])>div button
     <div class="hgb-fine">{{ si.hg.fine }}</div>
   </section></div>
   </sc-if>
+  <!-- 분양 소식 (시안 r79 확정 2026-11-28) — 최신 공개 글 3개 · 누르면 검색용 글 페이지 (news/글 주소) · 글이 없으면 숨김 -->
+  <sc-if value="{{ si.newsOn }}" hint-placeholder-val="{{ false }}">
+  <div id="news" style="background:#fff;border-radius:18px;padding:20px;min-width:0">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:12px"><h2 style="margin:0;font-size:clamp(18px,2vw,24px);font-weight:800;letter-spacing:-.02em">📰 분양 소식</h2><a href="news" style="font-size:13.5px;font-weight:700;color:#0066cc;text-decoration:none">소식 전체 보기 →</a></div>
+    <div data-m="newsg" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">
+      <sc-for list="{{ si.news }}" as="n" hint-placeholder-count="3"><a href="{{ n.href }}" style="display:flex;flex-direction:column;border:1px solid #ececf0;border-radius:14px;overflow:hidden;text-decoration:none;color:#1d1d1f;background:#fff;min-width:0">
+        <sc-if value="{{ n.hasImg }}"><img src="{{ n.img }}" alt="{{ n.title }}" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#eef2f7"></sc-if>
+        <sc-if value="{{ n.noImg }}"><div style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#dfe7f1,#c9d6e6)"></div></sc-if>
+        <div style="padding:12px 14px;display:flex;flex-direction:column;gap:6px"><div><span style="font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;background:#fdecea;color:#c8381e">{{ n.cat }}</span> <span style="font-size:12px;color:#8e8e93">{{ n.date }}</span></div>
+          <div style="font-size:15px;font-weight:800;line-height:1.4;word-break:keep-all">{{ n.title }}</div>
+          <div style="font-size:12.5px;color:#6e6e73;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ n.lead }}</div></div>
+      </a></sc-for>
+    </div>
+  </div>
+  </sc-if>
   <sc-for list="{{ si.sections }}" as="s" hint-placeholder-count="2">
     <div style="background:#fff;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0;font-size:clamp(18px,2vw,24px);font-weight:800;letter-spacing:-.02em;color:#1d1d1f;text-wrap:pretty">{{ s.title }}</h2><div style="display:flex;gap:4px;margin-left:auto"><sc-for list="{{ s.blks }}" as="b"><button onClick="{{ b.go }}" style="border:1px solid {{ b.bd }};background:{{ b.bg }};color:{{ b.fg }};border-radius:9999px;padding:5px 12px;font-size:12.5px;font-weight:700;cursor:pointer">{{ b.label }}</button></sc-for></div></div>
@@ -5062,6 +5078,12 @@ class Component extends DCLogic {
   popSz(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB'; }
   popIco(n) { return /\.pdf$/i.test(n) ? '📕' : /\.hwpx?$/i.test(n) ? '📘' : /\.xlsx?$/i.test(n) ? '📗' : /\.docx?$/i.test(n) ? '📄' : /\.zip$/i.test(n) ? '🗜️' : '🖼️'; }
   // 최근 실거래 (국토부, /api/public/trades) — 손님 화면 단지 소개 칸
+  // 분양 소식 (시안 r79 확정 2026-11-28): 단지 화면 헷지했지 보드 아래 — 최신 공개 글 3개 (/api/public/news), 없으면 칸 숨김 · 글 = 검색용 페이지 news/{글 주소}
+  gNewsLoad() { fetch('/api/public/news', { cache: 'no-store' }).then(r => r.json()).then(j => { if (j && j.ok) this.setState({ gNews: j.rows || [] }); }).catch(() => {}); }
+  newsVals() {
+    const R = this.state.gNews || [], src = s => !s ? '' : /^assets\//.test(s) ? s : 'news/img/' + s;
+    return { newsOn: R.length > 0, news: R.map(n => ({ href: 'news/' + n.slug, title: n.title, lead: n.lead, cat: n.cat, date: new Date(n.at + 9 * 3600e3).toISOString().slice(0, 10), img: src(n.cover), hasImg: !!n.cover, noImg: !n.cover })) };
+  }
   gTrLoad() { fetch('/api/public/trades', { cache: 'no-store' }).then(r => r.json()).then(j => { if (j && j.ok) this.setState({ gTr: j }); }).catch(() => {}); }
   trVals() {
     const T = this.state.gTr || {}, rows = T.rows || [];
@@ -5519,7 +5541,7 @@ class Component extends DCLogic {
     this._heroTs = e => { const h = e.target.closest && e.target.closest('[data-m=sihero]'); if (e.type === 'touchstart') { this._heroX = h ? e.touches[0].clientX : null; return; } if (this._heroX == null) return; const d = e.changedTouches[0].clientX - this._heroX; this._heroX = null; if (Math.abs(d) > 40) this.heroGo((this.state.siHero || 0) + (d < 0 ? 1 : -1)); }; document.addEventListener('touchstart', this._heroTs, { passive: true }); document.addEventListener('touchend', this._heroTs, { passive: true });
     this._bzTs = e => { const h = e.target.closest && e.target.closest('[data-m=bzslide]'); if (e.type === 'touchstart') { this._bzX = h ? e.touches[0].clientX : null; return; } if (this._bzX == null) return; const d = e.changedTouches[0].clientX - this._bzX; this._bzX = null; if (Math.abs(d) > 40) this.setState({ bzI: (this.state.bzI || 0) + (d < 0 ? 1 : -1) }); }; document.addEventListener('touchstart', this._bzTs, { passive: true }); document.addEventListener('touchend', this._bzTs, { passive: true });   // 사업개요 큰 칸 슬라이드 손가락 밀기 (r31)
     this._vwRs = () => { clearTimeout(this._vwT); this._vwT = setTimeout(() => this.setState({ vw: window.innerWidth }), 150); }; window.addEventListener('resize', this._vwRs);   // 팝업 한 번에 몇 개 (3 · 2 · 1)
-    if (this.props.guestOnly) this.gPopLoad(); this.gTrLoad();   /* 최근 실거래 = 단지배치 탭 (손님 · 직원) */   // 공개 팝업은 서버에서 (그림 · 글만 · 첨부)
+    if (this.props.guestOnly) this.gPopLoad(); this.gTrLoad(); this.gNewsLoad();   /* 최근 실거래 = 단지배치 탭 (손님 · 직원) */   // 공개 팝업은 서버에서 (그림 · 글만 · 첨부)
     if (this.props.guestOnly) { try { const q0 = new URLSearchParams(location.search); if (location.hash === '#hedge' || q0.get('go') === 'hedge') { this.setState({ tab: 'gcity', ntClosed: true }); this._noPop = true; let n = 0; const t = setInterval(() => { const el = document.getElementById('hedge'); if (el || ++n > 40) { clearInterval(t); if (el) { const hd = document.querySelector('[data-m=ghead]') || null, off = 250; window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - off, behavior: 'smooth' }); } } }, 150); } } catch (x) {} }   /* 헷지했지 보드 바로가기: /daelasoo/#hedge 또는 ?go=hedge (2026-11-18) */
     if (this.props.guestOnly) { try { const q = new URLSearchParams(location.search); const TM = { city: 'gcity', plan: 'gcity', overview: 'guest', board: 'gboard', option: 'goption', price: 'gprice', list: 'glist' }; const o = {}; if (TM[q.get('tab')]) o.tab = TM[q.get('tab')]; const ty = q.get('type'); if (ty && this.D.types[ty]) { o.planOpen = ty; o.tab = o.tab || 'gcity'; } if (q.get('ad') || ty || q.get('visit') || q.get('reg') || q.get('tab')) o.ntClosed = true; if (q.get('reg') === '1' || q.get('visit') === '1') this._noPop = true; if (q.get('reg') === '1') { o.gRegOpen = true; o.gReg = this.gBlank('seller', ''); } if (q.get('reg') === 'client') { this._noPop = true; o.gRegOpen = true; o.gReg = Object.assign(this.gBlank('client', ''), { interest: String(q.get('int') || '').slice(0, 80) }); } if (q.get('visit') === '1') { const vk = this.D.generic ? 'client' : 'buyer'; o.gRegOpen = true; o.gReg = Object.assign(this.gBlank(vk), { kind: vk, visit: true, err: '' }); } if (Object.keys(o).length) this.setState(o); } catch (x) {} }
     this._hdt = () => { const h = document.querySelector('[data-cc-head]'); if (!h) return; const n = h.querySelector('[data-m=nav]'); if (window.innerWidth < 1100 && n && h.querySelector('[data-m=fam]')) h.style.setProperty('--hdt', -n.offsetTop + 'px'); else h.style.removeProperty('--hdt'); };
@@ -5616,6 +5638,7 @@ class Component extends DCLogic {
       heroCap: [].concat(HI[hi] || [])[2] || '',
       heroMulti: HI.length > 1, heroBar: ((S.siHeroN || 0) % 2 ? 'heroBarB' : 'heroBarA') + ' 5s linear forwards', heroPrev: () => this.heroGo(hi - 1), heroNext: () => this.heroGo(hi + 1),
       /* 헷지했지 혜택 보드 (site.json content.hedge, 시안 r15-hedge-soft 확정 2026-11-14) */
+      ...this.newsVals(),   /* 분양 소식 칸 (시안 r79) */
       ...(H => ({ hasHedge: !!H.hl1, hg: { tag1: H.tag1 || '', tag2: H.tag2 || '', hl1: H.hl1 || '', hl2: H.hl2 || '', sub0: H.sub0 || '', subU: H.subU || '', desc1: H.desc1 || '', desc2: H.desc2 || '', link: H.link || '#',
         bear: P(H.bear), qr: P(H.qr), giftT: H.giftT || '', giftS: H.giftS || '', fine: H.fine || '', reg: () => this.setState({ gRegOpen: true, gReg: Object.assign(this.gBlank('client', ''), { interest: '헷지했지 매입보장 혜택 상담' }) }),
         steps: (H.steps || []).map((s, i) => ({ n: String(i + 1), t: s[0], s: s[1] })), why: (H.why || []).map(w => ({ t: w[0], s: w[1] })),
@@ -5732,8 +5755,9 @@ class Component extends DCLogic {
     const groups = [
       /* '상담' 묶음(💬 소통)은 지움 — 공지사항 탭이 대신 (시안 r78 A안 확정 2026-11-25) */
       { h: '세대 · 가격', items: [it('prices', '💰 분양가표 · 전세연장', '호실별 분양가 · 보증금', page('prices.html'))] },
-      { h: '관리', items: [top ? it('report', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', page('report.html')) : null, boss ? it('claim', '📑 청구서', '수수료 청구 · MGM', page('claims.html')) : null].filter(Boolean) }];   /* KPI · 자료 옮기기 · 전환상태 화면 삭제 (2026-11-21 대표, 전환상태 서버 · 자료는 남김) */
-    return { groups, cur: '' }; }
+      { h: '관리', items: [top ? it('report', '🧾 일일업무보고', '오늘 실적 · 인쇄 · 엑셀', page('report.html')) : null, boss ? it('claim', '📑 청구서', '수수료 청구 · MGM', page('claims.html')) : null].filter(Boolean) },
+      { h: '홍보', items: [boss ? it('news', '📰 분양 소식', '검색용 글 쓰기 · 공개 (시안 r79)', page('news.html')) : null].filter(Boolean) }];   /* KPI · 자료 옮기기 · 전환상태 화면 삭제 (2026-11-21 대표, 전환상태 서버 · 자료는 남김) */
+    return { groups: groups.filter(g => g.items.length), cur: '' }; }
   has3d(code) { return !!(this.D.generic && ((this.D.S.types || {})[code] || {}).pop); }
   plan3dSrc(code) { return 'assets/' + this.D.S.site.code + '/plans/main3d_' + code + '.jpg?v=' + (this.D.S.assetVer || 1); }
   planAr(code, blk) { return this.planOf(code, blk).planAr || 1.365; }

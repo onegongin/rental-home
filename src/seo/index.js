@@ -5,13 +5,16 @@
 //   IndexNow: 공개 · 수정 · 비공개 순간 네이버 · Bing 에 '이 주소 바뀜' 알림 — INDEXNOW_KEY 비밀값이 있을 때만 (검색 등록 뒤 켬)
 import { listingPage, listPage, gonePage, sitemap, rss, DEAL } from './pages.js';
 import { isGuidePath, guideUrls, planIndex, planPage, pricePage, donghoPage, locationPage } from './guide.js';
+import { newsList, newsPage, newsImg } from './news.js';
+import { listPub as newsPub, bySlug as newsBySlug } from '../repo/news.js';
+import { CAT as NEWS_CAT, SLUG as NEWS_SLUG } from '../core/news.js';
 
 const parse = v => { try { return JSON.parse(v); } catch (e) { return []; } };
 const rowsOf = async (db, deal) => ((await db.prepare("SELECT * FROM public_listings WHERE ? = '' OR deal = ? ORDER BY urgent DESC, at DESC LIMIT 500").bind(deal || '', deal || '').all()).results || []);
 export const baseOf = (env, url) => String(env.SITE_URL || (url ? url.origin : '')).replace(/\/$/, '');
 const ULID = /^[0-9A-Z]{26}$/;
 
-export const isSeoPath = (p, env) => isGuidePath(p.replace(/\/$/, '')) || p === '/sitemap.xml' || p === '/rss.xml' || p === '/listings' || p.startsWith('/listings/') || (!!env.INDEXNOW_KEY && p === '/' + env.INDEXNOW_KEY + '.txt');
+export const isSeoPath = (p, env) => isGuidePath(p.replace(/\/$/, '')) || p === '/news' || p === '/news/' || p.startsWith('/news/') || p === '/sitemap.xml' || p === '/rss.xml' || p === '/listings' || p.startsWith('/listings/') || (!!env.INDEXNOW_KEY && p === '/' + env.INDEXNOW_KEY + '.txt');
 
 const out = (text, type, status = 200, cache = 'no-cache') => new Response(text, { status, headers: { 'content-type': type + '; charset=utf-8', 'cache-control': cache } });
 const HTML = 'text/html', XML = 'application/xml';
@@ -20,14 +23,23 @@ export async function seoApi(req, env, url) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return out('', 'text/plain', 405);
   const db = env.DB, p = url.pathname.replace(/\/$/, '') || '/', base = baseOf(env, url);
   if (env.INDEXNOW_KEY && p === '/' + env.INDEXNOW_KEY + '.txt') return out(env.INDEXNOW_KEY, 'text/plain');
-  if (p === '/sitemap.xml') return out(sitemap(base, await rowsOf(db), guideUrls()), XML, 200, 'public, max-age=300');
+  if (p === '/sitemap.xml') return out(sitemap(base, await rowsOf(db), guideUrls(), await newsPub(db)), XML, 200, 'public, max-age=300');
+  // 분양 소식 (시안 r79)
+  if (p === '/news') { const c = NEWS_CAT[url.searchParams.get('c')] ? url.searchParams.get('c') : ''; return out(newsList(base, await newsPub(db, c), c), HTML, 200, 'public, max-age=120'); }
+  if (p.startsWith('/news/img/')) return newsImg(env, p.slice(10));
+  if (p.startsWith('/news/')) {
+    const sl = p.slice(6).toLowerCase(), n = NEWS_SLUG.test(sl) ? await newsBySlug(db, sl) : null;
+    if (!n) return out(gonePage(base), HTML, 404);
+    const all = await newsPub(db), i = all.findIndex(x => x.id === n.id);
+    return out(newsPage(base, n, all[i + 1], i > 0 ? all[i - 1] : null), HTML, 200, 'public, max-age=120');
+  }
   if (p === '/plan') return out(planIndex(base), HTML, 200, 'public, max-age=300');
   if (p.startsWith('/plan/') && p.slice(6) !== p.slice(6).toLowerCase() && /^[\w-]+$/.test(p.slice(6))) return new Response(null, { status: 301, headers: { Location: './' + p.slice(6).toLowerCase() } });   // /plan/80A → /plan/80a (2026-11-19)
   if (p.startsWith('/plan/')) { const h = planPage(base, p.slice(6), await rowsOf(db)); return h ? out(h, HTML) : out(gonePage(base), HTML, 404); }
   if (p === '/price') return out(pricePage(base), HTML, 200, 'public, max-age=300');
   if (p === '/dongho') return out(donghoPage(base), HTML, 200, 'public, max-age=300');
   if (p === '/location') return out(locationPage(base), HTML, 200, 'public, max-age=300');
-  if (p === '/rss.xml') return out(rss(base, await rowsOf(db)), 'application/rss+xml', 200, 'public, max-age=300');
+  if (p === '/rss.xml') return out(rss(base, await rowsOf(db), await newsPub(db, '', 30)), 'application/rss+xml', 200, 'public, max-age=300');
   if (p === '/listings') return out(listPage(base, await rowsOf(db)), HTML);
   const k = p.slice('/listings/'.length);
   if (DEAL[k]) return out(listPage(base, await rowsOf(db, k), k), HTML);

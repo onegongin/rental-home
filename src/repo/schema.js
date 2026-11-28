@@ -2,7 +2,7 @@
 const ready = new Set();   // DB마다 한 번 (d1 · supabase · 시험 DB)
 // 표 준비 판 번호 — 아래에 표 · 칸을 새로 넣으면 1 올린다. 서버가 새로 뜰 때 meta 표에 이 번호가 있으면 한 번만 읽고 끝
 //   (2026-11-19: 새로 뜰 때마다 40번 넘게 DB 를 오가 첫 요청이 8~10초 걸리던 것 고침)
-export const SCHEMA_VER = '2026-11-25.1';   // 공지사항 표 notices · notice_reads · notice_replies (시안 r77)
+export const SCHEMA_VER = '2026-11-28.1';   // 분양 소식 표 news (시안 r79)
 export async function done(db, k, ver) {
   try { const r = await db.prepare('SELECT v FROM meta WHERE k = ?').bind(k).first(); return !!r && r.v === ver; } catch (e) { return false; }
 }
@@ -107,6 +107,8 @@ export async function init(db) {
   try { await db.prepare('CREATE TABLE IF NOT EXISTS notices (id TEXT PRIMARY KEY, cat TEXT NOT NULL, title TEXT, body TEXT, pin INTEGER DEFAULT 0, popup INTEGER DEFAULT 0, author TEXT, at INTEGER, edited_at INTEGER, status TEXT, files TEXT, deleted_at INTEGER, del_by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS notice_reads (nid TEXT NOT NULL, who TEXT NOT NULL, ack_at INTEGER, seen_at INTEGER, PRIMARY KEY (nid, who))').run(); } catch (e) { /* 이미 있음 */ }
   try { await db.prepare('CREATE TABLE IF NOT EXISTS notice_replies (id TEXT PRIMARY KEY, nid TEXT NOT NULL, who TEXT, body TEXT, at INTEGER, deleted_at INTEGER)').run(); } catch (e) { /* 이미 있음 */ }
+  // 분양 소식 (시안 r79 2026-11-28): 글 한 편 = 한 줄, body = 본문 블록 JSON, status draft · pub, 지우기는 숨김
+  try { await db.prepare('CREATE TABLE IF NOT EXISTS news (id TEXT PRIMARY KEY, slug TEXT NOT NULL, cat TEXT, title TEXT, lead TEXT, body TEXT, tags TEXT, status TEXT, author TEXT, at INTEGER, pub_at INTEGER, edited_at INTEGER, deleted_at INTEGER, del_by TEXT)').run(); } catch (e) { /* 이미 있음 */ }
   await mark(db, 'schema', SCHEMA_VER);
   ready.add(key);
 }

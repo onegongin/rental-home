@@ -102,19 +102,21 @@ export const gonePage = base => page({ base, path: '/listings', title: '거래�
 
 const iso = t => new Date(t || Date.now()).toISOString();
 const xesc = s => esc(s).replace(/&#39;/g, '&apos;');
-export function sitemap(base, rows, extra = []) {
+export function sitemap(base, rows, extra = [], news = []) {
   const last = rows.reduce((m, r) => Math.max(m, r.updated || 0), 0) || Date.now();
   const u = (loc, mod, freq, pri) => '<url><loc>' + xesc(loc) + '</loc><lastmod>' + iso(mod).slice(0, 10) + '</lastmod><changefreq>' + freq + '</changefreq><priority>' + pri + '</priority></url>';
   const deals = [...new Set(rows.map(r => r.deal))];
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    [u(base + '/', last, 'weekly', '1.0'), u(base + '/listings', last, 'daily', '0.9'), ...extra.map(p => u(base + p, last, 'weekly', p.startsWith('/plan/') ? '0.7' : '0.8')), ...deals.map(d => u(base + '/listings/' + d, last, 'daily', '0.8')), ...rows.map(r => u(urlOf(base, r), r.updated, 'weekly', '0.7'))].join('\n') + '\n</urlset>\n';
+    [u(base + '/', last, 'weekly', '1.0'), u(base + '/listings', last, 'daily', '0.9'), ...extra.map(p => u(base + p, last, 'weekly', p.startsWith('/plan/') ? '0.7' : '0.8')), ...deals.map(d => u(base + '/listings/' + d, last, 'daily', '0.8')), ...rows.map(r => u(urlOf(base, r), r.updated, 'weekly', '0.7')), ...(news.length ? [u(base + '/news', news[0].pub_at, 'daily', '0.8')] : []), ...news.map(n => u(base + '/news/' + n.slug, n.edited_at || n.pub_at, 'monthly', '0.7'))].join('\n') + '\n</urlset>\n';
 }
 const rfc = t => new Date(t || Date.now()).toUTCString().replace('GMT', '+0000');
-export function rss(base, rows) {
-  const items = rows.slice(0, 50).map(r => '<item><title>' + xesc(titleOf(r)) + '</title><link>' + xesc(urlOf(base, r)) + '</link><guid isPermaLink="true">' + xesc(urlOf(base, r)) + '</guid><description>' + xesc(descOf(r)) + '</description><pubDate>' + rfc(r.at) + '</pubDate></item>');
+export function rss(base, rows, news = []) {
+  // 분양 소식 (시안 r79) — 매물보다 앞에
+  const nitems = news.map(n => '<item><title>' + xesc(n.title) + '</title><link>' + xesc(base + '/news/' + n.slug) + '</link><guid isPermaLink="true">' + xesc(base + '/news/' + n.slug) + '</guid><description>' + xesc(n.lead || n.title) + '</description><pubDate>' + rfc(n.pub_at) + '</pubDate></item>');
+  const items = nitems.concat(rows.slice(0, 50).map(r => '<item><title>' + xesc(titleOf(r)) + '</title><link>' + xesc(urlOf(base, r)) + '</link><guid isPermaLink="true">' + xesc(urlOf(base, r)) + '</guid><description>' + xesc(descOf(r)) + '</description><pubDate>' + rfc(r.at) + '</pubDate></item>'));
   return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>' + xesc(S.name + ' 매물 · 소식') + '</title><link>' + xesc(base + '/') + '</link>' +
     '<description>' + xesc(nameX('') + ' ' + S.address + ' · ' + scaleText(' · ') + '. 매매 · 전세 · 월세 공개 매물. ' + O.name + ' ' + O.tel) + '</description><language>ko</language>' +
-    '<lastBuildDate>' + rfc(rows.reduce((m, r) => Math.max(m, r.updated || 0), 0) || Date.now()) + '</lastBuildDate><atom:link href="' + xesc(base + '/rss.xml') + '" rel="self" type="application/rss+xml"/>' +
+    '<lastBuildDate>' + rfc(Math.max(rows.reduce((m, r) => Math.max(m, r.updated || 0), 0), news.reduce((m, n) => Math.max(m, n.pub_at || 0), 0)) || Date.now()) + '</lastBuildDate><atom:link href="' + xesc(base + '/rss.xml') + '" rel="self" type="application/rss+xml"/>' +
     '<item><title>' + xesc(S.name + ' 단지 안내 · 평면 · 동호배치표 · 방문상담') + '</title><link>' + xesc(base + '/') + '</link><guid isPermaLink="false">' + xesc((S.slug || S.code) + '-site') + '</guid><description>' + xesc(S.address + ' · ' + (moveInText() ? moveInText() + '. ' : '') + '상담 ' + O.tel) + '</description></item>' +
     items.join('') + '</channel></rss>\n';
 }
