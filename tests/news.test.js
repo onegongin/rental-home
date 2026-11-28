@@ -98,5 +98,7 @@ test('화면: 대라수 업무 홍보 › 분양 소식 · 단지 화면 칸', (
   const src = readFileSync(new URL('../public/daelasoo/dashboard.dc.html', import.meta.url), 'utf8');
   assert.match(src, /it\('news', '📰 분양 소식'/);
   assert.match(src, /<sc-if value="\{\{ si\.newsOn \}\}"/);
+  assert.match(src, /\['glist', guestOnly \? '현재 매물' : '게스트 매물'\]\]\)\.concat\(guestOnly \? \[\['gnews', '분양 소식'\]\]/, '손님 탭 현재 매물 뒤 (시안 r80)');
+  assert.match(src, /<sc-if value="\{\{ isGN \}\}"/);
   assert.match(readFileSync(new URL('../public/daelasoo/staff/nav.js', import.meta.url), 'utf8'), /news\.html/);
 });
