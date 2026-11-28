@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r80 · 소식 탭</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}.note b{color:var(--fg)}
+.hdr{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-weight:900;color:#c8381e;font-size:15px;white-space:nowrap}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tb{border:none;border-radius:9999px;padding:8px 14px;font-size:14px;font-weight:600;background:transparent;color:#1d1d1f;white-space:nowrap;position:relative}
+.tb.on{background:#1d1d1f;color:#fff}
+.tb.new{outline:2px solid #157a3f;outline-offset:1px}
+.tb .n{position:absolute;top:-4px;right:-4px;font-size:9.5px;font-weight:900;background:#c8381e;color:#fff;border-radius:9999px;padding:1px 5px}
+.reg{margin-left:auto;border:none;border-radius:9999px;background:#c8381e;color:#fff;font-weight:800;font-size:13.5px;padding:8px 16px}
+.names{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.names button{border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;line-height:1.55;background:#fff;text-align:left;cursor:pointer;color:var(--fg)}
+.names button b{display:block;font-size:15px;margin-bottom:2px}
+.names button.on{border-color:#0066cc;background:#f5f9ff;box-shadow:0 0 0 2px #0066cc inset}
+.rec{display:inline-block;font-size:10.5px;font-weight:800;background:#0066cc;color:#fff;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:2px}
+.pg{background:#f5f5f7;border-radius:16px;padding:16px;margin-top:12px}
+.pgh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}.pgh b{font-size:20px}.pgh span{font-size:12.5px;color:#6e6e73}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 12px;font-size:12.5px;font-weight:700;color:#424245}
+.chip.on{background:#1d1d1f;border-color:#1d1d1f;color:#fff}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.nc{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.ph{aspect-ratio:16/9;background:linear-gradient(135deg,#dfe7f1,#c9d6e6);display:flex;align-items:center;justify-content:center;color:#5a6b80;font-size:12px;font-weight:700}
+.nc .in{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.cat{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;background:#fdecea;color:#c8381e}
+.dt{font-size:12px;color:#8e8e93}
+.nc .t{font-size:15px;font-weight:800;line-height:1.4}
+.nc .s{font-size:12.5px;color:#6e6e73;line-height:1.55}
+.opt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.opt div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55}
+.opt .rc{border-color:#0066cc;background:#f5f9ff}
+.mob{max-width:375px;border:1px solid var(--line);border-radius:18px;padding:10px;background:#fff}
+.mtabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.mtabs .tb{font-size:13px;padding:7px 11px}
+@media (max-width:760px){.names{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.opt{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>시안 r80 · 공개 사이트 상단 탭 — '현재 매물' 뒤에 소식 탭</h1>
+<p class="lead">손님 화면 맨 위 탭 줄 <b>현재 매물</b> 바로 뒤에 분양 소식(글 게시판) 탭을 넣습니다. 아래에서 <b>이름을 눌러 보면</b> 탭 모양이 바뀝니다. (글 · 사진은 예시)</p>
+
+<div class="card box"><h2>① 탭 이름 고르기</h2>
+<div class="names" id="names">
+<button class="on" data-n="분양 소식"><b>분양 소식<span class="rec">추천</span></b>단지 화면 칸 · 검색 페이지 이름과 같음 → 헷갈리지 않음</button>
+<button data-n="단지 소식"><b>단지 소식</b>분양 말고 생활 · 일정 소식까지 넓게</button>
+<button data-n="알림 · 소식"><b>알림 · 소식</b>공지 느낌 — 일정 · 공지 글이 많을 때</button>
+<button data-n="매입보장 · 소식"><b>매입보장 · 소식</b>매입보장을 앞에 내세움 (탭이 길어짐)</button>
+</div>
+<div class="hdr" style="margin-top:14px">
+<span class="logo">첨단대라수1차</span>
+<div class="tabs"><span class="tb">대라수1차</span><span class="tb">단지배치</span><span class="tb">동호배치표</span><span class="tb">현재 매물</span><span class="tb on new" id="tabName">분양 소식<span class="n">N</span></span></div>
+<span class="reg">관심등록</span>
+</div>
+<p class="note" style="margin-top:8px">· 초록 테두리 = 새 탭 · <b>N</b> = 최근 7일 안에 새 글이 있을 때만 붙음 (없으면 안 보임)</p>
+</div>
+
+<div class="card box"><h2>② 탭을 누르면</h2>
+<div class="opt">
+<div class="rc"><b>A안 (추천) 탭 안에서 소식 목록</b><br>다른 탭처럼 화면 안에서 카드 목록 · 분류 칩. 글을 누르면 글 페이지가 열림 (검색에 잡히는 그 페이지). 위 탭 줄이 그대로 남아 다른 탭으로 바로 이동</div>
+<div><b>B안 소식 페이지로 바로 이동</b><br>/daelasoo/news 목록 페이지로 넘어감. 가장 간단하지만 위 탭 줄이 사라지고 '단지 안내 →' 링크로 돌아와야 함</div>
+</div>
+<div class="pg">
+<div class="pgh"><b>📰 <span id="pgName">분양 소식</span></b><span>첨단대라수1차 분양전환 · 매입보장 · 세대 · 입지 소식 — 제니스원부동산이 직접 정리합니다</span></div>
+<div class="chips"><span class="chip on">전체 3</span><span class="chip">분양전환</span><span class="chip">매입보장 1</span><span class="chip">평면 · 세대 1</span><span class="chip">입지 1</span><span class="chip">일정 · 공지</span></div>
+<div class="g3">
+<div class="nc"><div class="ph">단지 전경</div><div class="in"><div><span class="cat">매입보장</span> <span class="dt">2026-11-28</span></div><div class="t">첨단대라수1차 매입보장 — 3년 뒤 분양가에 다시 사드립니다</div><div class="s">신규 분양전환 계약자는 헷지했지 매입보장 약정에 가입할 수 있고, 약정 수수료는 사업자가…</div></div></div>
+<div class="nc"><div class="ph">80A 3D 평면</div><div class="in"><div><span class="cat">평면 · 세대</span> <span class="dt">2026-11-28</span></div><div class="t">첨단대라수1차 80A · 80B 차이 한눈에 — 면적 · 위치 · 금액대</div><div class="s">80타입은 80A(50세대)와 80B(100세대) 두 가지입니다…</div></div></div>
+<div class="nc"><div class="ph">쌍암공원</div><div class="in"><div><span class="cat">입지</span> <span class="dt">2026-11-28</span></div><div class="t">첨단대라수1차 입지 — 쌍암공원 생활권과 6대 개발 계획 정리</div><div class="s">광주 광산구 앰코로 21, 쌍암공원 생활권에 있는 300세대…</div></div></div>
+</div>
+<p class="note" style="margin-top:10px">· 글이 많아지면 12개씩 + [더 보기] · 글이 0개면 "곧 소식을 올려 드립니다" + 관심등록 단추</p>
+</div>
+</div>
+
+<div class="card box"><h2>③ 휴대폰</h2>
+<div class="mob">
+<div class="mtabs"><span class="tb">대라수1차</span><span class="tb">단지배치</span><span class="tb">동호배치표</span><span class="tb">현재 매물</span><span class="tb on new" id="mName">분양 소식</span></div>
+<div class="nc" style="margin-top:10px"><div class="ph">단지 전경</div><div class="in"><div><span class="cat">매입보장</span> <span class="dt">2026-11-28</span></div><div class="t">첨단대라수1차 매입보장 — 3년 뒤 분양가에 다시 사드립니다</div></div></div>
+</div>
+<p class="note" style="margin-top:8px">· 탭 줄은 지금처럼 옆으로 밀어서 봄 · 카드는 한 줄에 하나</p>
+</div>
+
+<div class="card box"><h2>정해 주실 것</h2>
+<p class="note" style="margin:0">1. 탭 이름 — <b>분양 소식 (추천)</b> / 단지 소식 / 알림 · 소식 / 매입보장 · 소식 (다른 이름도 가능)<br>2. 누르면 — <b>A안 탭 안 목록 (추천)</b> / B안 소식 페이지로 이동</p>
+</div>
+</div>
+<script>
+document.querySelectorAll('#names button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#names button').forEach(x => x.classList.toggle('on', x === b));
+  const n = b.dataset.n; document.getElementById('tabName').firstChild.nodeValue = n; document.getElementById('pgName').textContent = n; document.getElementById('mName').textContent = n;
+});
+</script>
+</body></html>
