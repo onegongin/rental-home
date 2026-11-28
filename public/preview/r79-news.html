@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 r79 · 분양 소식</title>
+<link rel="stylesheet" href="style-tokens.css">
+<style>
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.lead{color:var(--sub);font-size:14px;margin:0 0 18px;line-height:1.6}
+h2{font-size:16px;margin:0 0 10px}
+.box{padding:16px 18px;margin-bottom:16px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.75}.note b{color:var(--fg)}
+.url{display:inline-block;font-size:12px;font-family:ui-monospace,Consolas,monospace;background:#f2f2f5;border-radius:6px;padding:2px 8px;color:#424245;margin-bottom:10px}
+.ph{background:linear-gradient(135deg,#dfe7f1,#c9d6e6);display:flex;align-items:center;justify-content:center;color:#5a6b80;font-size:12px;font-weight:700;border-radius:12px}
+.cat{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;background:#fdecea;color:#c8381e}
+.cat.b{background:#e8f0fb;color:#0066cc}.cat.g{background:#eaf6ee;color:#157a3f}.cat.y{background:#fff1d6;color:#9a5b00}
+.dt{font-size:12px;color:#8e8e93}
+/* ① 단지 화면 칸 */
+.sec{background:#fff;border-radius:18px;padding:20px}
+.sech{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sech b{font-size:19px}.sech a{font-size:13px;font-weight:700}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.nc{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.nc .ph{height:150px;border-radius:0}
+.nc .in{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.nc .t{font-size:15px;font-weight:800;line-height:1.4}
+.nc .s{font-size:12.5px;color:#6e6e73;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* ② 목록 */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid #d2d2d7;background:#fff;border-radius:9999px;padding:5px 12px;font-size:12.5px;font-weight:700;color:#424245}
+.chip.on{background:#1d1d1f;border-color:#1d1d1f;color:#fff}
+.li{display:grid;grid-template-columns:180px minmax(0,1fr);gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.li .ph{height:112px}
+.li .t{font-size:16px;font-weight:800;margin:4px 0}
+.li .s{font-size:13px;color:#6e6e73;line-height:1.6}
+/* ③ 글 */
+.art{max-width:760px;margin:0 auto;background:#fff;border-radius:18px;padding:26px 24px}
+.bc{font-size:12px;color:#8e8e93;margin-bottom:10px}
+.art h3.h{font-size:26px;line-height:1.35;margin:8px 0 8px}
+.by{display:flex;gap:8px;align-items:center;font-size:12.5px;color:#6e6e73;margin-bottom:16px;flex-wrap:wrap}
+.sum{background:#f5f9ff;border:1px solid #d6e6fb;border-radius:14px;padding:14px 16px;margin:16px 0;font-size:14px;line-height:1.75}
+.sum b.k{display:block;font-size:12px;color:#0066cc;margin-bottom:4px}
+.art h4{font-size:19px;margin:24px 0 8px}
+.art p{font-size:15px;line-height:1.9;margin:0 0 12px;color:#1d1d1f}
+.cap{font-size:12px;color:#8e8e93;text-align:center;margin:6px 0 14px}
+.tb{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 14px}
+.tb th,.tb td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left}
+.tb th{background:#fafafc;color:#6e6e73;font-size:12.5px}
+.rel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.rel a{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;color:#1d1d1f}
+.rel a span{display:block;font-size:11.5px;color:#8e8e93;font-weight:500}
+.cta{background:#fff4f2;border:1.5px solid #c8381e;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cta b{font-size:15px}.cta span{font-size:12.5px;color:#6e6e73;display:block}
+.cta button{margin-left:auto;height:44px;border:none;border-radius:12px;background:#c8381e;color:#fff;font-weight:800;font-size:14.5px;padding:0 18px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.tags span{font-size:12px;color:#0066cc;background:#f0f6ff;border-radius:9999px;padding:3px 10px}
+.nx{display:flex;justify-content:space-between;gap:10px;margin-top:16px;font-size:13px;border-top:1px solid var(--line);padding-top:12px}
+/* ④ 쓰기 */
+.wr{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px}
+.pn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.wf{display:grid;gap:10px}
+.wf label{font-size:12px;font-weight:700;color:#6e6e73;display:grid;gap:4px}
+.wf input,.wf select,.wf textarea{border:1px solid #d2d2d7;border-radius:10px;padding:8px 10px;font-size:13.5px;font-family:inherit}
+.cnt{font-weight:500;color:#157a3f}
+.blk{border:1px dashed #d2d2d7;border-radius:10px;padding:8px 10px;font-size:13px;display:flex;gap:8px;align-items:center}
+.blk i{font-style:normal;font-size:11px;font-weight:800;background:#f2f2f5;border-radius:6px;padding:2px 7px;color:#424245}
+.add{display:flex;gap:6px;flex-wrap:wrap}
+.add span{font-size:12px;border:1px solid #b9d3f3;color:#0066cc;border-radius:9999px;padding:4px 11px;font-weight:700;background:#fff}
+.btns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.btns span{height:38px;display:inline-flex;align-items:center;border-radius:10px;padding:0 14px;font-weight:800;font-size:13.5px}
+.nv{border:1px solid #e5e5ea;border-radius:12px;padding:12px;background:#fff}
+.nv .src{font-size:12px;color:#6e6e73;display:flex;gap:6px;align-items:center}
+.nv .src i{width:20px;height:20px;border-radius:50%;background:#c8381e;color:#fff;font-style:normal;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center}
+.nv .tt{color:#1a0dab;font-size:16px;font-weight:700;margin:6px 0 4px;line-height:1.4}
+.nv .ds{font-size:13px;color:#3a3a3c;line-height:1.55}
+.nv .im{display:flex;gap:6px;margin-top:8px}.nv .im .ph{width:33%;height:64px;border-radius:8px}
+.ck{list-style:none;padding:0;margin:10px 0 0;font-size:12.5px;line-height:2}
+.ck .o{color:#157a3f;font-weight:700}.ck .x{color:#c8381e;font-weight:700}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.flow div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px;line-height:1.55;background:#fff}
+.flow b{display:block;font-size:13.5px;margin-bottom:2px}
+.opt{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+.opt div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55}
+.opt .rec{border-color:#0066cc;background:#f5f9ff}
+.q{margin:14px 0 4px;font-size:13.5px;font-weight:800}
+@media (max-width:860px){.wr{grid-template-columns:minmax(0,1fr)}.flow{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.wrap{padding:16px}.g3,.rel,.opt{grid-template-columns:1fr}.li{grid-template-columns:110px minmax(0,1fr)}.li .ph{height:80px}.art{padding:20px 16px}.art h3.h{font-size:22px}.flow{grid-template-columns:1fr}.cta button{margin-left:0;width:100%}}
+</style></head><body><div class="wrap">
+<h1>시안 r79 · '분양 소식' 글 게시판 (네이버 검색용)</h1>
+<p class="lead">블로그처럼 <b>날짜 있는 글</b>을 사이트 안에 올립니다. 글마다 <b>자기 주소 · 제목 · 사진</b>이 있어 네이버가 하나하나 검색 결과로 보여 줄 수 있고,
+올리는 즉시 <b>사이트맵 · RSS</b>에 들어가 네이버에 알려집니다. (아래 글 · 사진은 예시)</p>
+
+<div class="card box"><h2>① 단지 화면 — '분양 소식' 칸 (헷지했지 보드 아래)</h2>
+<div class="sec">
+<div class="sech"><b>📰 첨단대라수1차 분양 소식</b><a href="#">소식 전체 보기 →</a></div>
+<div class="g3">
+<div class="nc"><div class="ph">대표 사진</div><div class="in"><div><span class="cat">매입보장</span> <span class="dt">2026-11-28</span></div><div class="t">3년 뒤 분양가에 다시 사드립니다 — 헷지했지 매입보장, 숫자로 쉽게</div><div class="s">80타입 4억 원대, 3년 살고 시세가 내려가면 분양가 그대로 매수청구. 신청 기한 2027년 5월 12일까지.</div></div></div>
+<div class="nc"><div class="ph">대표 사진</div><div class="in"><div><span class="cat b">평면 · 세대</span> <span class="dt">2026-11-25</span></div><div class="t">80A · 80B 차이 한눈에 — 실제 세대 사진으로 비교</div><div class="s">같은 80타입이라도 라인과 향이 다릅니다. 101동 3라인 80A 세대를 직접 둘러봤습니다.</div></div></div>
+<div class="nc"><div class="ph">대표 사진</div><div class="in"><div><span class="cat g">입지</span> <span class="dt">2026-11-20</span></div><div class="t">쌍암공원 도보 5분 · 첨단 생활권 정리</div><div class="s">롯데마트 · 병원 · 빛고을대로 교통까지 단지에서 걸어서 몇 분인지 재 봤습니다.</div></div></div>
+</div>
+</div>
+<p class="note" style="margin-top:8px">· 최신 글 3개만 · 휴대폰은 1칸씩 세로 · 글이 0개면 칸 숨김</p>
+</div>
+
+<div class="card box"><h2>② 소식 목록 페이지</h2>
+<span class="url">rental-home.kr/daelasoo/news</span>
+<div class="sec">
+<div class="chips"><span class="chip on">전체 12</span><span class="chip">분양전환</span><span class="chip">매입보장</span><span class="chip">평면 · 세대</span><span class="chip">입지</span><span class="chip">일정 · 공지</span></div>
+<div class="li"><div class="ph">사진</div><div><span class="cat">매입보장</span> <span class="dt">2026-11-28 · 제니스원부동산</span><div class="t">3년 뒤 분양가에 다시 사드립니다 — 헷지했지 매입보장, 숫자로 쉽게</div><div class="s">80타입 4억 원대, 3년 살고 시세가 내려가면 분양가 그대로 매수청구. 신청 기한 2027년 5월 12일까지…</div></div></div>
+<div class="li"><div class="ph">사진</div><div><span class="cat b">평면 · 세대</span> <span class="dt">2026-11-25 · 제니스원부동산</span><div class="t">80A · 80B 차이 한눈에 — 실제 세대 사진으로 비교</div><div class="s">같은 80타입이라도 라인과 향이 다릅니다…</div></div></div>
+<div class="li"><div class="ph">사진</div><div><span class="cat y">일정 · 공지</span> <span class="dt">2026-11-22 · 제니스원부동산</span><div class="t">12월 분양전환 상담 일정 · 주말 세대 방문 안내</div><div class="s">토 · 일 오전 10시~오후 5시 세대 방문 가능, 예약하면 대기 없이…</div></div></div>
+</div>
+<p class="note" style="margin-top:8px">· 분류 칩마다 자기 주소(/news?c=매입보장)도 있어 검색에 잡힘 · 20개씩 · 검색용 페이지와 같은 모양(빠름, 글자가 HTML 에 그대로)</p>
+</div>
+
+<div class="card box"><h2>③ 글 한 편 페이지 — 네이버가 좋아하는 구성</h2>
+<span class="url">rental-home.kr/daelasoo/news/maeip-bojang-3nyeon</span>
+<div class="art">
+<div class="bc">첨단대라수1차 › 분양 소식 › 매입보장</div>
+<span class="cat">매입보장</span>
+<h3 class="h">첨단대라수1차 매입보장 — 3년 뒤 분양가에 다시 사드립니다, 숫자로 쉽게</h3>
+<div class="by"><b style="color:#1d1d1f">제니스원부동산</b> · 2026-11-28 · 고침 2026-11-28 · 읽는 데 3분</div>
+<div class="ph" style="height:300px">대표 사진 (직접 찍은 단지 · 세대 사진, 로고 새김)</div>
+<div class="cap">101동 3라인 80A 거실 (2026년 11월 촬영)</div>
+<div class="sum"><b class="k">한 줄로 먼저</b>첨단대라수1차 신규 분양전환 계약자는 <b>헷지했지 매입보장</b>을 받을 수 있습니다. 3년 뒤 시세가 분양가보다 낮으면 <b>분양가 그대로 다시 사 달라고 청구</b>할 수 있고, 약정 수수료는 사업자가 냅니다. 신청 기한은 <b>2027년 5월 12일</b>까지입니다.</div>
+<h4>매입보장이 뭔가요?</h4>
+<p>집값이 떨어질까 걱정돼 망설이시는 분이 많습니다. 매입보장은 3년 뒤 시세가 계약한 분양가보다 낮아지면, 60일 안에 매수청구를 해서 분양가 그대로 돌려받는 약속입니다…</p>
+<h4>타입별 금액대</h4>
+<table class="tb"><tr><th>타입</th><th>금액대 (매입보장가 · 5~28층)</th></tr><tr><td>80타입</td><td>4억 1,900만 ~ 4억 3,900만원</td></tr><tr><td>59타입</td><td>3억 3,800만 ~ 3억 5,500만원</td></tr></table>
+<div class="ph" style="height:220px">본문 사진 2</div>
+<div class="cap">헷지했지 약정 일정 안내</div>
+<h4>직접 상담해 보니 많이 묻는 것</h4>
+<p>"3년 안에 팔고 싶으면요?", "전세로 살다가 사도 되나요?" — 실제 상담에서 가장 많이 나온 질문 3가지를 정리했습니다…</p>
+<div class="rel"><a href="#">80A · 80B 평면<span>타입별 평면 · 면적</span></a><a href="#">입지환경<span>쌍암공원 · 교통</span></a><a href="#">현재 매물<span>공개 매물 보기</span></a></div>
+<div class="cta"><div><b>매입보장 상담 신청</b><span>이름 · 연락처만 남기시면 담당자가 연락드립니다 · 1800-7240</span></div><button>상담 신청</button></div>
+<div class="tags"><span>#첨단대라수1차</span><span>#첨단대라수1차분양전환</span><span>#매입보장</span><span>#광주민간임대</span><span>#쌍암동아파트</span></div>
+<div class="nx"><a href="#">← 80A · 80B 차이 한눈에</a><a href="#">소식 목록</a></div>
+</div>
+<p class="note" style="margin-top:10px">· <b>'한 줄로 먼저'</b> 상자 = 검색한 사람이 바로 답을 얻는 첫 문단 (네이버 · AI 답변이 잘 가져감)<br>
+· 소제목은 질문 모양 · 직접 찍은 사진 + 촬영 시기 · 표 · 관련 페이지 링크 · 상담 신청 단추 · 해시태그<br>
+· 화면에 안 보이는 것: 글 제목 · 설명 · 대표 사진(링크 미리보기) · 네이버용 꼬리표(글 · 작성자 · 날짜) · 사이트맵 · RSS 자동 등록</p>
+</div>
+
+<div class="card box"><h2>④ 직원 화면 — 소식 쓰기 (대표 · 관리자)</h2>
+<div class="wr">
+<div class="pn"><div class="wf">
+<label>분류<select><option>매입보장</option><option>분양전환</option><option>평면 · 세대</option><option>입지</option><option>일정 · 공지</option></select></label>
+<label>제목 <span class="cnt">38자 ✓ ('첨단대라수1차'로 시작)</span><input value="첨단대라수1차 매입보장 — 3년 뒤 분양가에 다시 사드립니다, 숫자로 쉽게"></label>
+<label>한 줄로 먼저 (검색 결과 설명 · 첫 문단) <span class="cnt">92자 ✓</span><textarea rows="3">첨단대라수1차 신규 분양전환 계약자는 헷지했지 매입보장을 받을 수 있습니다…</textarea></label>
+<label>본문 블록</label>
+<div class="blk"><i>사진</i> 대표 사진 · 101동 3라인 80A 거실 (2026년 11월 촬영)</div>
+<div class="blk"><i>소제목</i> 매입보장이 뭔가요?</div>
+<div class="blk"><i>글</i> 집값이 떨어질까 걱정돼 망설이시는 분이 많습니다…</div>
+<div class="blk"><i>표</i> 타입별 금액대 (분양가표 금액대 불러오기)</div>
+<div class="add"><span>+ 소제목</span><span>+ 글</span><span>+ 사진</span><span>+ 표</span><span>+ 페이지 링크</span></div>
+<label>해시태그 (검색어)<input value="첨단대라수1차, 첨단대라수1차분양전환, 매입보장, 광주민간임대, 쌍암동아파트"></label>
+<label>글 주소 (자동, 고칠 수 있음)<input value="maeip-bojang-3nyeon"></label>
+<div class="btns"><span style="background:#e8e8ed">임시 저장</span><span style="background:#fff;border:1px solid #d2d2d7">미리보기</span><span style="background:#c8381e;color:#fff">공개 올리기</span></div>
+</div></div>
+<div class="pn">
+<b style="font-size:13.5px">네이버 검색 결과 미리보기</b>
+<div class="nv" style="margin-top:8px"><div class="src"><i>DS</i>첨단대라수1차 · rental-home.kr</div><div class="tt">첨단대라수1차 매입보장 — 3년 뒤 분양가에 다시 사드립니다, 숫자로 쉽게</div><div class="ds">첨단대라수1차 신규 분양전환 계약자는 헷지했지 매입보장을 받을 수 있습니다. 3년 뒤 시세가 분양가보다 낮으면…</div><div class="im"><div class="ph">1</div><div class="ph">2</div><div class="ph">3</div></div></div>
+<b style="font-size:13.5px;display:block;margin-top:14px">올리기 전 점검 (자동)</b>
+<ul class="ck">
+<li class="o">✓ 제목에 '첨단대라수1차' · 60자 이하</li>
+<li class="o">✓ '한 줄로 먼저' 60~150자</li>
+<li class="o">✓ 사진 3장 이상 (지금 4장) · 사진 설명 있음</li>
+<li class="o">✓ 본문 800자 이상 (지금 1,240자)</li>
+<li class="x">✕ 소제목 2개 이상 권장 (지금 1개)</li>
+<li class="o">✓ 호수 · 손님 이름 · 전화번호 없음 (개인정보 검사)</li>
+</ul>
+<p class="note">· ✕ 가 있어도 올릴 수는 있음 (권장 사항)<br>· 사진은 올릴 때 사무소 로고 자동 새김 · 긴 변 1600px 로 줄임</p>
+</div>
+</div>
+</div>
+
+<div class="card box"><h2>⑤ 올린 뒤 자동으로 되는 것</h2>
+<div class="flow">
+<div><b>1. 글 페이지 생성</b>rental-home.kr/daelasoo/news/글주소</div>
+<div><b>2. 사이트맵 · RSS 추가</b>네이버 서치어드바이저가 읽어 감</div>
+<div><b>3. 단지 화면 칸</b>최신 3개에 바로 나옴</div>
+<div><b>4. 텔레그램 알림</b>"새 소식 올림 + 링크" → 블로그 · 카페에 공유</div>
+</div>
+<p class="note" style="margin-top:8px">· 고치면 '고침' 날짜가 바뀌어 네이버가 다시 읽음 · 내린 글은 주소가 '없는 페이지'로 바뀌어 검색에서 빠짐</p>
+</div>
+
+<div class="card box"><h2>정해 주실 것</h2>
+<p class="q">1. 쓰는 사람</p>
+<div class="opt"><div class="rec"><b>A안 (추천) 대표 · 관리자만</b><br>손님에게 공개되는 글이라 바로 공개 권한은 둘만</div><div><b>B안 권한자도 씀 → 대표 · 관리자 승인 후 공개</b><br>직원이 초안, 승인하면 공개</div><div style="visibility:hidden"></div></div>
+<p class="q">2. 직원 화면에서 쓰는 곳</p>
+<div class="opt"><div class="rec"><b>A안 (추천) [대라수 업무 ▾] › 📰 분양 소식</b><br>따로 열리는 화면</div><div><b>B안 '광고' 탭 안</b><br>매물 광고와 같은 곳</div><div style="visibility:hidden"></div></div>
+<p class="q">3. 첫 글</p>
+<div class="opt"><div class="rec"><b>A안 (추천) 첫 글 3편 초안을 제가 써서 넣어 둠</b><br>매입보장 · 80A/80B 비교 · 입지 — 대표님이 사진만 바꾸고 공개</div><div><b>B안 빈 게시판으로 시작</b><br>대표님이 직접 첫 글부터</div><div style="visibility:hidden"></div></div>
+</div>
+</div></body></html>
